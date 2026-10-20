@@ -1,0 +1,15 @@
+{
+  "board": [],
+  "members": [
+    {
+      "role": "عضو",
+      "name": "عبد النور",
+      "university": "FSA",
+      "age": "20",
+      "promo": "2024",
+      "track": "PC",
+      "profession": "informatique applique",
+      "image": ""
+    }
+  ]
+}

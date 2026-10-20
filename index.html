@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>نادي الذكاء الاصطناعي المدمج — Intelligence Artificielle Embarquée</title>
+  <meta name="description"
+    content="Intelligence Artificielle Embarquée — club universitaire d'informatique, d'intelligence artificielle et de systèmes embarqués. نادٍ جامعي للذكاء الاصطناعي والأنظمة المدمجة." />
+  <meta name="author" content="Intelligence Artificielle Embarquée" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://anciendulyceealmourabitine.netlify.app/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://anciendulyceealmourabitine.netlify.app/" />
+  <meta property="og:site_name" content="Intelligence Artificielle Embarquée" />
+  <meta property="og:title" content="Intelligence Artificielle Embarquée — Club universitaire" />
+  <meta property="og:description" content="Club universitaire d'IA et de systèmes embarqués : ateliers, projets et rencontres." />
+  <meta property="og:image" content="https://anciendulyceealmourabitine.netlify.app/logo.jpg" />
+  <meta property="og:image:secure_url" content="https://anciendulyceealmourabitine.netlify.app/logo.jpg" />
+  <meta property="og:locale" content="ar_MA" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Intelligence Artificielle Embarquée" />
+  <meta name="twitter:description" content="Club universitaire d'IA et de systèmes embarqués." />
+  <meta name="twitter:image" content="https://anciendulyceealmourabitine.netlify.app/logo.jpg" />
+
+  <meta name="google-site-verification" content="xddvA7Qy3Bh9GZDz7TPUKZMqEfWCJPcoppU4cbESPM8" />
+
+  <link rel="icon" href="/logo.jpg" type="image/jpeg" />
+  <meta name="theme-color" content="#0a66c8" />
+
+  <!-- Thème clair/sombre appliqué avant le premier rendu (évite le flash). Clé : iae:theme -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('iae:theme');
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Intelligence Artificielle Embarquée",
+      "alternateName": "نادي الذكاء الاصطناعي المدمج",
+      "url": "https://anciendulyceealmourabitine.netlify.app/",
+      "logo": "https://anciendulyceealmourabitine.netlify.app/logo.jpg"
+    }
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <!--
+    نموذج ثابت مخفي لأجل Netlify Forms فقط (لا يُعرض أبدًا للزائر).
+    Netlify يكتشف النماذج بفحص HTML الناتج وقت البناء (build-time scan)، ولا يمكنه رؤية
+    نموذج يُرسم لاحقًا عبر React/JS. لذلك يجب إبقاء نسخة HTML ثابتة مطابقة تمامًا (نفس
+    name وnetlify-honeypot وأسماء الحقول) لنموذج "contact" في features/contact/ContactForm.jsx
+    حتى يبقى استقبال رسائل التواصل عبر Netlify Forms يعمل كما في المشروع الأصلي.
+    نموذج "membership" لا يحتاج هذا لأنه يُرسل مباشرة إلى Supabase (membership_requests)،
+    وليس عبر Netlify Forms (انظر AUDIT_REPORT.md في المشروع الأصلي).
+  -->
+  <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input type="hidden" name="form-name" value="contact" />
+    <input name="bot-field" />
+    <input name="name" />
+    <input name="promo" />
+    <input name="email" />
+    <textarea name="message"></textarea>
+  </form>
+
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>

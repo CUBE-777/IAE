@@ -1,0 +1,41 @@
+# netlify.toml
+# إعدادات النشر + رؤوس أمان (Security Headers) على مستوى Netlify.
+# ملاحظة: تم اختيار قيم CSP بعناية لتتطابق مع مشروع Supabase الجديد: wthmsecoivbhqnifemkj.supabase.co
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback: React Router يتولى التوجيه داخل المتصفح، لذا كل المسارات غير
+# الموجودة كملفات فعلية يجب أن تُعاد توجيهها إلى index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=()"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
+      style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https: blob:;
+      connect-src 'self' https://wthmsecoivbhqnifemkj.supabase.co wss://wthmsecoivbhqnifemkj.supabase.co;
+      frame-ancestors 'none';
+      base-uri 'self';
+      form-action 'self';
+      object-src 'none';
+    """
+
+# لا فهرسة لصفحات لوحة الإدارة عبر محركات البحث (طبقة إضافية فوق noindex meta)
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
