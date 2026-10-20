@@ -6,7 +6,7 @@ export const SETTINGS_GROUPS = [
   {
     title: 'عام',
     keys: [
-      ['association_name', 'اسم الجمعية'],
+      ['association_name', 'اسم النادي'],
       ['email', 'البريد الإلكتروني'],
       ['phone', 'الهاتف'],
       ['address', 'العنوان'],

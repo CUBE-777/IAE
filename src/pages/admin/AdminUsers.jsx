@@ -14,7 +14,7 @@ export default function AdminUsers() {
   const [deactivateTarget, setDeactivateTarget] = useState(null);
 
   useEffect(() => {
-    document.title = 'المستخدمون الإداريون — لوحة إدارة الجمعية';
+    document.title = 'المستخدمون الإداريون — لوحة إدارة النادي';
   }, []);
 
   const load = () => {

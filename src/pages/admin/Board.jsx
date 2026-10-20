@@ -13,7 +13,7 @@ export default function Board() {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
-    document.title = 'أعضاء المكتب — لوحة إدارة الجمعية';
+    document.title = 'أعضاء المكتب — لوحة إدارة النادي';
   }, []);
 
   const load = () => {

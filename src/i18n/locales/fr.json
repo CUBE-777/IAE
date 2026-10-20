@@ -106,7 +106,7 @@
   "join": {
     "eyebrow": "Rejoignez-nous",
     "title": "Faites partie de l'histoire",
-    "description": "Que ce soit par votre temps, votre expérience ou votre soutien, chaque contribution fait une différence dans le parcours d'un élève d'aujourd'hui.",
+    "description": "Que ce soit par votre temps, votre expérience ou votre soutien, chaque contribution fait une différence dans le parcours d'un étudiant d'aujourd'hui.",
     "membershipEyebrow": "Adhésion",
     "membershipTitle": "Devenez membre du club",
     "membershipDesc": "Rejoignez la communauté d'étudiants passionnés d'IA et de systèmes embarqués et participez à ses projets.",
@@ -162,7 +162,7 @@
     "form": {
       "name": "Nom complet",
       "namePlaceholder": "Entrez votre nom",
-      "promo": "Promotion (optionnel)",
+      "promo": "Année d'étude / Promotion (facultatif)",
       "promoPlaceholder": "Exemple : 2015",
       "email": "Adresse e-mail",
       "emailPlaceholder": "exemple@email.com",
@@ -240,7 +240,7 @@
     "membersBadge": "Membre",
     "membersEmpty": "Les membres seront bientôt ajoutés depuis le tableau de bord.",
     "membersSwitch": "Voir le bureau exécutif actuel",
-    "membersSearch": "Rechercher par nom, université ou année de promotion",
+    "membersSearch": "Rechercher par nom, université ou promotion",
     "boardTitle": "Le bureau exécutif actuel",
     "boardDescription": "Les membres chargés de diriger le club et d'exécuter ses décisions, mis à jour depuis le tableau de bord.",
     "boardCrumb": "Bureau exécutif",
@@ -289,7 +289,7 @@
   },
   "person": {
     "age": "Âge",
-    "promo": "Année de diplôme",
+    "promo": "Année / Promotion",
     "track": "Filière",
     "profession": "Profession / spécialité",
     "defaultName": "Membre du club",

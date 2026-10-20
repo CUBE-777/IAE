@@ -18,7 +18,7 @@ export default function Gallery() {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    document.title = 'معرض الصور — لوحة إدارة الجمعية';
+    document.title = 'معرض الصور — لوحة إدارة النادي';
     fetchActivitiesForLinking()
       .then(setActivities)
       .catch((err) => console.error('تعذر تحميل قائمة الأنشطة للربط:', err));

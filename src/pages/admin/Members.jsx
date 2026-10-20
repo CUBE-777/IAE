@@ -27,7 +27,7 @@ export default function Members() {
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
-    document.title = 'الأعضاء — لوحة إدارة الجمعية';
+    document.title = 'الأعضاء — لوحة إدارة النادي';
   }, []);
 
   useEffect(() => {
@@ -86,7 +86,7 @@ export default function Members() {
     <AdminLayout>
       <AdminPageHeader
         title="الأعضاء"
-        subtitle="إدارة جميع أعضاء الجمعية"
+        subtitle="إدارة جميع أعضاء النادي"
         actions={
           <>
             <button className="admin-quick-action" disabled={exporting} onClick={exportCsv}>تصدير CSV</button>

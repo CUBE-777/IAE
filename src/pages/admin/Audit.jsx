@@ -11,7 +11,7 @@ export default function Audit() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    document.title = 'سجل العمليات — لوحة إدارة الجمعية';
+    document.title = 'سجل العمليات — لوحة إدارة النادي';
   }, []);
 
   useEffect(() => {

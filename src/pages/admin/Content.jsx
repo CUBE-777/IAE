@@ -42,7 +42,7 @@ export default function Content() {
   }, []);
 
   useEffect(() => {
-    document.title = 'محتوى الموقع — لوحة إدارة الجمعية';
+    document.title = 'محتوى الموقع — لوحة إدارة النادي';
     load();
   }, [load]);
 

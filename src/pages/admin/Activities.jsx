@@ -16,7 +16,7 @@ export default function Activities() {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
-    document.title = 'الأنشطة — لوحة إدارة الجمعية';
+    document.title = 'الأنشطة — لوحة إدارة النادي';
   }, []);
 
   const load = () => {
@@ -68,7 +68,7 @@ export default function Activities() {
     <AdminLayout>
       <AdminPageHeader
         title="الأنشطة"
-        subtitle="إدارة أنشطة الجمعية ونشرها في الموقع"
+        subtitle="إدارة أنشطة النادي ونشرها في الموقع"
         actions={<button className="admin-quick-action" onClick={() => setFormTarget(null)}>+ إضافة نشاط</button>}
       />
 

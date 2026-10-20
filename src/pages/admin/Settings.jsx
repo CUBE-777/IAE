@@ -37,7 +37,7 @@ export default function Settings() {
   }, []);
 
   useEffect(() => {
-    document.title = 'الإعدادات — لوحة إدارة الجمعية';
+    document.title = 'الإعدادات — لوحة إدارة النادي';
     load();
   }, [load]);
 
@@ -72,7 +72,7 @@ export default function Settings() {
 
   return (
     <AdminLayout>
-      <AdminPageHeader title="الإعدادات العامة" subtitle="معلومات الجمعية الأساسية الظاهرة في الموقع" />
+      <AdminPageHeader title="الإعدادات العامة" subtitle="معلومات النادي الأساسية الظاهرة في الموقع" />
       {values === null ? (
         <div className="admin-panel">
           <StateBox state={error ? 'error' : 'loading'} errorText="تعذر تحميل الإعدادات." onRetry={load} />
