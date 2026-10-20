@@ -1,6 +1,6 @@
 # netlify.toml
 # إعدادات النشر + رؤوس أمان (Security Headers) على مستوى Netlify.
-# ملاحظة: تم اختيار قيم CSP بعناية لتتطابق مع مشروع Supabase الجديد: wthmsecoivbhqnifemkj.supabase.co
+# ملاحظة: تم اختيار قيم CSP بعناية لتتطابق مع مشروع Supabase الجديد: vktydqfjybdgxhrjplki.supabase.co
 
 [build]
   command = "npm run build"
@@ -27,7 +27,7 @@
       style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
       font-src 'self' https://fonts.gstatic.com;
       img-src 'self' data: https: blob:;
-      connect-src 'self' https://wthmsecoivbhqnifemkj.supabase.co wss://wthmsecoivbhqnifemkj.supabase.co;
+      connect-src 'self' https://vktydqfjybdgxhrjplki.supabase.co wss://vktydqfjybdgxhrjplki.supabase.co;
       frame-ancestors 'none';
       base-uri 'self';
       form-action 'self';
