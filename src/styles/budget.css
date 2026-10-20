@@ -1,0 +1,38 @@
+/* قسم الميزانية (لوحة الإدارة) */
+.budget-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+.budget-filters label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--admin-text-muted);
+  margin-bottom: 4px;
+}
+.budget-stat-income .admin-stat-value { color: #3fb97a; }
+.budget-stat-expense .admin-stat-value { color: #e5675f; }
+.budget-balance-negative { color: #e5675f !important; }
+.budget-breakdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+}
+.budget-bar-row { margin-bottom: 10px; font-size: 0.86rem; }
+.budget-bar-row > div:first-child { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
+.budget-bar { height: 7px; border-radius: 100px; background: var(--admin-border); overflow: hidden; }
+.budget-bar > span { display: block; height: 100%; border-radius: 100px; }
+.budget-bar-income > span { background: #3fb97a; }
+.budget-bar-expense > span { background: #e5675f; }
+.budget-amount-income { color: #3fb97a; font-weight: 700; white-space: nowrap; }
+.budget-amount-expense { color: #e5675f; font-weight: 700; white-space: nowrap; }
+.budget-row-voided { opacity: 0.55; }
+.budget-row-voided .budget-desc { text-decoration: line-through; }
+.budget-cat-list { list-style: none; margin: 8px 0; padding: 0; max-height: 40vh; overflow-y: auto; }
+.budget-cat-list li {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  padding: 6px 0; border-bottom: 1px solid var(--admin-border);
+}
+.budget-cat-list li.is-off span { opacity: 0.5; }

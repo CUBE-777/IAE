@@ -1,0 +1,54 @@
+/**
+ * src/styles/not-found.css
+ * تنسيقات خاصة بصفحة 404 فقط. تعتمد كليًا على design tokens الموجودة في
+ * tokens.css (ألوان/تباعد) ولا تُعرّف قيمًا جديدة، تماشيًا مع مبدأ "مصدر واحد
+ * للحقيقة" للتصميم.
+ */
+
+.not-found-hero {
+  padding-bottom: var(--gap-md, 24px);
+}
+
+.not-found-section {
+  padding: var(--section-pad-y-mobile, 70px) 0 var(--section-pad-y, 100px);
+}
+
+.not-found-content {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.not-found-code {
+  font-family: var(--font-display, inherit);
+  font-size: clamp(64px, 12vw, 120px);
+  font-weight: 900;
+  line-height: 1;
+  margin: 0 0 var(--space-4, 16px);
+  color: var(--gold);
+}
+
+.not-found-content h2 {
+  margin: 0 0 var(--space-3, 12px);
+  color: var(--heading);
+}
+
+.not-found-text {
+  color: var(--muted);
+  margin: 0 0 var(--gap-md, 24px);
+  line-height: 1.8;
+}
+
+.not-found-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3, 12px);
+  justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .not-found-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

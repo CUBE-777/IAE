@@ -1,0 +1,208 @@
+.admin-login-wrap {
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy) 45%, var(--navy-deep) 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.admin-login-box {
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 36px 32px;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.admin-login-box img {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: block;
+  margin: 0 auto 14px;
+}
+
+.admin-login-box h1 {
+  font-family: var(--font-display);
+  text-align: center;
+  color: var(--heading);
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+}
+
+.admin-login-box p.sub {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 26px;
+}
+
+.admin-login-group {
+  margin-bottom: 16px;
+}
+
+.admin-login-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--heading);
+}
+
+.admin-login-group input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-family: inherit;
+}
+
+.admin-login-group input:focus {
+  outline: 2px solid var(--gold);
+  border-color: transparent;
+}
+
+/* ===== التعديل المصحح لزر إظهار/إخفاء كلمة المرور ===== */
+.admin-login-password {
+  position: relative;
+}
+
+.admin-login-password input {
+  padding-inline-end: 48px;
+  /* ترك مساحة للأيقونة حتى لا تختفي الكتابة تحتها */
+}
+
+.admin-login-toggle {
+  position: absolute;
+  inset-inline-end: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  background: none;
+  border: none;
+  color: var(--heading);
+  opacity: 0.75;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.admin-login-toggle:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ================================================= */
+
+.admin-login-box > button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background: var(--gold);
+  color: var(--on-accent);
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-top: 6px;
+  font-family: inherit;
+}
+
+.admin-login-box > button[type="submit"]:hover {
+  background: var(--gold-light);
+}
+
+.admin-login-box > button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-login-error {
+  background: var(--danger-soft);
+  color: var(--danger);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.admin-login-back {
+  display: block;
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+/* ===== تثبيت شكل زر إظهار/إخفاء كلمة المرور =====
+   خصوصية عالية حتى لا تغلبه أي قاعدة button عامة أو قاعدة زر الدخول. */
+.admin-login-box .admin-login-password .admin-login-toggle {
+  position: absolute;
+  inset-inline-end: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--heading);
+  opacity: 0.75;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.admin-login-box .admin-login-password .admin-login-toggle:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.admin-login-box .admin-login-password input {
+  width: 100%;
+  padding-inline-end: 48px;
+}
+
+
+/* ===== تحصين ضد قواعد الموقع العام العامة (form / form input / form label) =====
+   قواعد public-home.css تستهدف أي <form> و<input> (نص أبيض وخلفية شفافة)، وصندوق
+   الدخول هو <form>، فنثبّت ألوانه صراحةً. */
+.admin-login-box {
+  border: 0;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.admin-login-box .admin-login-group input {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+}
+
+.admin-login-box .admin-login-group input::placeholder {
+  color: var(--muted-light);
+}
+
+.admin-login-box .admin-login-group label {
+  color: var(--heading);
+  margin-bottom: 6px;
+}
+
+.admin-login-box .admin-login-password input {
+  padding-inline-end: 48px;
+}

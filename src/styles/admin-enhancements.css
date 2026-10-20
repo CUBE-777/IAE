@@ -1,0 +1,372 @@
+/**
+ * src/styles/admin-enhancements.css
+ * تحسينات لوحة الإدارة: درج جوّال مع backdrop، نوافذ منبثقة، جداول → بطاقات على
+ * الهاتف، حالات تحميل/خطأ مع إعادة المحاولة، تبويبات، معاينة، إتاحة.
+ */
+
+/* ===== درج الإدارة على الجوال ===== */
+.admin-mobile-topbar button {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-sidebar-backdrop {
+  display: none;
+}
+.admin-sidebar-close {
+  display: none;
+}
+@media (max-width: 980px) {
+  .admin-sidebar {
+    z-index: 70;
+    visibility: hidden;
+    transition: transform 0.3s ease, visibility 0s linear 0.3s;
+    height: 100%;
+    overflow-y: auto;
+  }
+  .admin-sidebar.mobile-open {
+    visibility: visible;
+    transition: transform 0.3s ease, visibility 0s;
+    box-shadow: var(--shadow-xl);
+  }
+  .admin-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: rgba(var(--navy-deep-rgb), 0.65);
+    animation: navFade 0.2s ease;
+  }
+  .admin-sidebar-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: var(--space-3);
+    inset-inline-end: var(--space-3);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text);
+    cursor: pointer;
+  }
+}
+.admin-sidebar-lang {
+  padding: 0 var(--space-4) var(--space-3);
+}
+.admin-sidebar-lang .lang-switcher {
+  margin-inline-start: 0;
+}
+.admin-sidebar-lang .lang-switcher-menu {
+  inset-inline-end: auto;
+  inset-inline-start: 0;
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+.admin-logout-btn svg {
+  margin-inline-end: 6px;
+}
+.admin-root :focus-visible {
+  outline: 2px solid var(--admin-accent);
+  outline-offset: 2px;
+}
+
+/* ===== النوافذ المنبثقة ===== */
+.admin-modal-overlay {
+  align-items: center;
+  overscroll-behavior: contain;
+}
+.admin-modal-box {
+  position: relative;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.admin-modal-box.admin-modal-wide {
+  max-width: 720px;
+}
+.admin-modal-close {
+  position: absolute;
+  top: var(--space-3);
+  inset-inline-end: var(--space-3);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--admin-border);
+  background: transparent;
+  color: var(--admin-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  line-height: 1;
+}
+.admin-modal-close:hover {
+  color: var(--admin-text);
+  background: var(--admin-accent-soft);
+}
+.admin-modal-box h3 {
+  padding-inline-end: 44px;
+}
+.admin-modal-box:focus {
+  outline: none;
+}
+@media (max-width: 640px) {
+  .admin-modal-overlay {
+    padding: var(--space-2);
+    align-items: flex-end;
+  }
+  .admin-modal-box {
+    padding: var(--space-5) var(--space-4);
+    max-height: 94vh;
+    max-height: 94dvh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .admin-modal-actions .admin-btn {
+    flex: 1 1 auto;
+  }
+}
+
+/* ===== جداول: اتجاه منطقي + بطاقات على الهاتف ===== */
+.admin-data-table th {
+  text-align: start;
+}
+.admin-cell-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+@media (max-width: 720px) {
+  .admin-data-table.admin-table-cards,
+  .admin-data-table.admin-table-cards tbody,
+  .admin-data-table.admin-table-cards tr,
+  .admin-data-table.admin-table-cards td {
+    display: block;
+    width: 100%;
+  }
+  .admin-data-table.admin-table-cards thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+  .admin-data-table.admin-table-cards tr {
+    background: var(--admin-surface-alt);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-3);
+  }
+  .admin-data-table.admin-table-cards td {
+    border: none;
+    padding: 6px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    text-align: end;
+    overflow-wrap: anywhere;
+  }
+  .admin-data-table.admin-table-cards td::before {
+    content: attr(data-label);
+    color: var(--admin-text-muted);
+    font-size: var(--text-caption);
+    font-weight: 700;
+    flex: 0 0 auto;
+    text-align: start;
+  }
+  .admin-data-table.admin-table-cards td[data-label=""]::before,
+  .admin-data-table.admin-table-cards td:not([data-label])::before {
+    display: none;
+  }
+  .admin-data-table.admin-table-cards td.admin-cell-actions {
+    justify-content: flex-start;
+    padding-top: var(--space-3);
+    margin-top: var(--space-2);
+    border-top: 1px solid var(--admin-border);
+  }
+}
+
+/* ===== حالات التحميل / الخطأ ===== */
+.admin-state-box.admin-state-error {
+  color: var(--danger-bright);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+.admin-stat-value.is-unavailable {
+  color: var(--admin-text-muted);
+}
+.admin-stat-error-hint {
+  font-size: var(--text-caption);
+  color: var(--danger-bright);
+}
+.admin-inline-error {
+  color: var(--danger-bright);
+  font-size: var(--text-small);
+  margin: 6px 0 0;
+}
+.admin-input[aria-invalid='true'],
+.admin-textarea[aria-invalid='true'],
+.admin-select[aria-invalid='true'] {
+  border-color: var(--danger-bright);
+}
+.admin-hint {
+  font-size: var(--text-caption);
+  color: var(--admin-text-muted);
+  margin: 6px 0 0;
+}
+.admin-btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-inline-end: 8px;
+  vertical-align: -2px;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--white-rgb), 0.3);
+  border-top-color: currentColor;
+  animation: btnSpin 0.7s linear infinite;
+}
+
+/* ===== تبويبات (محتوى الموقع / لغات الإعلان) ===== */
+.admin-tabs {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.admin-tab-btn {
+  white-space: nowrap;
+  min-height: 44px;
+}
+.admin-tab-btn:focus-visible {
+  outline-offset: -2px;
+}
+
+/* ===== معرض الإدارة: صور بنسبة ثابتة ===== */
+.admin-media-item img {
+  height: auto;
+  aspect-ratio: 4 / 3;
+  background: var(--admin-surface-alt);
+}
+.admin-media-item .media-actions .admin-btn {
+  flex: 1;
+}
+
+/* ===== شارات الإعلانات + معاينة ===== */
+.admin-badge-muted {
+  background: var(--admin-surface-alt);
+  color: var(--admin-text-muted);
+}
+.admin-badge-pinned {
+  background: var(--admin-accent-soft);
+  color: var(--admin-accent);
+}
+.admin-ann-title {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.admin-ann-sub {
+  display: block;
+  font-size: var(--text-caption);
+  color: var(--admin-text-muted);
+  margin-top: 2px;
+}
+.admin-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+@media (max-width: 560px) {
+  .admin-form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+.admin-check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+  cursor: pointer;
+}
+.admin-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--gold);
+}
+.admin-image-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.admin-image-thumb {
+  width: 120px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--admin-border);
+  background: var(--admin-surface-alt);
+}
+.admin-preview-box {
+  background: var(--cream);
+  color: var(--ink);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.admin-preview-box .ann-card-link {
+  pointer-events: none;
+}
+
+/* ===== الإعدادات / المحتوى: أقسام ===== */
+.admin-section-nav {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+/* ===== تسجيل الدخول: إظهار/إخفاء كلمة المرور ===== */
+.admin-login-password {
+  position: relative;
+}
+.admin-login-password input {
+  padding-inline-end: 48px;
+  width: 100%;
+}
+.admin-login-toggle {
+  position: absolute;
+  inset-inline-end: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.75;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+}
+.admin-login-toggle:hover {
+  opacity: 1;
+}
+.admin-login-field-error {
+  margin: 6px 0 0;
+  font-size: var(--text-small);
+  color: var(--danger-bright);
+}
+.admin-login-box button[type='submit'][disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

@@ -1,0 +1,607 @@
+/**
+ * src/styles/admin.css
+ * إعادة تصميم كاملة للوحة الإدارة (Phase 7) — Dark-first، SaaS Control Center.
+ * كل القيم اللونية تأتي من tokens.css ([data-theme='admin-dark']) — لا قيم
+ * لونية مباشرة هنا. المقارنة بـ admin.css القديم: نفس البنية الوظيفية
+ * (sidebar/topbar/stat-grid/panel/data-table/badge) لكن بصريًا جديدة بالكامل.
+ */
+
+.admin-root {
+  min-height: 100vh;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  font-family: var(--font-body);
+}
+
+/* ===== Sidebar ===== */
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--admin-surface);
+  border-inline-end: 1px solid var(--admin-border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  transition: width var(--transition-base);
+  z-index: 40;
+}
+
+.admin-sidebar.collapsed {
+  width: 76px;
+}
+
+.admin-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 18px;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-sidebar-brand img {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.admin-sidebar-brand span {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.admin-sidebar.collapsed .admin-sidebar-brand span {
+  display: none;
+}
+
+.admin-sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 10px;
+}
+
+.admin-sidebar-section {
+  font-size: 0.72rem;
+  color: var(--admin-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 16px 10px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.admin-sidebar.collapsed .admin-sidebar-section {
+  text-align: center;
+  padding: 16px 0 6px;
+}
+
+.admin-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--admin-text-muted);
+  font-size: 0.88rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-bottom: 2px;
+  transition: background var(--transition-base), color var(--transition-base);
+  position: relative;
+}
+
+.admin-sidebar.collapsed .admin-sidebar-link {
+  justify-content: center;
+  padding: 10px;
+}
+
+.admin-sidebar-link .icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-sidebar-link:hover {
+  background: var(--admin-surface-alt);
+  color: var(--admin-text);
+}
+
+.admin-sidebar-link.active {
+  background: var(--admin-accent-soft);
+  color: var(--admin-accent);
+  box-shadow: inset 3px 0 0 var(--admin-accent);
+}
+
+.admin-sidebar-footer {
+  padding: 14px 16px;
+  border-top: 1px solid var(--admin-border);
+}
+
+.admin-sidebar-user {
+  font-size: 0.78rem;
+  color: var(--admin-text-muted);
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.admin-sidebar.collapsed .admin-sidebar-user {
+  display: none;
+}
+
+.admin-sidebar-user strong {
+  display: block;
+  color: var(--admin-text);
+  font-weight: 700;
+}
+
+.admin-sidebar-user .role {
+  color: var(--admin-accent);
+}
+
+.admin-logout-btn {
+  width: 100%;
+  padding: 9px;
+  background: transparent;
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.82rem;
+  transition: all var(--transition-base);
+}
+
+.admin-logout-btn:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.admin-collapse-btn {
+  position: absolute;
+  top: 20px;
+  inset-inline-end: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text-muted);
+  cursor: pointer;
+  display: none;
+}
+
+@media (min-width: 981px) {
+  .admin-collapse-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ===== Mobile ===== */
+.admin-mobile-topbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--admin-surface);
+  border-bottom: 1px solid var(--admin-border);
+  position: sticky;
+  top: 0;
+  z-index: 45;
+}
+
+.admin-mobile-topbar button {
+  background: none;
+  border: none;
+  color: var(--admin-text);
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+@media (max-width: 980px) {
+  .admin-mobile-topbar {
+    display: flex;
+  }
+  .admin-sidebar {
+    position: fixed;
+    inset-inline-start: 0;
+    top: 0;
+    transform: translateX(105%);
+  }
+  html[dir='rtl'] .admin-sidebar {
+    transform: translateX(105%);
+  }
+  html[dir='ltr'] .admin-sidebar {
+    transform: translateX(-105%);
+  }
+  /* مهم: يجب أن تكون خصوصية هذا المحدد أعلى من html[dir='rtl'|'ltr'] .admin-sidebar
+     أعلاه، وإلا يبقى الدرج خارج الشاشة حتى بعد الضغط على زر القائمة. */
+  html[dir='rtl'] .admin-sidebar.mobile-open,
+  html[dir='ltr'] .admin-sidebar.mobile-open,
+  .admin-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+}
+
+/* ===== Main content ===== */
+.admin-main {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 32px 60px;
+}
+
+@media (max-width: 640px) {
+  .admin-main {
+    padding: 18px 16px 40px;
+  }
+}
+
+.admin-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 26px;
+}
+
+.admin-page-header h1 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  margin: 0 0 4px;
+}
+
+.admin-page-subtitle {
+  color: var(--admin-text-muted);
+  font-size: 0.9rem;
+}
+
+/* ===== KPI stat cards ===== */
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.admin-stat-card {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--admin-glow);
+}
+
+.admin-stat-label {
+  color: var(--admin-text-muted);
+  font-size: 0.82rem;
+  margin-bottom: 8px;
+}
+
+.admin-stat-value {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--admin-text);
+}
+
+/* ===== Quick actions ===== */
+.admin-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-quick-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--admin-accent-soft);
+  color: var(--admin-accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--transition-base);
+}
+
+.admin-quick-action:hover {
+  border-color: var(--admin-accent);
+}
+
+/* ===== Panels ===== */
+.admin-panel {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  margin-bottom: 22px;
+}
+
+.admin-panel h2 {
+  font-size: 1.05rem;
+  margin: 0 0 16px;
+  font-weight: 700;
+}
+
+.admin-state-box {
+  color: var(--admin-text-muted);
+  font-size: 0.88rem;
+  padding: 18px 0;
+  text-align: center;
+}
+
+/* ===== Data table ===== */
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.admin-data-table th {
+  text-align: right;
+  color: var(--admin-text-muted);
+  font-weight: 600;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--admin-border);
+  white-space: nowrap;
+}
+
+.admin-data-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--admin-border);
+  vertical-align: middle;
+}
+
+.admin-data-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ===== Badges ===== */
+.admin-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.admin-badge-pending {
+  background: rgba(var(--gold-rgb), 0.15);
+  color: var(--gold);
+}
+
+.admin-badge-approved {
+  background: rgba(31, 122, 77, 0.18);
+  color: var(--success-bright);
+}
+
+.admin-badge-rejected {
+  background: rgba(var(--danger-rgb), 0.18);
+  color: var(--danger-bright);
+}
+
+/* ===== Forms (shared by CRUD pages, Phase 6 continuation) ===== */
+.admin-input,
+.admin-select,
+.admin-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--admin-border);
+  background: var(--admin-surface-alt);
+  color: var(--admin-text);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.admin-input:focus,
+.admin-select:focus,
+.admin-textarea:focus {
+  outline: 2px solid var(--admin-accent);
+  outline-offset: 1px;
+}
+
+.admin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.88rem;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--transition-base);
+}
+
+.admin-btn-primary {
+  background: var(--admin-accent);
+  color: var(--admin-bg);
+}
+
+.admin-btn-primary:hover {
+  background: var(--gold-light);
+}
+
+.admin-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-btn-ghost {
+  background: transparent;
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text);
+}
+
+.admin-btn-ghost:hover {
+  border-color: var(--admin-accent);
+  color: var(--admin-accent);
+}
+
+.admin-btn-danger {
+  background: transparent;
+  border: 1px solid rgba(var(--danger-rgb), 0.4);
+  color: var(--danger-bright);
+}
+
+.admin-btn-danger:hover {
+  background: rgba(var(--danger-rgb), 0.12);
+}
+
+/* ===== Modal ===== */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 12, 28, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.admin-modal-box {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 440px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--admin-glow);
+}
+
+.admin-modal-box h3 {
+  margin: 0 0 14px;
+  font-size: 1.1rem;
+}
+
+.admin-modal-box p {
+  font-size: 0.9rem;
+  color: var(--admin-text-muted);
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.admin-modal-box p strong {
+  color: var(--admin-text);
+}
+
+.admin-modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.admin-form-group {
+  margin-bottom: 14px;
+}
+
+.admin-form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* ===== Tabs ===== */
+.admin-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-tab-btn {
+  padding: 10px 18px;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--admin-text-muted);
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.admin-tab-btn.active {
+  color: var(--admin-text);
+  border-color: var(--admin-accent);
+}
+
+.admin-btn-sm {
+  padding: 6px 12px;
+  font-size: 0.78rem;
+}
+
+/* ===== Media grid (gallery admin) ===== */
+.admin-media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.admin-media-item {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.admin-media-item img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+}
+
+.admin-media-item .media-body {
+  padding: 10px;
+}
+
+.admin-media-item .media-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.admin-media-item .media-sub {
+  font-size: 0.78rem;
+  color: var(--admin-text-muted);
+}
+
+.admin-media-item .media-actions {
+  display: flex;
+  gap: 6px;
+  padding: 0 10px 10px;
+}
+
+.admin-upload-label {
+  cursor: pointer;
+}

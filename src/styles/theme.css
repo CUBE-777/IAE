@@ -1,0 +1,141 @@
+/**
+ * src/styles/theme.css
+ * Identité « Intelligence Artificielle Embarquée » : bleu / blanc, thèmes clair et sombre.
+ * Importé en dernier (main.jsx). Ne contient que des surcharges visuelles ; toutes les couleurs
+ * viennent de tokens.css. Aucune logique applicative n'est touchée.
+ */
+
+html { background: var(--cream); }
+body { transition: background-color 0.25s ease, color 0.25s ease; }
+::selection { background: rgba(var(--gold-rgb), 0.28); }
+
+/* ===== Logo (circulaire, proportions respectées) ===== */
+.brand img,
+.admin-sidebar-brand img,
+.admin-login-box > img {
+  border-radius: 50% !important;
+  background: #fff;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
+}
+.brand img { width: 48px; height: 48px; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85); }
+.admin-sidebar-brand img { width: 40px; height: 40px; }
+.admin-login-box > img { width: 84px; height: 84px; margin-inline: auto; }
+
+/* ===== Outils d'en-tête : thème + langue ===== */
+.header-tools { display: flex; align-items: center; gap: 10px; margin-inline-start: 18px; }
+.header-tools .lang-switcher { margin-inline-start: 0; }
+
+.theme-toggle {
+  width: 36px; height: 36px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 8px; padding: 0;
+  background: transparent; color: var(--white);
+  border: 1px solid rgba(var(--white-rgb), 0.35);
+  cursor: pointer;
+  transition: background var(--transition-base), border-color var(--transition-base);
+}
+.theme-toggle:hover { background: rgba(var(--white-rgb), 0.14); }
+.theme-toggle-admin,
+.admin-mobile-topbar .theme-toggle {
+  color: var(--admin-text);
+  border: 1px solid var(--admin-border);
+  background: transparent;
+  font-size: inherit;
+}
+.theme-toggle-admin:hover,
+.admin-mobile-topbar .theme-toggle:hover { background: var(--admin-accent-soft); }
+.theme-toggle-floating { position: fixed; top: 16px; inset-inline-end: 16px; z-index: 5; }
+.admin-sidebar-lang { display: flex; align-items: center; gap: 8px; }
+
+/* ===== Navigation : états actif / survol / focus ===== */
+header.static-header { background: var(--navy-deep); }
+:where(header) nav a:hover { color: var(--gold-light); }
+header :focus-visible, footer :focus-visible { outline-color: var(--gold-light); }
+
+/* ===== Boutons ===== */
+.btn-gold {
+  background: var(--navy-mid);
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(10, 102, 200, 0.3);
+}
+.btn-gold:hover { background: var(--navy); box-shadow: 0 12px 28px rgba(10, 102, 200, 0.4); }
+.hero .btn-gold,
+.page-hero .btn-gold,
+.on-navy .btn-gold {
+  background: #fff; color: var(--navy);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+.hero .btn-gold:hover, .page-hero .btn-gold:hover, .on-navy .btn-gold:hover { background: var(--gold-light); }
+html[data-theme='dark'] .btn-gold { background: var(--gold); color: var(--on-accent); box-shadow: 0 8px 22px rgba(var(--gold-rgb), 0.25); }
+html[data-theme='dark'] .btn-gold:hover { background: var(--gold-light); }
+html[data-theme='dark'] .hero .btn-gold,
+html[data-theme='dark'] .page-hero .btn-gold,
+html[data-theme='dark'] .on-navy .btn-gold { background: #fff; color: var(--navy); }
+
+/* Boutons « contour » sur surface : lisibles dans les deux thèmes */
+.interior-btn, .btn-outline { border-color: var(--heading); color: var(--heading); }
+.interior-btn:hover, .btn-outline:hover { background: var(--navy-mid); border-color: var(--navy-mid); color: #fff; }
+
+/* ===== Accents sur fond clair : contraste AA ===== */
+.eyebrow { color: var(--gold-text); }
+.on-navy .eyebrow, .hero .eyebrow, .page-hero .eyebrow, .join-card.featured .eyebrow, .people-link.featured .eyebrow { color: var(--gold-light); }
+.eyebrow::before { background: currentColor; }
+
+/* ===== Hero : motif discret « circuit imprimé » (CSS pur, sans image) ===== */
+.hero { background-color: var(--navy-deep); }
+.hero::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(var(--white-rgb), 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--white-rgb), 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse at 50% 40%, #000 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 40%, #000 20%, transparent 75%);
+}
+.hero .container { position: relative; z-index: 1; }
+.hero h1 em { color: var(--gold-light); font-style: normal; }
+
+/* ===== Pied de page ===== */
+footer .brand img, .interior-footer .brand img { width: 40px !important; height: 40px !important; }
+
+/* ===== Cartes : bordure + ombre sobres, thème sombre ===== */
+html[data-theme='dark'] .pillar,
+html[data-theme='dark'] .join-card:not(.featured),
+html[data-theme='dark'] .member-card,
+html[data-theme='dark'] .board-card,
+html[data-theme='dark'] .people-link:not(.featured),
+html[data-theme='dark'] .ann-card,
+html[data-theme='dark'] .ann-board-panel,
+html[data-theme='dark'] .main-card,
+html[data-theme='dark'] .sidebar-card,
+html[data-theme='dark'] .person-modal { border-color: var(--border); }
+input, textarea, select { color-scheme: inherit; }
+html[data-theme='dark'] input,
+html[data-theme='dark'] textarea,
+html[data-theme='dark'] select { background-color: var(--surface); color: var(--ink); border-color: var(--border); }
+html[data-theme='dark'] ::placeholder { color: var(--muted-light); }
+
+/* ===== Administration ===== */
+.admin-root { transition: background-color 0.25s ease, color 0.25s ease; }
+.admin-badge-pending { color: var(--admin-accent); background: var(--admin-accent-soft); }
+html:not([data-theme='dark']) .admin-badge-approved { color: var(--success); background: rgba(31, 122, 77, 0.12); }
+html:not([data-theme='dark']) .admin-badge-rejected { color: var(--danger); background: rgba(var(--danger-rgb), 0.1); }
+html:not([data-theme='dark']) .admin-root .admin-error { color: var(--danger); }
+html:not([data-theme='dark']) .budget-stat-income .admin-stat-value,
+html:not([data-theme='dark']) .budget-amount-income { color: var(--success); }
+html:not([data-theme='dark']) .budget-stat-expense .admin-stat-value,
+html:not([data-theme='dark']) .budget-amount-expense,
+html:not([data-theme='dark']) .budget-balance-negative { color: var(--danger) !important; }
+.admin-sidebar-brand span { font-family: var(--font-body); }
+.admin-modal-overlay { background: rgba(var(--navy-deep-rgb), 0.7); }
+.admin-login-wrap { position: relative; }
+
+/* ===== Mobile ===== */
+@media (max-width: 560px) {
+  .brand img { width: 40px; height: 40px; }
+  .brand-text { font-size: 0.86rem; min-width: 0; }
+  .brand-text span { display: none; }
+  .header-tools { margin-inline-start: 8px; gap: 6px; }
+  .theme-toggle { width: 34px; height: 34px; }
+}
