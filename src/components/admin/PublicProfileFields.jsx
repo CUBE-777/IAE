@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SOCIAL_PLATFORMS, isKnownPlatform, normalizeSocialUrl } from '../../constants/socialPlatforms';
 
+import { tr } from '../../i18n/adminDict';
 /**
  * قسم "الملف العام" + "الترجمات" المشترك بين نموذج العضو ونموذج عضو المكتب.
  * يعمل على حالة profile واحدة (انظر initProfileState) ويُنتج الحمولة عبر buildProfile.
@@ -37,14 +38,14 @@ const isObj = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
 const str = (v) => (typeof v === 'string' ? v : '');
 
 export function initProfileState(record, trFields) {
-  const tr = isObj(record?.translations) ? record.translations : {};
-  const langObj = (code) => (isObj(tr[code]) ? tr[code] : {});
+  const trData = isObj(record?.translations) ? record.translations : {};
+  const langObj = (code) => (isObj(trData[code]) ? trData[code] : {});
   const items = record && isObj(record.extra) && Array.isArray(record.extra.items) ? record.extra.items : [];
   return {
     public_bio: record?.public_bio || '',
     study_path: record?.study_path || '',
     socials: isObj(record?.socials) ? { ...record.socials } : {},
-    name_latin: str(tr.name_latin),
+    name_latin: str(trData.name_latin),
     extraItems: items.map((it, i) => {
       const row = { label: str(it?.label), value: str(it?.value) };
       TR_LANGS.forEach(({ code }) => {
@@ -75,7 +76,7 @@ export function buildProfile(profile, record, trFields) {
     const href = normalizeSocialUrl(val);
     if (!href) {
       const label = SOCIAL_PLATFORMS.find((p) => p.key === key)?.label || key;
-      return { error: `رابط غير صالح: ${label}` };
+      return { error: tr('رابط غير صالح: {{label}}', { label: label }) };
     }
     socials[key] = href;
   }
@@ -148,7 +149,7 @@ const legendStyle = { padding: '0 8px', fontWeight: 700, fontSize: '.9rem' };
  *  source               : نصوص عربية أصلية تظهر كـ placeholder داخل خانات الترجمة (key → text)
  *  bioLabel             : عنوان خانة النبذة العامة
  */
-export default function PublicProfileFields({ profile, setProfile, trFields, source = {}, bioLabel = 'نبذة عن العضو' }) {
+export default function PublicProfileFields({ profile, setProfile, trFields, source = {}, bioLabel = tr('نبذة عن العضو') }) {
   const [trLang, setTrLang] = useState('fr');
   const patch = (p) => setProfile((v) => ({ ...v, ...p }));
   const setSocial = (key, val) => setProfile((v) => ({ ...v, socials: { ...v.socials, [key]: val } }));
@@ -178,33 +179,33 @@ export default function PublicProfileFields({ profile, setProfile, trFields, sou
   return (
     <>
       <fieldset style={fieldsetStyle}>
-        <legend style={legendStyle}>الملف العام — اختياري (يظهر في الموقع)</legend>
+        <legend style={legendStyle}>{tr('الملف العام — اختياري (يظهر في الموقع)')}</legend>
         <div className="admin-form-group">
           <label htmlFor="f_public_bio">{bioLabel}</label>
           <textarea id="f_public_bio" className="admin-textarea" rows={3} maxLength={600} value={profile.public_bio} onChange={(e) => patch({ public_bio: e.target.value })} />
         </div>
         <div className="admin-form-group">
-          <label htmlFor="f_study_path">المسار الدراسي</label>
+          <label htmlFor="f_study_path">{tr('المسار الدراسي')}</label>
           <textarea
             id="f_study_path"
             className="admin-textarea"
             rows={3}
             maxLength={800}
-            placeholder="مثال: باكالوريا علوم فيزيائية 2024 ← الكلية المتعددة التخصصات ← إجازة في المعلوميات"
+            placeholder={tr('مثال: باكالوريا علوم فيزيائية 2024 ← الكلية المتعددة التخصصات ← إجازة في المعلوميات')}
             value={profile.study_path}
             onChange={(e) => patch({ study_path: e.target.value })}
           />
         </div>
         <div className="admin-form-group">
-          <label>حسابات التواصل (الصق الرابط)</label>
+          <label>{tr('حسابات التواصل (الصق الرابط)')}</label>
           <div className="admin-form-grid-2">
             {SOCIAL_PLATFORMS.map((p) => (
               <input
                 key={p.key}
                 className="admin-input"
                 dir="ltr"
-                aria-label={p.label}
-                placeholder={`${p.label} — ${p.placeholder}`}
+                aria-label={tr(p.label)}
+                placeholder={`${tr(p.label)} — ${p.placeholder}`}
                 value={profile.socials[p.key] || ''}
                 onChange={(e) => setSocial(p.key, e.target.value)}
               />
@@ -212,34 +213,34 @@ export default function PublicProfileFields({ profile, setProfile, trFields, sou
           </div>
         </div>
         <div className="admin-form-group" style={{ marginBottom: 0 }}>
-          <label>معلومات إضافية (عنوان + قيمة، مثل: اللغات ← العربية، الفرنسية)</label>
+          <label>{tr('معلومات إضافية (عنوان + قيمة، مثل: اللغات ← العربية، الفرنسية)')}</label>
           {profile.extraItems.map((it, i) => (
             <div key={i} className="admin-form-grid-2" style={{ alignItems: 'center', marginBottom: 8 }}>
-              <input className="admin-input" aria-label="العنوان" placeholder="العنوان" maxLength={40} value={it.label} onChange={(e) => setExtra(i, 'label', e.target.value)} />
+              <input className="admin-input" aria-label={tr('العنوان')} placeholder={tr('العنوان')} maxLength={40} value={it.label} onChange={(e) => setExtra(i, 'label', e.target.value)} />
               <div style={{ display: 'flex', gap: 6 }}>
-                <input className="admin-input" aria-label="القيمة" placeholder="القيمة" maxLength={200} value={it.value} onChange={(e) => setExtra(i, 'value', e.target.value)} />
-                <button type="button" className="admin-btn admin-btn-ghost" aria-label="حذف هذا الحقل" onClick={() => removeExtra(i)}>×</button>
+                <input className="admin-input" aria-label={tr('القيمة')} placeholder={tr('القيمة')} maxLength={200} value={it.value} onChange={(e) => setExtra(i, 'value', e.target.value)} />
+                <button type="button" className="admin-btn admin-btn-ghost" aria-label={tr('حذف هذا الحقل')} onClick={() => removeExtra(i)}>×</button>
               </div>
             </div>
           ))}
           {profile.extraItems.length < MAX_EXTRA_ITEMS && (
-            <button type="button" className="admin-btn admin-btn-ghost" onClick={addExtra}>+ إضافة معلومة</button>
+            <button type="button" className="admin-btn admin-btn-ghost" onClick={addExtra}>{tr('+ إضافة معلومة')}</button>
           )}
         </div>
       </fieldset>
 
       <fieldset style={fieldsetStyle}>
-        <legend style={legendStyle}>الترجمات — اختيارية (تظهر عند تغيير لغة الموقع)</legend>
+        <legend style={legendStyle}>{tr('الترجمات — اختيارية (تظهر عند تغيير لغة الموقع)')}</legend>
         <div style={{ ...noteStyle, marginTop: 0, marginBottom: 10 }}>
-          أي خانة تتركها فارغة سيظهر نصها العربي للزائر. اكتب النص العربي أولًا ثم ترجمته هنا.
+          {tr('أي خانة تتركها فارغة سيظهر نصها العربي للزائر. اكتب النص العربي أولًا ثم ترجمته هنا.')}
         </div>
         <div className="admin-form-group">
-          <label htmlFor="f_name_latin">الاسم بالحروف اللاتينية (يظهر في الفرنسية والإنجليزية)</label>
-          <input id="f_name_latin" className="admin-input" dir="ltr" maxLength={120} placeholder="مثال: Mohamed El Alaoui" value={profile.name_latin} onChange={(e) => patch({ name_latin: e.target.value })} />
-          <div style={noteStyle}>اكتب الاسم كما يريده صاحبه تمامًا (لا تُحوَّل الأسماء تلقائيًا لأن لكل اسم عدة كتابات صحيحة).</div>
+          <label htmlFor="f_name_latin">{tr('الاسم بالحروف اللاتينية (يظهر في الفرنسية والإنجليزية)')}</label>
+          <input id="f_name_latin" className="admin-input" dir="ltr" maxLength={120} placeholder={tr('مثال: Mohamed El Alaoui')} value={profile.name_latin} onChange={(e) => patch({ name_latin: e.target.value })} />
+          <div style={noteStyle}>{tr('اكتب الاسم كما يريده صاحبه تمامًا (لا تُحوَّل الأسماء تلقائيًا لأن لكل اسم عدة كتابات صحيحة).')}</div>
         </div>
 
-        <div role="tablist" aria-label="لغة الترجمة" style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+        <div role="tablist" aria-label={tr('لغة الترجمة')} style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
           {TR_LANGS.map(({ code, label }) => (
             <button
               key={code}
@@ -266,7 +267,7 @@ export default function PublicProfileFields({ profile, setProfile, trFields, sou
           };
           return (
             <div className="admin-form-group" key={`${trLang}-${f.key}`}>
-              <label htmlFor={id}>{f.label}</label>
+              <label htmlFor={id}>{tr(f.label)}</label>
               {f.rows ? <textarea className="admin-textarea" rows={f.rows} {...common} /> : <input className="admin-input" {...common} />}
             </div>
           );
@@ -274,12 +275,12 @@ export default function PublicProfileFields({ profile, setProfile, trFields, sou
 
         {profile.extraItems.some((it) => it.label.trim() && it.value.trim()) && (
           <div className="admin-form-group" style={{ marginBottom: 0 }}>
-            <label>ترجمة المعلومات الإضافية</label>
+            <label>{tr('ترجمة المعلومات الإضافية')}</label>
             {profile.extraItems.map((it, i) =>
               it.label.trim() && it.value.trim() ? (
                 <div key={`${trLang}-extra-${i}`} className="admin-form-grid-2" style={{ marginBottom: 8 }}>
-                  <input className="admin-input" dir="ltr" aria-label={`ترجمة العنوان: ${it.label}`} placeholder={it.label} maxLength={40} value={it[trLang].label} onChange={(e) => setExtraTr(i, trLang, 'label', e.target.value)} />
-                  <input className="admin-input" dir="ltr" aria-label={`ترجمة القيمة: ${it.value}`} placeholder={it.value} maxLength={200} value={it[trLang].value} onChange={(e) => setExtraTr(i, trLang, 'value', e.target.value)} />
+                  <input className="admin-input" dir="ltr" aria-label={tr('ترجمة العنوان: {{label}}', { label: it.label })} placeholder={it.label} maxLength={40} value={it[trLang].label} onChange={(e) => setExtraTr(i, trLang, 'label', e.target.value)} />
+                  <input className="admin-input" dir="ltr" aria-label={tr('ترجمة القيمة: {{value}}', { value: it.value })} placeholder={it.value} maxLength={200} value={it[trLang].value} onChange={(e) => setExtraTr(i, trLang, 'value', e.target.value)} />
                 </div>
               ) : null
             )}

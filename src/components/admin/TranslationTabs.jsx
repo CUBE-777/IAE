@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { TR_LANGS, getTr, setTr, getTrItem, setTrItem } from '../../utils/translationForm';
 
+import { tr } from '../../i18n/adminDict';
 /**
  * قسم "الترجمات" بتبويبين FR/EN لنماذج الإدارة ذات الحقول المتعددة (الأنشطة...).
  *  translations / onChange : كائن الترجمات الكامل للسجل وطريقة تحديثه
@@ -17,10 +18,10 @@ export default function TranslationTabs({ translations, onChange, fields, source
 
   return (
     <fieldset style={{ border: '1px solid var(--admin-border)', borderRadius: 12, padding: '12px 14px', margin: '4px 0 14px' }}>
-      <legend style={{ padding: '0 8px', fontWeight: 700, fontSize: '.9rem' }}>الترجمات — اختيارية (تظهر عند تغيير لغة الموقع)</legend>
-      <div style={{ ...fieldStyle, marginBottom: 10 }}>أي خانة تتركها فارغة سيظهر نصها العربي للزائر. اكتب النص العربي أولًا ثم ترجمته هنا.</div>
+      <legend style={{ padding: '0 8px', fontWeight: 700, fontSize: '.9rem' }}>{tr('الترجمات — اختيارية (تظهر عند تغيير لغة الموقع)')}</legend>
+      <div style={{ ...fieldStyle, marginBottom: 10 }}>{tr('أي خانة تتركها فارغة سيظهر نصها العربي للزائر. اكتب النص العربي أولًا ثم ترجمته هنا.')}</div>
 
-      <div role="tablist" aria-label="لغة الترجمة" style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+      <div role="tablist" aria-label={tr('لغة الترجمة')} style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
         {TR_LANGS.map(({ code, label }) => (
           <button
             key={code}
@@ -30,7 +31,7 @@ export default function TranslationTabs({ translations, onChange, fields, source
             className={`admin-btn ${lang === code ? 'admin-btn-primary' : 'admin-btn-ghost'}`}
             onClick={() => setLang(code)}
           >
-            {label}
+            {tr(label)}
           </button>
         ))}
       </div>
@@ -47,7 +48,7 @@ export default function TranslationTabs({ translations, onChange, fields, source
         };
         return (
           <div className="admin-form-group" key={`${lang}-${f.key}`}>
-            <label htmlFor={id}>{f.label}</label>
+            <label htmlFor={id}>{tr(f.label)}</label>
             {f.rows ? <textarea className="admin-textarea" rows={f.rows} style={f.rows > 4 ? { minHeight: 140 } : undefined} {...common} /> : <input className="admin-input" {...common} />}
           </div>
         );
@@ -55,7 +56,7 @@ export default function TranslationTabs({ translations, onChange, fields, source
 
       {list && list.items.length > 0 && (
         <div className="admin-form-group" style={{ marginBottom: 0 }}>
-          <label>{list.label}</label>
+          <label>{tr(list.label)}</label>
           {list.items.map((item, i) => (
             <div key={`${lang}-${list.key}-${i}`} style={{ border: '1px dashed var(--admin-border)', borderRadius: 10, padding: 10, marginBottom: 8 }}>
               <div style={{ ...fieldStyle, marginBottom: 6 }}>{list.itemLabel ? list.itemLabel(item, i) : `#${i + 1}`}</div>
@@ -66,7 +67,7 @@ export default function TranslationTabs({ translations, onChange, fields, source
                   dir: 'ltr',
                   maxLength: f.max,
                   placeholder: (item && item[f.key]) || '',
-                  'aria-label': f.label,
+                  'aria-label': tr(f.label),
                   value: getTrItem(translations, lang, list.key, i, f.key),
                   onChange: (e) => onChange(setTrItem(translations, lang, list.key, i, f.key, e.target.value)),
                 };

@@ -1,5 +1,6 @@
 import { TR_LANGS, getTr, setTr } from '../../utils/translationForm';
 
+import { tr } from '../../i18n/adminDict';
 /**
  * خانتا ترجمة (FR/EN) تُوضعان تحت حقل عربي واحد في نماذج الإدارة.
  * translations: كائن الترجمات الكامل للسجل، onChange يستقبل الكائن الجديد.
@@ -16,14 +17,14 @@ export default function InlineTranslationInputs({ id, translations, onChange, tr
           dir: 'ltr',
           maxLength,
           placeholder,
-          'aria-label': `ترجمة ${label}`,
+          'aria-label': tr('ترجمة {{label}}', { label: tr(label) }),
           value: getTr(translations, code, trKey),
           onChange: (e) => onChange(setTr(translations, code, trKey, e.target.value)),
         };
         return (
           <div key={code} style={{ marginTop: 4 }}>
             <label htmlFor={common.id} style={{ fontSize: '.8rem', color: 'var(--admin-text-muted)' }}>
-              {label}
+              {tr(label)}
             </label>
             {rows ? <textarea rows={rows} {...common} /> : <input {...common} />}
           </div>
