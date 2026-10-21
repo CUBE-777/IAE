@@ -3,6 +3,7 @@ import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import { fetchAuditLogs, AUDIT_ENTITY_OPTIONS, AUDIT_PAGE_SIZE } from '../../services/supabase/auditLog.service';
 
+import { tr, dateLocale } from '../../i18n/adminDict';
 export default function Audit() {
   const [page, setPage] = useState(1);
   const [entity, setEntity] = useState('');
@@ -11,7 +12,7 @@ export default function Audit() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    document.title = 'سجل العمليات — لوحة إدارة النادي';
+    document.title = tr('سجل العمليات — لوحة إدارة النادي');
   }, []);
 
   useEffect(() => {
@@ -24,7 +25,7 @@ export default function Audit() {
       })
       .catch((err) => {
         console.error('تعذر تحميل السجل:', err);
-        window.notify?.fromError(err, 'تعذر تحميل السجل');
+        window.notify?.fromError(err, tr('تعذر تحميل السجل'));
         setError(true);
       });
   }, [page, entity]);
@@ -33,7 +34,7 @@ export default function Audit() {
 
   return (
     <AdminLayout>
-      <AdminPageHeader title="سجل العمليات الإدارية" subtitle="سجل كامل بكل العمليات الحساسة في لوحة الإدارة" />
+      <AdminPageHeader title={tr('سجل العمليات الإدارية')} subtitle={tr('سجل كامل بكل العمليات الحساسة في لوحة الإدارة')} />
 
       <div className="admin-panel">
         <div style={{ marginBottom: 16 }}>
@@ -47,25 +48,25 @@ export default function Audit() {
             }}
           >
             {AUDIT_ENTITY_OPTIONS.map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
+              <option key={value} value={value}>{tr(label)}</option>
             ))}
           </select>
         </div>
 
-        {rows === null && !error && <div className="admin-state-box">جاري التحميل...</div>}
-        {error && <div className="admin-state-box">تعذر التحميل.</div>}
-        {rows && rows.length === 0 && <div className="admin-state-box">لا توجد عمليات مسجّلة.</div>}
+        {rows === null && !error && <div className="admin-state-box">{tr('جاري التحميل...')}</div>}
+        {error && <div className="admin-state-box">{tr('تعذر التحميل.')}</div>}
+        {rows && rows.length === 0 && <div className="admin-state-box">{tr('لا توجد عمليات مسجّلة.')}</div>}
         {rows && rows.length > 0 && (
           <div className="admin-table-wrap">
             <table className="admin-data-table admin-table-cards">
-              <thead><tr><th>المسؤول</th><th>العملية</th><th>الوصف</th><th>التاريخ</th></tr></thead>
+              <thead><tr><th>{tr('المسؤول')}</th><th>{tr('العملية')}</th><th>{tr('الوصف')}</th><th>{tr('التاريخ')}</th></tr></thead>
               <tbody>
                 {rows.map((a) => (
                   <tr key={a.id}>
-                    <td data-label="المسؤول">{a.profiles?.full_name || '—'}</td>
-                    <td data-label="العملية"><code style={{ fontSize: '.8rem' }}>{a.action}</code></td>
-                    <td data-label="الوصف">{a.description || '—'}</td>
-                    <td data-label="التاريخ" style={{ fontSize: '.82rem' }}>{new Date(a.created_at).toLocaleString('ar-MA')}</td>
+                    <td data-label={tr('المسؤول')}>{a.profiles?.full_name || '—'}</td>
+                    <td data-label={tr('العملية')}><code style={{ fontSize: '.8rem' }}>{a.action}</code></td>
+                    <td data-label={tr('الوصف')}>{a.description || '—'}</td>
+                    <td data-label={tr('التاريخ')} style={{ fontSize: '.82rem' }}>{new Date(a.created_at).toLocaleString(dateLocale())}</td>
                   </tr>
                 ))}
               </tbody>

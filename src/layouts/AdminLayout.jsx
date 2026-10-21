@@ -27,7 +27,7 @@ const ICONS = {
 };
 
 export default function AdminLayout({ children }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { profile, logout } = useAuth();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
@@ -160,7 +160,7 @@ export default function AdminLayout({ children }) {
           </div>
         </aside>
 
-        <main className="admin-main">{children}</main>
+        <main className="admin-main" key={i18n.resolvedLanguage || i18n.language}>{children}</main>
       </div>
     </div>
   );

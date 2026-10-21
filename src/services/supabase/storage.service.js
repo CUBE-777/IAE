@@ -1,6 +1,7 @@
 import { supabase } from './client';
 import { compressImage } from '../../utils/imageCompress';
 
+import { tr } from '../../i18n/adminDict';
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB (بعد الضغط)
 const MAX_INPUT_SIZE = 15 * 1024 * 1024; // نقبل صور الهاتف الكبيرة لأنها تُضغط قبل الرفع
@@ -8,15 +9,15 @@ const MAX_INPUT_SIZE = 15 * 1024 * 1024; // نقبل صور الهاتف الك�
 /** يرفع صورة إلى bucket "association-media" ويُرجع الرابط العام، مطابق تمامًا لسلوك uploadFile() الأصلي. */
 export async function uploadImage(file, folder) {
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-    throw new Error('نوع الملف غير مدعوم، استخدم صورة JPG أو PNG أو WEBP.');
+    throw new Error(tr('نوع الملف غير مدعوم، استخدم صورة JPG أو PNG أو WEBP.'));
   }
   if (file.size > MAX_INPUT_SIZE) {
-    throw new Error('حجم الملف أكبر من 15MB.');
+    throw new Error(tr('حجم الملف أكبر من 15MB.'));
   }
   // ضغط تلقائي (يرجع الأصل إن تعذّر). الحد 5MB يُطبَّق على الملف النهائي المرفوع.
   const prepared = await compressImage(file);
   if (prepared.size > MAX_SIZE) {
-    throw new Error('حجم الملف أكبر من 5MB.');
+    throw new Error(tr('حجم الملف أكبر من 5MB.'));
   }
   const path = `${folder}/${Date.now()}-${prepared.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
   const { error } = await supabase.storage

@@ -5,6 +5,7 @@ import { saveActivity } from '../../services/supabase/adminActivities.service';
 import TranslationTabs from '../../components/admin/TranslationTabs';
 import { cleanTr, hasTr } from '../../utils/translationForm';
 
+import { tr } from '../../i18n/adminDict';
 const TR_MAX = 20000; // وصف النشاط HTML طويل
 const ACTIVITY_TR_FIELDS = [
   { key: 'title', label: 'العنوان', max: 300 },
@@ -38,11 +39,11 @@ export default function ActivityFormModal({ activity, onClose, onSaved }) {
     e.preventDefault();
     const title = values.title.trim();
     if (!title) {
-      window.notify?.error('العنوان مطلوب');
+      window.notify?.error(tr('العنوان مطلوب'));
       return;
     }
     setSaving(true);
-    const t = window.notify?.loading('جاري الحفظ...');
+    const t = window.notify?.loading(tr('جاري الحفظ...'));
     try {
       let coverUrl = activity?.cover_image_url || null;
       if (imageFile) coverUrl = await uploadImage(imageFile, 'activities');
@@ -61,61 +62,61 @@ export default function ActivityFormModal({ activity, onClose, onSaved }) {
       if ((isEdit && 'translations' in activity) || hasTr(cleaned)) payload.translations = cleaned;
       const result = await saveActivity(activity, payload);
       t?.remove();
-      window.notify?.success('تم حفظ النشاط بنجاح');
+      window.notify?.success(tr('تم حفظ النشاط بنجاح'));
       if (result?.degraded) {
-        window.notify?.info('حُفظ النص العربي فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0013 في Supabase أولًا.');
+        window.notify?.info(tr('حُفظ النص العربي فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0013 في Supabase أولًا.'));
       }
       onSaved();
     } catch (err) {
       t?.remove();
-      window.notify?.fromError(err, 'تعذر حفظ النشاط، حاول مرة أخرى.');
+      window.notify?.fromError(err, tr('تعذر حفظ النشاط، حاول مرة أخرى.'));
       setSaving(false);
     }
   };
 
   return (
     <Modal onClose={onClose}>
-      <h3>{isEdit ? 'تعديل نشاط' : 'إضافة نشاط جديد'}</h3>
+      <h3>{isEdit ? tr('تعديل نشاط') : tr('إضافة نشاط جديد')}</h3>
       <form onSubmit={handleSubmit}>
         <div className="admin-form-group">
-          <label htmlFor="f_title">العنوان *</label>
+          <label htmlFor="f_title">{tr('العنوان *')}</label>
           <input id="f_title" name="title" className="admin-input" required value={values.title} onChange={handleChange} />
         </div>
         <div className="admin-form-grid-2">
           <div className="admin-form-group">
-            <label htmlFor="f_category">الفئة</label>
+            <label htmlFor="f_category">{tr('الفئة')}</label>
             <input id="f_category" name="category" className="admin-input" value={values.category} onChange={handleChange} />
           </div>
           <div className="admin-form-group">
-            <label htmlFor="f_target">الفئة المستهدفة</label>
+            <label htmlFor="f_target">{tr('الفئة المستهدفة')}</label>
             <input id="f_target" name="target_audience" className="admin-input" value={values.target_audience} onChange={handleChange} />
           </div>
         </div>
         <div className="admin-form-grid-2">
           <div className="admin-form-group">
-            <label htmlFor="f_date">التاريخ</label>
+            <label htmlFor="f_date">{tr('التاريخ')}</label>
             <input id="f_date" name="date" type="date" className="admin-input" value={values.date} onChange={handleChange} />
           </div>
           <div className="admin-form-group">
-            <label htmlFor="f_time">الوقت</label>
+            <label htmlFor="f_time">{tr('الوقت')}</label>
             <input id="f_time" name="time" className="admin-input" value={values.time} onChange={handleChange} />
           </div>
         </div>
         <div className="admin-form-group">
-          <label htmlFor="f_location">المكان</label>
+          <label htmlFor="f_location">{tr('المكان')}</label>
           <input id="f_location" name="location" className="admin-input" value={values.location} onChange={handleChange} />
         </div>
         <div className="admin-form-group">
-          <label htmlFor="f_image">صورة الغلاف</label>
+          <label htmlFor="f_image">{tr('صورة الغلاف')}</label>
           <input id="f_image" type="file" accept="image/*" className="admin-input" onChange={(e) => setImageFile(e.target.files?.[0] || null)} />
           {activity?.cover_image_url && (
             <div style={{ fontSize: '.8rem', color: 'var(--admin-text-muted)', marginTop: 4 }}>
-              صورة حالية موجودة، اختر ملفًا جديدًا فقط لاستبدالها.
+              {tr('صورة حالية موجودة، اختر ملفًا جديدًا فقط لاستبدالها.')}
             </div>
           )}
         </div>
         <div className="admin-form-group">
-          <label htmlFor="f_description">الوصف</label>
+          <label htmlFor="f_description">{tr('الوصف')}</label>
           <textarea id="f_description" name="description" className="admin-textarea" style={{ minHeight: 140 }} value={values.description} onChange={handleChange} />
         </div>
         <TranslationTabs
@@ -125,20 +126,20 @@ export default function ActivityFormModal({ activity, onClose, onSaved }) {
           source={{ title: values.title, category: values.category, target_audience: values.target_audience, location: values.location, description: values.description.replace(/<[^>]*>/g, ' ').slice(0, 120) }}
           list={{
             key: 'sub_activities',
-            label: 'ترجمة المشاريع الفرعية',
+            label: tr('ترجمة المشاريع الفرعية'),
             items: subActivities,
             itemLabel: (item, i) => `${i + 1}. ${item?.title || ''}`,
             fields: [
-              { key: 'title', label: 'العنوان', max: 300 },
-              { key: 'desc', label: 'الوصف', rows: 2, max: 1000 },
+              { key: 'title', label: tr('العنوان'), max: 300 },
+              { key: 'desc', label: tr('الوصف'), rows: 2, max: 1000 },
             ],
           }}
         />
         <div className="admin-modal-actions">
           <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>
-            {isEdit ? 'حفظ التعديلات' : 'حفظ كمسودة'}
+            {isEdit ? tr('حفظ التعديلات') : tr('حفظ كمسودة')}
           </button>
-          <button type="button" className="admin-btn admin-btn-ghost" onClick={onClose}>إلغاء</button>
+          <button type="button" className="admin-btn admin-btn-ghost" onClick={onClose}>{tr('إلغاء')}</button>
         </div>
       </form>
     </Modal>

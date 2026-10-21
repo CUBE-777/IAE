@@ -6,6 +6,7 @@ import InlineTranslationInputs from '../../components/admin/InlineTranslationInp
 import { cleanTr, hasTr } from '../../utils/translationForm';
 import { CONTENT_FIELDS, fetchSiteContentAdmin, saveSiteContent } from '../../services/supabase/adminContent.service';
 
+import { tr } from '../../i18n/adminDict';
 // أسماء الأقسام للتبويبات (المفتاح = section في site_content)
 const SECTION_LABELS = { homepage: 'الصفحة الرئيسية', footer: 'الفوتر' };
 
@@ -24,25 +25,25 @@ export default function Content() {
     fetchSiteContentAdmin()
       .then((data) => {
         const v = {};
-        const tr = {};
+        const trMap = {};
         CONTENT_FIELDS.forEach((f) => {
           const row = data.find((d) => d.section === f.section && d.key === f.key);
           v[`${f.section}.${f.key}`] = row?.value || '';
-          tr[`${f.section}.${f.key}`] = row?.translations && typeof row.translations === 'object' ? row.translations : {};
+          trMap[`${f.section}.${f.key}`] = row?.translations && typeof row.translations === 'object' ? row.translations : {};
         });
         setTrColumn(data.some((d) => 'translations' in d));
-        setTrs(tr);
+        setTrs(trMap);
         setValues(v);
       })
       .catch((err) => {
         console.error('تعذر تحميل المحتوى:', err);
-        window.notify?.fromError(err, 'تعذر تحميل المحتوى');
+        window.notify?.fromError(err, tr('تعذر تحميل المحتوى'));
         setError(true);
       });
   }, []);
 
   useEffect(() => {
-    document.title = 'محتوى الموقع — لوحة إدارة النادي';
+    document.title = tr('محتوى الموقع — لوحة إدارة النادي');
     load();
   }, [load]);
 
@@ -51,7 +52,7 @@ export default function Content() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    const t = window.notify?.loading('جاري الحفظ...');
+    const t = window.notify?.loading(tr('جاري الحفظ...'));
     try {
       // الترجمات (0013): تُرسل لكل الصفوف أو لا تُرسل أبدًا (صفوف الدفعة الواحدة يجب أن تتطابق أعمدتها)
       const includeTr = trColumn || CONTENT_FIELDS.some((f) => hasTr(trs[`${f.section}.${f.key}`]));
@@ -63,13 +64,13 @@ export default function Content() {
       });
       const result = await saveSiteContent(rows);
       t?.remove();
-      window.notify?.success('تم حفظ التغييرات بنجاح');
+      window.notify?.success(tr('تم حفظ التغييرات بنجاح'));
       if (result?.degraded) {
-        window.notify?.info('حُفظت النصوص العربية فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0013 في Supabase أولًا.');
+        window.notify?.info(tr('حُفظت النصوص العربية فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0013 في Supabase أولًا.'));
       }
     } catch (err) {
       t?.remove();
-      window.notify?.fromError(err, 'تعذر حفظ التغييرات');
+      window.notify?.fromError(err, tr('تعذر حفظ التغييرات'));
     } finally {
       setSaving(false);
     }
@@ -77,16 +78,16 @@ export default function Content() {
 
   return (
     <AdminLayout>
-      <AdminPageHeader title="محتوى الموقع" subtitle="عدّل النصوص الظاهرة في الصفحة الرئيسية والفوتر دون لمس الكود" />
+      <AdminPageHeader title={tr('محتوى الموقع')} subtitle={tr('عدّل النصوص الظاهرة في الصفحة الرئيسية والفوتر دون لمس الكود')} />
       <div className="admin-panel">
-        <StateBox state={error ? 'error' : values === null ? 'loading' : ''} errorText="تعذر تحميل المحتوى." onRetry={load} />
+        <StateBox state={error ? 'error' : values === null ? 'loading' : ''} errorText={tr('تعذر تحميل المحتوى.')} onRetry={load} />
         {values !== null && (
           <form onSubmit={handleSubmit}>
-            <div className="admin-tabs" role="tablist" aria-label="أقسام المحتوى">
+            <div className="admin-tabs" role="tablist" aria-label={tr('أقسام المحتوى')}>
               {sections.map((s) => (
                 <button key={s} type="button" role="tab" id={`tab_${s}`} aria-selected={active === s} aria-controls={`panel_${s}`}
                   className={`admin-tab-btn${active === s ? ' active' : ''}`} onClick={() => setActive(s)}>
-                  {SECTION_LABELS[s] || s}
+                  {tr(SECTION_LABELS[s] || s)}
                 </button>
               ))}
             </div>
@@ -94,7 +95,7 @@ export default function Content() {
               <div key={s} id={`panel_${s}`} role="tabpanel" aria-labelledby={`tab_${s}`} hidden={active !== s}>
                 {CONTENT_FIELDS.filter((f) => f.section === s).map((f) => (
                   <div className="admin-form-group" key={`${f.section}.${f.key}`}>
-                    <label htmlFor={`fld_${f.section}_${f.key}`}>{f.label}</label>
+                    <label htmlFor={`fld_${f.section}_${f.key}`}>{tr(f.label)}</label>
                     <textarea
                       id={`fld_${f.section}_${f.key}`}
                       className="admin-textarea"
@@ -116,7 +117,7 @@ export default function Content() {
             ))}
             <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>
               {saving && <span className="admin-btn-spinner" aria-hidden="true" />}
-              {saving ? 'جاري الحفظ...' : 'حفظ كل التعديلات'}
+              {saving ? tr('جاري الحفظ...') : tr('حفظ كل التعديلات')}
             </button>
           </form>
         )}

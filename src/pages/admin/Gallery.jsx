@@ -8,6 +8,7 @@ import {
   fetchActivitiesForLinking, fetchGalleryAdmin, uploadGalleryFiles, softDeleteGalleryItem,
 } from '../../services/supabase/adminGallery.service';
 
+import { tr } from '../../i18n/adminDict';
 export default function Gallery() {
   const [rows, setRows] = useState(null);
   const [error, setError] = useState(false);
@@ -18,7 +19,7 @@ export default function Gallery() {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    document.title = 'معرض الصور — لوحة إدارة النادي';
+    document.title = tr('معرض الصور — لوحة إدارة النادي');
     fetchActivitiesForLinking()
       .then(setActivities)
       .catch((err) => console.error('تعذر تحميل قائمة الأنشطة للربط:', err));
@@ -31,7 +32,7 @@ export default function Gallery() {
       .then(setRows)
       .catch((err) => {
         console.error('تعذر تحميل الصور:', err);
-        window.notify?.fromError(err, 'تعذر تحميل الصور');
+        window.notify?.fromError(err, tr('تعذر تحميل الصور'));
         setError(true);
       });
   };
@@ -44,12 +45,12 @@ export default function Gallery() {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
     setUploading(true);
-    const t = window.notify?.loading(`جاري رفع ${files.length} صورة...`);
+    const t = window.notify?.loading(tr('جاري رفع {{length}} صورة...', { length: files.length }));
     try {
       const { success, failed } = await uploadGalleryFiles(files);
       t?.remove();
-      if (success) window.notify?.success(`تم رفع ${success} صورة بنجاح`);
-      if (failed) window.notify?.error(`تعذر رفع ${failed} صورة`);
+      if (success) window.notify?.success(tr('تم رفع {{success}} صورة بنجاح', { success: success }));
+      if (failed) window.notify?.error(tr('تعذر رفع {{failed}} صورة', { failed: failed }));
       load();
     } finally {
       setUploading(false);
@@ -59,26 +60,26 @@ export default function Gallery() {
 
   const doDelete = async (item) => {
     setDeleteTarget(null);
-    const t = window.notify?.loading('جاري الحذف...');
+    const t = window.notify?.loading(tr('جاري الحذف...'));
     try {
       await softDeleteGalleryItem(item);
       t?.remove();
-      window.notify?.success('تم الحذف');
+      window.notify?.success(tr('تم الحذف'));
       load();
     } catch (err) {
       t?.remove();
-      window.notify?.fromError(err, 'تعذر الحذف');
+      window.notify?.fromError(err, tr('تعذر الحذف'));
     }
   };
 
   return (
     <AdminLayout>
       <AdminPageHeader
-        title="معرض الصور"
-        subtitle="رفع وإدارة صور المعرض العام"
+        title={tr('معرض الصور')}
+        subtitle={tr('رفع وإدارة صور المعرض العام')}
         actions={
           <label className="admin-quick-action admin-upload-label">
-            {uploading ? 'جاري الرفع...' : '+ رفع صور'}
+            {uploading ? tr('جاري الرفع...') : tr('+ رفع صور')}
             <input ref={fileInputRef} type="file" accept="image/*" multiple style={{ display: 'none' }} disabled={uploading} onChange={handleUpload} />
           </label>
         }
@@ -87,8 +88,8 @@ export default function Gallery() {
       <div className="admin-panel">
         <StateBox
           state={error ? 'error' : rows === null ? 'loading' : rows.length === 0 ? 'empty' : ''}
-          emptyText="لا توجد صور بعد."
-          errorText="تعذر تحميل الصور."
+          emptyText={tr('لا توجد صور بعد.')}
+          errorText={tr('تعذر تحميل الصور.')}
           onRetry={load}
         />
         {rows && rows.length > 0 && (
@@ -97,12 +98,12 @@ export default function Gallery() {
               <div className="admin-media-item" key={g.id}>
                 <img src={g.image_url} alt={g.title || ''} loading="lazy" />
                 <div className="media-body">
-                  <div className="media-title">{g.title || 'بدون عنوان'}</div>
-                  <div className="media-sub">{g.activity_id ? activityTitle(g.activity_id) : 'غير مرتبطة بنشاط'}</div>
+                  <div className="media-title">{g.title || tr('بدون عنوان')}</div>
+                  <div className="media-sub">{g.activity_id ? activityTitle(g.activity_id) : tr('غير مرتبطة بنشاط')}</div>
                 </div>
                 <div className="media-actions">
-                  <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" aria-label={`تعديل الصورة: ${g.title || 'بدون عنوان'}`} onClick={() => setEditTarget(g)}>تعديل</button>
-                  <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" aria-label={`حذف الصورة: ${g.title || 'بدون عنوان'}`} onClick={() => setDeleteTarget(g)}>حذف</button>
+                  <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" aria-label={tr('تعديل الصورة: {{v1}}', { v1: g.title || 'بدون عنوان' })} onClick={() => setEditTarget(g)}>{tr('تعديل')}</button>
+                  <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" aria-label={tr('حذف الصورة: {{v1}}', { v1: g.title || 'بدون عنوان' })} onClick={() => setDeleteTarget(g)}>{tr('حذف')}</button>
                 </div>
               </div>
             ))}
@@ -124,11 +125,11 @@ export default function Gallery() {
 
       {deleteTarget && (
         <Modal onClose={() => setDeleteTarget(null)}>
-          <h3>حذف الصورة</h3>
-          <p>هل تريد حذف هذه الصورة من المعرض؟</p>
+          <h3>{tr('حذف الصورة')}</h3>
+          <p>{tr('هل تريد حذف هذه الصورة من المعرض؟')}</p>
           <div className="admin-modal-actions">
-            <button type="button" className="admin-btn admin-btn-danger" onClick={() => doDelete(deleteTarget)}>حذف</button>
-            <button type="button" className="admin-btn admin-btn-ghost" onClick={() => setDeleteTarget(null)}>إلغاء</button>
+            <button type="button" className="admin-btn admin-btn-danger" onClick={() => doDelete(deleteTarget)}>{tr('حذف')}</button>
+            <button type="button" className="admin-btn admin-btn-ghost" onClick={() => setDeleteTarget(null)}>{tr('إلغاء')}</button>
           </div>
         </Modal>
       )}

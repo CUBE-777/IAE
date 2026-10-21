@@ -6,6 +6,7 @@
 import { supabase } from './client';
 import { compressImage } from '../../utils/imageCompress';
 
+import { tr } from '../../i18n/adminDict';
 const RECEIPT_BUCKET = 'budget-receipts';
 const RECEIPT_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
 const MAX_RECEIPT = 5 * 1024 * 1024;
@@ -66,11 +67,11 @@ export async function voidTransaction(id, reason) {
 /** يرفع إيصالًا (صورة تُضغط تلقائيًا أو PDF) إلى المخزن الخاص ويُرجع مساره (ليس رابطًا عامًا). */
 export async function uploadReceipt(file) {
   if (!RECEIPT_TYPES.includes(file.type)) {
-    throw new Error('نوع الإيصال غير مدعوم، استخدم صورة (JPG/PNG/WEBP) أو PDF.');
+    throw new Error(tr('نوع الإيصال غير مدعوم، استخدم صورة (JPG/PNG/WEBP) أو PDF.'));
   }
-  if (file.size > MAX_RECEIPT_INPUT) throw new Error('حجم الإيصال أكبر من 15MB.');
+  if (file.size > MAX_RECEIPT_INPUT) throw new Error(tr('حجم الإيصال أكبر من 15MB.'));
   const prepared = file.type === 'application/pdf' ? file : await compressImage(file);
-  if (prepared.size > MAX_RECEIPT) throw new Error('حجم الإيصال أكبر من 5MB.');
+  if (prepared.size > MAX_RECEIPT) throw new Error(tr('حجم الإيصال أكبر من 5MB.'));
   const safe = prepared.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
   const path = `${new Date().getFullYear()}/${Date.now()}-${safe}`;
   const { error } = await supabase.storage

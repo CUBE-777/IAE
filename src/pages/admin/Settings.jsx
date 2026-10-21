@@ -6,6 +6,7 @@ import InlineTranslationInputs from '../../components/admin/InlineTranslationInp
 import { cleanTr, hasTr } from '../../utils/translationForm';
 import { SETTINGS_GROUPS, TRANSLATABLE_SETTINGS, fetchSiteSettingsAdmin, saveSiteSettings } from '../../services/supabase/adminSettings.service';
 
+import { tr } from '../../i18n/adminDict';
 export default function Settings() {
   const [values, setValues] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -19,25 +20,25 @@ export default function Settings() {
     fetchSiteSettingsAdmin()
       .then((data) => {
         const v = {};
-        const tr = {};
+        const trMap = {};
         SETTINGS_GROUPS.forEach((g) => g.keys.forEach(([k]) => {
           const row = data.find((d) => d.key === k);
           v[k] = row?.value || '';
-          tr[k] = row?.translations && typeof row.translations === 'object' ? row.translations : {};
+          trMap[k] = row?.translations && typeof row.translations === 'object' ? row.translations : {};
         }));
         setTrColumn(data.some((d) => 'translations' in d));
-        setTrs(tr);
+        setTrs(trMap);
         setValues(v);
       })
       .catch((err) => {
         console.error('تعذر تحميل الإعدادات:', err);
-        window.notify?.fromError(err, 'تعذر تحميل الإعدادات');
+        window.notify?.fromError(err, tr('تعذر تحميل الإعدادات'));
         setError(true);
       });
   }, []);
 
   useEffect(() => {
-    document.title = 'الإعدادات — لوحة إدارة النادي';
+    document.title = tr('الإعدادات — لوحة إدارة النادي');
     load();
   }, [load]);
 
@@ -46,7 +47,7 @@ export default function Settings() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    const t = window.notify?.loading('جاري الحفظ...');
+    const t = window.notify?.loading(tr('جاري الحفظ...'));
     try {
       // الترجمات (0013): تُرسل لكل الصفوف أو لا تُرسل أبدًا (صفوف الدفعة الواحدة يجب أن تتطابق أعمدتها)
       const includeTr = trColumn || TRANSLATABLE_SETTINGS.some((k) => hasTr(trs[k]));
@@ -58,13 +59,13 @@ export default function Settings() {
       }));
       const result = await saveSiteSettings(rows);
       t?.remove();
-      window.notify?.success('تم حفظ التغييرات بنجاح');
+      window.notify?.success(tr('تم حفظ التغييرات بنجاح'));
       if (result?.degraded) {
-        window.notify?.info('حُفظت النصوص العربية فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0013 في Supabase أولًا.');
+        window.notify?.info(tr('حُفظت النصوص العربية فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0013 في Supabase أولًا.'));
       }
     } catch (err) {
       t?.remove();
-      window.notify?.fromError(err, 'تعذر حفظ التغييرات');
+      window.notify?.fromError(err, tr('تعذر حفظ التغييرات'));
     } finally {
       setSaving(false);
     }
@@ -72,19 +73,19 @@ export default function Settings() {
 
   return (
     <AdminLayout>
-      <AdminPageHeader title="الإعدادات العامة" subtitle="معلومات النادي الأساسية الظاهرة في الموقع" />
+      <AdminPageHeader title={tr('الإعدادات العامة')} subtitle={tr('معلومات النادي الأساسية الظاهرة في الموقع')} />
       {values === null ? (
         <div className="admin-panel">
-          <StateBox state={error ? 'error' : 'loading'} errorText="تعذر تحميل الإعدادات." onRetry={load} />
+          <StateBox state={error ? 'error' : 'loading'} errorText={tr('تعذر تحميل الإعدادات.')} onRetry={load} />
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
           {SETTINGS_GROUPS.map((g) => (
             <div className="admin-panel" key={g.title}>
-              <h2>{g.title}</h2>
+              <h2>{tr(g.title)}</h2>
               {g.keys.map(([k, label]) => (
                 <div className="admin-form-group" key={k}>
-                  <label htmlFor={`s_${k}`}>{label}</label>
+                  <label htmlFor={`s_${k}`}>{tr(label)}</label>
                   <input id={`s_${k}`} className="admin-input" value={values[k]} onChange={(e) => handleChange(k, e.target.value)} />
                   {TRANSLATABLE_SETTINGS.includes(k) && (
                     <InlineTranslationInputs
@@ -101,7 +102,7 @@ export default function Settings() {
           ))}
           <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>
             {saving && <span className="admin-btn-spinner" aria-hidden="true" />}
-            {saving ? 'جاري الحفظ...' : 'حفظ الإعدادات'}
+            {saving ? tr('جاري الحفظ...') : tr('حفظ الإعدادات')}
           </button>
         </form>
       )}

@@ -9,6 +9,7 @@ import {
   fetchMembersPage, softDeleteMember, fetchAllMembersForExport, PAGE_SIZE,
 } from '../../services/supabase/adminMembers.service';
 
+import { tr, trStrong } from '../../i18n/adminDict';
 const FIELD = (v) => (v == null || v === '' ? '—' : v);
 const CSV_HEADERS = ['full_name', 'university', 'promotion', 'track', 'profession', 'city', 'email', 'phone', 'status'];
 
@@ -27,7 +28,7 @@ export default function Members() {
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
-    document.title = 'الأعضاء — لوحة إدارة النادي';
+    document.title = tr('الأعضاء — لوحة إدارة النادي');
   }, []);
 
   useEffect(() => {
@@ -44,7 +45,7 @@ export default function Members() {
       })
       .catch((err) => {
         console.error('تعذر تحميل الأعضاء:', err);
-        window.notify?.fromError(err, 'تعذر تحميل الأعضاء');
+        window.notify?.fromError(err, tr('تعذر تحميل الأعضاء'));
         setError(true);
       });
   };
@@ -53,28 +54,28 @@ export default function Members() {
 
   const doDelete = async (member) => {
     setDeleteTarget(null);
-    const t = window.notify?.loading('جاري الحذف...');
+    const t = window.notify?.loading(tr('جاري الحذف...'));
     try {
       await softDeleteMember(member);
       t?.remove();
-      window.notify?.success('تم حذف العضو');
+      window.notify?.success(tr('تم حذف العضو'));
       load();
     } catch (err) {
       t?.remove();
-      window.notify?.fromError(err, 'تعذر الحذف');
+      window.notify?.fromError(err, tr('تعذر الحذف'));
     }
   };
 
   const exportCsv = async () => {
     setExporting(true);
-    const t = window.notify?.loading('جاري تجهيز الملف...');
+    const t = window.notify?.loading(tr('جاري تجهيز الملف...'));
     try {
       const data = await fetchAllMembersForExport();
       downloadCsv('members.csv', data, CSV_HEADERS);
       t?.remove();
     } catch (err) {
       t?.remove();
-      window.notify?.fromError(err, 'تعذر تصدير الملف');
+      window.notify?.fromError(err, tr('تعذر تصدير الملف'));
     } finally {
       setExporting(false);
     }
@@ -85,12 +86,12 @@ export default function Members() {
   return (
     <AdminLayout>
       <AdminPageHeader
-        title="الأعضاء"
-        subtitle="إدارة جميع أعضاء النادي"
+        title={tr('الأعضاء')}
+        subtitle={tr('إدارة جميع أعضاء النادي')}
         actions={
           <>
-            <button className="admin-quick-action" disabled={exporting} onClick={exportCsv}>تصدير CSV</button>
-            <button className="admin-quick-action" onClick={() => setFormTarget(null)}>+ إضافة عضو</button>
+            <button className="admin-quick-action" disabled={exporting} onClick={exportCsv}>{tr('تصدير CSV')}</button>
+            <button className="admin-quick-action" onClick={() => setFormTarget(null)}>{tr('+ إضافة عضو')}</button>
           </>
         }
       />
@@ -101,38 +102,38 @@ export default function Members() {
             type="text"
             className="admin-input"
             style={{ minWidth: 220, flex: 1 }}
-            placeholder="ابحث بالاسم، الجامعة، المهنة، المدينة، الدفعة..."
+            placeholder={tr('ابحث بالاسم، الجامعة، المهنة، المدينة، الدفعة...')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
           <select className="admin-select" style={{ width: 'auto' }} value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="">كل الحالات</option>
-            <option value="active">نشط</option>
-            <option value="inactive">غير نشط</option>
+            <option value="">{tr('كل الحالات')}</option>
+            <option value="active">{tr('نشط')}</option>
+            <option value="inactive">{tr('غير نشط')}</option>
           </select>
         </div>
 
-        {rows === null && !error && <div className="admin-state-box">جاري التحميل...</div>}
-        {error && <div className="admin-state-box">تعذر تحميل الأعضاء.</div>}
-        {rows && rows.length === 0 && <div className="admin-state-box">لا يوجد أعضاء مطابقون.</div>}
+        {rows === null && !error && <div className="admin-state-box">{tr('جاري التحميل...')}</div>}
+        {error && <div className="admin-state-box">{tr('تعذر تحميل الأعضاء.')}</div>}
+        {rows && rows.length === 0 && <div className="admin-state-box">{tr('لا يوجد أعضاء مطابقون.')}</div>}
         {rows && rows.length > 0 && (
           <div className="admin-table-wrap">
             <table className="admin-data-table admin-table-cards">
               <thead>
-                <tr><th>الاسم</th><th>الجامعة</th><th>الدفعة</th><th>المهنة</th><th>المدينة</th><th>الحالة</th><th>إجراءات</th></tr>
+                <tr><th>{tr('الاسم')}</th><th>{tr('الجامعة')}</th><th>{tr('الدفعة')}</th><th>{tr('المهنة')}</th><th>{tr('المدينة')}</th><th>{tr('الحالة')}</th><th>{tr('إجراءات')}</th></tr>
               </thead>
               <tbody>
                 {rows.map((m) => (
                   <tr key={m.id}>
-                    <td data-label="الاسم">{m.full_name}</td>
-                    <td data-label="الجامعة">{FIELD(m.university)}</td>
-                    <td data-label="الدفعة">{FIELD(m.promotion)}</td>
-                    <td data-label="المهنة">{FIELD(m.profession)}</td>
-                    <td data-label="المدينة">{FIELD(m.city)}</td>
-                    <td data-label="الحالة"><span className={`admin-badge admin-badge-${m.status === 'active' ? 'approved' : 'rejected'}`}>{m.status === 'active' ? 'نشط' : 'غير نشط'}</span></td>
+                    <td data-label={tr('الاسم')}>{m.full_name}</td>
+                    <td data-label={tr('الجامعة')}>{FIELD(m.university)}</td>
+                    <td data-label={tr('الدفعة')}>{FIELD(m.promotion)}</td>
+                    <td data-label={tr('المهنة')}>{FIELD(m.profession)}</td>
+                    <td data-label={tr('المدينة')}>{FIELD(m.city)}</td>
+                    <td data-label={tr('الحالة')}><span className={`admin-badge admin-badge-${m.status === 'active' ? 'approved' : 'rejected'}`}>{m.status === 'active' ? tr('نشط') : tr('غير نشط')}</span></td>
                     <td className="admin-cell-actions">
-                      <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setFormTarget(m)}>تعديل</button>
-                      <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDeleteTarget(m)}>حذف</button>
+                      <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setFormTarget(m)}>{tr('تعديل')}</button>
+                      <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDeleteTarget(m)}>{tr('حذف')}</button>
                     </td>
                   </tr>
                 ))}
@@ -170,11 +171,11 @@ export default function Members() {
 
       {deleteTarget && (
         <Modal onClose={() => setDeleteTarget(null)}>
-          <h3>تأكيد الحذف</h3>
-          <p>هل تريد حذف العضو <strong>{deleteTarget.full_name}</strong>؟ يمكن استرجاعه لاحقًا من قاعدة البيانات.</p>
+          <h3>{tr('تأكيد الحذف')}</h3>
+          <p>{trStrong('هل تريد حذف العضو <strong>{{name}}</strong>؟ يمكن استرجاعه لاحقًا من قاعدة البيانات.', { name: deleteTarget.full_name })}</p>
           <div className="admin-modal-actions">
-            <button className="admin-btn admin-btn-danger" onClick={() => doDelete(deleteTarget)}>حذف</button>
-            <button className="admin-btn admin-btn-ghost" onClick={() => setDeleteTarget(null)}>إلغاء</button>
+            <button className="admin-btn admin-btn-danger" onClick={() => doDelete(deleteTarget)}>{tr('حذف')}</button>
+            <button className="admin-btn admin-btn-ghost" onClick={() => setDeleteTarget(null)}>{tr('إلغاء')}</button>
           </div>
         </Modal>
       )}

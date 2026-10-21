@@ -6,6 +6,7 @@ import { saveAnnouncement } from '../../services/supabase/adminAnnouncements.ser
 import { ANNOUNCEMENT_TYPES } from '../../services/supabase/announcements.service';
 import { safeUrl } from '../../utils/sanitize';
 
+import { tr } from '../../i18n/adminDict';
 const LANGS = ['ar', 'fr', 'en'];
 const MAX_IMAGE = 5 * 1024 * 1024;
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -14,7 +15,7 @@ const toDateInput = (v) => (v ? String(v).substring(0, 10) : '');
 
 export default function AnnouncementFormModal({ announcement, onClose, onSaved }) {
   const { t } = useTranslation();
-  const tr = announcement?.translations || {};
+  const trData = announcement?.translations || {};
   const [values, setValues] = useState({
     title: announcement?.title || announcement?.text || '',
     excerpt: announcement?.excerpt || '',
@@ -25,8 +26,8 @@ export default function AnnouncementFormModal({ announcement, onClose, onSaved }
     end_at: toDateInput(announcement?.end_at),
     is_active: announcement ? announcement.is_active !== false : false, // الإعلان الجديد مسودة افتراضيًا
     is_pinned: announcement?.is_pinned === true,
-    fr: { title: tr.fr?.title || '', excerpt: tr.fr?.excerpt || '', content: tr.fr?.content || '' },
-    en: { title: tr.en?.title || '', excerpt: tr.en?.excerpt || '', content: tr.en?.content || '' },
+    fr: { title: trData.fr?.title || '', excerpt: trData.fr?.excerpt || '', content: trData.fr?.content || '' },
+    en: { title: trData.en?.title || '', excerpt: trData.en?.excerpt || '', content: trData.en?.content || '' },
   });
   const [lang, setLang] = useState('ar');
   const [imageFile, setImageFile] = useState(null);
@@ -159,7 +160,7 @@ export default function AnnouncementFormModal({ announcement, onClose, onSaved }
           {LANGS.map((l) => (
             <button key={l} type="button" role="tab" aria-selected={lang === l}
               className={`admin-tab-btn${lang === l ? ' active' : ''}`} onClick={() => setLang(l)}>
-              {l === 'ar' ? 'العربية' : l === 'fr' ? 'Français' : 'English'}
+              {l === 'ar' ? tr('العربية') : l === 'fr' ? 'Français' : 'English'}
             </button>
           ))}
         </div>
