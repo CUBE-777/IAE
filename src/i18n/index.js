@@ -18,12 +18,13 @@ export const SUPPORTED_LANGUAGES = [
   { code: 'en', dir: 'ltr', label: 'English', translated: true },
 ];
 
-const LANG_STORAGE_KEY = 'morabitine:lang';
+const LANG_STORAGE_KEY = 'iae:lang';
+const LEGACY_LANG_STORAGE_KEY = 'morabitine:lang'; // ancienne clé, lue une fois pour ne pas perdre la préférence
 
 /** يقرأ اللغة المحفوظة من آخر زيارة، مع العربية كلغة افتراضية. */
 function getInitialLanguage() {
   try {
-    const saved = localStorage.getItem(LANG_STORAGE_KEY);
+    const saved = localStorage.getItem(LANG_STORAGE_KEY) || localStorage.getItem(LEGACY_LANG_STORAGE_KEY);
     if (saved && SUPPORTED_LANGUAGES.some((l) => l.code === saved)) return saved;
   } catch {
     // localStorage قد يكون معطّلاً (وضع التصفح الخاص مثلاً) — نتجاهل بهدوء

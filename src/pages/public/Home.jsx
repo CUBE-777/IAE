@@ -7,6 +7,7 @@ import { usePublicHomeData } from '../../hooks/usePublicHomeData';
 import AnnouncementsBoard from '../../components/announcements/AnnouncementsBoard';
 import { safeUrl } from '../../utils/sanitize';
 import { localizeValue, localizeActivity, localizeGalleryItem } from '../../utils/i18nContent';
+import { normalizeWhatsappNumber } from '../../utils/whatsapp';
 
 const FALLBACK_ICONS = ['🤝', '📚', '🎒', '🌱', '🎓', '🌟', '🏆', '🤲'];
 
@@ -46,14 +47,17 @@ export default function Home() {
   const brandName = ls('association_name');
   const footerCopyright = lc('footer.copyright');
 
-  const email = settings.email || t('contact.defaultEmail');
-  const phoneDigits = settings.phone ? settings.phone.replace(/[^\d+]/g, '') : '+212679672284';
-  const phoneDisplay = settings.phone || t('contact.defaultPhone');
-  const address = ls('address') || t('contact.defaultAddress');
-  const whatsappNum = settings.whatsapp ? settings.whatsapp.replace(/[^\d]/g, '') : '212679672284';
-  const facebookUrl = settings.facebook ? safeUrl(settings.facebook) : '#';
-  const instagramUrl = settings.instagram ? safeUrl(settings.instagram) : '#';
+  // Coordonnées : uniquement les valeurs de site_settings (aucune valeur par défaut codée en dur).
+  // Un champ vide masque simplement l'élément correspondant sur la page.
+  const email = (settings.email || t('contact.defaultEmail') || '').trim();
+  const phoneDisplay = (settings.phone || t('contact.defaultPhone') || '').trim();
+  const phoneDigits = phoneDisplay.replace(/[^\d+]/g, '');
+  const address = ls('address') || t('contact.defaultAddress') || '';
+  const whatsappNum = normalizeWhatsappNumber(settings.whatsapp);
+  const facebookUrl = settings.facebook ? safeUrl(settings.facebook) : '';
+  const instagramUrl = settings.instagram ? safeUrl(settings.instagram) : '';
   const youtubeUrl = settings.youtube ? safeUrl(settings.youtube) : '';
+  const hasSocial = Boolean(facebookUrl || instagramUrl || youtubeUrl || whatsappNum);
 
   const activityCards = activities
     ? activities.map((raw, i) => {
@@ -238,9 +242,8 @@ export default function Home() {
                 ))}
               </ul>
               <a
-                href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent(t('join.donateWhatsappText'))}`}
-                target="_blank"
-                rel="noopener"
+                href={whatsappNum ? `https://wa.me/${whatsappNum}?text=${encodeURIComponent(t('join.donateWhatsappText'))}` : '#contact'}
+                {...(whatsappNum ? { target: '_blank', rel: 'noopener' } : {})}
                 className="btn btn-ghost"
                 style={{ color: 'var(--navy-deep)', borderColor: 'var(--navy-deep)' }}
               >
@@ -258,34 +261,42 @@ export default function Home() {
               <div className="eyebrow">{t('contact.eyebrow')}</div>
               <h2 style={{ marginBottom: 24 }}>{t('contact.title')}</h2>
               <ul className="contact-info">
-                <li>
-                  <span className="ico">✉</span>
-                  <div>
-                    <h4>{t('contact.emailLabel')}</h4>
-                    <span><a href={`mailto:${email}`} style={{ color: 'var(--navy-tint-2)' }}>{email}</a></span>
-                  </div>
-                </li>
-                <li>
-                  <span className="ico">☎</span>
-                  <div>
-                    <h4>{t('contact.phoneLabel')}</h4>
-                    <span><a href={`tel:${phoneDigits}`} style={{ color: 'var(--navy-tint-2)' }}>{phoneDisplay}</a></span>
-                  </div>
-                </li>
-                <li>
-                  <span className="ico">📍</span>
-                  <div>
-                    <h4>{t('contact.addressLabel')}</h4>
-                    <span>{address}</span>
-                  </div>
-                </li>
+                {email && (
+                  <li>
+                    <span className="ico">✉</span>
+                    <div>
+                      <h4>{t('contact.emailLabel')}</h4>
+                      <span><a href={`mailto:${email}`} style={{ color: 'var(--navy-tint-2)' }}>{email}</a></span>
+                    </div>
+                  </li>
+                )}
+                {phoneDisplay && (
+                  <li>
+                    <span className="ico">☎</span>
+                    <div>
+                      <h4>{t('contact.phoneLabel')}</h4>
+                      <span><a href={`tel:${phoneDigits}`} style={{ color: 'var(--navy-tint-2)' }}>{phoneDisplay}</a></span>
+                    </div>
+                  </li>
+                )}
+                {address && (
+                  <li>
+                    <span className="ico">📍</span>
+                    <div>
+                      <h4>{t('contact.addressLabel')}</h4>
+                      <span>{address}</span>
+                    </div>
+                  </li>
+                )}
               </ul>
-              <div className="social-row">
-                <a href={facebookUrl || '#'} aria-label={t('a11y.facebook')}>f</a>
-                <a href={instagramUrl || '#'} aria-label={t('a11y.instagram')}>📷</a>
-                {youtubeUrl && <a href={youtubeUrl} target="_blank" rel="noopener" aria-label={t('a11y.youtube')}>▶</a>}
-                <a href={`https://wa.me/${whatsappNum}`} target="_blank" rel="noopener" aria-label={t('a11y.whatsapp')}>📱</a>
-              </div>
+              {hasSocial && (
+                <div className="social-row">
+                  {facebookUrl && <a href={facebookUrl} target="_blank" rel="noopener" aria-label={t('a11y.facebook')}>f</a>}
+                  {instagramUrl && <a href={instagramUrl} target="_blank" rel="noopener" aria-label={t('a11y.instagram')}>📷</a>}
+                  {youtubeUrl && <a href={youtubeUrl} target="_blank" rel="noopener" aria-label={t('a11y.youtube')}>▶</a>}
+                  {whatsappNum && <a href={`https://wa.me/${whatsappNum}`} target="_blank" rel="noopener" aria-label={t('a11y.whatsapp')}>📱</a>}
+                </div>
+              )}
             </div>
             <ContactForm />
           </div>
