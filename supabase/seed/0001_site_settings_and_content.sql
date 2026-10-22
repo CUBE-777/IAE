@@ -1,24 +1,25 @@
 -- ============================================================
--- بيانات أولية لـ site_settings و site_content
--- مستخرجة من القيم الثابتة الموجودة حاليًا في index.html
--- (يمكن تعديلها لاحقًا من لوحة الإدارة بدون لمس HTML)
+-- Données initiales de site_settings (club IAE)
+-- À exécuter UNE fois sur une base vide ; tout se modifie ensuite depuis
+-- l'administration (Paramètres). `on conflict do nothing` garantit qu'un rejeu
+-- n'écrase jamais des valeurs déjà saisies.
+--
+-- Toutes les valeurs de texte/coordonnées sont volontairement VIDES :
+--  - nom, titre d'accueil, « à propos » et copyright : le site retombe sur les
+--    textes trilingues (AR/FR/EN) des fichiers src/i18n/locales/*.json ;
+--  - email, téléphone, WhatsApp, adresse, réseaux : à renseigner dans
+--    l'administration ; le site masque les éléments laissés vides.
 -- ============================================================
 
 insert into public.site_settings (key, value) values
-  ('association_name', 'جمعية خريجي ثانوية المرابطين ببيوكرة'),
+  ('association_name', ''),
   ('logo_url', '/logo.jpg'),
-  ('email', 'a.laureats.almourabitine@gmail.com'),
-  ('phone', '+212679672284'),
-  ('whatsapp', '212679672284'),
-  ('address', 'الثانوية التأهيلية المرابطين، بيوكرة، اشتوكة آيت باها'),
+  ('email', ''),
+  ('phone', ''),
+  ('whatsapp', ''),
+  ('address', ''),
   ('facebook', ''),
   ('instagram', ''),
   ('youtube', ''),
   ('google_maps_url', '')
 on conflict (key) do nothing;
-
-insert into public.site_content (section, key, value) values
-  ('homepage', 'hero_title', 'معاً نبني جسرًا بين الأجيال، من مقاعد الدراسة إلى ميدان العطاء'),
-  ('homepage', 'about_title', 'قصة جيل يعود'),
-  ('footer', 'copyright', '© 2026 جمعية خريجي ثانوية المرابطين. جميع الحقوق محفوظة.')
-on conflict (section, key) do nothing;

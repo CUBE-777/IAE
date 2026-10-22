@@ -47,3 +47,6 @@ values ('<AUTH_USER_UUID>', 'اسمك الكامل', 'admin@example.com', 'super
 ## ما بعد ذلك
 أعطني `SUPABASE_URL` و `SUPABASE_ANON_KEY` (Settings → API) لأبدأ **Phase 2: ربط الموقع بـ Supabase Client**.
 لا تشاركني أبدًا `service_role key`.
+
+## 0014 — مسار الانخراط (طلب ← نموذج ← انخراط سنوي)
+شروطه المسبقة: 0009 و0010 و0012. بعد تنفيذه اضبط من «الإعدادات»: مبلغ الانخراط السنوي والموسم الجامعي الحالي.
