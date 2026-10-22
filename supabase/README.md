@@ -50,3 +50,9 @@ values ('<AUTH_USER_UUID>', 'اسمك الكامل', 'admin@example.com', 'super
 
 ## 0014 — مسار الانخراط (طلب ← نموذج ← انخراط سنوي)
 شروطه المسبقة: 0009 و0010 و0012. بعد تنفيذه اضبط من «الإعدادات»: مبلغ الانخراط السنوي والموسم الجامعي الحالي.
+
+## 0015 — colonnes de traductions (remplace la « 0013 » jamais livrée)
+Prérequis : 0001 à 0012. Ajoute `translations jsonb` à `activities`, `gallery`, `site_settings` et `site_content` (idempotent, aucun droit élargi). À exécuter pour que les traductions FR/EN saisies dans l'administration soient enregistrées ; sans elle, seul le texte arabe est sauvegardé. La numérotation 0013 reste inutilisée.
+
+## 0016 — projets du club (Phase 1)
+Prérequis : 0001 à 0012 (rôles, `audit_logs`, `set_updated_at`). Indépendante de 0015. Crée la table `projects` (RLS : lecture publique des projets publiés ; écriture `can_manage_content()` ; pas de suppression physique) et un trigger d'audit. Idempotente.

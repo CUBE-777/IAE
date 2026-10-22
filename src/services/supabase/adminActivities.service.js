@@ -22,7 +22,7 @@ function slugify(title) {
   );
 }
 
-// يُرجع { degraded } = true إن حُفظ النص العربي فقط لأن عمود translations (0013) غير موجود بعد.
+// يُرجع { degraded } = true إن حُفظ النص العربي فقط لأن عمود translations (0015) غير موجود بعد.
 export async function saveActivity(existing, payload) {
   if (!existing) {
     payload.slug = slugify(payload.title);

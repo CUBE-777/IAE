@@ -40,7 +40,7 @@ export async function fetchSiteSettingsAdmin() {
   return data || [];
 }
 
-// يُرجع { degraded } = true إن حُفظت النصوص العربية فقط لأن عمود translations (0013) غير موجود بعد.
+// يُرجع { degraded } = true إن حُفظت النصوص العربية فقط لأن عمود translations (0015) غير موجود بعد.
 export async function saveSiteSettings(rows) {
   let degraded = false;
   let { error } = await supabase.from('site_settings').upsert(rows, { onConflict: 'key' });

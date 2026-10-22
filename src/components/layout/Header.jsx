@@ -4,14 +4,16 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
 import { useMobileNav } from '../../hooks/useMobileNav';
+import { useHasProjects } from '../../hooks/useHasProjects';
 
-const SECTION_IDS = ['home', 'about', 'activities', 'members', 'gallery', 'join', 'contact'];
+const SECTION_IDS = ['home', 'about', 'activities', 'projects', 'members', 'gallery', 'join', 'contact'];
 
 export default function Header({ brandName }) {
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const [activeId, setActiveId] = useState('home');
   const { open: navOpen, close, toggle, toggleRef, navRef } = useMobileNav();
+  const hasProjects = useHasProjects();
 
   useEffect(() => {
     // scroll-spy: القسم الحالي = آخر قسم تجاوز أعلاه خط مرجعي تحت الهيدر
@@ -43,6 +45,7 @@ export default function Header({ brandName }) {
     ['home', t('nav.home')],
     ['about', t('nav.about')],
     ['activities', t('nav.activities')],
+    ...(hasProjects ? [['projects', t('nav.projects')]] : []),
     ['members', t('nav.members')],
     ['gallery', t('nav.gallery')],
     ['join', t('nav.join')],

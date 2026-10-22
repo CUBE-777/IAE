@@ -23,14 +23,14 @@ export default function GalleryEditModal({ item, activities, onClose, onSaved })
         description: description.trim() || null,
         activity_id: activityId || null,
       };
-      // الترجمات (0013): تُرسل فقط إن كان العمود موجودًا أصلًا أو كُتب فيها شيء
+      // الترجمات (0015): تُرسل فقط إن كان العمود موجودًا أصلًا أو كُتب فيها شيء
       const cleaned = cleanTr(translations, 600);
       if ('translations' in item || hasTr(cleaned)) payload.translations = cleaned;
       const result = await updateGalleryItem(item, payload);
       t?.remove();
       window.notify?.success(tr('تم الحفظ'));
       if (result?.degraded) {
-        window.notify?.info(tr('حُفظ النص العربي فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0013 في Supabase أولًا.'));
+        window.notify?.info(tr('حُفظ النص العربي فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0015 في Supabase أولًا.'));
       }
       onSaved();
     } catch (err) {

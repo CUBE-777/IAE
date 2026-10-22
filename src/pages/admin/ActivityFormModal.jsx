@@ -57,14 +57,14 @@ export default function ActivityFormModal({ activity, onClose, onSaved }) {
         description: values.description || null,
         cover_image_url: coverUrl,
       };
-      // الترجمات (0013): تُرسل فقط إن كان العمود موجودًا أصلًا (عند التعديل) أو كُتب فيها شيء
+      // الترجمات (0015): تُرسل فقط إن كان العمود موجودًا أصلًا (عند التعديل) أو كُتب فيها شيء
       const cleaned = cleanTr(translations, TR_MAX);
       if ((isEdit && 'translations' in activity) || hasTr(cleaned)) payload.translations = cleaned;
       const result = await saveActivity(activity, payload);
       t?.remove();
       window.notify?.success(tr('تم حفظ النشاط بنجاح'));
       if (result?.degraded) {
-        window.notify?.info(tr('حُفظ النص العربي فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0013 في Supabase أولًا.'));
+        window.notify?.info(tr('حُفظ النص العربي فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0015 في Supabase أولًا.'));
       }
       onSaved();
     } catch (err) {

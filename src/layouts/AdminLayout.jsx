@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Users, UserPlus, Shield, Calendar, Image as ImageIcon,
-  Megaphone, FileText, UserCog, History, Settings, Wallet, Menu, ChevronRight, LogOut, X,
+  Megaphone, FileText, UserCog, History, Settings, Wallet, Cpu, Menu, ChevronRight, LogOut, X,
 } from 'lucide-react';
 import '../styles/admin.css';
 import { ADMIN_NAV } from '../constants/adminNav';
@@ -24,6 +24,7 @@ const ICONS = {
   history: History,
   settings: Settings,
   wallet: Wallet,
+  cpu: Cpu,
 };
 
 export default function AdminLayout({ children }) {

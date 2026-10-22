@@ -6,7 +6,7 @@
  */
 import { supabase } from './client';
 
-// يحاول جلب عمود translations (migration 0013) وإن لم يوجد بعد يرجع للأعمدة الأساسية.
+// يحاول جلب عمود translations (migration 0015) وإن لم يوجد بعد يرجع للأعمدة الأساسية.
 async function selectWithTranslations(table, cols) {
   let res = await supabase.from(table).select(`${cols}, translations`);
   if (res.error) res = await supabase.from(table).select(cols);
@@ -23,7 +23,7 @@ export async function fetchPublishedActivities(limit = 8) {
     .order('date', { ascending: false })
     .limit(limit);
   const BASE = 'slug, title, description, category, cover_image_url';
-  // sub_activities غير مطلوبة للبطاقات؛ الترجمة تُجلب مع تراجع تلقائي إن لم تُشغَّل 0013
+  // sub_activities غير مطلوبة للبطاقات؛ الترجمة تُجلب مع تراجع تلقائي إن لم تُشغَّل 0015
   let res = await query(`${BASE}, translations`);
   if (res.error) res = await query(BASE);
   if (res.error) throw res.error;

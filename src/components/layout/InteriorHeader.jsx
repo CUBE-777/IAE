@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
 import { useMobileNav } from '../../hooks/useMobileNav';
+import { useHasProjects } from '../../hooks/useHasProjects';
 
 /** يحدد الرابط النشط بحسب مسار الصفحة الداخلية الحالي. */
 function activeKeyFor(pathname) {
   if (pathname.startsWith('/members') || pathname.startsWith('/board')) return 'members';
   if (pathname.startsWith('/activity')) return 'activities';
+  if (pathname.startsWith('/projects')) return 'projects';
   if (pathname.startsWith('/announcement')) return 'announcements';
   return '';
 }
@@ -17,11 +19,13 @@ export default function InteriorHeader() {
   const { pathname } = useLocation();
   const { open: navOpen, close, toggle, toggleRef, navRef } = useMobileNav();
   const activeKey = activeKeyFor(pathname);
+  const hasProjects = useHasProjects();
 
   const links = [
     ['home', '/#home', t('nav.home')],
     ['about', '/#about', t('nav.about')],
     ['activities', '/#activities', t('nav.activities')],
+    ...(hasProjects || pathname.startsWith('/projects') ? [['projects', '/projects', t('nav.projects')]] : []),
     ['members', '/#members', t('nav.members')],
     ['gallery', '/#gallery', t('nav.gallery')],
     ['join', '/#join', t('nav.join')],

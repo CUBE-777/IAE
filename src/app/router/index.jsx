@@ -5,6 +5,8 @@ import Board from '../../pages/public/Board';
 import Activity from '../../pages/public/Activity';
 import PublicAnnouncements from '../../pages/public/Announcements';
 import AnnouncementDetail from '../../pages/public/AnnouncementDetail';
+import Projects from '../../pages/public/Projects';
+import ProjectDetail from '../../pages/public/ProjectDetail';
 import ThankYou from '../../pages/public/ThankYou';
 import MembershipFormPage from '../../pages/public/MembershipFormPage';
 import NotFound from '../../pages/public/NotFound';
@@ -14,6 +16,7 @@ import Requests from '../../pages/admin/Requests';
 import AdminMembers from '../../pages/admin/Members';
 import AdminBoard from '../../pages/admin/Board';
 import Activities from '../../pages/admin/Activities';
+import AdminProjects from '../../pages/admin/Projects';
 import Gallery from '../../pages/admin/Gallery';
 import AdminAnnouncements from '../../pages/admin/Announcements';
 import Content from '../../pages/admin/Content';
@@ -44,6 +47,8 @@ export const router = createBrowserRouter([
   { path: '/announcement/:slug', element: <AnnouncementDetail /> },
   // مرادف لنفس الصفحة (يتبع الصيغة الجمعية أيضًا) — بدون إعادة توجيه حتى يعمل أي رابط مشارَك
   { path: '/announcements/:slug', element: <AnnouncementDetail /> },
+  { path: '/projects', element: <Projects /> },
+  { path: '/projects/:slug', element: <ProjectDetail /> },
   { path: '/thank-you', element: <ThankYou /> },
   // رابط شخصي لنموذج الانخراط (رمز غير قابل للتخمين) — صفحة غير مفهرسة
   { path: '/membership-form/:token', element: <MembershipFormPage /> },
@@ -54,6 +59,7 @@ export const router = createBrowserRouter([
   { path: '/admin/requests', element: protectedAdmin(['developer', 'super_admin', 'members_manager', 'treasurer'], <Requests />) },
   { path: '/admin/board', element: protectedAdmin(['developer', 'super_admin', 'editor'], <AdminBoard />) },
   { path: '/admin/activities', element: protectedAdmin(['developer', 'super_admin', 'editor'], <Activities />) },
+  { path: '/admin/projects', element: protectedAdmin(['developer', 'super_admin', 'editor'], <AdminProjects />) },
   { path: '/admin/gallery', element: protectedAdmin(['developer', 'super_admin', 'editor'], <Gallery />) },
   { path: '/admin/announcements', element: protectedAdmin(['developer', 'super_admin', 'editor'], <AdminAnnouncements />) },
   { path: '/admin/content', element: protectedAdmin(['developer', 'super_admin', 'editor'], <Content />) },

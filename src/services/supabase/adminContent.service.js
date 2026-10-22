@@ -14,7 +14,7 @@ export async function fetchSiteContentAdmin() {
   return data || [];
 }
 
-// يُرجع { degraded } = true إن حُفظت النصوص العربية فقط لأن عمود translations (0013) غير موجود بعد.
+// يُرجع { degraded } = true إن حُفظت النصوص العربية فقط لأن عمود translations (0015) غير موجود بعد.
 export async function saveSiteContent(rows) {
   let degraded = false;
   let { error } = await supabase.from('site_content').upsert(rows, { onConflict: 'section,key' });

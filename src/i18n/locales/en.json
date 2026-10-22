@@ -8,7 +8,8 @@
     "join": "Join Us",
     "contact": "Contact",
     "announcements": "Announcements",
-    "menu": "Main menu"
+    "menu": "Main menu",
+    "projects": "Projects"
   },
   "brand": {
     "name": "Embedded Artificial Intelligence",
@@ -373,7 +374,8 @@
       "sectionAdmin": "Administration",
       "admins": "Admin users",
       "audit": "Audit log",
-      "settings": "General settings"
+      "settings": "General settings",
+      "projects": "Projects"
     },
     "roles": {
       "developer": "Developer",
@@ -704,5 +706,37 @@
     "privacy": "Your private information (date of birth, emergency contact) is never shown publicly and is only visible to club officers.",
     "successTitle": "Form submitted",
     "successText": "Thank you! The club will review your information and contact you to complete your annual membership."
+  },
+  "projects": {
+    "eyebrow": "Our projects",
+    "title": "Club projects",
+    "description": "Technical work carried out by club members in artificial intelligence and embedded systems.",
+    "viewAll": "View all projects",
+    "viewDetails": "Project details",
+    "crumb": "Projects",
+    "pageTitle": "Club projects",
+    "pageDescription": "Discover the technical projects club members are working on or have completed.",
+    "searchPlaceholder": "Search projects or technologies...",
+    "resultsCount": "{{count}} of {{total}} projects",
+    "countLabel": "projects",
+    "noResults": "No project matches your search.",
+    "empty": "No published projects yet.",
+    "loading": "Loading projects...",
+    "filterStatus": "Filter by status",
+    "filterTech": "Filter by technology",
+    "all": "All",
+    "allTech": "All technologies",
+    "statusInProgress": "In progress",
+    "statusCompleted": "Completed",
+    "technologies": "Technologies used",
+    "github": "Source code (GitHub)",
+    "demo": "Demo / view project",
+    "back": "Back to projects",
+    "coverAlt": "Project image: {{title}}",
+    "aboutTitle": "About the project",
+    "notFoundTitle": "Project not found",
+    "notFoundText": "This project does not exist or is no longer published.",
+    "loadingTitle": "Loading...",
+    "externalLink": "Opens in a new tab"
   }
 }

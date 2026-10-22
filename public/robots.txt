@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /membership-form/
 
-Sitemap: https://anciendulyceealmourabitine.netlify.app/sitemap.xml
+Sitemap: https://fsa-iae.netlify.app/sitemap.xml

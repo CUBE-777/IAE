@@ -11,6 +11,7 @@ export const ADMIN_NAV = [
   { key: 'board', labelKey: 'board', label: 'أعضاء المكتب', href: '/admin/board', icon: 'shield', roles: ['developer', 'super_admin', 'editor'] },
   { sectionKey: 'sectionContent', section: 'المحتوى' },
   { key: 'activities', labelKey: 'activities', label: 'الأنشطة', href: '/admin/activities', icon: 'calendar', roles: ['developer', 'super_admin', 'editor'] },
+  { key: 'projects', labelKey: 'projects', label: 'المشاريع', href: '/admin/projects', icon: 'cpu', roles: ['developer', 'super_admin', 'editor'] },
   { key: 'gallery', labelKey: 'gallery', label: 'معرض الصور', href: '/admin/gallery', icon: 'image', roles: ['developer', 'super_admin', 'editor'] },
   { key: 'announcements', labelKey: 'announcements', label: 'الإعلانات', href: '/admin/announcements', icon: 'megaphone', roles: ['developer', 'super_admin', 'editor'] },
   { key: 'content', labelKey: 'content', label: 'محتوى الموقع', href: '/admin/content', icon: 'file-text', roles: ['developer', 'super_admin', 'editor'] },

@@ -8,7 +8,8 @@
     "join": "Adhérer",
     "contact": "Contact",
     "announcements": "Annonces",
-    "menu": "Menu principal"
+    "menu": "Menu principal",
+    "projects": "Projets"
   },
   "brand": {
     "name": "Intelligence Artificielle Embarquée",
@@ -373,7 +374,8 @@
       "sectionAdmin": "Administration",
       "admins": "Administrateurs",
       "audit": "Journal des opérations",
-      "settings": "Paramètres généraux"
+      "settings": "Paramètres généraux",
+      "projects": "Projets"
     },
     "roles": {
       "developer": "Développeur",
@@ -704,5 +706,37 @@
     "privacy": "Vos informations privées (date de naissance, contact d'urgence) ne sont jamais affichées publiquement et ne sont accessibles qu'aux responsables du club.",
     "successTitle": "Formulaire envoyé",
     "successText": "Merci ! Le club examinera vos informations et vous contactera pour finaliser votre adhésion annuelle."
+  },
+  "projects": {
+    "eyebrow": "Nos projets",
+    "title": "Les projets du club",
+    "description": "Des réalisations techniques menées par les membres du club en intelligence artificielle et systèmes embarqués.",
+    "viewAll": "Voir tous les projets",
+    "viewDetails": "Détails du projet",
+    "crumb": "Projets",
+    "pageTitle": "Projets du club",
+    "pageDescription": "Découvrez les projets techniques sur lesquels les membres du club travaillent ou ont travaillé.",
+    "searchPlaceholder": "Rechercher un projet ou une technologie...",
+    "resultsCount": "{{count}} sur {{total}} projets",
+    "countLabel": "projets",
+    "noResults": "Aucun projet ne correspond à votre recherche.",
+    "empty": "Aucun projet publié pour le moment.",
+    "loading": "Chargement des projets...",
+    "filterStatus": "Filtrer par statut",
+    "filterTech": "Filtrer par technologie",
+    "all": "Tous",
+    "allTech": "Toutes les technologies",
+    "statusInProgress": "En cours",
+    "statusCompleted": "Terminé",
+    "technologies": "Technologies utilisées",
+    "github": "Code source (GitHub)",
+    "demo": "Démo / voir le projet",
+    "back": "Retour aux projets",
+    "coverAlt": "Image du projet : {{title}}",
+    "aboutTitle": "À propos du projet",
+    "notFoundTitle": "Projet introuvable",
+    "notFoundText": "Ce projet n'existe pas ou n'est plus publié.",
+    "loadingTitle": "Chargement...",
+    "externalLink": "S'ouvre dans un nouvel onglet"
   }
 }

@@ -9,7 +9,7 @@ export async function fetchActivityBySlug(slug) {
     .eq('status', 'published')
     .is('deleted_at', null)
     .maybeSingle();
-  // الترجمات (migration 0013) اختيارية: إن لم يوجد العمود بعد نرجع للأعمدة الأساسية
+  // الترجمات (migration 0015) اختيارية: إن لم يوجد العمود بعد نرجع للأعمدة الأساسية
   let res = await query(`${BASE}, translations`);
   if (res.error) res = await query(BASE);
   const { data, error } = res;

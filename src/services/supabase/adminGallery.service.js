@@ -32,7 +32,7 @@ export async function uploadGalleryFiles(files) {
   return { success, failed };
 }
 
-// يُرجع { degraded } = true إن حُفظ النص العربي فقط لأن عمود translations (0013) غير موجود بعد.
+// يُرجع { degraded } = true إن حُفظ النص العربي فقط لأن عمود translations (0015) غير موجود بعد.
 export async function updateGalleryItem(item, payload) {
   const { res, degraded } = await runWithColumnFallback(
     (p) => supabase.from('gallery').update(p).eq('id', item.id),

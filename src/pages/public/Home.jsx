@@ -1,13 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import PublicLayout from '../../layouts/PublicLayout';
 import MembershipForm from '../../features/membership/MembershipForm';
 import ContactForm from '../../features/contact/ContactForm';
 import { usePublicHomeData } from '../../hooks/usePublicHomeData';
 import AnnouncementsBoard from '../../components/announcements/AnnouncementsBoard';
 import { safeUrl } from '../../utils/sanitize';
-import { localizeValue, localizeActivity, localizeGalleryItem } from '../../utils/i18nContent';
+import { localizeValue, localizeActivity, localizeGalleryItem, localizeRow } from '../../utils/i18nContent';
 import { normalizeWhatsappNumber } from '../../utils/whatsapp';
+import '../../styles/projects.css';
+import ProjectCard from '../../components/projects/ProjectCard';
+import { fetchPublishedProjects } from '../../services/supabase/projects.service';
 
 const FALLBACK_ICONS = ['🤝', '📚', '🎒', '🌱', '🎓', '🌟', '🏆', '🤲'];
 
@@ -33,6 +37,19 @@ export default function Home() {
   const { t, i18n } = useTranslation();
   const lang = String(i18n.resolvedLanguage || i18n.language || 'ar').slice(0, 2);
   const { activities, gallery, settings, settingsTr, content, contentTr, announcement } = usePublicHomeData();
+
+  // Projets : section affichée uniquement s'il existe au moins un projet publié (aucun contenu fictif).
+  const [projects, setProjects] = useState([]);
+  useEffect(() => {
+    let alive = true;
+    fetchPublishedProjects(3)
+      .then((data) => alive && setProjects(data))
+      .catch((err) => console.error('Impossible de charger les projets :', err));
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const projectCards = useMemo(() => projects.map((p) => localizeRow(p, lang, ['title', 'summary', 'description'])), [projects, lang]);
 
   // ===== تحديث عنوان التبويب واتجاه التمرير (behavior parity فقط، لا منطق جديد) =====
   useEffect(() => {
@@ -159,6 +176,24 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {projectCards.length > 0 && (
+        <section className="projects-section" id="projects">
+          <div className="container">
+            <div className="section-head center">
+              <div className="eyebrow" style={{ justifyContent: 'center' }}>{t('projects.eyebrow')}</div>
+              <h2>{t('projects.title')}</h2>
+              <p>{t('projects.description')}</p>
+            </div>
+            <div className="project-grid">
+              {projectCards.map((p) => <ProjectCard key={p.id} project={p} />)}
+            </div>
+            <div className="projects-more">
+              <Link to="/projects" className="project-link">{t('projects.viewAll')}</Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="members-section" id="members">
         <div className="container">

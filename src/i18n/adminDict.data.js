@@ -119,9 +119,9 @@ export const ADMIN_DICT = {
   "fr": "Enregistré",
   "en": "Saved"
  },
- "حُفظ النص العربي فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0013 في Supabase أولًا.": {
-  "fr": "Seul le texte arabe a été enregistré ; les traductions nécessitent d'abord l'exécution du fichier SQL n° 0013 dans Supabase.",
-  "en": "Only the Arabic text was saved; translations require running SQL file no. 0013 in Supabase first."
+ "حُفظ النص العربي فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0015 في Supabase أولًا.": {
+  "fr": "Seul le texte arabe a été enregistré ; les traductions nécessitent d'abord l'exécution du fichier SQL n° 0015 dans Supabase.",
+  "en": "Only the Arabic text was saved; translations require running SQL file no. 0015 in Supabase first."
  },
  "تعذر الحفظ": {
   "fr": "Échec de l'enregistrement",
@@ -771,9 +771,9 @@ export const ADMIN_DICT = {
   "fr": "Modifications enregistrées avec succès",
   "en": "Changes saved successfully"
  },
- "حُفظت النصوص العربية فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0013 في Supabase أولًا.": {
-  "fr": "Seuls les textes arabes ont été enregistrés ; les traductions nécessitent d'abord l'exécution du fichier SQL n° 0013 dans Supabase.",
-  "en": "Only the Arabic texts were saved; translations require running SQL file no. 0013 in Supabase first."
+ "حُفظت النصوص العربية فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0015 في Supabase أولًا.": {
+  "fr": "Seuls les textes arabes ont été enregistrés ; les traductions nécessitent d'abord l'exécution du fichier SQL n° 0015 dans Supabase.",
+  "en": "Only the Arabic texts were saved; translations require running SQL file no. 0015 in Supabase first."
  },
  "تعذر حفظ التغييرات": {
   "fr": "Impossible d'enregistrer les modifications",
@@ -1394,5 +1394,121 @@ export const ADMIN_DICT = {
  "هل تريد حذف العضو <strong>{{name}}</strong>؟ يمكن استرجاعه لاحقًا من قاعدة البيانات.": {
   "fr": "Voulez-vous supprimer le membre <strong>{{name}}</strong> ? Il pourra être restauré plus tard depuis la base de données.",
   "en": "Do you want to delete the member <strong>{{name}}</strong>? It can be restored later from the database."
+ },
+ "يجب أن يبدأ الرابط بـ https:// ويكون صالحًا.": {
+  "fr": "Le lien doit commencer par https:// et être valide.",
+  "en": "The link must start with https:// and be valid."
+ },
+ "ترتيب العرض رقم صحيح بين 0 و9999.": {
+  "fr": "L'ordre d'affichage doit être un entier entre 0 et 9999.",
+  "en": "Display order must be a whole number between 0 and 9999."
+ },
+ "تم حفظ المشروع بنجاح": {
+  "fr": "Projet enregistré avec succès",
+  "en": "Project saved successfully"
+ },
+ "تعذر حفظ المشروع، حاول مرة أخرى.": {
+  "fr": "Impossible d'enregistrer le projet, veuillez réessayer.",
+  "en": "Could not save the project, please try again."
+ },
+ "تعديل مشروع": {
+  "fr": "Modifier un projet",
+  "en": "Edit project"
+ },
+ "إضافة مشروع جديد": {
+  "fr": "Ajouter un nouveau projet",
+  "en": "Add a new project"
+ },
+ "ملخص قصير": {
+  "fr": "Résumé court",
+  "en": "Short summary"
+ },
+ "نص عادي بدون HTML؛ تُحفظ الأسطر الجديدة.": {
+  "fr": "Texte brut sans HTML ; les retours à la ligne sont conservés.",
+  "en": "Plain text, no HTML; line breaks are kept."
+ },
+ "حالة المشروع": {
+  "fr": "Statut du projet",
+  "en": "Project status"
+ },
+ "قيد التنفيذ": {
+  "fr": "En cours",
+  "en": "In progress"
+ },
+ "منجز": {
+  "fr": "Terminé",
+  "en": "Completed"
+ },
+ "ترتيب العرض": {
+  "fr": "Ordre d'affichage",
+  "en": "Display order"
+ },
+ "التقنيات (مفصولة بفواصل)": {
+  "fr": "Technologies (séparées par des virgules)",
+  "en": "Technologies (comma-separated)"
+ },
+ "حتى {{max}} تقنية، تُحذف المكررات تلقائيًا.": {
+  "fr": "Jusqu'à {{max}} technologies ; les doublons sont supprimés automatiquement.",
+  "en": "Up to {{max}} technologies; duplicates are removed automatically."
+ },
+ "رابط GitHub": {
+  "fr": "Lien GitHub",
+  "en": "GitHub link"
+ },
+ "رابط العرض / التجربة": {
+  "fr": "Lien de démo / de présentation",
+  "en": "Demo / showcase link"
+ },
+ "المشاريع — لوحة إدارة النادي": {
+  "fr": "Projets — Administration du club",
+  "en": "Projects — Club administration"
+ },
+ "تعذر تحميل المشاريع": {
+  "fr": "Impossible de charger les projets",
+  "en": "Could not load projects"
+ },
+ "لا يمكن نشر مشروع بدون عنوان وملخص.": {
+  "fr": "Impossible de publier un projet sans titre ni résumé.",
+  "en": "A project cannot be published without a title and a summary."
+ },
+ "تم حذف المشروع": {
+  "fr": "Projet supprimé",
+  "en": "Project deleted"
+ },
+ "المشاريع": {
+  "fr": "Projets",
+  "en": "Projects"
+ },
+ "إدارة مشاريع النادي ونشرها في الموقع": {
+  "fr": "Gérer les projets du club et les publier sur le site",
+  "en": "Manage the club's projects and publish them on the site"
+ },
+ "+ إضافة مشروع": {
+  "fr": "+ Ajouter un projet",
+  "en": "+ Add a project"
+ },
+ "تعذر تحميل المشاريع.": {
+  "fr": "Impossible de charger les projets.",
+  "en": "Could not load projects."
+ },
+ "إعادة المحاولة": {
+  "fr": "Réessayer",
+  "en": "Retry"
+ },
+ "لا توجد مشاريع بعد.": {
+  "fr": "Aucun projet pour le moment.",
+  "en": "No projects yet."
+ },
+ "النشر": {
+  "fr": "Publication",
+  "en": "Publication"
+ },
+ "إلغاء النشر": {
+  "fr": "Dépublier",
+  "en": "Unpublish"
+ },
+ "هل تريد حذف المشروع <strong>{{name}}</strong>؟": {
+  "fr": "Voulez-vous supprimer le projet <strong>{{name}}</strong> ?",
+  "en": "Do you want to delete the project <strong>{{name}}</strong>?"
  }
 };

@@ -3,7 +3,7 @@
 -- LECTURE SEULE : uniquement des SELECT. À exécuter MANUELLEMENT dans
 -- Supabase → SQL Editor, puis corriger depuis l'administration.
 -- Ne modifie rien. Utilise to_jsonb(ligne) pour rester valable que les colonnes
--- `translations` (migration 0013) existent ou non.
+-- `translations` (migration 0015) existent ou non.
 -- Les données personnelles des membres (email, téléphone…) ne sont PAS affichées.
 -- ============================================================
 

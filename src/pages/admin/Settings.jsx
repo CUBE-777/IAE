@@ -12,7 +12,7 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
   const [trs, setTrs] = useState({}); // ترجمات الإعدادات (key → {fr:{value}, en:{value}})
-  const [trColumn, setTrColumn] = useState(false); // هل عمود translations موجود في القاعدة (0013)
+  const [trColumn, setTrColumn] = useState(false); // هل عمود translations موجود في القاعدة (0015)
 
   const load = useCallback(() => {
     setValues(null);
@@ -49,7 +49,7 @@ export default function Settings() {
     setSaving(true);
     const t = window.notify?.loading(tr('جاري الحفظ...'));
     try {
-      // الترجمات (0013): تُرسل لكل الصفوف أو لا تُرسل أبدًا (صفوف الدفعة الواحدة يجب أن تتطابق أعمدتها)
+      // الترجمات (0015): تُرسل لكل الصفوف أو لا تُرسل أبدًا (صفوف الدفعة الواحدة يجب أن تتطابق أعمدتها)
       const includeTr = trColumn || TRANSLATABLE_SETTINGS.some((k) => hasTr(trs[k]));
       const rows = [];
       SETTINGS_GROUPS.forEach((g) => g.keys.forEach(([k]) => {
@@ -61,7 +61,7 @@ export default function Settings() {
       t?.remove();
       window.notify?.success(tr('تم حفظ التغييرات بنجاح'));
       if (result?.degraded) {
-        window.notify?.info(tr('حُفظت النصوص العربية فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0013 في Supabase أولًا.'));
+        window.notify?.info(tr('حُفظت النصوص العربية فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0015 في Supabase أولًا.'));
       }
     } catch (err) {
       t?.remove();

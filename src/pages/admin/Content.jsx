@@ -15,7 +15,7 @@ export default function Content() {
   const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
   const [trs, setTrs] = useState({}); // ترجمات كل حقل ("section.key" → {fr:{value}, en:{value}})
-  const [trColumn, setTrColumn] = useState(false); // هل عمود translations موجود في القاعدة (0013)
+  const [trColumn, setTrColumn] = useState(false); // هل عمود translations موجود في القاعدة (0015)
   const sections = useMemo(() => [...new Set(CONTENT_FIELDS.map((f) => f.section))], []);
   const [active, setActive] = useState(sections[0]);
 
@@ -54,7 +54,7 @@ export default function Content() {
     setSaving(true);
     const t = window.notify?.loading(tr('جاري الحفظ...'));
     try {
-      // الترجمات (0013): تُرسل لكل الصفوف أو لا تُرسل أبدًا (صفوف الدفعة الواحدة يجب أن تتطابق أعمدتها)
+      // الترجمات (0015): تُرسل لكل الصفوف أو لا تُرسل أبدًا (صفوف الدفعة الواحدة يجب أن تتطابق أعمدتها)
       const includeTr = trColumn || CONTENT_FIELDS.some((f) => hasTr(trs[`${f.section}.${f.key}`]));
       const rows = CONTENT_FIELDS.map((f) => {
         const k = `${f.section}.${f.key}`;
@@ -66,7 +66,7 @@ export default function Content() {
       t?.remove();
       window.notify?.success(tr('تم حفظ التغييرات بنجاح'));
       if (result?.degraded) {
-        window.notify?.info(tr('حُفظت النصوص العربية فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0013 في Supabase أولًا.'));
+        window.notify?.info(tr('حُفظت النصوص العربية فقط، أما الترجمات فتحتاج تشغيل ملف SQL رقم 0015 في Supabase أولًا.'));
       }
     } catch (err) {
       t?.remove();
