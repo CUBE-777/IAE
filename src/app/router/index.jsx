@@ -6,6 +6,7 @@ import Activity from '../../pages/public/Activity';
 import PublicAnnouncements from '../../pages/public/Announcements';
 import AnnouncementDetail from '../../pages/public/AnnouncementDetail';
 import ThankYou from '../../pages/public/ThankYou';
+import MembershipFormPage from '../../pages/public/MembershipFormPage';
 import NotFound from '../../pages/public/NotFound';
 import Login from '../../pages/admin/Login';
 import Dashboard from '../../pages/admin/Dashboard';
@@ -44,11 +45,13 @@ export const router = createBrowserRouter([
   // مرادف لنفس الصفحة (يتبع الصيغة الجمعية أيضًا) — بدون إعادة توجيه حتى يعمل أي رابط مشارَك
   { path: '/announcements/:slug', element: <AnnouncementDetail /> },
   { path: '/thank-you', element: <ThankYou /> },
+  // رابط شخصي لنموذج الانخراط (رمز غير قابل للتخمين) — صفحة غير مفهرسة
+  { path: '/membership-form/:token', element: <MembershipFormPage /> },
 
   { path: '/admin/login', element: <Login /> },
   { path: '/admin/dashboard', element: protectedAdmin([], <Dashboard />) },
   { path: '/admin/members', element: protectedAdmin(['developer', 'super_admin', 'members_manager'], <AdminMembers />) },
-  { path: '/admin/requests', element: protectedAdmin(['developer', 'super_admin', 'members_manager'], <Requests />) },
+  { path: '/admin/requests', element: protectedAdmin(['developer', 'super_admin', 'members_manager', 'treasurer'], <Requests />) },
   { path: '/admin/board', element: protectedAdmin(['developer', 'super_admin', 'editor'], <AdminBoard />) },
   { path: '/admin/activities', element: protectedAdmin(['developer', 'super_admin', 'editor'], <Activities />) },
   { path: '/admin/gallery', element: protectedAdmin(['developer', 'super_admin', 'editor'], <Gallery />) },
