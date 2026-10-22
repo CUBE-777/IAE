@@ -139,3 +139,6 @@ html:not([data-theme='dark']) .budget-balance-negative { color: var(--danger) !i
   .header-tools { margin-inline-start: 8px; gap: 6px; }
   .theme-toggle { width: 34px; height: 34px; }
 }
+
+/* ===== Administration : récapitulatif dans les fenêtres de confirmation ===== */
+.admin-summary-list { list-style: none; margin: 12px 0 4px; padding: 12px 14px; border: 1px solid var(--admin-border); border-radius: 10px; background: var(--admin-surface-alt); display: grid; gap: 6px; }

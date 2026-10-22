@@ -10,6 +10,9 @@ import {
 } from '../../services/supabase/adminMembers.service';
 
 import { tr, trStrong } from '../../i18n/adminDict';
+import {
+  fetchMembershipSettings, fetchPaidMemberIds, recordAnnualMembership, fetchMemberPrivate, fetchMemberMemberships,
+} from '../../services/supabase/membershipFlow.service';
 const FIELD = (v) => (v == null || v === '' ? '—' : v);
 const CSV_HEADERS = ['full_name', 'university', 'promotion', 'track', 'profession', 'city', 'email', 'phone', 'status'];
 
@@ -26,6 +29,49 @@ export default function Members() {
   const [formTarget, setFormTarget] = useState(undefined); // undefined = closed, null = add, object = edit
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [exporting, setExporting] = useState(false);
+
+  // الانخراط السنوي: الموسم الحالي + من دفع فيه + نوافذ التجديد والتفاصيل
+  const [settings, setSettings] = useState({ fee: null, season: null });
+  const [paid, setPaid] = useState(new Set());
+  const [renewTarget, setRenewTarget] = useState(null);
+  const [detailTarget, setDetailTarget] = useState(null);
+  const [detail, setDetail] = useState(undefined); // undefined = تحميل، null = لا شيء
+
+  const loadMembership = () => {
+    fetchMembershipSettings()
+      .then(async (st) => {
+        setSettings(st);
+        setPaid(await fetchPaidMemberIds(st.season));
+      })
+      .catch((err) => console.error('membership status load failed', err));
+  };
+  useEffect(loadMembership, []);
+
+  const openDetails = async (m) => {
+    setDetailTarget(m);
+    setDetail(undefined);
+    try {
+      const [priv, history] = await Promise.all([fetchMemberPrivate(m.id), fetchMemberMemberships(m.id)]);
+      setDetail({ priv, history });
+    } catch (err) {
+      console.error('member details load failed', err);
+      setDetail(null);
+    }
+  };
+
+  const doRenew = async (member) => {
+    setRenewTarget(null);
+    const t = window.notify?.loading(tr('جارٍ تسجيل الانخراط…'));
+    try {
+      await recordAnnualMembership({ memberId: member.id });
+      t?.remove();
+      window.notify?.success(tr('تم تسجيل الانخراط وإضافة الإيراد إلى الميزانية'));
+      loadMembership();
+    } catch (err) {
+      t?.remove();
+      window.notify?.fromError(err, tr('تعذّر تسجيل الانخراط'));
+    }
+  };
 
   useEffect(() => {
     document.title = tr('الأعضاء — لوحة إدارة النادي');
@@ -120,7 +166,7 @@ export default function Members() {
           <div className="admin-table-wrap">
             <table className="admin-data-table admin-table-cards">
               <thead>
-                <tr><th>{tr('الاسم')}</th><th>{tr('الجامعة')}</th><th>{tr('الدفعة')}</th><th>{tr('المهنة')}</th><th>{tr('المدينة')}</th><th>{tr('الحالة')}</th><th>{tr('إجراءات')}</th></tr>
+                <tr><th>{tr('الاسم')}</th><th>{tr('الجامعة')}</th><th>{tr('الدفعة')}</th><th>{tr('المهنة')}</th><th>{tr('المدينة')}</th><th>{tr('الحالة')}</th><th>{tr('الانخراط')}</th><th>{tr('إجراءات')}</th></tr>
               </thead>
               <tbody>
                 {rows.map((m) => (
@@ -131,7 +177,18 @@ export default function Members() {
                     <td data-label={tr('المهنة')}>{FIELD(m.profession)}</td>
                     <td data-label={tr('المدينة')}>{FIELD(m.city)}</td>
                     <td data-label={tr('الحالة')}><span className={`admin-badge admin-badge-${m.status === 'active' ? 'approved' : 'rejected'}`}>{m.status === 'active' ? tr('نشط') : tr('غير نشط')}</span></td>
+                    <td data-label={tr('الانخراط')}>
+                      {settings.season ? (
+                        <span className={`admin-badge admin-badge-${paid.has(m.id) ? 'approved' : 'pending'}`}>
+                          {paid.has(m.id) ? tr('منخرط') : tr('غير منخرط')}
+                        </span>
+                      ) : '—'}
+                    </td>
                     <td className="admin-cell-actions">
+                      <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => openDetails(m)}>{tr('تفاصيل')}</button>
+                      {settings.season && !paid.has(m.id) && (
+                        <button className="admin-btn admin-btn-primary admin-btn-sm" onClick={() => setRenewTarget(m)}>{tr('تجديد')}</button>
+                      )}
                       <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setFormTarget(m)}>{tr('تعديل')}</button>
                       <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDeleteTarget(m)}>{tr('حذف')}</button>
                     </td>
@@ -167,6 +224,57 @@ export default function Members() {
             load();
           }}
         />
+      )}
+
+      {renewTarget && (
+        <Modal onClose={() => setRenewTarget(null)}>
+          <h3>{tr('تأكيد الانخراط السنوي')}</h3>
+          <p>{trStrong('سيتم تسجيل انخراط <strong>{{name}}</strong> للموسم {{season}} بمبلغ {{fee}} درهم وإضافته إلى الميزانية.', { name: renewTarget.full_name, season: settings.season, fee: settings.fee || '—' })}</p>
+          {!settings.fee && <div className="admin-state-box">{tr('اضبط مبلغ الانخراط والموسم من صفحة الإعدادات أولاً.')}</div>}
+          <div className="admin-modal-actions">
+            <button className="admin-btn admin-btn-primary" disabled={!settings.fee} onClick={() => doRenew(renewTarget)}>{tr('تأكيد الدفع وتسجيل الانخراط')}</button>
+            <button className="admin-btn admin-btn-ghost" onClick={() => setRenewTarget(null)}>{tr('إلغاء')}</button>
+          </div>
+        </Modal>
+      )}
+
+      {detailTarget && (
+        <Modal onClose={() => setDetailTarget(null)}>
+          <h3>{tr('تفاصيل العضو')}</h3>
+          <p><strong>{tr('الاسم')}:</strong> {detailTarget.full_name}</p>
+          <p><strong>{tr('البريد الإلكتروني')}:</strong> {FIELD(detailTarget.email)}</p>
+          <p><strong>{tr('الهاتف')}:</strong> {FIELD(detailTarget.phone)}</p>
+          {detail === undefined && <p>{tr('جارٍ التحميل…')}</p>}
+          {detail === null && <p>{tr('تعذّر تحميل التفاصيل')}</p>}
+          {detail && (
+            <>
+              {detail.priv ? (
+                <>
+                  <p><strong>{tr('تاريخ الميلاد')}:</strong> {FIELD(detail.priv.birth_date)}</p>
+                  <p><strong>{tr('المستوى الدراسي')}:</strong> {FIELD(detail.priv.level)}</p>
+                  <p><strong>{tr('المهارات')}:</strong> {FIELD(detail.priv.skills)}</p>
+                  <p><strong>{tr('الاهتمامات')}:</strong> {FIELD(detail.priv.interests)}</p>
+                  <p><strong>{tr('جهة الاتصال الطارئة')}:</strong> {FIELD(detail.priv.emergency_name)} ({FIELD(detail.priv.emergency_relation)})</p>
+                  <p><strong>{tr('هاتف الطوارئ')}:</strong> <span dir="ltr">{FIELD(detail.priv.emergency_phone)}</span></p>
+                  <p><strong>{tr('الموافقة على النظام الداخلي')}:</strong> {detail.priv.rules_accepted_at ? tr('نعم') : tr('لا')}</p>
+                </>
+              ) : (
+                <p>{tr('لا توجد بيانات إضافية لهذا العضو.')}</p>
+              )}
+              <h4>{tr('سجل الانخراطات')}</h4>
+              {detail.history.length === 0 ? <p>—</p> : (
+                <ul className="admin-summary-list">
+                  {detail.history.map((h) => (
+                    <li key={h.season}>{h.season} — {h.amount} MAD ({h.paid_at})</li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
+          <div className="admin-modal-actions">
+            <button className="admin-btn admin-btn-ghost" onClick={() => setDetailTarget(null)}>{tr('إغلاق')}</button>
+          </div>
+        </Modal>
       )}
 
       {deleteTarget && (

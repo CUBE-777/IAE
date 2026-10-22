@@ -5,14 +5,31 @@ import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import Modal from '../../components/admin/Modal';
 import {
   fetchRequestsByStatus,
-  approveMembershipRequest,
   rejectMembershipRequest,
 } from '../../services/supabase/membershipRequests.service';
 import { formatDate } from '../../utils/i18nContent';
+import { useAuth } from '../../app/providers/AuthProvider';
+import {
+  issueMembershipForm,
+  fetchFormForRequest,
+  recordAnnualMembership,
+  fetchRenewalCandidates,
+  fetchMembershipSettings,
+} from '../../services/supabase/membershipFlow.service';
+import { buildWhatsappLink } from '../../utils/whatsapp';
 
-const TABS = ['pending', 'approved', 'rejected'];
-const TAB_KEY = { pending: 'tabPending', approved: 'tabApproved', rejected: 'tabRejected' };
-const EMPTY_KEY = { pending: 'emptyPending', approved: 'emptyApproved', rejected: 'emptyRejected' };
+const MANAGER_ROLES = ['developer', 'super_admin', 'members_manager'];
+const FORM_STATUS_KEY = { none: 'formNone', sent: 'formSent', received: 'formReceived' };
+const FORM_FIELDS = [
+  ['birth_date', 'fBirthDate'], ['university', 'fUniversity'], ['track', 'fieldTrack'], ['level', 'fLevel'],
+  ['promotion', 'colPromotion'], ['profession', 'fieldProfession'], ['skills', 'fSkills'], ['interests', 'fInterests'],
+  ['github', 'GitHub'], ['linkedin', 'LinkedIn'], ['bio', 'fBio'],
+  ['emergency_name', 'fEmergencyName'], ['emergency_phone', 'fEmergencyPhone'], ['emergency_relation', 'fEmergencyRelation'],
+];
+
+const TABS = ['pending', 'approved', 'rejected', 'renewals'];
+const TAB_KEY = { pending: 'tabPending', approved: 'tabApproved', rejected: 'tabRejected', renewals: 'tabRenewals' };
+const EMPTY_KEY = { pending: 'emptyPending', approved: 'emptyApproved', rejected: 'emptyRejected', renewals: 'emptyRenewals' };
 const FIELD = (v) => (v == null || v === '' ? '—' : v);
 
 export default function Requests() {
@@ -23,11 +40,23 @@ export default function Requests() {
   const [modal, setModal] = useState(null); // { type: 'view'|'approve'|'reject', row }
   const [rejectReason, setRejectReason] = useState('');
   const [busy, setBusy] = useState(false);
+  const { profile } = useAuth();
+  const canManage = MANAGER_ROLES.includes(profile?.role);
+  const [settings, setSettings] = useState({ fee: null, season: null });
+  const [linkInfo, setLinkInfo] = useState(null); // { row, token, expires_at }
+  const [msgLang, setMsgLang] = useState('ar');
+  const [copied, setCopied] = useState(false);
+  const [formData, setFormData] = useState(undefined); // undefined = chargement, null = aucun
+
+  useEffect(() => {
+    fetchMembershipSettings().then(setSettings).catch(() => setSettings({ fee: null, season: null }));
+  }, []);
 
   const load = useCallback(() => {
     setRows(null);
     setError(false);
-    fetchRequestsByStatus(tab)
+    const source = tab === 'renewals' ? fetchRenewalCandidates() : fetchRequestsByStatus(tab);
+    source
       .then(setRows)
       .catch((err) => {
         console.error('تعذر تحميل الطلبات:', err);
@@ -47,16 +76,66 @@ export default function Requests() {
     setRejectReason('');
   };
 
-  const doApprove = async (row) => {
-    closeModal();
+  const closeLink = () => {
+    setLinkInfo(null);
+    setCopied(false);
+  };
+
+  const formLink = (token) => `${window.location.origin}/membership-form/${token}`;
+
+  const waText = (row, token, lng) =>
+    t('admin.requests.waMessage', { lng, name: row.full_name, link: formLink(token), days: 7 });
+
+  const doSendForm = async (row) => {
     setBusy(true);
-    window.notify?.loading(t('admin.requests.approving'));
+    window.notify?.loading(t('admin.requests.issuing'));
     try {
-      await approveMembershipRequest(row.id);
-      window.notify?.success(t('admin.requests.approved'));
+      const res = await issueMembershipForm(row.id);
+      window.notify?.success(t('admin.requests.issued'));
+      setLinkInfo({ row, token: res.token, expires_at: res.expires_at });
+      setCopied(false);
       load();
     } catch (err) {
-      window.notify?.fromError(err, t('admin.requests.approveFailed'));
+      window.notify?.fromError(err, t('admin.requests.issueFailed'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(formLink(linkInfo.token));
+      setCopied(true);
+    } catch {
+      window.notify?.error?.(t('admin.requests.copyFailed'));
+    }
+  };
+
+  const openView = async (row) => {
+    setModal({ type: 'view', row });
+    setFormData(undefined);
+    if (row.form_status === 'received') {
+      try {
+        setFormData(await fetchFormForRequest(row.id));
+      } catch (err) {
+        console.error('form load failed', err);
+        setFormData(null);
+      }
+    } else {
+      setFormData(null);
+    }
+  };
+
+  const doAnnual = async (target) => {
+    closeModal();
+    setBusy(true);
+    window.notify?.loading(t('admin.requests.recording'));
+    try {
+      await recordAnnualMembership(target.type === 'renewal' ? { memberId: target.row.id } : { requestId: target.row.id });
+      window.notify?.success(t('admin.requests.recorded'));
+      load();
+    } catch (err) {
+      window.notify?.fromError(err, t('admin.requests.recordFailed'));
     } finally {
       setBusy(false);
     }
@@ -104,7 +183,8 @@ export default function Requests() {
                   <th>{t('admin.requests.colPhone')}</th>
                   <th>{t('admin.requests.colPromotion')}</th>
                   <th>{t('admin.requests.colCity')}</th>
-                  <th>{t('admin.requests.colDate')}</th>
+                  {tab !== 'renewals' && <th>{t('admin.requests.colDate')}</th>}
+                  {tab === 'pending' && <th>{t('admin.requests.colForm')}</th>}
                   <th>{t('admin.requests.colActions')}</th>
                 </tr>
               </thead>
@@ -116,27 +196,55 @@ export default function Requests() {
                     <td data-label={t('admin.requests.colPhone')}>{FIELD(r.phone)}</td>
                     <td data-label={t('admin.requests.colPromotion')}>{FIELD(r.promotion)}</td>
                     <td data-label={t('admin.requests.colCity')}>{FIELD(r.city)}</td>
-                    <td data-label={t('admin.requests.colDate')}>{formatDate(r.created_at, i18n.language)}</td>
+                    {tab !== 'renewals' && <td data-label={t('admin.requests.colDate')}>{formatDate(r.created_at, i18n.language)}</td>}
+                    {tab === 'pending' && (
+                      <td data-label={t('admin.requests.colForm')}>
+                        <span className={`admin-badge admin-badge-${r.form_status === 'received' ? 'approved' : 'pending'}`}>
+                          {t(`admin.requests.${FORM_STATUS_KEY[r.form_status || 'none']}`)}
+                        </span>
+                      </td>
+                    )}
                     <td className="admin-cell-actions">
-                      <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setModal({ type: 'view', row: r })}>
-                        {t('admin.requests.view')}
-                      </button>
-                      {tab === 'pending' && (
+                      {tab === 'renewals' ? (
+                        <button
+                          className="admin-btn admin-btn-primary admin-btn-sm"
+                          disabled={busy}
+                          onClick={() => setModal({ type: 'annual', row: r, kind: 'renewal' })}
+                        >
+                          {t('admin.requests.renew')}
+                        </button>
+                      ) : (
                         <>
-                          <button
-                            className="admin-btn admin-btn-primary admin-btn-sm"
-                            disabled={busy}
-                            onClick={() => setModal({ type: 'approve', row: r })}
-                          >
-                            {t('admin.requests.approve')}
+                          <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => openView(r)}>
+                            {r.form_status === 'received' ? t('admin.requests.viewForm') : t('admin.requests.view')}
                           </button>
-                          <button
-                            className="admin-btn admin-btn-danger admin-btn-sm"
-                            disabled={busy}
-                            onClick={() => setModal({ type: 'reject', row: r })}
-                          >
-                            {t('admin.requests.reject')}
-                          </button>
+                          {tab === 'pending' && r.form_status !== 'received' && canManage && (
+                            <button
+                              className="admin-btn admin-btn-primary admin-btn-sm"
+                              disabled={busy}
+                              onClick={() => setModal({ type: 'sendForm', row: r })}
+                            >
+                              {r.form_status === 'sent' ? t('admin.requests.resendForm') : t('admin.requests.sendForm')}
+                            </button>
+                          )}
+                          {tab === 'pending' && r.form_status === 'received' && (
+                            <button
+                              className="admin-btn admin-btn-primary admin-btn-sm"
+                              disabled={busy}
+                              onClick={() => setModal({ type: 'annual', row: r, kind: 'request' })}
+                            >
+                              {t('admin.requests.annual')}
+                            </button>
+                          )}
+                          {tab === 'pending' && canManage && (
+                            <button
+                              className="admin-btn admin-btn-danger admin-btn-sm"
+                              disabled={busy}
+                              onClick={() => setModal({ type: 'reject', row: r })}
+                            >
+                              {t('admin.requests.reject')}
+                            </button>
+                          )}
                         </>
                       )}
                     </td>
@@ -150,34 +258,125 @@ export default function Requests() {
 
       {modal?.type === 'view' && (
         <Modal onClose={closeModal}>
-          <h3>{t('admin.requests.detailsTitle')}</h3>
+          <h3>{modal.row.form_status === 'received' ? t('admin.requests.formDetailsTitle') : t('admin.requests.detailsTitle')}</h3>
           <p><strong>{t('admin.requests.colName')}:</strong> {modal.row.full_name}</p>
           <p><strong>{t('admin.requests.colEmail')}:</strong> {modal.row.email}</p>
           <p><strong>{t('admin.requests.colPhone')}:</strong> {FIELD(modal.row.phone)}</p>
-          <p><strong>{t('admin.requests.colPromotion')}:</strong> {FIELD(modal.row.promotion)}</p>
-          <p><strong>{t('admin.requests.fieldTrack')}:</strong> {FIELD(modal.row.track)}</p>
-          <p><strong>{t('admin.requests.fieldProfession')}:</strong> {FIELD(modal.row.profession)}</p>
           <p><strong>{t('admin.requests.colCity')}:</strong> {FIELD(modal.row.city)}</p>
           <p><strong>{t('admin.requests.fieldMessage')}:</strong> {FIELD(modal.row.message)}</p>
           {modal.row.rejection_reason && <p><strong>{t('admin.requests.fieldRejectionReason')}:</strong> {modal.row.rejection_reason}</p>}
+          {modal.row.form_status === 'received' && (
+            <>
+              <hr />
+              {formData === undefined && <p>{t('admin.requests.loading')}</p>}
+              {formData === null && <p>{t('admin.requests.loadError')}</p>}
+              {formData && (
+                <>
+                  {FORM_FIELDS.map(([key, label]) => (
+                    formData.data?.[key] ? (
+                      <p key={key}>
+                        <strong>{label.startsWith('f') || label.startsWith('col') || label.startsWith('field') ? t(`admin.requests.${label}`) : label}:</strong>{' '}
+                        {formData.data[key]}
+                      </p>
+                    ) : null
+                  ))}
+                  <p><strong>{t('admin.requests.fRules')}:</strong> {formData.data?.rules_accepted ? t('admin.requests.yes') : t('admin.requests.no')}</p>
+                  <p><strong>{t('admin.requests.fSubmittedAt')}:</strong> {formatDate(formData.submitted_at, i18n.language)}</p>
+                </>
+              )}
+            </>
+          )}
           <div className="admin-modal-actions">
+            {modal.row.form_status === 'received' && modal.row.status === 'pending' && (
+              <button className="admin-btn admin-btn-primary" onClick={() => setModal({ type: 'annual', row: modal.row, kind: 'request' })}>
+                {t('admin.requests.annual')}
+              </button>
+            )}
             <button className="admin-btn admin-btn-ghost" onClick={closeModal}>{t('admin.common.close')}</button>
           </div>
         </Modal>
       )}
 
-      {modal?.type === 'approve' && (
+      {modal?.type === 'sendForm' && (
         <Modal onClose={closeModal}>
-          <h3>{t('admin.requests.approveTitle')}</h3>
+          <h3>{t('admin.requests.sendFormTitle')}</h3>
           <p>
-            <Trans
-              i18nKey="admin.requests.approveBody"
-              values={{ name: modal.row.full_name }}
-              components={{ strong: <strong /> }}
-            />
+            <Trans i18nKey="admin.requests.sendFormBody" values={{ name: modal.row.full_name }} components={{ strong: <strong /> }} />
+          </p>
+          <p className="admin-hint">{t('admin.requests.sendFormWarning')}</p>
+          <div className="admin-modal-actions">
+            <button
+              className="admin-btn admin-btn-primary"
+              disabled={busy}
+              onClick={() => { const row = modal.row; closeModal(); doSendForm(row); }}
+            >
+              {t('admin.requests.sendFormConfirm')}
+            </button>
+            <button className="admin-btn admin-btn-ghost" onClick={closeModal}>{t('admin.common.cancel')}</button>
+          </div>
+        </Modal>
+      )}
+
+      {linkInfo && (
+        <Modal onClose={closeLink}>
+          <h3>{t('admin.requests.linkTitle')}</h3>
+          <p>
+            <Trans i18nKey="admin.requests.linkBody" values={{ name: linkInfo.row.full_name }} components={{ strong: <strong /> }} />
+          </p>
+          <div className="admin-form-group">
+            <label htmlFor="waLang">{t('admin.requests.msgLang')}</label>
+            <select id="waLang" className="admin-select" value={msgLang} onChange={(e) => setMsgLang(e.target.value)}>
+              <option value="ar">العربية</option>
+              <option value="fr">Français</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div className="admin-form-group">
+            <label htmlFor="waPreview">{t('admin.requests.msgPreview')}</label>
+            <textarea id="waPreview" className="admin-textarea" rows={6} readOnly value={waText(linkInfo.row, linkInfo.token, msgLang)} />
+          </div>
+          <p className="admin-hint">
+            {t('admin.requests.linkExpires', { date: formatDate(linkInfo.expires_at, i18n.language) })}
           </p>
           <div className="admin-modal-actions">
-            <button className="admin-btn admin-btn-primary" onClick={() => doApprove(modal.row)}>{t('admin.requests.approveConfirm')}</button>
+            <a
+              className="admin-btn admin-btn-primary"
+              href={buildWhatsappLink(linkInfo.row.phone, waText(linkInfo.row, linkInfo.token, msgLang))}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('admin.requests.waOpen')}
+            </a>
+            <button className="admin-btn admin-btn-ghost" onClick={copyLink}>
+              {copied ? t('admin.requests.copied') : t('admin.requests.copyLink')}
+            </button>
+            <button className="admin-btn admin-btn-ghost" onClick={closeLink}>{t('admin.common.close')}</button>
+          </div>
+        </Modal>
+      )}
+
+      {modal?.type === 'annual' && (
+        <Modal onClose={closeModal}>
+          <h3>{modal.kind === 'renewal' ? t('admin.requests.renewTitle') : t('admin.requests.annualTitle')}</h3>
+          <p>
+            <Trans i18nKey="admin.requests.annualBody" values={{ name: modal.row.full_name }} components={{ strong: <strong /> }} />
+          </p>
+          {settings.fee && settings.season ? (
+            <ul className="admin-summary-list">
+              <li><strong>{t('admin.requests.annualAmount')}:</strong> {settings.fee} MAD</li>
+              <li><strong>{t('admin.requests.annualSeason')}:</strong> {settings.season}</li>
+            </ul>
+          ) : (
+            <div className="admin-state-box">{t('admin.requests.annualNoSettings')}</div>
+          )}
+          <div className="admin-modal-actions">
+            <button
+              className="admin-btn admin-btn-primary"
+              disabled={busy || !(settings.fee && settings.season)}
+              onClick={() => doAnnual({ type: modal.kind, row: modal.row })}
+            >
+              {t('admin.requests.annualConfirm')}
+            </button>
             <button className="admin-btn admin-btn-ghost" onClick={closeModal}>{t('admin.common.cancel')}</button>
           </div>
         </Modal>

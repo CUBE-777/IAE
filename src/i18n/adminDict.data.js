@@ -1266,5 +1266,133 @@ export const ADMIN_DICT = {
  "النبذة العامة": {
   "fr": "Présentation générale",
   "en": "General bio"
+ },
+ "الانخراط": {
+  "fr": "Adhésion",
+  "en": "Membership"
+ },
+ "منخرط": {
+  "fr": "À jour",
+  "en": "Paid"
+ },
+ "غير منخرط": {
+  "fr": "Non réglée",
+  "en": "Unpaid"
+ },
+ "تجديد": {
+  "fr": "Renouveler",
+  "en": "Renew"
+ },
+ "تفاصيل": {
+  "fr": "Détails",
+  "en": "Details"
+ },
+ "تأكيد الانخراط السنوي": {
+  "fr": "Confirmer l'adhésion annuelle",
+  "en": "Confirm annual membership"
+ },
+ "سيتم تسجيل انخراط <strong>{{name}}</strong> للموسم {{season}} بمبلغ {{fee}} درهم وإضافته إلى الميزانية.": {
+  "fr": "L'adhésion de <strong>{{name}}</strong> sera enregistrée pour la saison {{season}} au montant de {{fee}} MAD et ajoutée au budget.",
+  "en": "<strong>{{name}}</strong>'s membership will be recorded for season {{season}} at {{fee}} MAD and added to the budget."
+ },
+ "اضبط مبلغ الانخراط والموسم من صفحة الإعدادات أولاً.": {
+  "fr": "Renseignez d'abord le montant de l'adhésion et la saison dans les paramètres.",
+  "en": "Set the membership fee and the season in Settings first."
+ },
+ "تأكيد الدفع وتسجيل الانخراط": {
+  "fr": "Confirmer le paiement et enregistrer l'adhésion",
+  "en": "Confirm payment and record membership"
+ },
+ "تفاصيل العضو": {
+  "fr": "Détails du membre",
+  "en": "Member details"
+ },
+ "جارٍ التحميل…": {
+  "fr": "Chargement…",
+  "en": "Loading…"
+ },
+ "تعذّر تحميل التفاصيل": {
+  "fr": "Impossible de charger les détails",
+  "en": "Could not load the details"
+ },
+ "تاريخ الميلاد": {
+  "fr": "Date de naissance",
+  "en": "Date of birth"
+ },
+ "المستوى الدراسي": {
+  "fr": "Niveau d'études",
+  "en": "Study level"
+ },
+ "المهارات": {
+  "fr": "Compétences",
+  "en": "Skills"
+ },
+ "الاهتمامات": {
+  "fr": "Centres d'intérêt",
+  "en": "Interests"
+ },
+ "جهة الاتصال الطارئة": {
+  "fr": "Contact d'urgence",
+  "en": "Emergency contact"
+ },
+ "هاتف الطوارئ": {
+  "fr": "Téléphone d'urgence",
+  "en": "Emergency phone"
+ },
+ "الموافقة على النظام الداخلي": {
+  "fr": "Règlement intérieur accepté",
+  "en": "Internal rules accepted"
+ },
+ "نعم": {
+  "fr": "Oui",
+  "en": "Yes"
+ },
+ "لا": {
+  "fr": "Non",
+  "en": "No"
+ },
+ "لا توجد بيانات إضافية لهذا العضو.": {
+  "fr": "Aucune donnée complémentaire pour ce membre.",
+  "en": "No additional data for this member."
+ },
+ "سجل الانخراطات": {
+  "fr": "Historique des adhésions",
+  "en": "Membership history"
+ },
+ "جارٍ تسجيل الانخراط…": {
+  "fr": "Enregistrement de l'adhésion…",
+  "en": "Recording the membership…"
+ },
+ "تم تسجيل الانخراط وإضافة الإيراد إلى الميزانية": {
+  "fr": "Adhésion enregistrée et recette ajoutée au budget",
+  "en": "Membership recorded and income added to the budget"
+ },
+ "تعذّر تسجيل الانخراط": {
+  "fr": "Impossible d'enregistrer l'adhésion",
+  "en": "Could not record the membership"
+ },
+ "مبلغ الانخراط السنوي (درهم)": {
+  "fr": "Montant de l'adhésion annuelle (MAD)",
+  "en": "Annual membership fee (MAD)"
+ },
+ "الموسم الجامعي الحالي (مثال: 2026/2027)": {
+  "fr": "Saison universitaire en cours (ex. : 2026/2027)",
+  "en": "Current university season (e.g. 2026/2027)"
+ },
+ "حذف <strong>{{name}}</strong> من أعضاء المكتب؟": {
+  "fr": "Supprimer <strong>{{name}}</strong> des membres du bureau ?",
+  "en": "Remove <strong>{{name}}</strong> from the board members?"
+ },
+ "سيفقد <strong>{{name}}</strong> إمكانية الدخول إلى لوحة الإدارة فورًا (لن يُحذف حسابه من Supabase Auth، ويمكن إعادة تفعيله لاحقًا من هذه الصفحة عبر «تعديل»).": {
+  "fr": "<strong>{{name}}</strong> perdra immédiatement l'accès au tableau de bord (son compte ne sera pas supprimé de Supabase Auth et pourra être réactivé plus tard depuis cette page via « Modifier »).",
+  "en": "<strong>{{name}}</strong> will immediately lose access to the dashboard (their account is not deleted from Supabase Auth and can be re-enabled later from this page via “Edit”)."
+ },
+ "هل تريد حذف النشاط <strong>{{name}}</strong>؟": {
+  "fr": "Voulez-vous supprimer l'activité <strong>{{name}}</strong> ?",
+  "en": "Do you want to delete the activity <strong>{{name}}</strong>?"
+ },
+ "هل تريد حذف العضو <strong>{{name}}</strong>؟ يمكن استرجاعه لاحقًا من قاعدة البيانات.": {
+  "fr": "Voulez-vous supprimer le membre <strong>{{name}}</strong> ? Il pourra être restauré plus tard depuis la base de données.",
+  "en": "Do you want to delete the member <strong>{{name}}</strong>? It can be restored later from the database."
  }
 };
