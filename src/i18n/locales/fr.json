@@ -346,7 +346,8 @@
       "event": "Événement",
       "membership": "Adhésion",
       "notice": "Avis"
-    }
+    },
+    "latest": "Dernière annonce"
   },
   "admin": {
     "layout": {
@@ -676,7 +677,7 @@
       "interests": "Centres d'intérêt",
       "bio": "Présentation",
       "photo": "Photo personnelle",
-      "idCard": "Photo de la carte nationale"
+      "idCard": "Photo de la carte nationale (facultatif)"
     },
     "placeholders": {
       "skills": "Ex. : Python, Arduino, apprentissage automatique…",
@@ -711,13 +712,12 @@
     },
     "docs": {
       "photoHint": "Une photo nette de votre visage, fond simple et bonne lumière.",
-      "idHint": "Photo nette du recto de la carte nationale : toutes les informations lisibles, sans reflet.",
+      "idHint": "Facultatif : photo nette du recto de la carte nationale, informations lisibles et sans reflet.",
       "privacy": "Ces documents sont conservés dans un espace privé, jamais publiés sur le site, et visibles uniquement par les responsables des membres ; chaque consultation est journalisée.",
       "formats": "Formats acceptés : JPG, PNG ou WebP."
     },
     "errors": {
       "photoRequired": "Veuillez joindre votre photo personnelle.",
-      "idRequired": "Veuillez joindre la photo de la carte nationale.",
       "imageType": "Format non accepté : utilisez JPG, PNG ou WebP.",
       "imageTooBig": "Image trop volumineuse (10 Mo maximum)."
     },

@@ -16,17 +16,19 @@ export default function AnnouncementCard({ announcement, variant = 'list', previ
   const img = safeUrl(a.image_url);
   const type = a.type || 'general';
   const href = `/announcement/${encodeURIComponent(a.slug || '')}`;
-  const excerpt = a.excerpt || (a.content ? a.content.slice(0, 160) : '');
+  const excerpt = a.excerpt || (a.content ? a.content.slice(0, variant === 'featured' ? 260 : 160) : '');
+  const showMedia = img && (variant === 'list' || variant === 'featured');
 
   const body = (
     <>
-      {img && variant === 'list' && (
+      {showMedia && (
         <div className="ann-card-media">
-          <img src={img} alt="" loading="lazy" />
+          <img src={img} alt="" loading="lazy" decoding="async" />
         </div>
       )}
       <div className="ann-card-body">
         <div className="ann-card-badges">
+          {variant === 'featured' && !a.is_pinned && <span className="ann-badge ann-badge-latest">{t('announcements.latest')}</span>}
           <span className={`ann-badge ann-badge-${type}`}>{t(`announcements.types.${type}`)}</span>
           {a.is_pinned && (
             <span className="ann-pinned">
@@ -42,10 +44,12 @@ export default function AnnouncementCard({ announcement, variant = 'list', previ
     </>
   );
 
-  if (preview) return <article className={`ann-card ann-card-${variant}`}>{body}</article>;
+  const cls = `ann-card ann-card-${variant}${variant === 'featured' && !img ? ' ann-card-nomedia' : ''}`;
+
+  if (preview) return <article className={cls}>{body}</article>;
 
   return (
-    <article className={`ann-card ann-card-${variant}`}>
+    <article className={cls}>
       <Link to={href} className="ann-card-link" aria-label={`${a.title} — ${t('announcements.readMore')}`}>
         {body}
       </Link>

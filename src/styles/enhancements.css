@@ -923,6 +923,34 @@ html[dir='ltr'] .ann-arrow {
   }
 }
 
+/* الإعلان البارز في لوحة الصفحة الرئيسية */
+.ann-board-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: stretch;
+}
+.ann-board-solo { grid-template-columns: minmax(0, 1fr); }
+.ann-board-side { display: grid; gap: var(--space-3); align-content: start; }
+.ann-card-featured {
+  border-color: rgba(var(--gold-rgb), 0.5);
+  box-shadow: var(--shadow-sm);
+}
+.ann-card-featured .ann-card-link { flex-direction: column; align-items: stretch; }
+.ann-card-featured .ann-card-media { aspect-ratio: 16 / 8; }
+.ann-card-featured .ann-card-body { padding: var(--space-6); gap: var(--space-3); justify-content: center; }
+.ann-card-featured .ann-card-title { font-size: clamp(1.4rem, 2.6vw, 1.9rem); }
+.ann-card-featured .ann-card-excerpt { -webkit-line-clamp: 4; }
+.ann-card-nomedia { border-inline-start: 4px solid var(--gold); }
+.ann-badge-latest {
+  background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+  color: var(--heading);
+}
+@media (max-width: 860px) {
+  .ann-board-layout { grid-template-columns: minmax(0, 1fr); }
+  .ann-card-featured .ann-card-body { padding: var(--space-5); }
+}
+
 /* صفحة الإعلان */
 .ann-detail {
   background: var(--surface);

@@ -346,7 +346,8 @@
       "event": "Event",
       "membership": "Membership",
       "notice": "Notice"
-    }
+    },
+    "latest": "Latest announcement"
   },
   "admin": {
     "layout": {
@@ -676,7 +677,7 @@
       "interests": "Interests",
       "bio": "About you",
       "photo": "Profile photo",
-      "idCard": "National ID card photo"
+      "idCard": "National ID card photo (optional)"
     },
     "placeholders": {
       "skills": "e.g. Python, Arduino, machine learning…",
@@ -711,13 +712,12 @@
     },
     "docs": {
       "photoHint": "A clear photo of your face, plain background and good lighting.",
-      "idHint": "A clear photo of the front of your national ID: all details readable, no glare.",
+      "idHint": "Optional: a clear photo of the front of your national ID, details readable and no glare.",
       "privacy": "These documents are stored in a private space, never published on the site, and only visible to membership officers; every access is logged.",
       "formats": "Accepted formats: JPG, PNG or WebP."
     },
     "errors": {
       "photoRequired": "Please attach your profile photo.",
-      "idRequired": "Please attach a photo of your national ID.",
       "imageType": "Unsupported format: use JPG, PNG or WebP.",
       "imageTooBig": "Image is too large (10 MB maximum)."
     },

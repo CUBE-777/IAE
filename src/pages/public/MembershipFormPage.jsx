@@ -33,7 +33,6 @@ function validate(v, files) {
   set('track', validateRequired(v.track));
   set('level', validateRequired(v.level));
   if (!files.photo) e.photo = 'membershipForm.errors.photoRequired';
-  if (!files.id) e.id = 'membershipForm.errors.idRequired';
   set('skills', validateMaxLength(v.skills, 600));
   set('interests', validateMaxLength(v.interests, 600));
   set('bio', validateMaxLength(v.bio, 600));
@@ -163,10 +162,10 @@ export default function MembershipFormPage() {
     try {
       setStage('uploading');
       const photoPath = await ensureUploaded('photo');
-      const idPath = await ensureUploaded('id');
+      const idPath = files.id ? await ensureUploaded('id') : null; // البطاقة اختيارية
       step = 'send';
       setStage('sending');
-      await submitMembershipForm(token, { ...values, photo_path: photoPath, id_card_path: idPath, rules_accepted: true });
+      await submitMembershipForm(token, { ...values, photo_path: photoPath, ...(idPath ? { id_card_path: idPath } : {}), rules_accepted: true });
       setDone(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
@@ -303,7 +302,6 @@ export default function MembershipFormPage() {
                 shape="card"
                 label={t('membershipForm.fields.idCard')}
                 hint={t('membershipForm.docs.idHint')}
-                required
                 error={errors.id}
                 file={files.id}
                 onPick={(f) => handlePick('id', f)}

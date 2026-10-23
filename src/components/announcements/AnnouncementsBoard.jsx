@@ -57,10 +57,16 @@ export default function AnnouncementsBoard() {
           )}
           {state.status === 'ok' && (
             <>
-              <div className="ann-board-list">
-                {state.rows.map((row) => (
-                  <AnnouncementCard key={row.id} announcement={row} variant="board" />
-                ))}
+              {/* الأول (المثبّت أو الأحدث) بارز، والباقي بطاقات مصغّرة بجانبه */}
+              <div className={`ann-board-layout${state.rows.length > 1 ? '' : ' ann-board-solo'}`}>
+                <AnnouncementCard announcement={state.rows[0]} variant="featured" />
+                {state.rows.length > 1 && (
+                  <div className="ann-board-side">
+                    {state.rows.slice(1).map((row) => (
+                      <AnnouncementCard key={row.id} announcement={row} variant="board" />
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="ann-board-foot">
                 <Link to="/announcements" className="btn btn-gold">{t('announcements.viewAll')}</Link>

@@ -6,7 +6,7 @@
 --  * الزائر (anon) يرفع فقط إلى مجلد اسمه sha256(رمز الرابط)، وما دام الرابط صالحاً وغير مستعمل،
 --    وبأسماء ثابتة محدودة (photo-1..3 / id-1..3) فلا يمكن إغراق التخزين.
 --  * الاطّلاع على الوثائق لمسؤولي الأعضاء فقط، عبر دالة تسجّل كل اطلاع في سجل العمليات.
---  * submit_membership_form تُستبدل: لا حقول طوارئ، وملفا الصورة/البطاقة إلزاميان.
+--  * submit_membership_form تُستبدل: لا حقول طوارئ، الصورة الشخصية إلزامية وصورة البطاقة اختيارية.
 -- آمن لإعادة التشغيل. يتطلب 0014 (membership_forms) و0019 (الدوال).
 -- ============================================================
 
@@ -152,15 +152,16 @@ begin
   -- الصورة الشخصية وصورة البطاقة الوطنية: مسارات داخل مجلد هذا الرابط حصراً + وجود الملف فعلاً
   v_photo  := nullif(btrim(coalesce(p_data->>'photo_path', '')), '');
   v_idcard := nullif(btrim(coalesce(p_data->>'id_card_path', '')), '');
-  if v_photo is null or v_idcard is null then
-    raise exception 'يرجى رفع الصورة الشخصية وصورة البطاقة الوطنية';
+  if v_photo is null then
+    raise exception 'يرجى رفع الصورة الشخصية';
   end if;
   if v_photo !~ ('^' || v_form.token_hash || '/photo-[1-3]\.(webp|jpg|png)$')
-     or v_idcard !~ ('^' || v_form.token_hash || '/id-[1-3]\.(webp|jpg|png)$') then
+     or (v_idcard is not null and v_idcard !~ ('^' || v_form.token_hash || '/id-[1-3]\.(webp|jpg|png)$')) then
     raise exception 'مسار ملف غير صالح';
   end if;
   if not exists (select 1 from storage.objects where bucket_id = 'membership-docs' and name = v_photo)
-     or not exists (select 1 from storage.objects where bucket_id = 'membership-docs' and name = v_idcard) then
+     or (v_idcard is not null
+         and not exists (select 1 from storage.objects where bucket_id = 'membership-docs' and name = v_idcard)) then
     raise exception 'لم يكتمل رفع الملفات، أعد المحاولة';
   end if;
 
