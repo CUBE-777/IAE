@@ -47,12 +47,12 @@
   transition: background .2s ease, border-color .2s ease, color .2s ease;
 }
 
-.filter-chip:hover { border-color: var(--navy); }
+.filter-chip:hover { border-color: var(--accent-ink); }
 
 .filter-chip[aria-pressed='true'] {
-  background: var(--navy);
-  border-color: var(--navy);
-  color: var(--on-accent);
+  background: var(--control-strong);
+  border-color: var(--control-strong);
+  color: var(--on-control-strong);
 }
 
 .filter-chip:focus-visible,
@@ -88,7 +88,7 @@
 
 .project-cover {
   aspect-ratio: 16 / 9;
-  background: var(--navy-tint-3);
+  background: var(--border-soft);
   overflow: hidden;
 }
 
@@ -146,8 +146,9 @@
   font-size: 0.78rem;
   padding: 3px 9px;
   border-radius: 6px;
-  background: var(--navy-tint-3);
-  color: var(--navy);
+  background: var(--border-soft);
+  border: 1px solid var(--border);
+  color: var(--accent-ink);
   direction: ltr;
   unicode-bidi: isolate;
 }
@@ -205,14 +206,14 @@
   padding: 11px 18px;
   border-radius: 8px;
   font-weight: 700;
-  border: 1px solid var(--navy);
-  color: var(--navy);
+  border: 1px solid var(--accent-ink);
+  color: var(--accent-ink);
   background: transparent;
   text-decoration: none;
   transition: background .2s ease, color .2s ease;
 }
 
-.project-link:hover { background: var(--navy); color: var(--on-accent); }
+.project-link:hover { background: var(--control-strong); border-color: var(--control-strong); color: var(--on-control-strong); }
 
 @media (max-width: 860px) {
   .project-detail-layout { grid-template-columns: minmax(0, 1fr); }

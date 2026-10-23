@@ -9,7 +9,8 @@
     "contact": "Contact",
     "announcements": "Announcements",
     "menu": "Main menu",
-    "projects": "Projects"
+    "projects": "Projects",
+    "more": "More"
   },
   "brand": {
     "name": "Embedded Artificial Intelligence",
@@ -375,7 +376,9 @@
       "admins": "Admin users",
       "audit": "Audit log",
       "settings": "General settings",
-      "projects": "Projects"
+      "projects": "Projects",
+      "sectionDocs": "Documents",
+      "internalFiles": "Internal files"
     },
     "roles": {
       "developer": "Developer",

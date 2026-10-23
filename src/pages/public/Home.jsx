@@ -199,7 +199,7 @@ export default function Home() {
         <div className="container">
           <div className="section-head center">
             <div className="eyebrow" style={{ justifyContent: 'center' }}>{t('members.eyebrow')}</div>
-            <h2 style={{ color: 'var(--navy-deep)' }}>{t('members.title')}</h2>
+            <h2 style={{ color: 'var(--text-strong)' }}>{t('members.title')}</h2>
             <p>{t('members.description')}</p>
           </div>
           <div className="people-links">
@@ -223,7 +223,7 @@ export default function Home() {
         <div className="container">
           <div className="section-head center">
             <div className="eyebrow" style={{ justifyContent: 'center' }}>{t('gallery.eyebrow')}</div>
-            <h2 style={{ color: 'var(--navy-deep)' }}>{t('gallery.title')}</h2>
+            <h2 style={{ color: 'var(--text-strong)' }}>{t('gallery.title')}</h2>
             <p>{t('gallery.description')}</p>
           </div>
           <div className="gallery-grid" id="galleryGrid">
@@ -252,7 +252,7 @@ export default function Home() {
         <div className="container">
           <div className="section-head center">
             <div className="eyebrow" style={{ justifyContent: 'center' }}>{t('join.eyebrow')}</div>
-            <h2 style={{ color: 'var(--navy-deep)' }}>{t('join.title')}</h2>
+            <h2 style={{ color: 'var(--text-strong)' }}>{t('join.title')}</h2>
             <p>{t('join.description')}</p>
           </div>
           <div className="join-grid">
@@ -280,7 +280,7 @@ export default function Home() {
                 href={whatsappNum ? `https://wa.me/${whatsappNum}?text=${encodeURIComponent(t('join.donateWhatsappText'))}` : '#contact'}
                 {...(whatsappNum ? { target: '_blank', rel: 'noopener' } : {})}
                 className="btn btn-ghost"
-                style={{ color: 'var(--navy-deep)', borderColor: 'var(--navy-deep)' }}
+                style={{ color: 'var(--text-strong)', borderColor: 'var(--text-strong)' }}
               >
                 {t('join.donateCta')}
               </a>

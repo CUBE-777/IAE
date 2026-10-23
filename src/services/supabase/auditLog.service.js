@@ -8,6 +8,7 @@ export const AUDIT_ENTITY_OPTIONS = [
   ['membership_requests', 'طلبات الانخراط'],
   ['activities', 'الأنشطة'],
   ['projects', 'المشاريع'],
+  ['internal_files', 'الملفات الداخلية'],
   ['gallery', 'المعرض'],
   ['board_members', 'أعضاء المكتب'],
   ['announcements', 'الإعلانات'],

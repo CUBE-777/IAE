@@ -1,15 +1,16 @@
 {
   "nav": {
     "home": "Accueil",
-    "about": "Qui sommes-nous",
+    "about": "À propos",
     "activities": "Nos activités",
     "members": "Membres",
-    "gallery": "Galerie photos",
+    "gallery": "Galerie",
     "join": "Adhérer",
     "contact": "Contact",
     "announcements": "Annonces",
     "menu": "Menu principal",
-    "projects": "Projets"
+    "projects": "Projets",
+    "more": "Plus"
   },
   "brand": {
     "name": "Intelligence Artificielle Embarquée",
@@ -375,7 +376,9 @@
       "admins": "Administrateurs",
       "audit": "Journal des opérations",
       "settings": "Paramètres généraux",
-      "projects": "Projets"
+      "projects": "Projets",
+      "sectionDocs": "Documents",
+      "internalFiles": "Fichiers internes"
     },
     "roles": {
       "developer": "Développeur",

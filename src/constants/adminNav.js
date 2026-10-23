@@ -17,6 +17,8 @@ export const ADMIN_NAV = [
   { key: 'content', labelKey: 'content', label: 'محتوى الموقع', href: '/admin/content', icon: 'file-text', roles: ['developer', 'super_admin', 'editor'] },
   { sectionKey: 'sectionFinance', section: 'المالية' },
   { key: 'budget', labelKey: 'budget', label: 'الميزانية', href: '/admin/budget', icon: 'wallet', roles: ['developer', 'super_admin', 'treasurer'] },
+  { sectionKey: 'sectionDocs', section: 'الوثائق' },
+  { key: 'internalFiles', labelKey: 'internalFiles', label: 'الملفات الداخلية', href: '/admin/internal-files', icon: 'folder', roles: ['developer', 'super_admin', 'editor', 'members_manager'] },
   { sectionKey: 'sectionAdmin', section: 'الإدارة' },
   { key: 'admins', labelKey: 'admins', label: 'المستخدمون الإداريون', href: '/admin/admins', icon: 'user-cog', roles: ['developer', 'super_admin'] },
   { key: 'audit', labelKey: 'audit', label: 'سجل العمليات', href: '/admin/audit', icon: 'history', roles: ['developer', 'super_admin'] },

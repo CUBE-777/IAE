@@ -1510,5 +1510,133 @@ export const ADMIN_DICT = {
  "هل تريد حذف المشروع <strong>{{name}}</strong>؟": {
   "fr": "Voulez-vous supprimer le projet <strong>{{name}}</strong> ?",
   "en": "Do you want to delete the project <strong>{{name}}</strong>?"
+ },
+ "جاري رفع الملف...": {
+  "fr": "Envoi du fichier en cours...",
+  "en": "Uploading file..."
+ },
+ "تم رفع الملف بنجاح": {
+  "fr": "Fichier envoyé avec succès",
+  "en": "File uploaded successfully"
+ },
+ "تعذر رفع الملف، حاول مرة أخرى.": {
+  "fr": "Impossible d'envoyer le fichier, veuillez réessayer.",
+  "en": "Could not upload the file, please try again."
+ },
+ "رفع ملف داخلي": {
+  "fr": "Envoyer un fichier interne",
+  "en": "Upload an internal file"
+ },
+ "الملف *": {
+  "fr": "Fichier *",
+  "en": "File *"
+ },
+ "الحد الأقصى {{size}} — لا يُنشر الملف علنًا أبدًا.": {
+  "fr": "Taille maximale {{size}} — le fichier n'est jamais publié publiquement.",
+  "en": "Maximum size {{size}} — the file is never made public."
+ },
+ "رفع الملف": {
+  "fr": "Envoyer le fichier",
+  "en": "Upload file"
+ },
+ "الملفات الداخلية — لوحة إدارة النادي": {
+  "fr": "Fichiers internes — Administration du club",
+  "en": "Internal files — Club administration"
+ },
+ "تعذر تحميل الملفات الداخلية": {
+  "fr": "Impossible de charger les fichiers internes",
+  "en": "Could not load internal files"
+ },
+ "تعذر تنزيل الملف": {
+  "fr": "Impossible de télécharger le fichier",
+  "en": "Could not download the file"
+ },
+ "تم حذف الملف": {
+  "fr": "Fichier supprimé",
+  "en": "File deleted"
+ },
+ "الملفات الداخلية": {
+  "fr": "Fichiers internes",
+  "en": "Internal files"
+ },
+ "وثائق النادي الداخلية: متاحة للإدارة فقط ولا تُنشر في الموقع": {
+  "fr": "Documents internes du club : réservés à l'administration, jamais publiés sur le site",
+  "en": "Internal club documents: for administrators only, never published on the site"
+ },
+ "+ رفع ملف": {
+  "fr": "+ Envoyer un fichier",
+  "en": "+ Upload a file"
+ },
+ "بحث في الملفات...": {
+  "fr": "Rechercher un fichier...",
+  "en": "Search files..."
+ },
+ "كل الفئات": {
+  "fr": "Toutes les catégories",
+  "en": "All categories"
+ },
+ "تعذر تحميل الملفات الداخلية.": {
+  "fr": "Impossible de charger les fichiers internes.",
+  "en": "Could not load internal files."
+ },
+ "لا توجد ملفات داخلية بعد.": {
+  "fr": "Aucun fichier interne pour le moment.",
+  "en": "No internal files yet."
+ },
+ "لا توجد ملفات مطابقة.": {
+  "fr": "Aucun fichier correspondant.",
+  "en": "No matching files."
+ },
+ "الملف": {
+  "fr": "Fichier",
+  "en": "File"
+ },
+ "رفعه": {
+  "fr": "Envoyé par",
+  "en": "Uploaded by"
+ },
+ "تنزيل": {
+  "fr": "Télécharger",
+  "en": "Download"
+ },
+ "إدارية": {
+  "fr": "Administratif",
+  "en": "Administrative"
+ },
+ "محاضر الاجتماعات": {
+  "fr": "Procès-verbaux de réunions",
+  "en": "Meeting minutes"
+ },
+ "تعليمية": {
+  "fr": "Pédagogique",
+  "en": "Educational"
+ },
+ "نماذج": {
+  "fr": "Modèles",
+  "en": "Templates"
+ },
+ "أخرى": {
+  "fr": "Autre",
+  "en": "Other"
+ },
+ "الملف فارغ أو لم يتم اختياره.": {
+  "fr": "Le fichier est vide ou n'a pas été sélectionné.",
+  "en": "The file is empty or was not selected."
+ },
+ "نوع الملف غير مدعوم. المسموح: PDF وWord وExcel وPowerPoint وصور وCSV وTXT وZIP.": {
+  "fr": "Type de fichier non pris en charge. Autorisés : PDF, Word, Excel, PowerPoint, images, CSV, TXT et ZIP.",
+  "en": "Unsupported file type. Allowed: PDF, Word, Excel, PowerPoint, images, CSV, TXT and ZIP."
+ },
+ "حجم الملف أكبر من الحد المسموح (20MB).": {
+  "fr": "La taille du fichier dépasse la limite autorisée (20 Mo).",
+  "en": "The file is larger than the allowed limit (20 MB)."
+ },
+ "هل تريد حذف الملف <strong>{{name}}</strong>؟": {
+  "fr": "Voulez-vous supprimer le fichier <strong>{{name}}</strong> ?",
+  "en": "Do you want to delete the file <strong>{{name}}</strong>?"
+ },
+ "الوثائق": {
+  "fr": "Documents",
+  "en": "Documents"
  }
 };

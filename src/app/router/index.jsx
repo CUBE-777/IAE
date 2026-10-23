@@ -17,6 +17,7 @@ import AdminMembers from '../../pages/admin/Members';
 import AdminBoard from '../../pages/admin/Board';
 import Activities from '../../pages/admin/Activities';
 import AdminProjects from '../../pages/admin/Projects';
+import InternalFiles from '../../pages/admin/InternalFiles';
 import Gallery from '../../pages/admin/Gallery';
 import AdminAnnouncements from '../../pages/admin/Announcements';
 import Content from '../../pages/admin/Content';
@@ -63,6 +64,7 @@ export const router = createBrowserRouter([
   { path: '/admin/gallery', element: protectedAdmin(['developer', 'super_admin', 'editor'], <Gallery />) },
   { path: '/admin/announcements', element: protectedAdmin(['developer', 'super_admin', 'editor'], <AdminAnnouncements />) },
   { path: '/admin/content', element: protectedAdmin(['developer', 'super_admin', 'editor'], <Content />) },
+  { path: '/admin/internal-files', element: protectedAdmin(['developer', 'super_admin', 'editor', 'members_manager'], <InternalFiles />) },
   { path: '/admin/budget', element: protectedAdmin(['developer', 'super_admin', 'treasurer'], <Budget />) },
   { path: '/admin/admins', element: protectedAdmin(['developer', 'super_admin'], <AdminUsers />) },
   { path: '/admin/audit', element: protectedAdmin(['developer', 'super_admin'], <Audit />) },

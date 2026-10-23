@@ -56,3 +56,6 @@ Prérequis : 0001 à 0012. Ajoute `translations jsonb` à `activities`, `gallery
 
 ## 0016 — projets du club (Phase 1)
 Prérequis : 0001 à 0012 (rôles, `audit_logs`, `set_updated_at`). Indépendante de 0015. Crée la table `projects` (RLS : lecture publique des projets publiés ; écriture `can_manage_content()` ; pas de suppression physique) et un trigger d'audit. Idempotente.
+
+## 0017 — fichiers internes (administration)
+Prérequis : 0001 à 0012. Crée le bucket **privé** `internal-files` (20 Mo max, types limités), la table `internal_files`, les fonctions `can_access_internal_files()` / `can_delete_internal_files()` et `request_internal_file_download()` (téléchargement journalisé, lien signé de 60 s). Accès : developer, super_admin, editor, members_manager ; suppression logique : developer et super_admin. Idempotente.

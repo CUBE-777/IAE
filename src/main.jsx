@@ -10,6 +10,7 @@ import { AuthProvider } from './app/providers/AuthProvider';
 import './styles/enhancements.css';
 import './styles/admin-enhancements.css';
 import './styles/theme.css';
+import './styles/nav-responsive.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

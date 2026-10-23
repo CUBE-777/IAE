@@ -1,0 +1,177 @@
+/* ===== Menu principal : bureau ≥ 1181px (liens + menu « Plus ») / tiroir ≤ 1180px =====
+   Remplace le point de bascule 860px du menu : en FR/EN les libellés sont plus longs et le menu
+   débordait. Importé en dernier (après theme.css). Variables CSS uniquement ; propriétés logiques (RTL/LTR). */
+
+/* ---------- Bureau ---------- */
+@media (min-width: 1181px) {
+  :where(header) nav ul { gap: clamp(16px, 1.5vw, 30px); }
+
+  header nav a,
+  .nav-more-btn,
+  .brand-text { white-space: nowrap; }
+
+  .nav-more { position: relative; }
+
+  .nav-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 0;
+    padding: 6px 0;
+    color: var(--white);
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .nav-more-btn:hover,
+  .nav-more.open .nav-more-btn { color: var(--gold-light); }
+  .nav-more-btn.active { color: var(--gold); }
+  .nav-more-btn:focus-visible,
+  .nav-more-menu a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+
+  .nav-more-caret {
+    width: 7px;
+    height: 7px;
+    border-inline-end: 2px solid currentColor;
+    border-block-end: 2px solid currentColor;
+    transform: rotate(45deg) translateY(-2px);
+    transition: transform 0.2s ease;
+  }
+  .nav-more.open .nav-more-caret { transform: rotate(-135deg) translateY(-2px); }
+
+  .nav-more-menu {
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    position: absolute;
+    inset-inline-end: 0;
+    top: calc(100% + 12px);
+    min-width: 190px;
+    padding: 8px;
+    background: var(--navy-deep);
+    border: 1px solid rgba(var(--white-rgb), 0.14);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    z-index: 110;
+  }
+  .nav-more.open .nav-more-menu { display: flex; }
+
+  .nav-more-menu a {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 8px;
+    color: var(--white);
+  }
+  .nav-more-menu a:hover { background: rgba(var(--white-rgb), 0.08); }
+  .nav-more-menu a.active,
+  .nav-more-menu a[aria-current] { color: var(--gold); }
+  .nav-more-menu a::after { display: none; }
+}
+
+/* Marque : la ligne de sous-titre est masquée sur les écrans moyens pour libérer de la place */
+@media (min-width: 1181px) and (max-width: 1360px) {
+  header .brand-text span { display: none; }
+}
+
+/* ---------- Tiroir (≤ 1180px) : mêmes règles que le tiroir mobile existant, étendues aux tablettes/petits portables ---------- */
+@media (max-width: 1180px) {
+  header.scrolled,
+  header.static-header {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  header.scrolled { background: rgba(var(--navy-deep-rgb), 0.97); }
+  header.static-header { background: rgba(var(--navy-deep-rgb), 0.98); }
+
+  html[dir] header nav,
+  html[dir] header.static-header nav {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: auto;
+    left: auto;
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+    width: 78%;
+    max-width: 320px;
+    background: var(--navy-deep);
+    padding: 100px 32px 32px;
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.35s ease, visibility 0s linear 0.35s;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    z-index: 102;
+  }
+  html[dir='rtl'] header nav,
+  html[dir='rtl'] header.static-header nav { transform: translateX(-100%); }
+  html[dir] header nav.open,
+  html[dir] header.static-header nav.open {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.35s ease, visibility 0s;
+  }
+
+  :where(header) nav ul { flex-direction: column; gap: 26px; }
+
+  .nav-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 101;
+  }
+  .nav-toggle span { display: block; width: 24px; height: 2px; background: var(--white); }
+
+  .nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(var(--navy-deep-rgb), 0.6);
+    z-index: 101;
+    animation: navFade 0.25s ease;
+  }
+
+  .nav-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: var(--space-4);
+    inset-inline-end: var(--space-4);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(var(--white-rgb), 0.25);
+    background: transparent;
+    color: var(--white);
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .nav-close:hover { background: rgba(var(--white-rgb), 0.12); }
+
+  header nav a.active,
+  header nav a[aria-current] { color: var(--gold); }
+  header nav a.active::after,
+  header nav a[aria-current]::after { width: 100%; }
+
+  /* « Plus » : dans le tiroir, les liens secondaires sont affichés à plat, sans bouton */
+  .nav-more { display: contents; }
+  .nav-more-btn { display: none; }
+  .nav-more-menu { display: contents; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-more-caret { transition: none; }
+}

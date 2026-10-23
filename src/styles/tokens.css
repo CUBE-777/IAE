@@ -46,6 +46,11 @@
      --surface : fond des cartes/panneaux ; --heading : couleur des titres sur surface.
      Ils changent avec le thème (voir bloc html[data-theme='dark'] en bas du fichier). */
   --surface: #ffffff;
+  /* Couleurs « d'encre bleue » qui s'inversent en thème sombre (évite du bleu nuit sur fond bleu nuit) */
+  --text-strong: var(--navy-deep);
+  --accent-ink: var(--navy);
+  --control-strong: var(--navy);
+  --on-control-strong: var(--white);
   --heading: var(--navy-deep);
   --on-accent: #06142c;
 
@@ -153,6 +158,10 @@ html[data-theme='dark'] {
   --cream: #0a1325;
   --surface: #111d35;
   --heading: #e8f0fd;
+  --text-strong: var(--heading);
+  --accent-ink: var(--gold-text);
+  --control-strong: var(--navy-mid);
+  --on-control-strong: var(--white);
   --ink: #d5e1f4;
   --muted: #98a8c6;
   --muted-light: #7083a6;

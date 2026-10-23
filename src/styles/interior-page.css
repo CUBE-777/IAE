@@ -66,14 +66,14 @@ header.static-header .container {
   padding: 13px 24px;
   border-radius: 8px;
   font-weight: 700;
-  border: 1px solid var(--navy-deep);
-  color: var(--navy-deep);
+  border: 1px solid var(--text-strong);
+  color: var(--text-strong);
   transition: all 0.25s ease;
 }
 
 .interior-btn:hover {
-  background: var(--navy-deep);
-  color: var(--white);
+  background: var(--text-strong);
+  color: var(--cream);
 }
 
 .interior-footer {

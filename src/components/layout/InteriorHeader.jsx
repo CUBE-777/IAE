@@ -4,6 +4,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
 import { useMobileNav } from '../../hooks/useMobileNav';
 import { useHasProjects } from '../../hooks/useHasProjects';
+import NavMore from './NavMore';
 
 /** يحدد الرابط النشط بحسب مسار الصفحة الداخلية الحالي. */
 function activeKeyFor(pathname) {
@@ -17,7 +18,7 @@ function activeKeyFor(pathname) {
 export default function InteriorHeader() {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const { open: navOpen, close, toggle, toggleRef, navRef } = useMobileNav();
+  const { open: navOpen, close, toggle, toggleRef, navRef } = useMobileNav(1180);
   const activeKey = activeKeyFor(pathname);
   const hasProjects = useHasProjects();
 
@@ -27,9 +28,12 @@ export default function InteriorHeader() {
     ['activities', '/#activities', t('nav.activities')],
     ...(hasProjects || pathname.startsWith('/projects') ? [['projects', '/projects', t('nav.projects')]] : []),
     ['members', '/#members', t('nav.members')],
-    ['gallery', '/#gallery', t('nav.gallery')],
     ['join', '/#join', t('nav.join')],
-    ['contact', '/#contact', t('nav.contact')],
+  ];
+  const moreItems = [
+    { key: 'gallery', label: t('nav.gallery'), href: '/#gallery' },
+    { key: 'announcements', label: t('nav.announcements'), to: '/announcements' },
+    { key: 'contact', label: t('nav.contact'), href: '/#contact' },
   ];
 
   return (
@@ -71,16 +75,7 @@ export default function InteriorHeader() {
                 </a>
               </li>
             ))}
-            <li>
-              <Link
-                to="/announcements"
-                className={activeKey === 'announcements' ? 'active' : undefined}
-                aria-current={activeKey === 'announcements' ? 'page' : undefined}
-                onClick={close}
-              >
-                {t('nav.announcements')}
-              </Link>
-            </li>
+            <NavMore label={t('nav.more')} items={moreItems} activeKey={activeKey} onNavigate={close} />
           </ul>
         </nav>
         <div className="header-tools">
