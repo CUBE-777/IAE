@@ -26,7 +26,20 @@ export async function updateAdminProfile(existing, payload) {
 
 /** ينشئ المسؤول بالكامل على الخادم عبر Edge Function (تستخدم service_role هناك فقط، وليس في المتصفح). */
 export async function createAdminProfile({ email, full_name, role, password }) {
-  const { data, error } = await supabase.functions.invoke('admin-create-user', { body: { email, full_name, role, password } });
+  // تأكد من وجود جلسة صالحة وأرسل access token صراحةً إلى Edge Function.
+  // لا نرسل service_role من المتصفح؛ هذا رمز المستخدم الحالي فقط.
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  const accessToken = sessionData?.session?.access_token;
+  if (sessionError || !accessToken) {
+    const e = new Error('انتهت جلسة الدخول أو لا توجد جلسة صالحة. سجّل الدخول مجددًا ثم أعد المحاولة.');
+    e.userMessage = e.message;
+    throw e;
+  }
+
+  const { data, error } = await supabase.functions.invoke('admin-create-user', {
+    body: { email, full_name, role, password },
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
   if (error) {
     // الاستجابة غير الناجحة تحمل سبب الرفض بالعربية في جسمها؛ نعرضه بدل الرسالة العامة
     let userMessage = '';
