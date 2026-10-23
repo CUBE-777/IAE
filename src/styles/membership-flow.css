@@ -25,3 +25,84 @@
 .mf-loading { text-align: center; color: var(--muted); padding: 40px 0; }
 .mf-form select, .mf-form textarea { width: 100%; }
 @media (max-width: 560px) { .mf-group { padding: 18px 14px 4px; } .mf-submit { width: 100%; justify-self: stretch; } }
+
+/* ===== تحسين شكل النموذج (ترقيم الأقسام، بطاقات أنظف، منتقي الصور) ===== */
+.mf-section { background: linear-gradient(180deg, var(--cream) 0%, var(--surface) 100%); }
+.mf-form { counter-reset: mf-step; gap: 24px; }
+
+.mf-group {
+  position: relative;
+  padding: 26px 24px 14px;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(15, 30, 60, 0.06);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.mf-group:focus-within { border-color: rgba(var(--gold-rgb), 0.55); box-shadow: 0 10px 32px rgba(15, 30, 60, 0.1); }
+
+/* رقم القسم داخل الـ legend */
+.mf-group legend {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 0 12px; font-size: 1.1rem;
+}
+.mf-group legend::before {
+  counter-increment: mf-step; content: counter(mf-step);
+  display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--navy-mid, #1d3b6f); color: #fff; font-size: 0.9rem; font-weight: 700;
+}
+
+.mf-fee { border-radius: 14px; display: flex; align-items: center; gap: 10px; }
+.mf-consent { border-radius: 14px; }
+.mf-privacy { text-align: center; }
+
+/* ملاحظة الخصوصية داخل قسم الوثائق */
+.mf-privacy-note {
+  display: flex; gap: 10px; align-items: flex-start;
+  margin: 4px 0 14px; padding: 12px 14px; border-radius: 12px;
+  background: rgba(var(--gold-rgb), 0.08); border: 1px dashed rgba(var(--gold-rgb), 0.45);
+  color: var(--muted); font-size: 0.88rem; line-height: 1.7;
+}
+.mf-privacy-note svg { flex-shrink: 0; margin-top: 3px; color: var(--navy-mid, #1d3b6f); }
+
+/* ===== منتقي الصورة ===== */
+.mf-picker { margin-bottom: 18px; }
+.mf-picker-label { display: block; font-weight: 600; margin-bottom: 10px; color: var(--heading); }
+.mf-picker-body { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; position: relative; }
+
+/* حقل الملف مخفي بصريًا لكنه قابل للتركيز */
+.mf-picker-input {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+.mf-picker-drop {
+  display: grid; place-items: center; overflow: hidden; cursor: pointer;
+  background: var(--cream); color: var(--muted);
+  border: 2px dashed var(--border); transition: border-color 0.2s ease, background 0.2s ease;
+}
+.mf-picker-drop:hover { border-color: rgba(var(--gold-rgb), 0.7); background: rgba(var(--gold-rgb), 0.06); }
+.mf-picker-input:focus-visible + .mf-picker-drop { outline: 3px solid rgba(var(--gold-rgb), 0.7); outline-offset: 3px; }
+.mf-picker-drop.has-image { border-style: solid; border-color: rgba(var(--gold-rgb), 0.6); }
+.mf-picker-drop img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mf-picker-empty { display: grid; justify-items: center; gap: 6px; padding: 10px; font-size: 0.82rem; text-align: center; line-height: 1.4; }
+
+.mf-picker-avatar .mf-picker-drop { width: 132px; height: 132px; border-radius: 50%; }
+.mf-picker-card .mf-picker-drop { width: min(100%, 360px); aspect-ratio: 1.586; border-radius: 14px; }
+
+.mf-picker-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.mf-picker-btn { padding: 8px 16px; }
+.mf-picker-remove {
+  background: none; border: 0; padding: 6px 4px; cursor: pointer;
+  color: #b3261e; font: inherit; font-size: 0.9rem; text-decoration: underline;
+}
+.mf-picker-remove:disabled, .mf-picker-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.mf-picker.field-invalid .mf-picker-drop { border-color: #b3261e; }
+
+@media (max-width: 560px) {
+  .mf-group { padding: 22px 14px 8px; border-radius: 14px; }
+  .mf-picker-avatar .mf-picker-body { justify-content: center; }
+  .mf-picker-avatar .mf-picker-label { text-align: center; }
+  .mf-picker-card .mf-picker-drop { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mf-group, .mf-picker-drop { transition: none; }
+}

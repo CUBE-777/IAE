@@ -33,7 +33,7 @@ export default function Dashboard() {
   }, []);
 
   const loadRequests = useCallback(() => {
-    if (!['developer', 'super_admin', 'members_manager'].includes(profile.role)) {
+    if (!['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'secretary_general', 'deputy_secretary_general'].includes(profile.role)) {
       setRequestsState('forbidden');
       return;
     }

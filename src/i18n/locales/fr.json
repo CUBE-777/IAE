@@ -103,7 +103,8 @@
     "eyebrow": "Moments de notre parcours",
     "title": "Galerie photos",
     "description": "Photos des activités et événements du club, mises à jour régulièrement.",
-    "empty": "Les photos des activités seront bientôt ajoutées ici."
+    "empty": "Les photos des activités seront bientôt ajoutées ici.",
+    "showMore": "Afficher plus"
   },
   "join": {
     "eyebrow": "Rejoignez-nous",
@@ -385,7 +386,11 @@
       "super_admin": "Super administrateur",
       "editor": "Éditeur",
       "members_manager": "Gestionnaire des membres",
-      "treasurer": "Trésorier"
+      "treasurer": "Trésorier",
+      "secretary_general": "Secrétaire général",
+      "deputy_secretary_general": "Secrétaire général adjoint",
+      "deputy_treasurer": "Trésorier adjoint",
+      "deputy_super_admin": "Super administrateur adjoint"
     },
     "common": {
       "edit": "Modifier",
@@ -654,7 +659,7 @@
       "personal": "Informations personnelles",
       "study": "Informations d'études",
       "tech": "Informations techniques",
-      "emergency": "Contact d'urgence"
+      "documents": "Pièce d’identité"
     },
     "fields": {
       "fullName": "Nom complet",
@@ -670,9 +675,8 @@
       "skills": "Compétences",
       "interests": "Centres d'intérêt",
       "bio": "Présentation",
-      "emergencyName": "Nom du contact",
-      "emergencyPhone": "Téléphone du contact",
-      "emergencyRelation": "Lien de parenté"
+      "photo": "Photo personnelle",
+      "idCard": "Photo de la carte nationale"
     },
     "placeholders": {
       "skills": "Ex. : Python, Arduino, apprentissage automatique…",
@@ -690,25 +694,35 @@
       "Doctorat",
       "Autre"
     ],
-    "relations": [
-      "Père",
-      "Mère",
-      "Frère / Sœur",
-      "Époux / Épouse",
-      "Proche",
-      "Ami(e)",
-      "Autre"
-    ],
-    "emergencyHint": "Utilisé uniquement en cas d'urgence ; jamais affiché publiquement.",
     "rulesLabel": "J'accepte le règlement intérieur du club et certifie l'exactitude des informations ci-dessus.",
     "rulesRequired": "L'acceptation du règlement intérieur est obligatoire",
     "feeNote": "Cotisation annuelle : {{fee}} MAD — saison {{season}}. Elle est réglée au club après examen du formulaire.",
     "submit": "Envoyer le formulaire",
     "submitting": "Envoi en cours…",
     "submitError": "Impossible d'envoyer le formulaire. Le lien a peut-être expiré ou déjà été utilisé.",
-    "privacy": "Vos informations privées (date de naissance, contact d'urgence) ne sont jamais affichées publiquement et ne sont accessibles qu'aux responsables du club.",
+    "privacy": "Vos informations privées (date de naissance et documents joints) ne sont jamais affichées publiquement et ne sont accessibles qu’aux responsables du club.",
     "successTitle": "Formulaire envoyé",
-    "successText": "Merci ! Le club examinera vos informations et vous contactera pour finaliser votre adhésion annuelle."
+    "successText": "Merci ! Le club examinera vos informations et vous contactera pour finaliser votre adhésion annuelle.",
+    "picker": {
+      "choose": "Choisir une image",
+      "change": "Changer l’image",
+      "remove": "Retirer",
+      "empty": "Appuyez pour choisir une image"
+    },
+    "docs": {
+      "photoHint": "Une photo nette de votre visage, fond simple et bonne lumière.",
+      "idHint": "Photo nette du recto de la carte nationale : toutes les informations lisibles, sans reflet.",
+      "privacy": "Ces documents sont conservés dans un espace privé, jamais publiés sur le site, et visibles uniquement par les responsables des membres ; chaque consultation est journalisée.",
+      "formats": "Formats acceptés : JPG, PNG ou WebP."
+    },
+    "errors": {
+      "photoRequired": "Veuillez joindre votre photo personnelle.",
+      "idRequired": "Veuillez joindre la photo de la carte nationale.",
+      "imageType": "Format non accepté : utilisez JPG, PNG ou WebP.",
+      "imageTooBig": "Image trop volumineuse (10 Mo maximum)."
+    },
+    "uploading": "Envoi des fichiers…",
+    "uploadError": "Impossible d’envoyer les images. Vérifiez votre connexion et réessayez."
   },
   "projects": {
     "eyebrow": "Nos projets",

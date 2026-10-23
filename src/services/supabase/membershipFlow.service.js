@@ -20,6 +20,48 @@ export async function submitMembershipForm(token, payload) {
   return data;
 }
 
+/* ---------- Documents (photo + carte nationale) : bucket privé membership-docs (migration 0020) ---------- */
+
+const DOCS_BUCKET = 'membership-docs';
+
+/** sha256 hex du jeton : même valeur que token_hash côté SQL → nom du dossier d'envoi. */
+export async function sha256Hex(text) {
+  const bytes = new TextEncoder().encode(String(text || ''));
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Envoie une image (kind = 'photo' | 'id') dans le dossier privé lié au jeton.
+ * Les noms sont limités par la politique SQL à photo-1..3 / id-1..3 : on essaie le suivant si le nom existe.
+ * Renvoie le chemin à transmettre à submit_membership_form.
+ */
+export async function uploadMembershipDoc(token, kind, file) {
+  const prefix = await sha256Hex(token);
+  const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
+  let lastError = null;
+  for (let i = 1; i <= 3; i += 1) {
+    const path = `${prefix}/${kind}-${i}.${ext}`;
+    const { error } = await supabase.storage
+      .from(DOCS_BUCKET)
+      .upload(path, file, { upsert: false, contentType: file.type, cacheControl: '3600' });
+    if (!error) return path;
+    lastError = error;
+    const text = `${error.message || ''} ${error.statusCode || ''}`;
+    if (!/exist|duplicate|409/i.test(text)) break;
+  }
+  throw lastError || new Error('upload failed');
+}
+
+/** Admin : lien signé de 2 minutes ; l'accès est journalisé côté SQL (request_membership_document). */
+export async function getMembershipDocUrl(path) {
+  const { data: allowed, error } = await supabase.rpc('request_membership_document', { p_path: path });
+  if (error) throw error;
+  const { data, error: signError } = await supabase.storage.from(DOCS_BUCKET).createSignedUrl(allowed || path, 120);
+  if (signError) throw signError;
+  return data.signedUrl;
+}
+
 /* ---------- Administration ---------- */
 
 /** Génère (ou régénère) le lien : renvoie { token, expires_at }. L'ancien lien est invalidé. */

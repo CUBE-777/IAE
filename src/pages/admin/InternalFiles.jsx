@@ -13,7 +13,7 @@ import { normalizeSearchValue } from '../../utils/arabicSearch';
 import { tr, trStrong, dateLocale } from '../../i18n/adminDict';
 
 const CATEGORY_LABEL = Object.fromEntries(INTERNAL_FILE_CATEGORIES);
-const CAN_DELETE_ROLES = ['developer', 'super_admin']; // doit rester identique à can_delete_internal_files() en SQL
+const CAN_DELETE_ROLES = ['developer', 'super_admin', 'deputy_super_admin', 'secretary_general']; // identique à can_delete_internal_files() (0019)
 
 export default function InternalFiles() {
   const { profile } = useAuth();

@@ -6,7 +6,7 @@
 // تغييرات هذه النسخة:
 //  - إنشاء الحساب بكلمة المرور القادمة من النموذج (createUser) لتطابق نص الواجهة:
 //    "سلّمه البريد وكلمة المرور ليدخل من صفحة تسجيل الدخول".
-//  - قبول الأدوار treasurer و developer (كانا معروضين في الواجهة ومرفوضين هنا).
+//  - قبول الأدوار treasurer و developer وأدوار المكتب الجديدة (الكاتب العام ونوّابه).
 //  - دور developer لا يستطيع منحه إلا developer (الـ service_role يتجاوز triggers القاعدة).
 //
 // service_role يبقى داخل بيئة الـ Edge Function فقط.
@@ -14,7 +14,18 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
-const ALLOWED_ROLES = ['super_admin', 'editor', 'members_manager', 'treasurer', 'developer'];
+const ALLOWED_ROLES = [
+  'super_admin',
+  'editor',
+  'members_manager',
+  'treasurer',
+  'developer',
+  // أدوار المكتب (migration 0019)
+  'secretary_general',
+  'deputy_secretary_general',
+  'deputy_treasurer',
+  'deputy_super_admin',
+];
 const CALLER_ROLES = ['super_admin', 'developer'];
 
 const corsHeaders = {

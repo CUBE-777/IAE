@@ -124,6 +124,10 @@ export default function AdminUserFormModal({ profile, onClose, onSaved }) {
             <option value="editor">{tr('محرر')}</option>
             <option value="members_manager">{tr('مسؤول الأعضاء')}</option>
             <option value="treasurer">{tr('أمين المال')}</option>
+            <option value="deputy_treasurer">{tr('نائب أمين المال')}</option>
+            <option value="secretary_general">{tr('الكاتب العام')}</option>
+            <option value="deputy_secretary_general">{tr('نائب الكاتب العام')}</option>
+            <option value="deputy_super_admin">{tr('نائب المسؤول الأعلى')}</option>
             <option value="super_admin">{tr('مسؤول أعلى')}</option>
             {iAmDeveloper && <option value="developer">{tr('مطوّر')}</option>}
           </select>

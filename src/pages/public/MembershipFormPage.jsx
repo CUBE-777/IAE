@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import InteriorLayout from '../../layouts/InteriorLayout';
 import PageHero from '../../components/layout/PageHero';
 import FormField from '../../components/common/FormField';
-import { getMembershipForm, submitMembershipForm } from '../../services/supabase/membershipFlow.service';
+import ImagePicker from '../../components/common/ImagePicker';
+import { compressImage } from '../../utils/imageCompress';
+import { getMembershipForm, submitMembershipForm, uploadMembershipDoc } from '../../services/supabase/membershipFlow.service';
 import { validateName, validatePhone, validateRequired, validateEmail, validateMaxLength } from '../../utils/validators';
 import '../../styles/membership-flow.css';
 
@@ -12,11 +14,14 @@ const EMPTY = {
   full_name: '', birth_date: '', phone: '', email: '', city: '',
   university: '', track: '', level: '', promotion: '',
   profession: '', skills: '', interests: '', github: '', linkedin: '', bio: '',
-  emergency_name: '', emergency_phone: '', emergency_relation: '',
   rules_accepted: false,
 };
 
-function validate(v) {
+const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_PICK_BYTES = 10 * 1024 * 1024; // حد الاختيار؛ الضغط يخفّضه، وحد الخادم 5 ميغابايت
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
+function validate(v, files) {
   const e = {};
   const set = (k, err) => err && (e[k] = err);
   set('full_name', validateName(v.full_name));
@@ -27,9 +32,8 @@ function validate(v) {
   set('university', validateRequired(v.university));
   set('track', validateRequired(v.track));
   set('level', validateRequired(v.level));
-  set('emergency_name', validateName(v.emergency_name));
-  set('emergency_phone', validatePhone(v.emergency_phone));
-  set('emergency_relation', validateRequired(v.emergency_relation));
+  if (!files.photo) e.photo = 'membershipForm.errors.photoRequired';
+  if (!files.id) e.id = 'membershipForm.errors.idRequired';
   set('skills', validateMaxLength(v.skills, 600));
   set('interests', validateMaxLength(v.interests, 600));
   set('bio', validateMaxLength(v.bio, 600));
@@ -59,9 +63,12 @@ export default function MembershipFormPage() {
   const [info, setInfo] = useState(null); // réponse de get_membership_form
   const [loadError, setLoadError] = useState(false);
   const [values, setValues] = useState(EMPTY);
+  const [files, setFiles] = useState({ photo: null, id: null });
+  const uploadedRef = useRef({ photo: null, id: null }); // مسارات مرفوعة سلفًا (لا نعيد الرفع عند إعادة المحاولة)
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [stage, setStage] = useState('idle'); // idle | uploading | sending
   const [done, setDone] = useState(false);
 
   useEffect(() => {
@@ -101,7 +108,6 @@ export default function MembershipFormPage() {
   }, [token]);
 
   const levels = useMemo(() => t('membershipForm.levels', { returnObjects: true }), [t]);
-  const relations = useMemo(() => t('membershipForm.relations', { returnObjects: true }), [t]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -109,9 +115,42 @@ export default function MembershipFormPage() {
     if (errors[name]) setErrors((er) => ({ ...er, [name]: undefined }));
   };
 
+  const handlePick = (kind, picked) => {
+    uploadedRef.current[kind] = null; // أي تغيير في الملف يُبطل رفعًا سابقًا
+    if (!picked) {
+      setFiles((f) => ({ ...f, [kind]: null }));
+      return;
+    }
+    let err;
+    if (!ACCEPTED_TYPES.includes(picked.type)) err = 'membershipForm.errors.imageType';
+    else if (picked.size > MAX_PICK_BYTES) err = 'membershipForm.errors.imageTooBig';
+    if (err) {
+      setFiles((f) => ({ ...f, [kind]: null }));
+      setErrors((er) => ({ ...er, [kind]: err }));
+      return;
+    }
+    setFiles((f) => ({ ...f, [kind]: picked }));
+    setErrors((er) => ({ ...er, [kind]: undefined }));
+  };
+
+  // ضغط ثم رفع إلى المجلد الخاص؛ يُرجع المسار (أو المسار المرفوع سابقًا)
+  const ensureUploaded = async (kind) => {
+    if (uploadedRef.current[kind]) return uploadedRef.current[kind];
+    const opts = kind === 'photo' ? { maxDim: 1200, quality: 0.85 } : { maxDim: 1800, quality: 0.88 }; // البطاقة: وضوح أعلى
+    const prepared = await compressImage(files[kind], opts);
+    if (prepared.size > MAX_UPLOAD_BYTES || !ACCEPTED_TYPES.includes(prepared.type)) {
+      const bad = new Error('image rejected');
+      bad.code = 'IMAGE_REJECTED';
+      throw bad;
+    }
+    const path = await uploadMembershipDoc(token, kind, prepared);
+    uploadedRef.current[kind] = path;
+    return path;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const found = validate(values);
+    const found = validate(values, files);
     setErrors(found);
     setFormError('');
     if (Object.keys(found).length) {
@@ -120,15 +159,24 @@ export default function MembershipFormPage() {
       return;
     }
     setSubmitting(true);
+    let step = 'upload';
     try {
-      await submitMembershipForm(token, { ...values, rules_accepted: true });
+      setStage('uploading');
+      const photoPath = await ensureUploaded('photo');
+      const idPath = await ensureUploaded('id');
+      step = 'send';
+      setStage('sending');
+      await submitMembershipForm(token, { ...values, photo_path: photoPath, id_card_path: idPath, rules_accepted: true });
       setDone(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       console.error('membership form submit failed', err);
-      setFormError(navigator.onLine ? t('membershipForm.submitError') : t('forms.networkError'));
+      if (!navigator.onLine) setFormError(t('forms.networkError'));
+      else if (err?.code === 'IMAGE_REJECTED') setFormError(t('membershipForm.errors.imageTooBig'));
+      else setFormError(step === 'upload' ? t('membershipForm.uploadError') : t('membershipForm.submitError'));
     } finally {
       setSubmitting(false);
+      setStage('idle');
     }
   };
 
@@ -161,6 +209,17 @@ export default function MembershipFormPage() {
 
             <fieldset className="mf-group">
               <legend>{t('membershipForm.groups.personal')}</legend>
+              <ImagePicker
+                id="mf-photo"
+                shape="avatar"
+                label={t('membershipForm.fields.photo')}
+                hint={t('membershipForm.docs.photoHint')}
+                required
+                error={errors.photo}
+                file={files.photo}
+                onPick={(f) => handlePick('photo', f)}
+                disabled={submitting}
+              />
               <div className="form-row">
                 <FormField id="mf-name" label={t('membershipForm.fields.fullName')} required error={errors.full_name}>
                   {input('full_name', { type: 'text', autoComplete: 'name' })}
@@ -238,26 +297,25 @@ export default function MembershipFormPage() {
             </fieldset>
 
             <fieldset className="mf-group">
-              <legend>{t('membershipForm.groups.emergency')}</legend>
-              <p className="mf-hint">{t('membershipForm.emergencyHint')}</p>
-              <div className="form-row">
-                <FormField id="mf-em-name" label={t('membershipForm.fields.emergencyName')} required error={errors.emergency_name}>
-                  {input('emergency_name', { type: 'text' })}
-                </FormField>
-                <FormField id="mf-em-phone" label={t('membershipForm.fields.emergencyPhone')} required error={errors.emergency_phone}>
-                  {input('emergency_phone', { type: 'tel', inputMode: 'tel', dir: 'ltr' })}
-                </FormField>
-              </div>
-              <div className="form-row">
-                <FormField id="mf-em-rel" label={t('membershipForm.fields.emergencyRelation')} required error={errors.emergency_relation}>
-                  {(a) => (
-                    <select {...a} name="emergency_relation" value={values.emergency_relation} onChange={handleChange}>
-                      <option value="">{t('membershipForm.choose')}</option>
-                      {Array.isArray(relations) && relations.map((r) => <option key={r} value={r}>{r}</option>)}
-                    </select>
-                  )}
-                </FormField>
-              </div>
+              <legend>{t('membershipForm.groups.documents')}</legend>
+              <ImagePicker
+                id="mf-id"
+                shape="card"
+                label={t('membershipForm.fields.idCard')}
+                hint={t('membershipForm.docs.idHint')}
+                required
+                error={errors.id}
+                file={files.id}
+                onPick={(f) => handlePick('id', f)}
+                disabled={submitting}
+              />
+              <p className="mf-privacy-note" role="note">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="4" y="11" width="16" height="9" rx="2" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+                <span>{t('membershipForm.docs.privacy')} {t('membershipForm.docs.formats')}</span>
+              </p>
             </fieldset>
 
             <div className={`mf-consent${errors.rules_accepted ? ' field-invalid' : ''}`}>
@@ -276,7 +334,7 @@ export default function MembershipFormPage() {
             </div>
 
             <button type="submit" className="btn btn-gold mf-submit" disabled={submitting}>
-              {submitting ? t('membershipForm.submitting') : t('membershipForm.submit')}
+              {submitting ? (stage === 'uploading' ? t('membershipForm.uploading') : t('membershipForm.submitting')) : t('membershipForm.submit')}
             </button>
             <p className="mf-privacy">{t('membershipForm.privacy')}</p>
           </form>

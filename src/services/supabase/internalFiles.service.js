@@ -64,9 +64,8 @@ export async function getInternalFileDownloadUrl(file) {
 
 /** Suppression logique (developer / super_admin) : le fichier disparaît de la liste ; l'objet reste dans le stockage. */
 export async function softDeleteInternalFile(file) {
-  const { error } = await supabase
-    .from('internal_files')
-    .update({ deleted_at: new Date().toISOString() })
-    .eq('id', file.id);
+  // دالة SECURITY DEFINER (migration 0019): تتحقق من الدور وتنفّذ الحذف المنطقي وتسجّله.
+  // الـ UPDATE المباشر كان يُرفض بسبب سياسات RLS حتى للمطوّر.
+  const { error } = await supabase.rpc('soft_delete_internal_file', { p_id: file.id });
   if (error) throw error;
 }

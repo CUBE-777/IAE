@@ -103,7 +103,8 @@
     "eyebrow": "Moments From Our Journey",
     "title": "Gallery",
     "description": "Photos from the club's activities and events, updated regularly.",
-    "empty": "Photos from activities will be added here soon."
+    "empty": "Photos from activities will be added here soon.",
+    "showMore": "Show more"
   },
   "join": {
     "eyebrow": "Get Involved",
@@ -385,7 +386,11 @@
       "super_admin": "Super admin",
       "editor": "Editor",
       "members_manager": "Members manager",
-      "treasurer": "Treasurer"
+      "treasurer": "Treasurer",
+      "secretary_general": "Secretary general",
+      "deputy_secretary_general": "Deputy secretary general",
+      "deputy_treasurer": "Deputy treasurer",
+      "deputy_super_admin": "Deputy super admin"
     },
     "common": {
       "edit": "Edit",
@@ -654,7 +659,7 @@
       "personal": "Personal information",
       "study": "Study information",
       "tech": "Technical information",
-      "emergency": "Emergency contact"
+      "documents": "Identity document"
     },
     "fields": {
       "fullName": "Full name",
@@ -670,9 +675,8 @@
       "skills": "Skills",
       "interests": "Interests",
       "bio": "About you",
-      "emergencyName": "Contact name",
-      "emergencyPhone": "Contact phone",
-      "emergencyRelation": "Relationship"
+      "photo": "Profile photo",
+      "idCard": "National ID card photo"
     },
     "placeholders": {
       "skills": "e.g. Python, Arduino, machine learning…",
@@ -690,25 +694,35 @@
       "PhD",
       "Other"
     ],
-    "relations": [
-      "Father",
-      "Mother",
-      "Brother / Sister",
-      "Spouse",
-      "Relative",
-      "Friend",
-      "Other"
-    ],
-    "emergencyHint": "Used only in an emergency; never shown publicly.",
     "rulesLabel": "I accept the club's internal rules and confirm the information above is accurate.",
     "rulesRequired": "Accepting the internal rules is required",
     "feeNote": "Annual membership fee: {{fee}} MAD — season {{season}}. It is paid to the club after the form is reviewed.",
     "submit": "Submit the form",
     "submitting": "Sending…",
     "submitError": "Could not submit the form. The link may have expired or already been used.",
-    "privacy": "Your private information (date of birth, emergency contact) is never shown publicly and is only visible to club officers.",
+    "privacy": "Your private information (date of birth and attached documents) is never shown publicly and is only visible to club officers.",
     "successTitle": "Form submitted",
-    "successText": "Thank you! The club will review your information and contact you to complete your annual membership."
+    "successText": "Thank you! The club will review your information and contact you to complete your annual membership.",
+    "picker": {
+      "choose": "Choose an image",
+      "change": "Change image",
+      "remove": "Remove",
+      "empty": "Tap to choose an image"
+    },
+    "docs": {
+      "photoHint": "A clear photo of your face, plain background and good lighting.",
+      "idHint": "A clear photo of the front of your national ID: all details readable, no glare.",
+      "privacy": "These documents are stored in a private space, never published on the site, and only visible to membership officers; every access is logged.",
+      "formats": "Accepted formats: JPG, PNG or WebP."
+    },
+    "errors": {
+      "photoRequired": "Please attach your profile photo.",
+      "idRequired": "Please attach a photo of your national ID.",
+      "imageType": "Unsupported format: use JPG, PNG or WebP.",
+      "imageTooBig": "Image is too large (10 MB maximum)."
+    },
+    "uploading": "Uploading files…",
+    "uploadError": "Could not upload the images. Check your connection and try again."
   },
   "projects": {
     "eyebrow": "Our projects",

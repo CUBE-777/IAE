@@ -13,6 +13,9 @@ import '../../styles/projects.css';
 import ProjectCard from '../../components/projects/ProjectCard';
 import { fetchPublishedProjects } from '../../services/supabase/projects.service';
 
+// عدد صور المعرض الظاهرة أولًا؛ الباقي لا يُحمَّل حتى يضغط الزائر «عرض المزيد»
+const GALLERY_INITIAL = 6;
+
 const FALLBACK_ICONS = ['🤝', '📚', '🎒', '🌱', '🎓', '🌟', '🏆', '🤲'];
 
 // أيقونة تمثّل النشاط بحسب تصنيفه/عنوانه (بدون تغيير schema). كلمات مفتاحية بالعربية/الفرنسية/الإنجليزية.
@@ -40,6 +43,7 @@ export default function Home() {
 
   // Projets : section affichée uniquement s'il existe au moins un projet publié (aucun contenu fictif).
   const [projects, setProjects] = useState([]);
+  const [showAllGallery, setShowAllGallery] = useState(false);
   useEffect(() => {
     let alive = true;
     fetchPublishedProjects(3)
@@ -230,7 +234,7 @@ export default function Home() {
             {gallery.length === 0 ? (
               <div className="gallery-empty">{t('gallery.empty')}</div>
             ) : (
-              gallery.map((raw, i) => {
+              (showAllGallery ? gallery : gallery.slice(0, GALLERY_INITIAL)).map((raw, i) => {
                 const item = localizeGalleryItem(raw, lang);
                 return (
                 <figure className="gallery-item" key={`${item.image_url}-${i}`}>
@@ -245,6 +249,13 @@ export default function Home() {
               })
             )}
           </div>
+          {!showAllGallery && gallery.length > GALLERY_INITIAL && (
+            <div style={{ textAlign: 'center', marginTop: 'var(--space-5, 24px)' }}>
+              <button type="button" className="btn btn-ghost" onClick={() => setShowAllGallery(true)}>
+                {t('gallery.showMore')}
+              </button>
+            </div>
+          )}
         </div>
       </section>
 

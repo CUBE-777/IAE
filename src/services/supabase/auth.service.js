@@ -58,4 +58,8 @@ export const ROLE_LABELS = {
   editor: 'محرر',
   members_manager: 'مسؤول الأعضاء',
   treasurer: 'أمين المال',
+  secretary_general: 'الكاتب العام',
+  deputy_secretary_general: 'نائب الكاتب العام',
+  deputy_treasurer: 'نائب أمين المال',
+  deputy_super_admin: 'نائب المسؤول الأعلى',
 };

@@ -3,6 +3,38 @@
  * Généré à partir des écrans existants ; arabe = identité, donc non listé ici.
  */
 export const ADMIN_DICT = {
+ "نائب أمين المال": {
+  "fr": "Trésorier adjoint",
+  "en": "Deputy treasurer"
+ },
+ "الكاتب العام": {
+  "fr": "Secrétaire général",
+  "en": "Secretary general"
+ },
+ "نائب الكاتب العام": {
+  "fr": "Secrétaire général adjoint",
+  "en": "Deputy secretary general"
+ },
+ "نائب المسؤول الأعلى": {
+  "fr": "Super administrateur adjoint",
+  "en": "Deputy super admin"
+ },
+ "وثائق مرفقة": {
+  "fr": "Documents joints",
+  "en": "Attached documents"
+ },
+ "عرض الصورة الشخصية": {
+  "fr": "Voir la photo personnelle",
+  "en": "View profile photo"
+ },
+ "عرض البطاقة الوطنية": {
+  "fr": "Voir la carte nationale",
+  "en": "View national ID card"
+ },
+ "تعذر فتح الملف": {
+  "fr": "Impossible d’ouvrir le fichier",
+  "en": "Could not open the file"
+ },
  "رابط غير صالح: {{label}}": {
   "fr": "Lien invalide : {{label}}",
   "en": "Invalid link: {{label}}"

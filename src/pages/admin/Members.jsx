@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import Modal from '../../components/admin/Modal';
+import MembershipDocs from '../../components/admin/MembershipDocs';
 import MemberFormModal from './MemberFormModal';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { downloadCsv } from '../../utils/csvExport';
@@ -254,8 +255,13 @@ export default function Members() {
                   <p><strong>{tr('المستوى الدراسي')}:</strong> {FIELD(detail.priv.level)}</p>
                   <p><strong>{tr('المهارات')}:</strong> {FIELD(detail.priv.skills)}</p>
                   <p><strong>{tr('الاهتمامات')}:</strong> {FIELD(detail.priv.interests)}</p>
-                  <p><strong>{tr('جهة الاتصال الطارئة')}:</strong> {FIELD(detail.priv.emergency_name)} ({FIELD(detail.priv.emergency_relation)})</p>
-                  <p><strong>{tr('هاتف الطوارئ')}:</strong> <span dir="ltr">{FIELD(detail.priv.emergency_phone)}</span></p>
+                  {(detail.priv.emergency_name || detail.priv.emergency_phone) && (
+                    <>
+                      <p><strong>{tr('جهة الاتصال الطارئة')}:</strong> {FIELD(detail.priv.emergency_name)} ({FIELD(detail.priv.emergency_relation)})</p>
+                      <p><strong>{tr('هاتف الطوارئ')}:</strong> <span dir="ltr">{FIELD(detail.priv.emergency_phone)}</span></p>
+                    </>
+                  )}
+                  <MembershipDocs data={detail.priv.form_data} />
                   <p><strong>{tr('الموافقة على النظام الداخلي')}:</strong> {detail.priv.rules_accepted_at ? tr('نعم') : tr('لا')}</p>
                 </>
               ) : (

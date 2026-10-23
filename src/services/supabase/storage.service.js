@@ -22,7 +22,12 @@ export async function uploadImage(file, folder) {
   const path = `${folder}/${Date.now()}-${prepared.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
   const { error } = await supabase.storage
     .from('association-media')
-    .upload(path, prepared, { upsert: false, contentType: prepared.type });
+    .upload(path, prepared, {
+      upsert: false,
+      contentType: prepared.type,
+      // اسم الملف فريد (يحوي الوقت) فلا خطر من التخزين الطويل: سنة كاملة في ذاكرة المتصفح
+      cacheControl: '31536000',
+    });
   if (error) throw error;
   const { data } = supabase.storage.from('association-media').getPublicUrl(path);
   return data.publicUrl;

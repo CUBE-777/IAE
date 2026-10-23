@@ -3,6 +3,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import Modal from '../../components/admin/Modal';
+import MembershipDocs from '../../components/admin/MembershipDocs';
 import {
   fetchRequestsByStatus,
   rejectMembershipRequest,
@@ -18,7 +19,7 @@ import {
 } from '../../services/supabase/membershipFlow.service';
 import { buildWhatsappLink } from '../../utils/whatsapp';
 
-const MANAGER_ROLES = ['developer', 'super_admin', 'members_manager'];
+const MANAGER_ROLES = ['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'secretary_general', 'deputy_secretary_general'];
 const FORM_STATUS_KEY = { none: 'formNone', sent: 'formSent', received: 'formReceived' };
 const FORM_FIELDS = [
   ['birth_date', 'fBirthDate'], ['university', 'fUniversity'], ['track', 'fieldTrack'], ['level', 'fLevel'],
@@ -280,6 +281,7 @@ export default function Requests() {
                       </p>
                     ) : null
                   ))}
+                  <MembershipDocs data={formData.data} />
                   <p><strong>{t('admin.requests.fRules')}:</strong> {formData.data?.rules_accepted ? t('admin.requests.yes') : t('admin.requests.no')}</p>
                   <p><strong>{t('admin.requests.fSubmittedAt')}:</strong> {formatDate(formData.submitted_at, i18n.language)}</p>
                 </>
