@@ -54,10 +54,13 @@ Deno.serve(async (req: Request) => {
     const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
 
     // عميل بصلاحية المستدعي: للتحقق من هويته فقط
-    const callerClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: userData, error: userErr } = await callerClient.auth.getUser();
+    // ملاحظة: بوابة Supabase (verify_jwt) تعطّلت لهذه الدالة في supabase/config.toml لأنها
+    // ترفض رموز المستخدمين الموقّعة بمفاتيح JWT غير المتماثلة الجديدة (401 قبل وصول الطلب للدالة).
+    // التحقق الفعلي من الهوية يتم هنا عبر auth.getUser(token) ثم فحص الدور في profiles.
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+    if (!token) return json({ error: 'مطلوب تسجيل الدخول' }, 401);
+    const callerClient = createClient(supabaseUrl, anonKey);
+    const { data: userData, error: userErr } = await callerClient.auth.getUser(token);
     if (userErr || !userData?.user) return json({ error: 'جلسة غير صالحة' }, 401);
 
     // عميل service_role: للتحقق من دور المستدعي وللإنشاء. لا يُستخدم إلا هنا.

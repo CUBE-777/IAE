@@ -28,8 +28,12 @@ supabase db push
 لا يغادر بيئة الـ Edge Function أبدًا). انشره بعد ربط المشروع:
 
 ```bash
-supabase functions deploy admin-create-user
+supabase functions deploy admin-create-user --no-verify-jwt
 ```
+
+> `--no-verify-jwt` مهم: بدونه ترفض بوابة Supabase الطلب بـ 401 قبل وصوله للدالة
+> (خصوصًا مع مفاتيح JWT الجديدة). الدالة نفسها تتحقق من الجلسة والدور (super_admin/developer).
+> الإعداد نفسه مُثبَّت في `supabase/config.toml`.
 
 لا حاجة لضبط أي متغير بيئة يدويًا: `SUPABASE_URL` و `SUPABASE_SERVICE_ROLE_KEY`
 و `SUPABASE_ANON_KEY` متاحة تلقائيًا لكل Edge Function في مشروعك.
