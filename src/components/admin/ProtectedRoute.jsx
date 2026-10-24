@@ -12,9 +12,9 @@ import { useAuth } from '../../app/providers/AuthProvider';
  */
 export default function ProtectedRoute({ roles, children }) {
   const { t } = useTranslation();
-  const { status, profile, logout } = useAuth();
+  const { status, profile, profileError, logout, refresh } = useAuth();
   const location = useLocation();
-  const inactive = status === 'authenticated' && (!profile || !profile.is_active);
+  const inactive = status === 'authenticated' && !profileError && (!profile || !profile.is_active);
   const loggedOutRef = useRef(false);
 
   // Side effect (signOut) خارج render: يُنفَّذ مرة واحدة فقط حتى تحت StrictMode
@@ -33,6 +33,20 @@ export default function ProtectedRoute({ roles, children }) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-text-muted, var(--muted))' }}>
         {t('admin.errors.verifyingSession')}
+      </div>
+    );
+  }
+
+  // فشل مؤقت في جلب الملف الشخصي (شبكة/خادم): لا نُخرج المستخدم، نعرض إعادة المحاولة
+  if (status === 'authenticated' && profileError) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 24, color: 'var(--admin-text, inherit)' }}>
+        <div>
+          <p style={{ marginBottom: 16 }}>{t('admin.errors.sessionRetryMessage', 'تعذر التحقق من الجلسة بسبب مشكلة اتصال. حاول مرة أخرى.')}</p>
+          <button type="button" className="btn" onClick={() => refresh()}>
+            {t('admin.errors.sessionRetry', 'إعادة المحاولة')}
+          </button>
+        </div>
       </div>
     );
   }

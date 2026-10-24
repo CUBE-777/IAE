@@ -21,12 +21,16 @@ export async function getSession() {
   return data.session;
 }
 
-/** يُرجع صف profiles الخاص بالمستخدم الحالي (role/full_name/is_active...) أو null. */
+/**
+ * يُرجع صف profiles الخاص بالمستخدم الحالي (role/full_name/is_active...).
+ *  - null  : لا يوجد صف profile لهذا المستخدم فعلاً (PGRST116) → حساب غير مُفعَّل كإداري.
+ *  - يرمي خطأ : فشل مؤقت (شبكة/خادم). لا يجوز اعتباره "حساب غير نشط" وتسجيل الخروج بسببه.
+ */
 export async function getProfile() {
   const session = await getSession();
   if (!session) return null;
-  const { data, error } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
-  if (error) return null;
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+  if (error) throw error;
   return data;
 }
 

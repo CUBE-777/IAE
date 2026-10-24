@@ -288,7 +288,8 @@
     "networkError": "Could not reach the server, please check your internet connection.",
     "duplicatePending": "A membership request with this email is already under review.",
     "fixErrors": "Please fix the fields highlighted below.",
-    "honeypot": "Do not fill in this field:"
+    "honeypot": "Do not fill in this field:",
+    "rateLimited": "Too many requests in a short time, please try again in a few minutes."
   },
   "person": {
     "age": "Age",
@@ -533,7 +534,9 @@
       "verifyingSession": "Verifying your session...",
       "forbiddenTitle": "Access denied",
       "forbiddenMessage": "You don't have sufficient permissions to view this page.",
-      "backToDashboard": "Back to the dashboard"
+      "backToDashboard": "Back to the dashboard",
+      "sessionRetryMessage": "Could not verify your session because of a connection problem. Please try again.",
+      "sessionRetry": "Try again"
     },
     "requests": {
       "pageTitle": "Membership requests — Club admin",
@@ -755,5 +758,13 @@
     "notFoundText": "This project does not exist or is no longer published.",
     "loadingTitle": "Loading...",
     "externalLink": "Opens in a new tab"
+  },
+  "app": {
+    "error": {
+      "title": "An unexpected error occurred",
+      "message": "This page could not be displayed. Reload it, and if the problem persists try again later.",
+      "reload": "Reload page",
+      "home": "Back to home"
+    }
   }
 }

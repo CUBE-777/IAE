@@ -31,20 +31,9 @@
   <link rel="icon" href="/logo.jpg" type="image/jpeg" />
   <meta name="theme-color" content="#0a66c8" />
 
-  <!-- Thème clair/sombre appliqué avant le premier rendu (évite le flash). Clé : iae:theme -->
-  <script>
-    (function () {
-      try {
-        var t = localStorage.getItem('iae:theme');
-        if (t !== 'light' && t !== 'dark') {
-          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        document.documentElement.setAttribute('data-theme', t);
-      } catch (e) {
-        document.documentElement.setAttribute('data-theme', 'light');
-      }
-    })();
-  </script>
+  <!-- Thème clair/sombre appliqué avant le premier rendu (évite le flash). Clé : iae:theme.
+       Script externe (public/theme-init.js) : la CSP n'autorise plus les scripts inline. -->
+  <script src="/theme-init.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

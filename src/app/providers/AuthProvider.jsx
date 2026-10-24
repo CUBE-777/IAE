@@ -12,16 +12,27 @@ const AuthContext = createContext(null);
  * status: 'loading' | 'authenticated' | 'anonymous'
  */
 export function AuthProvider({ children }) {
-  const [state, setState] = useState({ status: 'loading', session: null, profile: null });
+  const [state, setState] = useState({ status: 'loading', session: null, profile: null, profileError: false });
 
   const refresh = useCallback(async () => {
-    const session = await getSession();
-    if (!session) {
-      setState({ status: 'anonymous', session: null, profile: null });
-      return;
+    try {
+      const session = await getSession();
+      if (!session) {
+        setState({ status: 'anonymous', session: null, profile: null, profileError: false });
+        return;
+      }
+      const profile = await getProfile();
+      setState({ status: 'authenticated', session, profile, profileError: false });
+    } catch (err) {
+      // فشل مؤقت (شبكة/خادم): لا نُسجّل الخروج. نُبقي آخر profile معروف إن وُجد، وإلا نعلّم الخطأ
+      // ليعرض ProtectedRoute زر "إعادة المحاولة" بدل إخراج المستخدم.
+      console.error('تعذر تحديث الجلسة/الملف الشخصي:', err);
+      setState((prev) =>
+        prev.profile
+          ? { ...prev, profileError: false }
+          : { status: 'authenticated', session: prev.session, profile: null, profileError: true },
+      );
     }
-    const profile = await getProfile();
-    setState({ status: 'authenticated', session, profile });
   }, []);
 
   useEffect(() => {
@@ -39,7 +50,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     await logoutRequest();
-    setState({ status: 'anonymous', session: null, profile: null });
+    setState({ status: 'anonymous', session: null, profile: null, profileError: false });
   };
 
   return (

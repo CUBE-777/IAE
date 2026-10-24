@@ -73,6 +73,7 @@ export default function MembershipForm() {
       // 23505 = انتهاك unique (طلب معلّق بنفس البريد) — راجع migration 0008
       const raw = `${err?.code || ''} ${err?.message || ''}`;
       if (/23505|duplicate|unique/i.test(raw)) setFormError(t('forms.duplicatePending'));
+      else if (/rate_limited/i.test(raw)) setFormError(t('forms.rateLimited'));
       else if (/network|fetch/i.test(raw)) setFormError(t('forms.networkError'));
       else setFormError(t('join.form.error'));
       setSubmitting(false);

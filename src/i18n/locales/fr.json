@@ -288,7 +288,8 @@
     "networkError": "Connexion au serveur impossible, vérifiez votre connexion Internet.",
     "duplicatePending": "Une demande d'adhésion avec cet e-mail est déjà en cours d'examen.",
     "fixErrors": "Veuillez corriger les champs indiqués ci-dessous.",
-    "honeypot": "Ne remplissez pas ce champ :"
+    "honeypot": "Ne remplissez pas ce champ :",
+    "rateLimited": "Trop de demandes en peu de temps, réessayez dans quelques minutes."
   },
   "person": {
     "age": "Âge",
@@ -533,7 +534,9 @@
       "verifyingSession": "Vérification de la session...",
       "forbiddenTitle": "Accès non autorisé",
       "forbiddenMessage": "Vous n'avez pas les droits suffisants pour voir cette page.",
-      "backToDashboard": "Retour au tableau de bord"
+      "backToDashboard": "Retour au tableau de bord",
+      "sessionRetryMessage": "Impossible de vérifier la session (problème de connexion). Réessayez.",
+      "sessionRetry": "Réessayer"
     },
     "requests": {
       "pageTitle": "Demandes d'adhésion — Administration du club",
@@ -755,5 +758,13 @@
     "notFoundText": "Ce projet n'existe pas ou n'est plus publié.",
     "loadingTitle": "Chargement...",
     "externalLink": "S'ouvre dans un nouvel onglet"
+  },
+  "app": {
+    "error": {
+      "title": "Une erreur inattendue est survenue",
+      "message": "Cette page n'a pas pu être affichée. Rechargez-la ; si le problème persiste, réessayez plus tard.",
+      "reload": "Recharger la page",
+      "home": "Retour à l'accueil"
+    }
   }
 }

@@ -26,6 +26,7 @@ import Audit from '../../pages/admin/Audit';
 import Settings from '../../pages/admin/Settings';
 import Budget from '../../pages/admin/Budget';
 import ProtectedRoute from '../../components/admin/ProtectedRoute';
+import RouteError from '../../components/common/RouteError';
 
 /**
  * src/app/router/index.jsx
@@ -40,38 +41,44 @@ function protectedAdmin(roles, element) {
 }
 
 export const router = createBrowserRouter([
-  { path: '/', element: <Home /> },
-  { path: '/members', element: <Members /> },
-  { path: '/board', element: <Board /> },
-  { path: '/activity/:slug', element: <Activity /> },
-  { path: '/announcements', element: <PublicAnnouncements /> },
-  { path: '/announcement/:slug', element: <AnnouncementDetail /> },
-  // مرادف لنفس الصفحة (يتبع الصيغة الجمعية أيضًا) — بدون إعادة توجيه حتى يعمل أي رابط مشارَك
-  { path: '/announcements/:slug', element: <AnnouncementDetail /> },
-  { path: '/projects', element: <Projects /> },
-  { path: '/projects/:slug', element: <ProjectDetail /> },
-  { path: '/thank-you', element: <ThankYou /> },
-  // رابط شخصي لنموذج الانخراط (رمز غير قابل للتخمين) — صفحة غير مفهرسة
-  { path: '/membership-form/:token', element: <MembershipFormPage /> },
+  // مسار بلا مسار فعلي يغلّف الكل ليلتقط RouteError أي خطأ عرض (الخطأ في مسار فرعي يظهر هنا)
+  {
+    errorElement: <RouteError />,
+    children: [
+      { path: '/', element: <Home /> },
+      { path: '/members', element: <Members /> },
+      { path: '/board', element: <Board /> },
+      { path: '/activity/:slug', element: <Activity /> },
+      { path: '/announcements', element: <PublicAnnouncements /> },
+      { path: '/announcement/:slug', element: <AnnouncementDetail /> },
+      // مرادف لنفس الصفحة (يتبع الصيغة الجمعية أيضًا) — بدون إعادة توجيه حتى يعمل أي رابط مشارَك
+      { path: '/announcements/:slug', element: <AnnouncementDetail /> },
+      { path: '/projects', element: <Projects /> },
+      { path: '/projects/:slug', element: <ProjectDetail /> },
+      { path: '/thank-you', element: <ThankYou /> },
+      // رابط شخصي لنموذج الانخراط (رمز غير قابل للتخمين) — صفحة غير مفهرسة
+      { path: '/membership-form/:token', element: <MembershipFormPage /> },
 
-  { path: '/admin/login', element: <Login /> },
-  { path: '/admin/dashboard', element: protectedAdmin([], <Dashboard />) },
-  { path: '/admin/members', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'secretary_general', 'deputy_secretary_general'], <AdminMembers />) },
-  { path: '/admin/requests', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'treasurer', 'deputy_treasurer', 'secretary_general', 'deputy_secretary_general'], <Requests />) },
-  { path: '/admin/board', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <AdminBoard />) },
-  { path: '/admin/activities', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <Activities />) },
-  { path: '/admin/projects', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <AdminProjects />) },
-  { path: '/admin/gallery', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <Gallery />) },
-  { path: '/admin/announcements', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <AdminAnnouncements />) },
-  { path: '/admin/content', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <Content />) },
-  { path: '/admin/internal-files', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'members_manager', 'secretary_general', 'deputy_secretary_general'], <InternalFiles />) },
-  { path: '/admin/budget', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'treasurer', 'deputy_treasurer'], <Budget />) },
-  { path: '/admin/admins', element: protectedAdmin(['developer', 'super_admin'], <AdminUsers />) },
-  { path: '/admin/audit', element: protectedAdmin(['developer', 'super_admin'], <Audit />) },
-  { path: '/admin/settings', element: protectedAdmin(['developer', 'super_admin'], <Settings />) },
+      { path: '/admin/login', element: <Login /> },
+      { path: '/admin/dashboard', element: protectedAdmin([], <Dashboard />) },
+      { path: '/admin/members', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'secretary_general', 'deputy_secretary_general'], <AdminMembers />) },
+      { path: '/admin/requests', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'treasurer', 'deputy_treasurer', 'secretary_general', 'deputy_secretary_general'], <Requests />) },
+      { path: '/admin/board', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <AdminBoard />) },
+      { path: '/admin/activities', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <Activities />) },
+      { path: '/admin/projects', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <AdminProjects />) },
+      { path: '/admin/gallery', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <Gallery />) },
+      { path: '/admin/announcements', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <AdminAnnouncements />) },
+      { path: '/admin/content', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <Content />) },
+      { path: '/admin/internal-files', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'members_manager', 'secretary_general', 'deputy_secretary_general'], <InternalFiles />) },
+      { path: '/admin/budget', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'treasurer', 'deputy_treasurer'], <Budget />) },
+      { path: '/admin/admins', element: protectedAdmin(['developer', 'super_admin'], <AdminUsers />) },
+      { path: '/admin/audit', element: protectedAdmin(['developer', 'super_admin'], <Audit />) },
+      { path: '/admin/settings', element: protectedAdmin(['developer', 'super_admin'], <Settings />) },
 
-  // Phase 28 — Fallback 404: أي مسار غير معرّف أعلاه (عام أو إداري) يعرض صفحة
-  // 404 احترافية بدل شاشة بيضاء فارغة أو خطأ React Router.
-  { path: '*', element: <NotFound /> },
+      // Phase 28 — Fallback 404: أي مسار غير معرّف أعلاه (عام أو إداري) يعرض صفحة
+      // 404 احترافية بدل شاشة بيضاء فارغة أو خطأ React Router.
+      { path: '*', element: <NotFound /> },
+    ],
+  },
 ]);
 

@@ -7,7 +7,8 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    // لا خرائط مصدر في الإنتاج (كانت تكشف الكود المصدري كاملاً للزوار).
+    sourcemap: false,
   },
   server: {
     port: 5173,

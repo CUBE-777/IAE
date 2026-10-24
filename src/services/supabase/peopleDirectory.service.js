@@ -1,4 +1,5 @@
 import { supabase } from './client';
+import { supabasePublic } from './publicClient';
 
 function memberRowToPerson(row) {
   return {
@@ -48,7 +49,8 @@ export async function fetchPeopleDirectory(listKey) {
   // نحاول أولًا مع أعمدة الملف العام الجديدة، وإن لم تكن موجودة بعد (migration 0010
   // لم تُشغَّل) نرجع تلقائيًا للأعمدة الأساسية حتى لا تتعطل الصفحة.
   const BASE_COLS = 'id, full_name, photo_url, promotion, track, university, profession, status, created_at, deleted_at';
-  const queryMembers = (cols) => supabase
+  // عميل مجهول الجلسة عمدًا: الصفحة العامة تُعرض بدور anon دائمًا (انظر publicClient.js و0021).
+  const queryMembers = (cols) => supabasePublic
     .from('members')
     .select(cols)
     .eq('status', 'active')

@@ -1,5 +1,7 @@
 # netlify.toml
 # إعدادات النشر + رؤوس أمان (Security Headers) على مستوى Netlify.
+# المرحلة 1: script-src لم يعد يسمح بـ 'unsafe-inline' ولا بأي CDN (لا يوجد سكربت خارجي في الموقع).
+# style-src يحتفظ بـ 'unsafe-inline' لأن React يكتب style="..." في عناصر كثيرة.
 # ملاحظة: تم اختيار قيم CSP بعناية لتتطابق مع مشروع Supabase الجديد: vktydqfjybdgxhrjplki.supabase.co
 
 [build]
@@ -23,7 +25,7 @@
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
     Content-Security-Policy = """
       default-src 'self';
-      script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
+      script-src 'self';
       style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
       font-src 'self' https://fonts.gstatic.com;
       img-src 'self' data: https: blob:;
@@ -32,6 +34,8 @@
       base-uri 'self';
       form-action 'self';
       object-src 'none';
+      frame-src 'none';
+      manifest-src 'self';
     """
 
 # لا فهرسة لصفحات لوحة الإدارة عبر محركات البحث (طبقة إضافية فوق noindex meta)

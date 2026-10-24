@@ -14,9 +14,19 @@ function toStat(key, res) {
   return { key, value: res.count ?? 0, error: false };
 }
 
+/**
+ * عدد الأعضاء عبر دالة آمنة (0021) كي تعمل لوحة المؤشرات لكل الأدوار دون كشف بيانات شخصية.
+ * إن لم تُشغَّل 0021 بعد نرجع إلى العدّ المباشر (يعمل لأدوار إدارة الأعضاء).
+ */
+async function countMembers() {
+  const rpc = await supabase.rpc('admin_active_members_count');
+  if (!rpc.error && typeof rpc.data === 'number') return { count: rpc.data, error: null };
+  return supabase.from('members').select('id', { count: 'exact', head: true }).is('deleted_at', null);
+}
+
 export async function fetchDashboardStats() {
   const [members, pending, activities, gallery, announcements] = await Promise.all([
-    supabase.from('members').select('id', { count: 'exact', head: true }).is('deleted_at', null),
+    countMembers(),
     supabase.from('membership_requests').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('activities').select('id', { count: 'exact', head: true }).eq('status', 'published').is('deleted_at', null),
     supabase.from('gallery').select('id', { count: 'exact', head: true }).is('deleted_at', null),

@@ -19,6 +19,7 @@ export default function PublicLayout({ children, brandName, copyright, announcem
       document.documentElement.style.setProperty('--fixed-stack-height', `${el.offsetHeight}px`);
     };
     setHeight();
+    if (typeof ResizeObserver === 'undefined') return undefined;
     const ro = new ResizeObserver(setHeight);
     ro.observe(el);
     return () => ro.disconnect();
