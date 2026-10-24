@@ -5,6 +5,7 @@ import PublicLayout from '../../layouts/PublicLayout';
 import MembershipForm from '../../features/membership/MembershipForm';
 import ContactForm from '../../features/contact/ContactForm';
 import { usePublicHomeData } from '../../hooks/usePublicHomeData';
+import { useScrollToHash } from '../../hooks/useScrollToHash';
 import AnnouncementsBoard from '../../components/announcements/AnnouncementsBoard';
 import { safeUrl } from '../../utils/sanitize';
 import { localizeValue, localizeActivity, localizeGalleryItem, localizeRow } from '../../utils/i18nContent';
@@ -40,6 +41,8 @@ export default function Home() {
   const { t, i18n } = useTranslation();
   const lang = String(i18n.resolvedLanguage || i18n.language || 'ar').slice(0, 2);
   const { activities, gallery, settings, settingsTr, content, contentTr, announcement } = usePublicHomeData();
+  // فتح /#join (أو أي #قسم) من رابط خارجي أو صفحة أخرى: يمرّر إلى القسم بعد اكتمال الرسم
+  useScrollToHash();
 
   // Projets : section affichée uniquement s'il existe au moins un projet publié (aucun contenu fictif).
   const [projects, setProjects] = useState([]);
