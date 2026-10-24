@@ -43,3 +43,15 @@
   for = "/admin/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
+
+# المرحلة 3: ملفات Vite المبنية في /assets/ أسماؤها تحوي hash، فيمكن تخزينها سنة كاملة.
+# index.html وtheme-init.js يبقيان بلا تخزين طويل ليصل أي نشر جديد للزوار فورًا.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/theme-init.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

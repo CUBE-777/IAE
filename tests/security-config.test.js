@@ -45,3 +45,21 @@ test('0021: إدراج طلبات الانخراط مقيّد بالأعمدة �
   assert.match(sql, /grant insert \(full_name, email, phone, promotion, track, profession, city, message\)/);
   assert.match(sql, /status = 'pending'/);
 });
+
+test('0022: حد المعدل لكل عميل/بريد وسقف عام احتياطي، وجدول الـ throttle مغلق على أدوار العميل', () => {
+  const sql = read('supabase/migrations/0022_rate_limit_per_client.sql');
+  assert.match(sql, /raise exception 'rate_limited'/);
+  assert.match(sql, /request\.headers/);
+  assert.match(sql, /enable row level security/);
+  assert.match(sql, /revoke all on table public\.membership_request_throttle from public, anon, authenticated/);
+  assert.match(sql, /security definer/);
+  assert.match(sql, /set search_path = public, pg_temp/);
+  // السقف العام لم يعد 30 (كان يسمح لمهاجم واحد بحجب الجميع)
+  assert.doesNotMatch(sql, />= 30 then/);
+});
+
+test('netlify: ملفات /assets/ تُخزَّن طويلًا وtheme-init.js يُعاد التحقق منه', () => {
+  const toml = read('netlify.toml');
+  assert.match(toml, /for = "\/assets\/\*"[\s\S]*?immutable/);
+  assert.match(toml, /for = "\/theme-init\.js"[\s\S]*?must-revalidate/);
+});
