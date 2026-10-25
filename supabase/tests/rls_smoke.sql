@@ -15,7 +15,16 @@ declare
   t      record;
   denied boolean;
   n      bigint;
+  has_dir boolean;
 begin
+  -- تحضير (قبل التحويل إلى anon): عضوان تجريبيان لفحص موافقة الظهور (migration 0030) — يُلغيان مع الـ rollback
+  has_dir := exists (select 1 from information_schema.columns
+                     where table_schema = 'public' and table_name = 'members' and column_name = 'show_in_directory');
+  if has_dir then
+    insert into public.members (full_name, status, show_in_directory) values ('__smoke_hidden__', 'active', false);
+    insert into public.members (full_name, status, show_in_directory) values ('__smoke_visible__', 'active', true);
+  end if;
+
   -- ---------- (1) الزائر anon ----------
   set local role anon;
 
@@ -86,6 +95,16 @@ begin
 
   -- (1.د) ما يجب أن يعمل: الأعمدة العامة للأعضاء
   perform full_name, photo_url, promotion, track from public.members limit 1;
+
+  -- (1.هـ) موافقة الظهور: العضو غير الموافق لا يراه الزائر، والموافق يراه
+  if has_dir then
+    select count(*) into n from public.members where full_name = '__smoke_hidden__';
+    if n > 0 then raise exception 'FAIL: anon يرى عضوًا لم يوافق على الظهور في الصفحة العامة'; end if;
+    select count(*) into n from public.members where full_name = '__smoke_visible__';
+    if n = 0 then raise exception 'FAIL: anon لا يرى عضوًا وافق على الظهور'; end if;
+  else
+    raise notice 'تخطّي فحص موافقة الظهور: migration 0030 غير مطبّقة';
+  end if;
 
   -- ---------- (2) مستخدم موثّق بلا صف في profiles (ليس مسؤولًا) ----------
   reset role;

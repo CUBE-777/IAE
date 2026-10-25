@@ -623,6 +623,7 @@
       "copyFailed": "Impossible de copier le lien",
       "waMessage": "Bonjour {{name}},\n\nMerci de votre intérêt pour le club Intelligence Artificielle Embarquée.\n\nPour finaliser votre demande, merci de remplir le formulaire d'adhésion via votre lien personnel :\n{{link}}\n\nCela ne prend que quelques minutes ; prévoyez une photo d'identité nette (la photo de la carte nationale est facultative).\nCe lien vous est réservé et reste valable jusqu'au {{date}}.\n\nSi vous rencontrez la moindre difficulté, répondez simplement à ce message.\nL'équipe du club",
       "copyMessage": "Copier le message",
+      "photoPublishFailed": "L'adhésion est enregistrée, mais la photo du membre n'a pas pu être publiée automatiquement. Ajoutez-la manuellement via « Modifier le membre ».",
       "msgEditHint": "Modifiez le texte avant l'envoi si besoin ; il revient au modèle si vous changez de langue.",
       "formDetailsTitle": "Formulaire d'adhésion",
       "fBirthDate": "Date de naissance",
@@ -720,10 +721,13 @@
       "personal": "Informations personnelles",
       "study": "Informations d'études",
       "tech": "Informations techniques",
-      "documents": "Pièce d’identité"
+      "documents": "Pièce d’identité",
+      "visibility": "Visibilité sur le site"
     },
     "fields": {
       "fullName": "Nom complet",
+      "nameArabic": "Nom complet en arabe",
+      "nameLatin": "Nom en lettres latines",
       "birthDate": "Date de naissance",
       "phone": "Téléphone",
       "email": "E-mail",
@@ -755,6 +759,10 @@
       "Doctorat",
       "Autre"
     ],
+    "nameHint": "Saisissez au moins un nom (en arabe ou en lettres latines). Le nom latin s'affiche sur les pages françaises et anglaises du site.",
+    "consentDirectory": "J'accepte que mon nom et mes informations d'études et de profession apparaissent sur la page publique des membres du club.",
+    "consentPhoto": "J'accepte que ma photo soit publiée sur cette page (sinon le logo du club s'affiche à la place).",
+    "consentNote": "Ce choix est entièrement facultatif et n'influence pas l'acceptation de votre demande. Votre photo et votre carte restent réservées à l'administration, et vous pouvez demander à tout moment le retrait de vos informations en contactant le club.",
     "rulesLabel": "J'accepte le règlement intérieur du club et certifie l'exactitude des informations ci-dessus.",
     "rulesRequired": "L'acceptation du règlement intérieur est obligatoire",
     "feeNote": "Cotisation annuelle : {{fee}} MAD — saison {{season}}. Elle est réglée au club après examen du formulaire.",
@@ -778,6 +786,7 @@
     },
     "errors": {
       "photoRequired": "Veuillez joindre votre photo personnelle.",
+      "nameRequired": "Saisissez au moins votre nom en arabe ou en lettres latines.",
       "imageType": "Format non accepté : utilisez JPG, PNG ou WebP.",
       "imageTooBig": "Image trop volumineuse (10 Mo maximum)."
     },

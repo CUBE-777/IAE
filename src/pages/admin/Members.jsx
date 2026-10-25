@@ -177,7 +177,11 @@ export default function Members() {
                     <td data-label={tr('الدفعة')}>{FIELD(m.promotion)}</td>
                     <td data-label={tr('المهنة')}>{FIELD(m.profession)}</td>
                     <td data-label={tr('المدينة')}>{FIELD(m.city)}</td>
-                    <td data-label={tr('الحالة')}><span className={`admin-badge admin-badge-${m.status === 'active' ? 'approved' : 'rejected'}`}>{m.status === 'active' ? tr('نشط') : tr('غير نشط')}</span></td>
+                    <td data-label={tr('الحالة')}><span className={`admin-badge admin-badge-${m.status === 'active' ? 'approved' : 'rejected'}`}>{m.status === 'active' ? tr('نشط') : tr('غير نشط')}</span>
+                      {m.status === 'active' && m.show_in_directory === false && (
+                        <> <span className="admin-badge admin-badge-pending" title={tr('بموافقة العضو. عند إلغاء التحديد لا يظهر اسمه ولا صورته في الموقع.')}>{tr('غير ظاهر للعامة')}</span></>
+                      )}
+                    </td>
                     <td data-label={tr('الانخراط')}>
                       {settings.season ? (
                         <span className={`admin-badge admin-badge-${paid.has(m.id) ? 'approved' : 'pending'}`}>

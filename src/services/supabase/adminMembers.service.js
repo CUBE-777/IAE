@@ -6,13 +6,17 @@ export { PAGE_SIZE };
 
 // أعمدة الملف العام (migration 0010). إن لم تُشغَّل بعد، نحفظ بدونها بدل أن يفشل الحفظ كله.
 const PROFILE_COLS = ['public_bio', 'study_path', 'socials', 'extra'];
+// عمود موافقة الظهور (migration 0030): إن لم يُشغَّل بعد نحفظ بدونه بصمت، فلا يفشل الحفظ العادي.
+const DIRECTORY_COL = 'show_in_directory';
 const isMissingColumn = (e) => !!e && (e.code === 'PGRST204' || e.code === '42703');
 const withoutProfileCols = (payload) => {
   const copy = { ...payload };
   PROFILE_COLS.forEach((k) => delete copy[k]);
+  delete copy[DIRECTORY_COL];
   return copy;
 };
 const hasProfileCols = (payload) => PROFILE_COLS.some((k) => k in payload);
+const hasOptionalCols = (payload) => hasProfileCols(payload) || DIRECTORY_COL in payload;
 
 export async function fetchMembersPage({ page, search, status }) {
   let query = supabase.from('members').select('*', { count: 'exact' }).is('deleted_at', null);
@@ -32,8 +36,8 @@ export async function fetchMembersPage({ page, search, status }) {
 export async function createMember(payload) {
   let degraded = false;
   let res = await supabase.from('members').insert(payload).select().single();
-  if (res.error && isMissingColumn(res.error) && hasProfileCols(payload)) {
-    degraded = true;
+  if (res.error && isMissingColumn(res.error) && hasOptionalCols(payload)) {
+    degraded = hasProfileCols(payload);
     res = await supabase.from('members').insert(withoutProfileCols(payload)).select().single();
   }
   if (res.error) throw res.error;
@@ -44,8 +48,8 @@ export async function createMember(payload) {
 export async function updateMember(id, payload) {
   let degraded = false;
   let { error } = await supabase.from('members').update(payload).eq('id', id);
-  if (error && isMissingColumn(error) && hasProfileCols(payload)) {
-    degraded = true;
+  if (error && isMissingColumn(error) && hasOptionalCols(payload)) {
+    degraded = hasProfileCols(payload);
     ({ error } = await supabase.from('members').update(withoutProfileCols(payload)).eq('id', id));
   }
   if (error) throw error;

@@ -1,4 +1,5 @@
 import { supabase } from './client';
+import { uploadImage } from './storage.service';
 
 /**
  * Parcours d'adhésion : lien de formulaire personnel → formulaire détaillé → adhésion annuelle.
@@ -60,6 +61,25 @@ export async function getMembershipDocUrl(path) {
   const { data, error: signError } = await supabase.storage.from(DOCS_BUCKET).createSignedUrl(allowed || path, 120);
   if (signError) throw signError;
   return data.signedUrl;
+}
+
+/**
+ * ينشر صورة العضو في الصفحة العامة بعد قبوله، وفقط إن وافق على ذلك (consent_photo في النموذج).
+ * تُنسخ الصورة من المجلد الخاص membership-docs إلى الـ bucket العام ثم يُحدَّث members.photo_url.
+ * (الصورة الأصلية تبقى في المجلد الخاص). تُرمى استثناءات عند الفشل ليقرّر المستدعي ما يفعل.
+ */
+export async function publishMemberPhotoFromForm(memberId, photoPath) {
+  if (!memberId || !photoPath) return null;
+  const signedUrl = await getMembershipDocUrl(photoPath);
+  const res = await fetch(signedUrl);
+  if (!res.ok) throw new Error(`photo download failed (${res.status})`);
+  const blob = await res.blob();
+  const ext = blob.type === 'image/png' ? 'png' : blob.type === 'image/webp' ? 'webp' : 'jpg';
+  const file = new File([blob], `member-${memberId}.${ext}`, { type: blob.type || 'image/jpeg' });
+  const publicUrl = await uploadImage(file, 'members');
+  const { error } = await supabase.from('members').update({ photo_url: publicUrl }).eq('id', memberId);
+  if (error) throw error;
+  return publicUrl;
 }
 
 /* ---------- Administration ---------- */

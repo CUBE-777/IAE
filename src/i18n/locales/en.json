@@ -623,6 +623,7 @@
       "copyFailed": "Could not copy the link",
       "waMessage": "Hello {{name}},\n\nThank you for your interest in joining the Embedded Artificial Intelligence club.\n\nTo complete your application, please fill in the membership form using your personal link:\n{{link}}\n\nIt only takes a few minutes; please have a clear profile photo ready (a photo of your national ID is optional).\nThis link is just for you and is valid until {{date}}.\n\nIf you run into any difficulty, simply reply to this message.\nThe club team",
       "copyMessage": "Copy message",
+      "photoPublishFailed": "The membership was recorded, but the member's photo could not be published automatically. Upload it manually from “Edit member”.",
       "msgEditHint": "Edit the text before sending if you like; it resets to the template when you change the language.",
       "formDetailsTitle": "Membership form",
       "fBirthDate": "Date of birth",
@@ -720,10 +721,13 @@
       "personal": "Personal information",
       "study": "Study information",
       "tech": "Technical information",
-      "documents": "Identity document"
+      "documents": "Identity document",
+      "visibility": "Visibility on the website"
     },
     "fields": {
       "fullName": "Full name",
+      "nameArabic": "Full name in Arabic",
+      "nameLatin": "Name in Latin letters",
       "birthDate": "Date of birth",
       "phone": "Phone",
       "email": "Email",
@@ -755,6 +759,10 @@
       "PhD",
       "Other"
     ],
+    "nameHint": "Enter at least one name (in Arabic or in Latin letters). The Latin name is shown on the French and English pages of the site.",
+    "consentDirectory": "I agree that my name and my study and professional information appear on the club's public members page.",
+    "consentPhoto": "I agree that my photo is published on that page (otherwise the club logo is shown instead).",
+    "consentNote": "This choice is entirely optional and does not affect whether your application is accepted. Your photo and ID stay visible to the administration only, and you can ask at any time to have your details hidden by contacting the club.",
     "rulesLabel": "I accept the club's internal rules and confirm the information above is accurate.",
     "rulesRequired": "Accepting the internal rules is required",
     "feeNote": "Annual membership fee: {{fee}} MAD — season {{season}}. It is paid to the club after the form is reviewed.",
@@ -778,6 +786,7 @@
     },
     "errors": {
       "photoRequired": "Please attach your profile photo.",
+      "nameRequired": "Please enter your name in Arabic or in Latin letters (at least one).",
       "imageType": "Unsupported format: use JPG, PNG or WebP.",
       "imageTooBig": "Image is too large (10 MB maximum)."
     },

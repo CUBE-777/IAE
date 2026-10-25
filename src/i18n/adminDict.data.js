@@ -3,6 +3,18 @@
  * Généré à partir des écrans existants ; arabe = identité, donc non listé ici.
  */
 export const ADMIN_DICT = {
+ "يظهر في صفحة الأعضاء العامة": {
+  "fr": "Visible sur la page publique des membres",
+  "en": "Visible on the public members page"
+ },
+ "بموافقة العضو. عند إلغاء التحديد لا يظهر اسمه ولا صورته في الموقع.": {
+  "fr": "Avec l'accord du membre. Décoché, son nom et sa photo n'apparaissent pas sur le site.",
+  "en": "With the member's consent. When unchecked, their name and photo are not shown on the site."
+ },
+ "غير ظاهر للعامة": {
+  "fr": "Non visible publiquement",
+  "en": "Not shown publicly"
+ },
  "نائب أمين المال": {
   "fr": "Trésorier adjoint",
   "en": "Deputy treasurer"

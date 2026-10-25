@@ -14,6 +14,7 @@ import {
   issueMembershipForm,
   fetchFormForRequest,
   recordAnnualMembership,
+  publishMemberPhotoFromForm,
   fetchRenewalCandidates,
   fetchMembershipSettings,
 } from '../../services/supabase/membershipFlow.service';
@@ -151,8 +152,30 @@ export default function Requests() {
     setBusy(true);
     window.notify?.loading(t('admin.requests.recording'));
     try {
-      await recordAnnualMembership(target.type === 'renewal' ? { memberId: target.row.id } : { requestId: target.row.id });
+      const isRenewal = target.type === 'renewal';
+      // موافقة العضو على نشر صورته (من نموذج الانخراط) تُقرأ قبل القبول، فإن لم يوافق لا تُنشر الصورة أبدًا
+      let consentedPhoto = null;
+      if (!isRenewal) {
+        try {
+          const form = await fetchFormForRequest(target.row.id);
+          const d = form?.data;
+          if (d && d.consent_directory === true && d.consent_photo === true && typeof d.photo_path === 'string') {
+            consentedPhoto = d.photo_path;
+          }
+        } catch (err) {
+          console.error('consent read failed', err); // لا نوقف التسجيل: الأسلم عدم نشر الصورة
+        }
+      }
+      const res = await recordAnnualMembership(isRenewal ? { memberId: target.row.id } : { requestId: target.row.id });
       window.notify?.success(t('admin.requests.recorded'));
+      if (consentedPhoto && res?.member_id) {
+        try {
+          await publishMemberPhotoFromForm(res.member_id, consentedPhoto);
+        } catch (err) {
+          console.error('photo publish failed', err);
+          window.notify?.error(t('admin.requests.photoPublishFailed'));
+        }
+      }
       load();
     } catch (err) {
       window.notify?.fromError(err, t('admin.requests.recordFailed'));

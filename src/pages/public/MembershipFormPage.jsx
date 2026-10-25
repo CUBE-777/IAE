@@ -13,11 +13,14 @@ import { LEVELS } from '../../constants/membershipLevels.js';
 import '../../styles/membership-flow.css';
 
 const EMPTY = {
-  full_name: '', birth_date: '', phone: '', email: '', city: '',
+  full_name: '', name_latin: '', birth_date: '', phone: '', email: '', city: '',
   university: '', track: '', level: '', promotion: '',
   profession: '', skills: '', interests: '', github: '', linkedin: '', bio: '',
+  consent_directory: false, consent_photo: false,
   rules_accepted: false,
 };
+
+const ARABIC_LETTERS = /[\u0600-\u06FF]/;
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_PICK_BYTES = 10 * 1024 * 1024; // حد الاختيار؛ الضغط يخفّضه، وحد الخادم 5 ميغابايت
@@ -26,7 +29,16 @@ const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 function validate(v, files) {
   const e = {};
   const set = (k, err) => err && (e[k] = err);
-  set('full_name', validateName(v.full_name));
+  // الاسم: بالعربية و/أو بالحروف اللاتينية (واحد منهما على الأقل)
+  const nameAr = v.full_name.trim();
+  const nameLatin = v.name_latin.trim();
+  if (!nameAr && !nameLatin) {
+    e.full_name = 'membershipForm.errors.nameRequired';
+    e.name_latin = 'membershipForm.errors.nameRequired';
+  } else {
+    if (nameAr) set('full_name', validateName(nameAr));
+    if (nameLatin) set('name_latin', validateName(nameLatin));
+  }
   set('birth_date', validateRequired(v.birth_date));
   set('phone', validatePhone(v.phone));
   if (v.email.trim()) set('email', validateEmail(v.email));
@@ -104,7 +116,9 @@ export default function MembershipFormPage() {
           const p = data.prefill;
           setValues((v) => ({
             ...v,
-            full_name: p.full_name || '',
+            // الاسم المسجّل في الطلب: عربي → حقل العربية، وإلا → حقل الحروف اللاتينية
+            full_name: ARABIC_LETTERS.test(p.full_name || '') ? p.full_name : '',
+            name_latin: p.full_name && !ARABIC_LETTERS.test(p.full_name) ? p.full_name : '',
             phone: p.phone || '',
             email: p.email || '',
             city: p.city || '',
@@ -126,7 +140,12 @@ export default function MembershipFormPage() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setValues((v) => ({ ...v, [name]: type === 'checkbox' ? checked : value }));
+    setValues((v) => {
+      const next = { ...v, [name]: type === 'checkbox' ? checked : value };
+      // لا نشر للصورة دون الموافقة على الظهور أصلًا
+      if (name === 'consent_directory' && !checked) next.consent_photo = false;
+      return next;
+    });
     if (errors[name]) setErrors((er) => ({ ...er, [name]: undefined }));
   };
 
@@ -181,7 +200,19 @@ export default function MembershipFormPage() {
       const idPath = files.id ? await ensureUploaded('id') : null; // البطاقة اختيارية
       step = 'send';
       setStage('sending');
-      await submitMembershipForm(token, { ...values, photo_path: photoPath, ...(idPath ? { id_card_path: idPath } : {}), rules_accepted: true });
+      const nameAr = values.full_name.trim();
+      const nameLatin = values.name_latin.trim();
+      await submitMembershipForm(token, {
+        ...values,
+        // full_name = العربي إن وُجد وإلا اللاتيني (يعمل أيضًا مع نسخة الدالة القديمة قبل migration 0030)
+        full_name: nameAr || nameLatin,
+        name_latin: nameLatin,
+        consent_directory: values.consent_directory === true,
+        consent_photo: values.consent_directory === true && values.consent_photo === true,
+        photo_path: photoPath,
+        ...(idPath ? { id_card_path: idPath } : {}),
+        rules_accepted: true,
+      });
       setDone(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
@@ -236,22 +267,26 @@ export default function MembershipFormPage() {
                 disabled={submitting}
               />
               <div className="form-row">
-                <FormField id="mf-name" label={t('membershipForm.fields.fullName')} required error={errors.full_name}>
-                  {input('full_name', { type: 'text', autoComplete: 'name' })}
+                <FormField id="mf-name" label={t('membershipForm.fields.nameArabic')} error={errors.full_name}>
+                  {input('full_name', { type: 'text', autoComplete: 'name', dir: 'rtl', lang: 'ar' })}
                 </FormField>
+                <FormField id="mf-name-latin" label={t('membershipForm.fields.nameLatin')} error={errors.name_latin}>
+                  {input('name_latin', { type: 'text', autoComplete: 'off', dir: 'ltr', lang: 'fr', placeholder: 'Mohamed El Alaoui' })}
+                </FormField>
+              </div>
+              <p className="mf-privacy" role="note">{t('membershipForm.nameHint')}</p>
+              <div className="form-row">
                 <FormField id="mf-birth" label={t('membershipForm.fields.birthDate')} required error={errors.birth_date}>
                   {input('birth_date', { type: 'date', dir: 'ltr', max: new Date().toISOString().slice(0, 10) })}
                 </FormField>
-              </div>
-              <div className="form-row">
                 <FormField id="mf-phone" label={t('membershipForm.fields.phone')} required error={errors.phone}>
                   {input('phone', { type: 'tel', inputMode: 'tel', autoComplete: 'tel', dir: 'ltr' })}
                 </FormField>
+              </div>
+              <div className="form-row">
                 <FormField id="mf-email" label={t('membershipForm.fields.email')} error={errors.email}>
                   {input('email', { type: 'email', inputMode: 'email', autoComplete: 'email', dir: 'ltr' })}
                 </FormField>
-              </div>
-              <div className="form-row">
                 <FormField id="mf-city" label={t('membershipForm.fields.city')} required error={errors.city}>
                   {input('city', { type: 'text', autoComplete: 'address-level2' })}
                 </FormField>
@@ -330,6 +365,23 @@ export default function MembershipFormPage() {
                 </svg>
                 <span>{t('membershipForm.docs.privacy')} {t('membershipForm.docs.formats')}</span>
               </p>
+            </fieldset>
+
+            <fieldset className="mf-group">
+              <legend>{t('membershipForm.groups.visibility')}</legend>
+              <div className="mf-consent">
+                <label>
+                  <input type="checkbox" name="consent_directory" checked={values.consent_directory} onChange={handleChange} disabled={submitting} />
+                  <span>{t('membershipForm.consentDirectory')}</span>
+                </label>
+              </div>
+              <div className="mf-consent">
+                <label>
+                  <input type="checkbox" name="consent_photo" checked={values.consent_photo} onChange={handleChange} disabled={submitting || !values.consent_directory} />
+                  <span>{t('membershipForm.consentPhoto')}</span>
+                </label>
+              </div>
+              <p className="mf-privacy" role="note">{t('membershipForm.consentNote')}</p>
             </fieldset>
 
             <div className={`mf-consent${errors.rules_accepted ? ' field-invalid' : ''}`}>

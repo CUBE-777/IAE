@@ -10,6 +10,7 @@ const MAX_EXTRA_ITEMS = 8;
 const emptyForm = {
   full_name: '', university: '', promotion: '', track: '', profession: '', city: '', email: '', phone: '', status: 'active', bio: '',
   public_bio: '', study_path: '', socials: {},
+  show_in_directory: true, // الإضافة اليدوية من الإدارة: ظاهر افتراضيًا (المسؤول يتحمل قرار النشر)
 };
 
 export default function MemberFormModal({ member, onClose, onSaved }) {
@@ -30,6 +31,7 @@ export default function MemberFormModal({ member, onClose, onSaved }) {
           public_bio: member.public_bio || '',
           study_path: member.study_path || '',
           socials: member.socials && typeof member.socials === 'object' && !Array.isArray(member.socials) ? { ...member.socials } : {},
+          show_in_directory: member.show_in_directory !== false,
         }
       : emptyForm
   );
@@ -42,6 +44,7 @@ export default function MemberFormModal({ member, onClose, onSaved }) {
   const [saving, setSaving] = useState(false);
 
   const handleChange = (e) => setValues((v) => ({ ...v, [e.target.name]: e.target.value }));
+  const handleToggle = (e) => setValues((v) => ({ ...v, [e.target.name]: e.target.checked }));
   const handleSocial = (key, val) => setValues((v) => ({ ...v, socials: { ...v.socials, [key]: val } }));
   const setExtra = (i, field, val) => setExtraItems((list) => list.map((it, idx) => (idx === i ? { ...it, [field]: val } : it)));
   const addExtra = () => setExtraItems((list) => (list.length >= MAX_EXTRA_ITEMS ? list : [...list, { label: '', value: '' }]));
@@ -87,6 +90,8 @@ export default function MemberFormModal({ member, onClose, onSaved }) {
       status: values.status,
       bio: values.bio.trim() || null,
     };
+    // موافقة الظهور (migration 0030): عند الإضافة دائمًا، وعند التعديل فقط إن كان العمود موجودًا فعلًا
+    if (!isEdit || 'show_in_directory' in member) payload.show_in_directory = values.show_in_directory === true;
 
     // حقول الملف العام (migration 0010): تُرسل فقط إن كانت الأعمدة موجودة أصلًا (عند التعديل)
     // أو إن كتب المسؤول فيها شيئًا، فلا يتأثر الحفظ العادي إن لم يُشغَّل ملف SQL بعد.
@@ -194,6 +199,15 @@ export default function MemberFormModal({ member, onClose, onSaved }) {
             <option value="active">{tr('نشط')}</option>
             <option value="inactive">{tr('غير نشط')}</option>
           </select>
+        </div>
+        <div className="admin-form-group">
+          <label htmlFor="f_show_in_directory" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input id="f_show_in_directory" name="show_in_directory" type="checkbox" checked={values.show_in_directory} onChange={handleToggle} />
+            <span>{tr('يظهر في صفحة الأعضاء العامة')}</span>
+          </label>
+          <div style={{ fontSize: '.8rem', color: 'var(--admin-text-muted)', marginTop: 4 }}>
+            {tr('بموافقة العضو. عند إلغاء التحديد لا يظهر اسمه ولا صورته في الموقع.')}
+          </div>
         </div>
         <div className="admin-form-group">
           <label htmlFor="f_bio">{tr('ملاحظات داخلية (لا تظهر للزوار)')}</label>
