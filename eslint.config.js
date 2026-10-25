@@ -22,6 +22,15 @@ export default [
     },
   },
   {
+    // Netlify Edge Functions (Deno): fetch/Response/URL من globals.browser، و Deno/Netlify يُعرَّفان هنا
+    files: ['netlify/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: { ...globals.browser, Deno: 'readonly', Netlify: 'readonly' },
+    },
+  },
+  {
     files: ['tests/**/*.js', 'scripts/**/*.{js,mjs}', 'vite.config.js', 'eslint.config.js'],
     languageOptions: { ecmaVersion: 2022, sourceType: 'module', globals: { ...globals.node } },
   },

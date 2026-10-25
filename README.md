@@ -41,7 +41,7 @@ npm run preview   # معاينة نسخة الإنتاج محليًا
 
 ```bash
 npm run lint     # ESLint (الأخطاء تُفشل الأمر، والتحذيرات للمراجعة)
-npm test         # اختبارات node:test (التحقق والتعقيم والترجمة والأمان وتقسيم الكود)
+npm test         # اختبارات node:test (التحقق والتعقيم والترجمة والأمان وتقسيم الكود والأدوار ومعاينات المشاركة)
 npm run check    # lint + test + build معًا
 ```
 
@@ -94,6 +94,27 @@ src/
 مستقلة (`vite.config.js` → `manualChunks`) لتبقى في كاش المتصفح بين النشرات. عند نشر نسخة جديدة وفشل
 تحميل جزء قديم، يعيد `RouteError` تحميل الصفحة تلقائيًا مرة واحدة. أي صفحة جديدة يجب أن تُضاف
 بـ `lazy()` أيضًا (يفرض ذلك `tests/code-splitting.test.js` على صفحات الإدارة).
+
+### معاينات المشاركة وخريطة الموقع (Netlify Edge Functions)
+
+المجلد `netlify/edge-functions/`:
+
+- `share-meta.js`: عند مشاركة رابط إعلان/مشروع/نشاط على واتساب أو فيسبوك أو تويتر أو تيليغرام، تحقن وسوم OG الحقيقية
+  (العنوان والوصف والصورة) في الـ HTML، لأن هذه الزواحف لا تنفّذ JavaScript. الزائر العادي وGoogle لا يتأثران، وأي خطأ يُرجع الصفحة الأصلية.
+- `sitemap.js`: `/sitemap.xml` ديناميكي (الصفحات الثابتة + المنشور من الإعلانات والأنشطة والمشاريع)، و`public/sitemap.xml` احتياطي.
+- المنطق النقي في `lib/share-meta.js` ومُختبَر في `tests/share-meta.test.js`.
+- يحتاجان المتغيرين `VITE_SUPABASE_URL` و`VITE_SUPABASE_PUBLISHABLE_KEY` في Netlify بنطاق **Functions/Runtime** (لا Builds وحدها).
+- للتجربة: `facebook.com/sharing/debugger` أو `curl -A "WhatsApp/2.23" https://<site>/announcement/<slug>`.
+
+### الصلاحيات (مصدر واحد)
+
+`src/constants/roles.js` هو مصدر مجموعات الأدوار في الراوتر وقائمة التنقل. `tests/roles.test.js` يفشل إن اختلفت عن دوال RLS في SQL
+أو عن `ALLOWED_ROLES` في Edge Function أو `ROLE_LABELS`. لإضافة دور: SQL ثم `roles.js` ثم Edge Function ثم `ROLE_LABELS`.
+
+### فحص قاعدة البيانات
+
+`supabase/tests/rls_smoke.sql`: ألصقه في SQL Editor بعد أي migration أمنية؛ يعمل داخل معاملة تُلغى ولا يكتب شيئًا،
+ويرفع `FAIL: ...` إن استطاع الزائر قراءة بيانات الأعضاء الشخصية أو الوصول لجداول الإدارة.
 
 ### نظام التصميم
 

@@ -3,6 +3,7 @@ import { createBrowserRouter, Outlet } from 'react-router-dom';
 import Home from '../../pages/public/Home';
 import ProtectedRoute from '../../components/admin/ProtectedRoute';
 import RouteError from '../../components/common/RouteError';
+import { ROLES_MEMBERS, ROLES_REQUESTS, ROLES_CONTENT, ROLES_INTERNAL_FILES, ROLES_BUDGET, ROLES_SUPER } from '../../constants/roles';
 import PageLoader from '../../components/common/PageLoader';
 
 // Code splitting: الصفحة الرئيسية تبقى في الحزمة الأولى (أسرع ظهور)، وباقي الصفحات — خصوصًا
@@ -79,20 +80,20 @@ export const router = createBrowserRouter([
 
       { path: '/admin/login', element: <Login /> },
       { path: '/admin/dashboard', element: protectedAdmin([], <Dashboard />) },
-      { path: '/admin/members', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'secretary_general', 'deputy_secretary_general'], <AdminMembers />) },
-      { path: '/admin/requests', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'treasurer', 'deputy_treasurer', 'secretary_general', 'deputy_secretary_general'], <Requests />) },
-      { path: '/admin/board', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <AdminBoard />) },
-      { path: '/admin/activities', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <Activities />) },
-      { path: '/admin/projects', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <AdminProjects />) },
-      { path: '/admin/gallery', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <Gallery />) },
-      { path: '/admin/announcements', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <AdminAnnouncements />) },
-      { path: '/admin/content', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'secretary_general', 'deputy_secretary_general'], <Content />) },
-      { path: '/admin/internal-files', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'editor', 'members_manager', 'secretary_general', 'deputy_secretary_general'], <InternalFiles />) },
-      { path: '/admin/budget', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'treasurer', 'deputy_treasurer'], <Budget />) },
-      { path: '/admin/admins', element: protectedAdmin(['developer', 'super_admin'], <AdminUsers />) },
-      { path: '/admin/audit', element: protectedAdmin(['developer', 'super_admin'], <Audit />) },
+      { path: '/admin/members', element: protectedAdmin(ROLES_MEMBERS, <AdminMembers />) },
+      { path: '/admin/requests', element: protectedAdmin(ROLES_REQUESTS, <Requests />) },
+      { path: '/admin/board', element: protectedAdmin(ROLES_CONTENT, <AdminBoard />) },
+      { path: '/admin/activities', element: protectedAdmin(ROLES_CONTENT, <Activities />) },
+      { path: '/admin/projects', element: protectedAdmin(ROLES_CONTENT, <AdminProjects />) },
+      { path: '/admin/gallery', element: protectedAdmin(ROLES_CONTENT, <Gallery />) },
+      { path: '/admin/announcements', element: protectedAdmin(ROLES_CONTENT, <AdminAnnouncements />) },
+      { path: '/admin/content', element: protectedAdmin(ROLES_CONTENT, <Content />) },
+      { path: '/admin/internal-files', element: protectedAdmin(ROLES_INTERNAL_FILES, <InternalFiles />) },
+      { path: '/admin/budget', element: protectedAdmin(ROLES_BUDGET, <Budget />) },
+      { path: '/admin/admins', element: protectedAdmin(ROLES_SUPER, <AdminUsers />) },
+      { path: '/admin/audit', element: protectedAdmin(ROLES_SUPER, <Audit />) },
       { path: '/admin/security', element: protectedAdmin([], <Security />) },
-      { path: '/admin/settings', element: protectedAdmin(['developer', 'super_admin'], <Settings />) },
+      { path: '/admin/settings', element: protectedAdmin(ROLES_SUPER, <Settings />) },
 
       // Phase 28 — Fallback 404: أي مسار غير معرّف أعلاه (عام أو إداري) يعرض صفحة
       // 404 احترافية بدل شاشة بيضاء فارغة أو خطأ React Router.
