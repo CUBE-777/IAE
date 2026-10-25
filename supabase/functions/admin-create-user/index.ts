@@ -47,6 +47,19 @@ function corsFor(req: Request): Record<string, string> {
   };
 }
 
+/** مستوى الضمان (aal1/aal2) من حمولة JWT. يُستدعى فقط بعد أن تحقّق auth.getUser من صحة الرمز. */
+function jwtAal(token: string): string {
+  try {
+    const part = token.split('.')[1] || '';
+    const b64 = part.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = b64 + '='.repeat((4 - (b64.length % 4)) % 4);
+    const payload = JSON.parse(atob(padded));
+    return typeof payload.aal === 'string' ? payload.aal : 'aal1';
+  } catch {
+    return 'aal1';
+  }
+}
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -90,8 +103,25 @@ async function handle(req: Request): Promise<Response> {
       return json({ error: 'غير مصرح لك بإنشاء مستخدمين إداريين' }, 403);
     }
 
+    // المصادقة الثنائية: هذه الدالة تعمل بـ service_role فلا تمرّ عبر RLS (migration 0024)، لذا نطبّق
+    // القاعدة نفسها هنا: من فعّل عاملًا موثّقًا يجب أن تكون جلسته aal2، وإلا كفت كلمة المرور وحدها
+    // لإنشاء مسؤول جديد. من لم يفعّل MFA لا يتغيّر عليه شيء. الرمز تحقّق منه getUser أعلاه فقراءة claim آمنة.
+    if (jwtAal(token) !== 'aal2') {
+      const { data: factorData, error: factorErr } = await adminClient.auth.admin.mfa.listFactors({
+        userId: userData.user.id,
+      });
+      if (factorErr) {
+        console.error('admin-create-user: listFactors failed:', factorErr);
+        return json({ error: 'تعذر التحقق من المصادقة الثنائية، حاول لاحقًا' }, 500);
+      }
+      const hasVerifiedFactor = (factorData?.factors || []).some((f: { status?: string }) => f.status === 'verified');
+      if (hasVerifiedFactor) {
+        return json({ error: 'أدخل رمز المصادقة الثنائية (سجّل الخروج ثم الدخول وأكمل الرمز) ثم أعد المحاولة' }, 403);
+      }
+    }
+
     const body = await req.json().catch(() => ({}));
-    const email = String(body.email || '').trim().toLowerCase();
+    const email =String(body.email || '').trim().toLowerCase();
     const full_name = String(body.full_name || '').trim();
     const role = String(body.role || '').trim();
     const password = String(body.password || '');
