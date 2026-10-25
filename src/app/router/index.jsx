@@ -1,32 +1,37 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { createBrowserRouter, Outlet } from 'react-router-dom';
 import Home from '../../pages/public/Home';
-import Members from '../../pages/public/Members';
-import Board from '../../pages/public/Board';
-import Activity from '../../pages/public/Activity';
-import PublicAnnouncements from '../../pages/public/Announcements';
-import AnnouncementDetail from '../../pages/public/AnnouncementDetail';
-import Projects from '../../pages/public/Projects';
-import ProjectDetail from '../../pages/public/ProjectDetail';
-import ThankYou from '../../pages/public/ThankYou';
-import MembershipFormPage from '../../pages/public/MembershipFormPage';
-import NotFound from '../../pages/public/NotFound';
-import Login from '../../pages/admin/Login';
-import Dashboard from '../../pages/admin/Dashboard';
-import Requests from '../../pages/admin/Requests';
-import AdminMembers from '../../pages/admin/Members';
-import AdminBoard from '../../pages/admin/Board';
-import Activities from '../../pages/admin/Activities';
-import AdminProjects from '../../pages/admin/Projects';
-import InternalFiles from '../../pages/admin/InternalFiles';
-import Gallery from '../../pages/admin/Gallery';
-import AdminAnnouncements from '../../pages/admin/Announcements';
-import Content from '../../pages/admin/Content';
-import AdminUsers from '../../pages/admin/AdminUsers';
-import Audit from '../../pages/admin/Audit';
-import Settings from '../../pages/admin/Settings';
-import Budget from '../../pages/admin/Budget';
 import ProtectedRoute from '../../components/admin/ProtectedRoute';
 import RouteError from '../../components/common/RouteError';
+import PageLoader from '../../components/common/PageLoader';
+
+// Code splitting: الصفحة الرئيسية تبقى في الحزمة الأولى (أسرع ظهور)، وباقي الصفحات — خصوصًا
+// لوحة الإدارة — تُحمَّل عند الطلب فقط، فلا يحمّل الزائر العادي كود الإدارة وقاموسها.
+const Members = lazy(() => import('../../pages/public/Members'));
+const Board = lazy(() => import('../../pages/public/Board'));
+const Activity = lazy(() => import('../../pages/public/Activity'));
+const PublicAnnouncements = lazy(() => import('../../pages/public/Announcements'));
+const AnnouncementDetail = lazy(() => import('../../pages/public/AnnouncementDetail'));
+const Projects = lazy(() => import('../../pages/public/Projects'));
+const ProjectDetail = lazy(() => import('../../pages/public/ProjectDetail'));
+const ThankYou = lazy(() => import('../../pages/public/ThankYou'));
+const MembershipFormPage = lazy(() => import('../../pages/public/MembershipFormPage'));
+const NotFound = lazy(() => import('../../pages/public/NotFound'));
+const Login = lazy(() => import('../../pages/admin/Login'));
+const Dashboard = lazy(() => import('../../pages/admin/Dashboard'));
+const Requests = lazy(() => import('../../pages/admin/Requests'));
+const AdminMembers = lazy(() => import('../../pages/admin/Members'));
+const AdminBoard = lazy(() => import('../../pages/admin/Board'));
+const Activities = lazy(() => import('../../pages/admin/Activities'));
+const AdminProjects = lazy(() => import('../../pages/admin/Projects'));
+const InternalFiles = lazy(() => import('../../pages/admin/InternalFiles'));
+const Gallery = lazy(() => import('../../pages/admin/Gallery'));
+const AdminAnnouncements = lazy(() => import('../../pages/admin/Announcements'));
+const Content = lazy(() => import('../../pages/admin/Content'));
+const AdminUsers = lazy(() => import('../../pages/admin/AdminUsers'));
+const Audit = lazy(() => import('../../pages/admin/Audit'));
+const Settings = lazy(() => import('../../pages/admin/Settings'));
+const Budget = lazy(() => import('../../pages/admin/Budget'));
 
 /**
  * src/app/router/index.jsx
@@ -40,9 +45,19 @@ function protectedAdmin(roles, element) {
   return <ProtectedRoute roles={roles}>{element}</ProtectedRoute>;
 }
 
+// Suspense واحد يغلّف كل الصفحات المحمّلة عند الطلب. فشل تحميل جزء (بعد نشر جديد) يلتقطه RouteError.
+function RootLayout() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Outlet />
+    </Suspense>
+  );
+}
+
 export const router = createBrowserRouter([
   // مسار بلا مسار فعلي يغلّف الكل ليلتقط RouteError أي خطأ عرض (الخطأ في مسار فرعي يظهر هنا)
   {
+    element: <RootLayout />,
     errorElement: <RouteError />,
     children: [
       { path: '/', element: <Home /> },
