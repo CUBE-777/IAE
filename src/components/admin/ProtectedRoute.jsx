@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../app/providers/AuthProvider';
+import ForcePasswordChange from './ForcePasswordChange';
 
 /**
  * يطابق سلوك Auth.requireAuth(allowedRoles) الأصلي:
@@ -12,7 +13,7 @@ import { useAuth } from '../../app/providers/AuthProvider';
  */
 export default function ProtectedRoute({ roles, children }) {
   const { t } = useTranslation();
-  const { status, profile, profileError, mfaRequired, logout, refresh } = useAuth();
+  const { status, session, profile, profileError, mfaRequired, logout, refresh } = useAuth();
   const location = useLocation();
   const inactive = status === 'authenticated' && !profileError && (!profile || !profile.is_active);
   const loggedOutRef = useRef(false);
@@ -62,6 +63,11 @@ export default function ProtectedRoute({ roles, children }) {
 
   if (inactive) {
     return <Navigate to="/admin/login?reason=inactive" replace />;
+  }
+
+  // حساب أُنشئ بكلمة مرور مؤقتة: لا دخول للوحة قبل اختيار كلمة مرور خاصة
+  if (session?.user?.user_metadata?.must_change_password === true) {
+    return <ForcePasswordChange />;
   }
 
   if (Array.isArray(roles) && roles.length && !roles.includes(profile.role)) {

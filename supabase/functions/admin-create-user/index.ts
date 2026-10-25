@@ -142,6 +142,8 @@ async function handle(req: Request): Promise<Response> {
       email,
       password,
       email_confirm: true,
+      // الحساب الجديد يُلزَم بتغيير كلمة المرور المؤقتة عند أول دخول (ForcePasswordChange في الواجهة)
+      user_metadata: { must_change_password: true },
     });
     if (createErr || !created?.user) {
       return json({ error: createErr?.message || 'تعذر إنشاء المستخدم' }, 400);

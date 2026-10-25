@@ -47,6 +47,7 @@ npm run check    # lint + test + build معًا
 
 يُشغَّل `check` تلقائيًا على GitHub Actions (`.github/workflows/ci.yml`) عند كل push وPull Request.
 يجب إبقاء `package-lock.json` في المستودع (يستخدمه `npm ci` في CI وNetlify لبناء مطابق دائمًا).
+إن لم يكن `package-lock.json` موجودًا بعد، شغّل `npm install` مرة واحدة وارفع الملف الناتج (يستعمل CI الأمر `npm install` تلقائيًا حتى يوجد).
 
 ---
 
@@ -179,3 +180,10 @@ src/
 - **ملفات البيئة**: `.gitignore` و`.env.example` (انسخه إلى `.env`).
 - **التطبيق**: شغّل `0009_announcements_board_audit.sql` على قاعدة Supabase *قبل* نشر الواجهة الجديدة (الواجهة تستدعي الدالتين الجديدتين).
 - أنماط التحسينات في `src/styles/enhancements.css` و`src/styles/admin-enhancements.css` (تُستورد آخراً في `main.jsx`).
+
+## ملاحظات أمان إضافية (مرحلتا التحصين)
+
+- **0025**: الرفع/التعديل/الحذف على bucket `association-media` لمن يدير المحتوى أو الأعضاء فقط (لا أمين المال ولا نوّابه).
+- **0026**: بصمة العميل في حد معدل الانخراط تُجزَّأ بـ sha256 وملح سرّي مولّد داخل القاعدة (`membership_throttle_secret`) بدل md5 بملح ثابت.
+- `admin-create-user` تفرض `aal2` على من فعّل المصادقة الثنائية، وتُنشئ الحساب بعلم `must_change_password`؛ تعرض الواجهة شاشة إلزامية لاختيار كلمة مرور خاصة قبل دخول اللوحة.
+- بعد أي تحديث للدالة: `supabase functions deploy admin-create-user --no-verify-jwt`.

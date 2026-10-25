@@ -32,3 +32,25 @@ test('ملفات المشروع الأساسية موجودة ولا تُرفع 
   assert.doesNotMatch(read('.env.example'), /eyJ[A-Za-z0-9_-]{20,}/);
   assert.doesNotMatch(read('.env.example'), /^[^#\n]*service_role/im);
 });
+
+test('0026: بصمة العميل sha256 بملح سرّي مغلق على أدوار العميل، لا md5', () => {
+  const sql = read('supabase/migrations/0026_throttle_salted_hash.sql');
+  const code = sql.replace(/--.*$/gm, '');
+  assert.doesNotMatch(code, /md5\(/);
+  assert.match(code, /sha256\(/);
+  assert.match(code, /membership_throttle_secret/);
+  assert.match(code, /revoke all on table public\.membership_throttle_secret from public, anon, authenticated/);
+  assert.match(code, /set search_path = public, pg_temp/);
+  assert.match(code, /raise exception 'rate_limited'/);
+});
+
+test('كلمة المرور المؤقتة: الدالة تضع العلم والواجهة تعرض شاشة إلزامية قبل اللوحة', () => {
+  assert.match(read('supabase/functions/admin-create-user/index.ts'), /user_metadata:\s*\{\s*must_change_password:\s*true\s*\}/);
+  const route = read('src/components/admin/ProtectedRoute.jsx');
+  assert.match(route, /must_change_password === true/);
+  assert.match(route, /<ForcePasswordChange \/>/);
+  // الحارس يأتي بعد فحص الجلسة/MFA/الخمول وقبل فحص الدور
+  assert.ok(route.indexOf('must_change_password') > route.indexOf('mfaRequired'));
+  assert.ok(route.indexOf('must_change_password') < route.indexOf('roles.includes(profile.role)'));
+  assert.match(read('src/services/supabase/auth.service.js'), /must_change_password: false/);
+});

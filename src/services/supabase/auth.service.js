@@ -51,6 +51,15 @@ export async function unenrollTotp(factorId) {
   if (error) throw error;
 }
 
+/**
+ * يغيّر كلمة مرور المستخدم الحالي ويُسقط علم must_change_password (يضعه admin-create-user للحسابات الجديدة).
+ * ملاحظة: user_metadata قابل للتعديل من صاحب الحساب، فهذا العلم تنبيه لتجربة الاستخدام وليس حدًّا أمنيًا.
+ */
+export async function changeOwnPassword(password) {
+  const { error } = await supabase.auth.updateUser({ password, data: { must_change_password: false } });
+  if (error) throw error;
+}
+
 export async function getSession() {
   const { data } = await supabase.auth.getSession();
   return data.session;

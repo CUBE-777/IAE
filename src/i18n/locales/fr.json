@@ -672,6 +672,19 @@
       "disable": "Désactiver la vérification en deux étapes",
       "disableConfirm": "Êtes-vous sûr ? Votre compte ne sera plus protégé que par le mot de passe.",
       "disableYes": "Oui, désactiver"
+    },
+    "forcePassword": {
+      "title": "Changez votre mot de passe",
+      "subtitle": "Votre compte a été créé avec un mot de passe temporaire. Choisissez le vôtre pour continuer.",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "hint": "De 8 à 72 caractères.",
+      "submit": "Enregistrer et continuer",
+      "submitting": "Enregistrement…",
+      "tooShort": "Le mot de passe doit contenir de 8 à 72 caractères.",
+      "mismatch": "Les deux mots de passe ne correspondent pas.",
+      "failed": "Impossible de changer le mot de passe. Essayez-en un autre ou réessayez.",
+      "logout": "Se déconnecter"
     }
   },
   "membershipForm": {
