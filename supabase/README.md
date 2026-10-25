@@ -66,3 +66,9 @@ Prérequis : 0001 à 0012. Crée le bucket **privé** `internal-files` (20 Mo ma
 
 ## 0027 — علم كلمة المرور المؤقتة في الخادم
 Prérequis : 0002 et 0003. Ajoute `profiles.must_change_password` (migration des comptes existants depuis `user_metadata`) et un trigger sur `auth.users` qui remet le drapeau à `false` uniquement quand le hash du mot de passe change réellement. À exécuter **avant** de déployer le nouveau frontend et la fonction `admin-create-user`. Idempotente.
+
+## 0028 — حذف مستخدمي الإدارة من Supabase Auth
+Prérequis : 0002, 0008, 0009, 0012. Corrige « Database error deleting user » : `membership_requests.reviewed_by` passe en `ON DELETE SET NULL`, et les triggers de `audit_logs`, `budget_transactions` et `announcements` acceptent la mise à NULL de la référence uniquement sans session utilisateur (`auth.uid() is null` : dashboard Supabase / SQL Editor), sans qu'aucune autre colonne ne change. Idempotente.
+
+## 0029 — slug المشاريع وسياسة profiles
+Prérequis : 0003 et 0016. Remplace la contrainte `projects_slug_key` par un index unique partiel (`where deleted_at is null`) : le slug d'un projet supprimé est libéré. Ajoute `WITH CHECK` à la politique de mise à jour de `profiles`. Idempotente. Ne pas rejouer 0016 après celle-ci.

@@ -36,3 +36,28 @@ test('الملفات الأساسية للمستودع موجودة', () => {
     assert.ok(fs.existsSync(new URL(`../${f}`, import.meta.url)), `${f} مفقود`);
   }
 });
+
+test('0028: حذف مستخدم Auth ممكن دون كسر حماية السجلات (تصفير المرجع فقط وبلا جلسة مستخدم)', () => {
+  const code = stripSqlComments(read('supabase/migrations/0028_allow_admin_user_deletion.sql'));
+  assert.match(code, /foreign key \(reviewed_by\) references public\.profiles\(id\) on delete set null/);
+  // كل دالة معدَّلة تقيّد الاستثناء بغياب جلسة المستخدم
+  for (const fn of ['prevent_audit_log_update', 'budget_tx_guard', 'announcements_before_write']) {
+    const body = code.slice(code.indexOf(`function public.${fn}()`));
+    assert.match(body.slice(0, 1200), /auth\.uid\(\) is null/, fn);
+  }
+  assert.match(code, /raise exception 'سجلات audit_logs غير قابلة للتعديل'/);
+  assert.match(code, /raise exception 'لا يمكن تغيير بيانات الإنشاء'/);
+});
+
+test('0029: تفرّد slug للمشاريع غير المحذوفة فقط، وسياسة تعديل profiles فيها WITH CHECK', () => {
+  const code = stripSqlComments(read('supabase/migrations/0029_projects_slug_and_profiles_check.sql'));
+  assert.match(code, /drop constraint if exists projects_slug_key/);
+  assert.match(code, /create unique index if not exists uq_projects_slug_active\s+on public\.projects \(slug\)\s+where deleted_at is null/);
+  assert.match(code, /for update\s+using \(public\.is_super_admin\(\)\)\s+with check \(public\.is_super_admin\(\)\)/);
+});
+
+test('الراوتر: /admin يُحوَّل إلى صفحة الدخول (المدخل الوحيد للوحة) بدل 404', () => {
+  const router = read('src/app/router/index.jsx');
+  assert.match(router, /path: '\/admin',\s*element: <Navigate to="\/admin\/login" replace \/>/);
+  assert.match(router, /import \{[^}]*\bNavigate\b[^}]*\} from 'react-router-dom'/);
+});

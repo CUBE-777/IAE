@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { createBrowserRouter, Outlet } from 'react-router-dom';
+import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import Home from '../../pages/public/Home';
 import ProtectedRoute from '../../components/admin/ProtectedRoute';
 import RouteError from '../../components/common/RouteError';
@@ -78,6 +78,8 @@ export const router = createBrowserRouter([
       // رابط شخصي لنموذج الانخراط (رمز غير قابل للتخمين) — صفحة غير مفهرسة
       { path: '/membership-form/:token', element: <MembershipFormPage /> },
 
+      // /admin (بلا لاحقة) كان يعرض 404؛ المدخل الوحيد للوحة هو /admin/login (وهو يحوّل المسجَّل إلى اللوحة)
+      { path: '/admin', element: <Navigate to="/admin/login" replace /> },
       { path: '/admin/login', element: <Login /> },
       { path: '/admin/dashboard', element: protectedAdmin([], <Dashboard />) },
       { path: '/admin/members', element: protectedAdmin(ROLES_MEMBERS, <AdminMembers />) },
