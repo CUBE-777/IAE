@@ -187,3 +187,11 @@ src/
 - **0026**: بصمة العميل في حد معدل الانخراط تُجزَّأ بـ sha256 وملح سرّي مولّد داخل القاعدة (`membership_throttle_secret`) بدل md5 بملح ثابت.
 - `admin-create-user` تفرض `aal2` على من فعّل المصادقة الثنائية، وتُنشئ الحساب بعلم `must_change_password`؛ تعرض الواجهة شاشة إلزامية لاختيار كلمة مرور خاصة قبل دخول اللوحة.
 - بعد أي تحديث للدالة: `supabase functions deploy admin-create-user --no-verify-jwt`.
+
+## تحديث 0027 — تحصين علم كلمة المرور المؤقتة
+
+- كان علم «يجب تغيير كلمة المرور» في `user_metadata` فيستطيع صاحب الحساب إسقاطه بنفسه وتخطي الشاشة الإلزامية. صار عمودًا `profiles.must_change_password` لا يعدّله إلا `super_admin`، ويُسقطه trigger على `auth.users` تلقائيًا عند تغيّر كلمة المرور فعلًا (`supabase/migrations/0027_must_change_password_server_side.sql`، ويرحّل الحسابات القديمة).
+- **ترتيب النشر:** (1) نفّذ `0027` في SQL Editor، (2) انشر الواجهة، (3) `supabase functions deploy admin-create-user --no-verify-jwt`.
+- `admin-create-user` لم تعد تُعيد رسائل أخطاء Supabase الخام، وفيها حدّ بسيط (10 إنشاءات / 10 دقائق لكل مستدعٍ).
+- `trStrong` والإشعارات تبنيان عقد DOM/React مباشرة بدل `innerHTML`.
+- أُضيفت الملفات الأساسية: `.gitignore` و`.env.example` و`.github/workflows/ci.yml`. شغّل `npm install` مرة واحدة وارفع `package-lock.json` الناتج.

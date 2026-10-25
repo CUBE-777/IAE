@@ -18,7 +18,7 @@ function ensureContainer() {
     el.style.cssText = `
       position: fixed; top: 20px; left: 20px; z-index: 9999;
       display: flex; flex-direction: column; gap: 10px;
-      max-width: 340px; font-family: 'Tajawal', sans-serif;
+      max-width: 340px; font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
     `;
     document.body.appendChild(el);
   }
@@ -42,11 +42,13 @@ function show(type, message, opts = {}) {
     box-shadow:0 8px 24px rgba(0,0,0,.18); display:flex; align-items:center; gap:10px;
     font-size:.92rem; line-height:1.5; animation: toast-in .25s ease;
   `;
-  const safeMessage = String(message == null ? '' : message)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-  toast.innerHTML = `<span style="font-weight:700;">${s.icon}</span><span>${safeMessage}</span>`;
+  // نبني العقد بـ textContent (لا innerHTML) فلا حاجة للتهريب اليدوي ولا خطر حقن
+  const iconEl = document.createElement('span');
+  iconEl.style.fontWeight = '700';
+  iconEl.textContent = s.icon;
+  const textEl = document.createElement('span');
+  textEl.textContent = String(message == null ? '' : message);
+  toast.append(iconEl, textEl);
   container.appendChild(toast);
 
   if (type !== 'loading') {

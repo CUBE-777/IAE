@@ -5,6 +5,7 @@
  * dans une langue, on retombe sur l'arabe (jamais de clé technique affichée).
  * AdminLayout remonte son contenu à chaque changement de langue (key), donc tr() est relu à l'affichage.
  */
+import { Fragment } from 'react';
 import i18n from './index';
 import { ADMIN_DICT } from './adminDict.data';
 
@@ -32,16 +33,19 @@ export function tr(text, vars) {
   return interpolate(out, vars);
 }
 
-const escapeHtml = (v) =>
-  String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-
 /**
- * Variante pour les phrases contenant <strong>{{name}}</strong> : les variables sont échappées,
- * seules les balises <strong> du texte source sont conservées. Retourne un élément React-safe (span).
+ * Variante pour les phrases contenant <strong>{{name}}</strong> : le texte source est découpé en nœuds React
+ * (aucun innerHTML) ; seules les balises <strong> du texte source sont rendues, les variables restent du texte.
  */
 export function trStrong(text, vars) {
-  const safe = {};
-  Object.keys(vars || {}).forEach((k) => { safe[k] = escapeHtml(vars[k]); });
-  const html = tr(text, safe);
-  return <span dangerouslySetInnerHTML={{ __html: html }} />;
+  const template = tr(text);
+  const parts = template.split(/(<strong>[\s\S]*?<\/strong>)/g).filter((p) => p !== '');
+  return (
+    <span>
+      {parts.map((part, i) => {
+        const m = part.match(/^<strong>([\s\S]*?)<\/strong>$/);
+        return m ? <strong key={i}>{interpolate(m[1], vars)}</strong> : <Fragment key={i}>{interpolate(part, vars)}</Fragment>;
+      })}
+    </span>
+  );
 }

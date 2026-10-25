@@ -9,6 +9,10 @@
 //  - قبول الأدوار treasurer و developer وأدوار المكتب الجديدة (الكاتب العام ونوّابه).
 //  - دور developer لا يستطيع منحه إلا developer (الـ service_role يتجاوز triggers القاعدة).
 //
+//  - علم «تغيير كلمة المرور المؤقتة» يُحفظ في profiles.must_change_password (migration 0027) لا في
+//    user_metadata (الذي يستطيع صاحب الحساب تعديله)، ويُسقطه trigger في القاعدة عند تغيّر كلمة المرور.
+//  - رسائل الخطأ الداخلية لا تُعاد للعميل، وحدّ بسيط لعدد عمليات الإنشاء لكل مستدعٍ.
+//
 // service_role يبقى داخل بيئة الـ Edge Function فقط.
 // النشر:  supabase functions deploy admin-create-user
 
@@ -58,6 +62,23 @@ function jwtAal(token: string): string {
   } catch {
     return 'aal1';
   }
+}
+
+// حدّ بسيط (best-effort) لكل نسخة تشغيل: 10 عمليات إنشاء لكل مستدعٍ خلال 10 دقائق.
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const RATE_MAX = 10;
+const recentCalls = new Map<string, number[]>();
+
+function rateLimited(userId: string): boolean {
+  const now = Date.now();
+  const hits = (recentCalls.get(userId) || []).filter((t) => now - t < RATE_WINDOW_MS);
+  if (hits.length >= RATE_MAX) {
+    recentCalls.set(userId, hits);
+    return true;
+  }
+  hits.push(now);
+  recentCalls.set(userId, hits);
+  return false;
 }
 
 function json(body: unknown, status = 200) {
@@ -120,8 +141,12 @@ async function handle(req: Request): Promise<Response> {
       }
     }
 
+    if (rateLimited(userData.user.id)) {
+      return json({ error: 'محاولات كثيرة، حاول لاحقًا' }, 429);
+    }
+
     const body = await req.json().catch(() => ({}));
-    const email =String(body.email || '').trim().toLowerCase();
+    const email = String(body.email || '').trim().toLowerCase();
     const full_name = String(body.full_name || '').trim();
     const role = String(body.role || '').trim();
     const password = String(body.password || '');
@@ -142,11 +167,17 @@ async function handle(req: Request): Promise<Response> {
       email,
       password,
       email_confirm: true,
-      // الحساب الجديد يُلزَم بتغيير كلمة المرور المؤقتة عند أول دخول (ForcePasswordChange في الواجهة)
-      user_metadata: { must_change_password: true },
     });
     if (createErr || !created?.user) {
-      return json({ error: createErr?.message || 'تعذر إنشاء المستخدم' }, 400);
+      console.error('admin-create-user: createUser failed:', createErr);
+      const msg = String(createErr?.message || '').toLowerCase();
+      if (createErr?.status === 422 || msg.includes('already') || msg.includes('registered')) {
+        return json({ error: 'هذا البريد الإلكتروني مسجّل مسبقًا' }, 409);
+      }
+      if (msg.includes('password')) {
+        return json({ error: 'كلمة المرور غير مقبولة (اختر كلمة أقوى)' }, 400);
+      }
+      return json({ error: 'تعذر إنشاء المستخدم' }, 400);
     }
 
     const { error: insertErr } = await adminClient.from('profiles').insert({
@@ -155,11 +186,14 @@ async function handle(req: Request): Promise<Response> {
       email,
       role,
       is_active: true,
+      // الحساب الجديد يُلزَم بتغيير كلمة المرور المؤقتة عند أول دخول (ForcePasswordChange في الواجهة)
+      must_change_password: true,
     });
     if (insertErr) {
       // تراجع: لا يبقى حساب Auth بلا profile
+      console.error('admin-create-user: profile insert failed:', insertErr);
       await adminClient.auth.admin.deleteUser(created.user.id);
-      return json({ error: insertErr.message }, 400);
+      return json({ error: 'تعذر إنشاء ملف المسؤول' }, 400);
     }
 
     return json({ id: created.user.id, message: 'تم إنشاء المسؤول.' });

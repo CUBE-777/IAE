@@ -63,3 +63,6 @@ Prérequis : 0001 à 0012 (rôles, `audit_logs`, `set_updated_at`). Indépendant
 
 ## 0017 — fichiers internes (administration)
 Prérequis : 0001 à 0012. Crée le bucket **privé** `internal-files` (20 Mo max, types limités), la table `internal_files`, les fonctions `can_access_internal_files()` / `can_delete_internal_files()` et `request_internal_file_download()` (téléchargement journalisé, lien signé de 60 s). Accès : developer, super_admin, editor, members_manager ; suppression logique : developer et super_admin. Idempotente.
+
+## 0027 — علم كلمة المرور المؤقتة في الخادم
+Prérequis : 0002 et 0003. Ajoute `profiles.must_change_password` (migration des comptes existants depuis `user_metadata`) et un trigger sur `auth.users` qui remet le drapeau à `false` uniquement quand le hash du mot de passe change réellement. À exécuter **avant** de déployer le nouveau frontend et la fonction `admin-create-user`. Idempotente.

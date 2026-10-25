@@ -52,8 +52,9 @@ export async function unenrollTotp(factorId) {
 }
 
 /**
- * يغيّر كلمة مرور المستخدم الحالي ويُسقط علم must_change_password (يضعه admin-create-user للحسابات الجديدة).
- * ملاحظة: user_metadata قابل للتعديل من صاحب الحساب، فهذا العلم تنبيه لتجربة الاستخدام وليس حدًّا أمنيًا.
+ * يغيّر كلمة مرور المستخدم الحالي. علم profiles.must_change_password (يضعه admin-create-user) يُسقطه
+ * trigger في القاعدة عند تغيّر كلمة المرور فعلًا (migration 0027)؛ نُسقط هنا فقط العلم القديم في
+ * user_metadata لتنظيف الحسابات التي أُنشئت قبل 0027.
  */
 export async function changeOwnPassword(password) {
   const { error } = await supabase.auth.updateUser({ password, data: { must_change_password: false } });

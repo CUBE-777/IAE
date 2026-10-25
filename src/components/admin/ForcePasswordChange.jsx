@@ -6,7 +6,7 @@ import ThemeToggle from '../layout/ThemeToggle';
 import '../../styles/admin-login.css';
 
 /**
- * شاشة إلزامية لحساب أنشأه مسؤول بكلمة مرور مؤقتة (علم user_metadata.must_change_password).
+ * شاشة إلزامية لحساب أنشأه مسؤول بكلمة مرور مؤقتة (علم profiles.must_change_password).
  * تعرضها ProtectedRoute بدل أي صفحة إدارية حتى يختار صاحب الحساب كلمة مرور خاصة به.
  */
 export default function ForcePasswordChange() {

@@ -65,8 +65,9 @@ export default function ProtectedRoute({ roles, children }) {
     return <Navigate to="/admin/login?reason=inactive" replace />;
   }
 
-  // حساب أُنشئ بكلمة مرور مؤقتة: لا دخول للوحة قبل اختيار كلمة مرور خاصة
-  if (session?.user?.user_metadata?.must_change_password === true) {
+  // حساب أُنشئ بكلمة مرور مؤقتة: لا دخول للوحة قبل اختيار كلمة مرور خاصة.
+  // العلم في profiles (migration 0027): لا يعدّله المسؤول العادي، ويُسقطه الخادم عند تغيّر كلمة المرور.
+  if (profile?.must_change_password === true) {
     return <ForcePasswordChange />;
   }
 
