@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import InteriorLayout from '../../layouts/InteriorLayout';
 import PageHero from '../../components/layout/PageHero';
@@ -8,6 +8,8 @@ import ImagePicker from '../../components/common/ImagePicker';
 import { compressImage } from '../../utils/imageCompress';
 import { getMembershipForm, submitMembershipForm, uploadMembershipDoc } from '../../services/supabase/membershipFlow.service';
 import { validateName, validatePhone, validateRequired, validateEmail, validateMaxLength } from '../../utils/validators';
+import { SUPPORTED_LANGUAGES, applyDocumentDirection } from '../../i18n';
+import { LEVELS } from '../../constants/membershipLevels.js';
 import '../../styles/membership-flow.css';
 
 const EMPTY = {
@@ -57,7 +59,8 @@ function StateBox({ title, text }) {
 
 export default function MembershipFormPage() {
   const { token } = useParams();
-  const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const { t, i18n } = useTranslation();
   const formRef = useRef(null);
   const [info, setInfo] = useState(null); // réponse de get_membership_form
   const [loadError, setLoadError] = useState(false);
@@ -69,6 +72,18 @@ export default function MembershipFormPage() {
   const [submitting, setSubmitting] = useState(false);
   const [stage, setStage] = useState('idle'); // idle | uploading | sending
   const [done, setDone] = useState(false);
+
+  // لغة الرسالة التي وصلت للمنخرط (?lang=fr|en|ar): تفتح الصفحة بها مرة واحدة دون تغيير تفضيله المحفوظ.
+  // بعدها يستطيع التبديل بحرية من مبدّل اللغة.
+  useEffect(() => {
+    const wanted = searchParams.get('lang');
+    const known = SUPPORTED_LANGUAGES.find((l) => l.code === wanted);
+    if (known && known.code !== i18n.language) {
+      i18n.changeLanguage(known.code);
+      applyDocumentDirection(known.code);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     document.title = `${t('membershipForm.pageTitle')} — ${t('brand.name')}`;
@@ -106,6 +121,7 @@ export default function MembershipFormPage() {
     return () => { alive = false; };
   }, [token]);
 
+  // القيمة المحفوظة عربية دائمًا (LEVELS.ar) ليبقى التخزين موحّدًا، والنص المعروض بلغة الزائر
   const levels = useMemo(() => t('membershipForm.levels', { returnObjects: true }), [t]);
 
   const handleChange = (e) => {
@@ -257,7 +273,7 @@ export default function MembershipFormPage() {
                   {(a) => (
                     <select {...a} name="level" value={values.level} onChange={handleChange}>
                       <option value="">{t('membershipForm.choose')}</option>
-                      {Array.isArray(levels) && levels.map((l) => <option key={l} value={l}>{l}</option>)}
+                      {Array.isArray(levels) && levels.map((label, i) => <option key={LEVELS.ar[i] || label} value={LEVELS.ar[i] || label}>{label}</option>)}
                     </select>
                   )}
                 </FormField>

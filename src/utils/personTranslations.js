@@ -5,6 +5,25 @@
  *   { name_latin, fr: { position, bio, public_bio, study_path, profession, track, extra: [{label,value}] }, en: {...} }
  * أي حقل ترجمة غير موجود أو فارغ يعود تلقائيًا إلى النص العربي. لا يُغيّر الكائن الأصلي.
  */
+import { LEVELS } from '../constants/membershipLevels.js';
+
+const levelsOf = (lg) => LEVELS[lg] || [];
+
+/**
+ * المستوى الدراسي يُحفظ في النموذج بقيمته العربية القانونية (وقد توجد سجلات قديمة بالفرنسية/الإنجليزية).
+ * هذه الدالة تُرجع صيغة اللغة المطلوبة إن طابقت القيمة أحد المستويات المعروفة، وإلا تُرجع القيمة كما هي.
+ */
+export function translateLevel(value, lang) {
+  const v = typeof value === 'string' ? value.trim() : '';
+  if (!v) return value;
+  const target = levelsOf(lang === 'fr' || lang === 'en' ? lang : 'ar');
+  for (const lg of ['ar', 'fr', 'en']) {
+    const idx = levelsOf(lg).indexOf(v);
+    if (idx >= 0 && target[idx]) return target[idx];
+  }
+  return value;
+}
+
 const isObj = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
 const clean = (v) => (typeof v === 'string' ? v.trim() : '');
 
@@ -23,14 +42,16 @@ export function localizePerson(person, lang) {
   const role = isAr ? person.role : clean(person.roleTr && person.roleTr[lang]) || person.role;
 
   let extra = person.extra;
-  if (!isAr && isObj(person.extra) && Array.isArray(person.extra.items)) {
-    const trItems = Array.isArray(L.extra) ? L.extra : [];
+  if (isObj(person.extra) && Array.isArray(person.extra.items)) {
+    const trItems = !isAr && Array.isArray(L.extra) ? L.extra : [];
     extra = {
       ...person.extra,
-      items: person.extra.items.map((it, i) => ({
-        label: clean(trItems[i] && trItems[i].label) || (it && it.label),
-        value: clean(trItems[i] && trItems[i].value) || (it && it.value),
-      })),
+      items: person.extra.items.map((it, i) => {
+        const label = clean(trItems[i] && trItems[i].label) || (it && it.label);
+        const value = clean(trItems[i] && trItems[i].value) || (it && it.value);
+        // قيمة «المستوى الدراسي» تتبع لغة الزائر دائمًا (مهما كانت لغة إدخالها)
+        return { ...(it || {}), label, value: translateLevel(value, lang) };
+      }),
     };
   }
 

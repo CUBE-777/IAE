@@ -312,7 +312,8 @@
     "about": "À propos",
     "studyPath": "Parcours académique",
     "additionalInfo": "Informations complémentaires",
-    "links": "Réseaux sociaux"
+    "links": "Réseaux sociaux",
+    "website": "Site personnel"
   },
   "board": {
     "featured": "À la tête du bureau",
@@ -620,7 +621,9 @@
       "copyLink": "Copier le lien",
       "copied": "Copié",
       "copyFailed": "Impossible de copier le lien",
-      "waMessage": "Bonjour {{name}}, merci de votre intérêt pour le club Intelligence Artificielle Embarquée. Merci de remplir le formulaire d'adhésion via ce lien personnel (valable {{days}} jours) :\n{{link}}",
+      "waMessage": "Bonjour {{name}},\n\nMerci de votre intérêt pour le club Intelligence Artificielle Embarquée.\n\nPour finaliser votre demande, merci de remplir le formulaire d'adhésion via votre lien personnel :\n{{link}}\n\nCela ne prend que quelques minutes ; prévoyez une photo d'identité nette (la photo de la carte nationale est facultative).\nCe lien vous est réservé et reste valable jusqu'au {{date}}.\n\nSi vous rencontrez la moindre difficulté, répondez simplement à ce message.\nL'équipe du club",
+      "copyMessage": "Copier le message",
+      "msgEditHint": "Modifiez le texte avant l'envoi si besoin ; il revient au modèle si vous changez de langue.",
       "formDetailsTitle": "Formulaire d'adhésion",
       "fBirthDate": "Date de naissance",
       "fUniversity": "Université",

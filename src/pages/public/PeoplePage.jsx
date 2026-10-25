@@ -6,6 +6,7 @@ import PersonCard from '../../components/common/PersonCard';
 import PersonModal from '../../components/common/PersonModal';
 import { fetchPeopleDirectory } from '../../services/supabase/peopleDirectory.service';
 import { normalizeSearchValue, matchesMemberSearch } from '../../utils/arabicSearch';
+import { localizePerson } from '../../utils/personTranslations';
 
 /**
  * صفحة موحّدة تُستخدم لكل من /members و/board — تطابق تمامًا العلاقة بين
@@ -25,11 +26,12 @@ export default function PeoplePage({
   searchPlaceholder,
 }) {
   const isBoard = listKey === 'board';
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = String(i18n.resolvedLanguage || i18n.language || 'ar').slice(0, 2);
   const [people, setPeople] = useState(null); // null = يحمَّل
   const [query, setQuery] = useState('');
   const [error, setError] = useState(false);
-  const [selected, setSelected] = useState(null); // العضو المعروض ملفه في النافذة
+  const [selectedKey, setSelectedKey] = useState(null); // مفتاح العضو المعروض ملفه (نشتق الكائن من القائمة ليتبع لغة الزائر)
 
   const load = useCallback(() => {
     let alive = true;
@@ -48,11 +50,22 @@ export default function PeoplePage({
 
   useEffect(() => load(), [load]);
 
+  // عرض الأشخاص بلغة الزائر (الاسم اللاتيني، المنصب، النبذة...) مع رجوع تلقائي للعربية عند غياب الترجمة
+  const localized = useMemo(
+    () => (people ? people.map((p, i) => ({ ...localizePerson(p, lang), _key: p.id ?? `${p.name}-${i}` })) : null),
+    [people, lang]
+  );
+
   const filtered = useMemo(() => {
-    if (!people) return [];
+    if (!localized) return [];
     const normalizedQuery = normalizeSearchValue(query);
-    return people.filter((p) => matchesMemberSearch(p, normalizedQuery));
-  }, [people, query]);
+    return localized.filter((p) => matchesMemberSearch(p, normalizedQuery));
+  }, [localized, query]);
+
+  const selected = useMemo(
+    () => (selectedKey == null || !localized ? null : localized.find((p) => p._key === selectedKey) || null),
+    [localized, selectedKey]
+  );
 
   useEffect(() => {
     document.title = `${title} — ${t('brand.name')}`;
@@ -100,12 +113,12 @@ export default function PeoplePage({
             )}
             {filtered.map((person, i) => (
               <PersonCard
-                key={`${person.name}-${i}`}
+                key={person._key}
                 person={person}
                 fallbackBadge={fallbackBadge}
                 variant={isBoard ? 'board' : 'member'}
                 featured={isBoard && i === 0 && !query}
-                onOpen={isBoard ? undefined : setSelected}
+                onOpen={isBoard ? undefined : (p) => setSelectedKey(p._key)}
               />
             ))}
           </div>
@@ -117,7 +130,7 @@ export default function PeoplePage({
           </div>
         </div>
       </section>
-      {selected && <PersonModal person={selected} fallbackBadge={fallbackBadge} onClose={() => setSelected(null)} />}
+      {selected && <PersonModal person={selected} fallbackBadge={fallbackBadge} onClose={() => setSelectedKey(null)} />}
     </InteriorLayout>
   );
 }

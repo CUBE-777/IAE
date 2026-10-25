@@ -46,6 +46,7 @@ export default function Requests() {
   const [settings, setSettings] = useState({ fee: null, season: null });
   const [linkInfo, setLinkInfo] = useState(null); // { row, token, expires_at }
   const [msgLang, setMsgLang] = useState('ar');
+  const [waCustom, setWaCustom] = useState(null); // نص معدَّل يدويًا؛ null = القالب الجاهز
   const [copied, setCopied] = useState(false);
   const [formData, setFormData] = useState(undefined); // undefined = chargement, null = aucun
 
@@ -80,12 +81,20 @@ export default function Requests() {
   const closeLink = () => {
     setLinkInfo(null);
     setCopied(false);
+    setWaCustom(null);
   };
 
-  const formLink = (token) => `${window.location.origin}/membership-form/${token}`;
+  // رابط النموذج يحمل لغة الرسالة (?lang=) فتفتح الصفحة بنفس لغة الرسالة التي وصلت للمنخرط
+  const formLink = (token, lng) => `${window.location.origin}/membership-form/${token}${lng ? `?lang=${lng}` : ''}`;
 
-  const waText = (row, token, lng) =>
-    t('admin.requests.waMessage', { lng, name: row.full_name, link: formLink(token), days: 7 });
+  const waText = (info, lng) =>
+    t('admin.requests.waMessage', {
+      lng,
+      name: info.row.full_name,
+      link: formLink(info.token, lng),
+      date: formatDate(info.expires_at, lng), // تاريخ الانتهاء الفعلي بدل مدة ثابتة
+    });
+  const waFinalText = (info, lng) => (waCustom != null ? waCustom : waText(info, lng));
 
   const doSendForm = async (row) => {
     setBusy(true);
@@ -95,6 +104,7 @@ export default function Requests() {
       window.notify?.success(t('admin.requests.issued'));
       setLinkInfo({ row, token: res.token, expires_at: res.expires_at });
       setCopied(false);
+      setWaCustom(null);
       load();
     } catch (err) {
       window.notify?.fromError(err, t('admin.requests.issueFailed'));
@@ -105,8 +115,17 @@ export default function Requests() {
 
   const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(formLink(linkInfo.token));
-      setCopied(true);
+      await navigator.clipboard.writeText(formLink(linkInfo.token, msgLang));
+      setCopied('link');
+    } catch {
+      window.notify?.error?.(t('admin.requests.copyFailed'));
+    }
+  };
+
+  const copyMessage = async () => {
+    try {
+      await navigator.clipboard.writeText(waFinalText(linkInfo, msgLang));
+      setCopied('message');
     } catch {
       window.notify?.error?.(t('admin.requests.copyFailed'));
     }
@@ -327,7 +346,7 @@ export default function Requests() {
           </p>
           <div className="admin-form-group">
             <label htmlFor="waLang">{t('admin.requests.msgLang')}</label>
-            <select id="waLang" className="admin-select" value={msgLang} onChange={(e) => setMsgLang(e.target.value)}>
+            <select id="waLang" className="admin-select" value={msgLang} onChange={(e) => { setMsgLang(e.target.value); setWaCustom(null); setCopied(false); }}>
               <option value="ar">العربية</option>
               <option value="fr">Français</option>
               <option value="en">English</option>
@@ -335,7 +354,15 @@ export default function Requests() {
           </div>
           <div className="admin-form-group">
             <label htmlFor="waPreview">{t('admin.requests.msgPreview')}</label>
-            <textarea id="waPreview" className="admin-textarea" rows={6} readOnly value={waText(linkInfo.row, linkInfo.token, msgLang)} />
+            <textarea
+              id="waPreview"
+              className="admin-textarea"
+              rows={12}
+              dir={msgLang === 'ar' ? 'rtl' : 'ltr'}
+              value={waFinalText(linkInfo, msgLang)}
+              onChange={(e) => { setWaCustom(e.target.value); setCopied(false); }}
+            />
+            <p className="admin-hint">{t('admin.requests.msgEditHint')}</p>
           </div>
           <p className="admin-hint">
             {t('admin.requests.linkExpires', { date: formatDate(linkInfo.expires_at, i18n.language) })}
@@ -343,14 +370,17 @@ export default function Requests() {
           <div className="admin-modal-actions">
             <a
               className="admin-btn admin-btn-primary"
-              href={buildWhatsappLink(linkInfo.row.phone, waText(linkInfo.row, linkInfo.token, msgLang))}
+              href={buildWhatsappLink(linkInfo.row.phone, waFinalText(linkInfo, msgLang))}
               target="_blank"
               rel="noopener noreferrer"
             >
               {t('admin.requests.waOpen')}
             </a>
+            <button className="admin-btn admin-btn-ghost" onClick={copyMessage}>
+              {copied === 'message' ? t('admin.requests.copied') : t('admin.requests.copyMessage')}
+            </button>
             <button className="admin-btn admin-btn-ghost" onClick={copyLink}>
-              {copied ? t('admin.requests.copied') : t('admin.requests.copyLink')}
+              {copied === 'link' ? t('admin.requests.copied') : t('admin.requests.copyLink')}
             </button>
             <button className="admin-btn admin-btn-ghost" onClick={closeLink}>{t('admin.common.close')}</button>
           </div>

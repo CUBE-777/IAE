@@ -3,6 +3,7 @@ import { supabasePublic } from './publicClient';
 
 function memberRowToPerson(row) {
   return {
+    id: row.id,
     name: row.full_name,
     role: null, // يُترجَم في الواجهة (person.memberRole)
     university: row.university,
@@ -18,13 +19,20 @@ function memberRowToPerson(row) {
     studyPath: row.study_path,
     socials: row.socials,
     extra: row.extra,
+    // ترجمات FR/EN (migration 0011): { name_latin, fr: {...}, en: {...} } — تُعرض عبر localizePerson
+    tr: row.translations,
   };
 }
 
 function boardRowToPerson(row) {
+  const tr = row.translations && typeof row.translations === 'object' ? row.translations : null;
   return {
+    id: row.id,
     name: row.full_name,
     role: row.position,
+    // المنصب بلغات الزائر (translations.fr.position / translations.en.position)
+    roleTr: tr ? { fr: tr.fr && tr.fr.position, en: tr.en && tr.en.position } : null,
+    tr,
     university: row.university,
     age: null,
     promo: null,
@@ -37,13 +45,17 @@ function boardRowToPerson(row) {
 
 export async function fetchPeopleDirectory(listKey) {
   if (listKey === 'board') {
-    const { data, error } = await supabase
+    const BOARD_BASE = 'id, full_name, position, photo_url, university, bio, sort_order, is_active';
+    const queryBoard = (cols) => supabase
       .from('board_members')
-      .select('id, full_name, position, photo_url, university, bio, sort_order, is_active')
+      .select(cols)
       .eq('is_active', true)
       .order('sort_order', { ascending: true });
-    if (error) throw error;
-    return (data || []).map(boardRowToPerson);
+    // نطلب عمود الترجمات أولًا؛ إن لم تُشغَّل migration 0011 نرجع للأعمدة الأساسية فلا تتعطل الصفحة.
+    let res = await queryBoard(`${BOARD_BASE}, translations`);
+    if (res.error) res = await queryBoard(BOARD_BASE);
+    if (res.error) throw res.error;
+    return (res.data || []).map(boardRowToPerson);
   }
   // نطلب فقط الأعمدة العامة غير الحساسة (RLS يرفض الباقي أصلاً لدور anon).
   // نحاول أولًا مع أعمدة الملف العام الجديدة، وإن لم تكن موجودة بعد (migration 0010
@@ -56,7 +68,10 @@ export async function fetchPeopleDirectory(listKey) {
     .eq('status', 'active')
     .is('deleted_at', null)
     .order('created_at', { ascending: false });
-  let res = await queryMembers(`${BASE_COLS}, public_bio, study_path, socials, extra`);
+  const PROFILE_COLS = `${BASE_COLS}, public_bio, study_path, socials, extra`;
+  // الترتيب: الملف العام + الترجمات ← الملف العام وحده ← الأعمدة الأساسية (كل مرحلة احتياط لعدم تشغيل migration معيّنة)
+  let res = await queryMembers(`${PROFILE_COLS}, translations`);
+  if (res.error) res = await queryMembers(PROFILE_COLS);
   if (res.error) res = await queryMembers(BASE_COLS);
   if (res.error) throw res.error;
   return (res.data || []).map(memberRowToPerson);

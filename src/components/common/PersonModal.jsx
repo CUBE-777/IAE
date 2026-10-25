@@ -139,7 +139,7 @@ export default function PersonModal({ person, fallbackBadge, onClose }) {
                 return (
                   <a key={s.key} href={s.href} target="_blank" rel="noopener noreferrer nofollow" className="person-social-link">
                     <Icon size={16} aria-hidden="true" />
-                    <span>{s.label}</span>
+                    <span>{s.key === 'website' ? t('person.website') : s.label}</span>
                   </a>
                 );
               })}
