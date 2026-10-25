@@ -61,3 +61,11 @@ test('الراوتر: /admin يُحوَّل إلى صفحة الدخول (الم
   assert.match(router, /path: '\/admin',\s*element: <Navigate to="\/admin\/login" replace \/>/);
   assert.match(router, /import \{[^}]*\bNavigate\b[^}]*\} from 'react-router-dom'/);
 });
+
+test('واجهة: مبدّل اللغة في الإدارة يتبع ألوان اللوحة، وهيدر الهاتف لا يفيض', () => {
+  const adminCss = read('src/styles/admin-enhancements.css');
+  assert.match(adminCss, /\.admin-sidebar-lang \.lang-switcher-current\s*\{[^}]*color:\s*var\(--admin-text\)/);
+  const nav = read('src/styles/nav-responsive.css');
+  assert.match(nav, /@media \(max-width: 560px\)[\s\S]*header \.brand\s*\{[^}]*min-width:\s*0/);
+  assert.match(nav, /header \.header-tools\s*\{[^}]*flex:\s*0 0 auto/);
+});

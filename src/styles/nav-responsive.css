@@ -172,6 +172,29 @@
   .nav-more-menu { display: contents; }
 }
 
+/* ---------- Hôtes mobiles : l'en-tête ne doit jamais déborder (nom long en FR/EN) ----------
+   Le bloc marque prend l'espace restant et peut rétrécir (min-width: 0) ; les outils (thème + langue)
+   et le bouton du menu gardent leur taille et restent entièrement visibles. */
+@media (max-width: 560px) {
+  header .container { gap: 8px; padding-inline: 14px; }
+  header .brand { flex: 1 1 0; min-width: 0; gap: 8px; }
+  header .brand-text {
+    min-width: 0;
+    font-size: 0.78rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+  header .nav-toggle { flex: 0 0 auto; min-width: 40px; }
+  header .header-tools { flex: 0 0 auto; margin-inline-start: 0; gap: 6px; }
+  header .lang-switcher-current { padding: 6px 8px; }
+}
+@media (max-width: 380px) {
+  header .brand img { width: 34px; height: 34px; }
+  header .brand-text { font-size: 0.72rem; }
+  header .theme-toggle { width: 32px; height: 32px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nav-more-caret { transition: none; }
 }

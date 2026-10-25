@@ -73,6 +73,15 @@ html[data-theme='dark'] .hero .btn-gold,
 html[data-theme='dark'] .page-hero .btn-gold,
 html[data-theme='dark'] .on-navy .btn-gold { background: #fff; color: var(--navy); }
 
+/* .btn-ghost : texte blanc prévu pour les fonds bleus (hero, cartes d'activité). Sur surface claire
+   (galerie, pages 404/erreur, sélecteur d'image du formulaire d'adhésion) il était invisible en thème clair. */
+.gallery .btn-ghost,
+.not-found-section .btn-ghost,
+.btn-ghost.mf-picker-btn { color: var(--heading); border-color: var(--heading); }
+.gallery .btn-ghost:hover,
+.not-found-section .btn-ghost:hover,
+.btn-ghost.mf-picker-btn:hover { background: var(--navy-mid); border-color: var(--navy-mid); color: #fff; }
+
 /* Boutons « contour » sur surface : lisibles dans les deux thèmes */
 .interior-btn, .btn-outline { border-color: var(--heading); color: var(--heading); }
 .interior-btn:hover, .btn-outline:hover { background: var(--navy-mid); border-color: var(--navy-mid); color: #fff; }
@@ -110,6 +119,7 @@ html[data-theme='dark'] .ann-board-panel,
 html[data-theme='dark'] .main-card,
 html[data-theme='dark'] .sidebar-card,
 html[data-theme='dark'] .person-modal { border-color: var(--border); }
+html:not([data-theme='dark']) .people-link:not(.featured) { box-shadow: var(--shadow-sm); }
 input, textarea, select { color-scheme: inherit; }
 html[data-theme='dark'] input,
 html[data-theme='dark'] textarea,

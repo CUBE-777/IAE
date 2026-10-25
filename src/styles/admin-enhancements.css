@@ -67,6 +67,21 @@
   top: auto;
   bottom: calc(100% + 6px);
 }
+/* مبدّل اللغة مصمَّم أصلًا للهيدر الأزرق (نص أبيض): في الإدارة يتبع ألوان اللوحة حتى لا يختفي في الوضع الفاتح */
+.admin-sidebar-lang .lang-switcher-current {
+  color: var(--admin-text);
+  background: var(--admin-surface-alt);
+  border-color: var(--admin-border);
+  min-height: 36px;
+}
+.admin-sidebar-lang .lang-switcher-current:hover { background: var(--admin-accent-soft); }
+.admin-sidebar-lang .lang-switcher-menu {
+  background: var(--admin-surface);
+  border-color: var(--admin-border);
+  box-shadow: var(--admin-glow);
+}
+.admin-sidebar-lang .lang-switcher-menu li button { color: var(--admin-text); }
+.admin-sidebar-lang .lang-switcher-menu li button:hover { background: var(--admin-accent-soft); }
 .admin-logout-btn svg {
   margin-inline-end: 6px;
 }
