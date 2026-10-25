@@ -16,6 +16,41 @@ export async function logout() {
   await supabase.auth.signOut();
 }
 
+/* ---------- المصادقة الثنائية (TOTP) — اختيارية؛ يفرضها الخادم لمن فعّلها (migration 0024) ---------- */
+
+/** { currentLevel, nextLevel } — nextLevel='aal2' مع currentLevel='aal1' يعني: يلزم إدخال رمز التطبيق. */
+export async function getAssuranceLevel() {
+  const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (error) throw error;
+  return data;
+}
+
+/** العوامل الموثّقة (verified) فقط للمستخدم الحالي. */
+export async function listVerifiedTotpFactors() {
+  const { data, error } = await supabase.auth.mfa.listFactors();
+  if (error) throw error;
+  return data?.totp || []; // المصفوفة totp تضم الموثّقة فقط في supabase-js
+}
+
+/** يبدأ تسجيل عامل جديد: يُرجع { id, qr (data:image/svg+xml), secret }. لا يصبح فعّالًا قبل verify. */
+export async function enrollTotp() {
+  const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: `iae-${Date.now()}` });
+  if (error) throw error;
+  return { id: data.id, qr: data.totp.qr_code, secret: data.totp.secret };
+}
+
+/** يتحقق من رمز من 6 أرقام (تسجيل جديد أو إتمام تسجيل الدخول) ويرفع الجلسة إلى aal2. */
+export async function verifyTotp(factorId, code) {
+  const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code: String(code || '').trim() });
+  if (error) throw error;
+}
+
+/** يلغي عاملًا (يتطلب جلسة aal2 إن كان موثّقًا). */
+export async function unenrollTotp(factorId) {
+  const { error } = await supabase.auth.mfa.unenroll({ factorId });
+  if (error) throw error;
+}
+
 export async function getSession() {
   const { data } = await supabase.auth.getSession();
   return data.session;

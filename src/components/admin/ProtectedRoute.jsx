@@ -12,7 +12,7 @@ import { useAuth } from '../../app/providers/AuthProvider';
  */
 export default function ProtectedRoute({ roles, children }) {
   const { t } = useTranslation();
-  const { status, profile, profileError, logout, refresh } = useAuth();
+  const { status, profile, profileError, mfaRequired, logout, refresh } = useAuth();
   const location = useLocation();
   const inactive = status === 'authenticated' && !profileError && (!profile || !profile.is_active);
   const loggedOutRef = useRef(false);
@@ -52,6 +52,11 @@ export default function ProtectedRoute({ roles, children }) {
   }
 
   if (status === 'anonymous') {
+    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+  }
+
+  // مصادقة ثنائية مفعّلة لكن الرمز لم يُدخل بعد: شاشة الرمز في صفحة الدخول
+  if (status === 'authenticated' && mfaRequired) {
     return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
 

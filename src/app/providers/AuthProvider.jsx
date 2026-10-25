@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '../../services/supabase/client';
-import { getSession, getProfile, login as loginRequest, logout as logoutRequest } from '../../services/supabase/auth.service';
+import { getSession, getProfile, getAssuranceLevel, login as loginRequest, logout as logoutRequest } from '../../services/supabase/auth.service';
 
 const AuthContext = createContext(null);
 
@@ -10,19 +10,29 @@ const AuthContext = createContext(null);
  * التطبيق، ويستمع لتغيّرات الجلسة (onAuthStateChange) بدل تكرار
  * Auth.requireAuth() في رأس كل صفحة إدارية كما كان في المشروع الأصلي.
  * status: 'loading' | 'authenticated' | 'anonymous'
+ * mfaRequired: true عندما فعّل المستخدم المصادقة الثنائية لكن جلسته الحالية بكلمة المرور فقط (aal1)؛
+ *   تعرض الواجهة شاشة الرمز، ويرفض الخادم أي صلاحية إدارية حتى يكتمل (migration 0024).
  */
 export function AuthProvider({ children }) {
-  const [state, setState] = useState({ status: 'loading', session: null, profile: null, profileError: false });
+  const [state, setState] = useState({ status: 'loading', session: null, profile: null, profileError: false, mfaRequired: false });
 
   const refresh = useCallback(async () => {
     try {
       const session = await getSession();
       if (!session) {
-        setState({ status: 'anonymous', session: null, profile: null, profileError: false });
+        setState({ status: 'anonymous', session: null, profile: null, profileError: false, mfaRequired: false });
         return;
       }
       const profile = await getProfile();
-      setState({ status: 'authenticated', session, profile, profileError: false });
+      // فشل فحص مستوى التحقق لا يمنع الدخول (الخادم هو المرجع)، لكنه يُسجَّل
+      let mfaRequired = false;
+      try {
+        const aal = await getAssuranceLevel();
+        mfaRequired = aal?.nextLevel === 'aal2' && aal?.currentLevel !== 'aal2';
+      } catch (mfaErr) {
+        console.error('تعذر فحص مستوى المصادقة الثنائية:', mfaErr);
+      }
+      setState({ status: 'authenticated', session, profile, profileError: false, mfaRequired });
     } catch (err) {
       // فشل مؤقت (شبكة/خادم): لا نُسجّل الخروج. نُبقي آخر profile معروف إن وُجد، وإلا نعلّم الخطأ
       // ليعرض ProtectedRoute زر "إعادة المحاولة" بدل إخراج المستخدم.
@@ -30,7 +40,7 @@ export function AuthProvider({ children }) {
       setState((prev) =>
         prev.profile
           ? { ...prev, profileError: false }
-          : { status: 'authenticated', session: prev.session, profile: null, profileError: true },
+          : { status: 'authenticated', session: prev.session, profile: null, profileError: true, mfaRequired: false },
       );
     }
   }, []);
@@ -50,7 +60,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     await logoutRequest();
-    setState({ status: 'anonymous', session: null, profile: null, profileError: false });
+    setState({ status: 'anonymous', session: null, profile: null, profileError: false, mfaRequired: false });
   };
 
   return (

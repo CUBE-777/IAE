@@ -1,0 +1,17 @@
+/**
+ * src/styles/privacy.css — صفحة سياسة الخصوصية وخانة الموافقة في نموذج الانخراط.
+ * يعتمد على design tokens فقط (لا ألوان مباشرة).
+ */
+.privacy-section { padding: var(--section-pad-y-mobile, 60px) 0 var(--section-pad-y, 90px); }
+.privacy-content { max-width: 780px; margin: 0 auto; }
+.privacy-updated { color: var(--muted); margin: 0 0 var(--gap-md, 24px); font-size: 0.9rem; }
+.privacy-block { margin-bottom: var(--gap-md, 24px); }
+.privacy-block h2 { margin: 0 0 var(--space-2, 8px); color: var(--heading); font-size: 1.15rem; }
+.privacy-block p { margin: 0; color: var(--muted); line-height: 1.9; }
+.privacy-note { color: var(--muted-light); font-size: 0.85rem; margin-top: var(--gap-md, 24px); }
+
+.consent-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; }
+.consent-row label { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; line-height: 1.7; }
+.consent-row input[type='checkbox'] { width: 20px; height: 20px; margin-top: 4px; flex-shrink: 0; accent-color: var(--navy-mid); }
+.consent-row a { color: var(--gold-text); text-decoration: underline; }
+.consent-row.field-invalid { border-color: var(--error, #c0392b); }

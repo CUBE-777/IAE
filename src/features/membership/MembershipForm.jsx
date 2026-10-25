@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import FormField from '../../components/common/FormField';
 import { submitMembershipRequest } from '../../services/supabase/publicContent.service';
+import '../../styles/privacy.css';
 import { validateEmail, validateMaxLength, validateName, validatePhone, validateRequired } from '../../utils/validators';
 
-const initialState = { name: '', phone: '', email: '', promo: '', track: '', message: '', botField: '' };
+const initialState = { name: '', phone: '', email: '', promo: '', track: '', message: '', botField: '', consent: false };
 const MESSAGE_MAX = 2000;
 
 function validate(v) {
@@ -16,6 +17,7 @@ function validate(v) {
   set('email', validateEmail(v.email));
   set('track', validateRequired(v.track));
   set('message', validateMaxLength(v.message, MESSAGE_MAX));
+  if (!v.consent) errors.consent = 'forms.consentRequired';
   return errors;
 }
 
@@ -29,8 +31,8 @@ export default function MembershipForm() {
   const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setValues((v) => ({ ...v, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setValues((v) => ({ ...v, [name]: type === 'checkbox' ? checked : value }));
     if (errors[name]) setErrors((er) => ({ ...er, [name]: undefined })); // يزول الخطأ بمجرد التصحيح
   };
 
@@ -63,6 +65,7 @@ export default function MembershipForm() {
       promotion: values.promo.trim() || null,
       track: values.track || null,
       message: values.message.trim() || null,
+      privacy_consent: true, // الخادم يختم وقت الموافقة (migration 0023)
     };
 
     try {
@@ -137,6 +140,22 @@ export default function MembershipForm() {
             value={values.message} onChange={handleChange} onBlur={handleBlur} />
         )}
       </FormField>
+      <div className={`consent-row full-row${errors.consent ? ' field-invalid' : ''}`}>
+        <label>
+          <input
+            type="checkbox"
+            name="consent"
+            checked={values.consent}
+            onChange={handleChange}
+            aria-invalid={errors.consent ? 'true' : undefined}
+            aria-required="true"
+          />
+          <span>
+            {t('forms.consentPrefix')} <Link to="/privacy" target="_blank" rel="noopener">{t('forms.consentLink')}</Link> {t('forms.consentSuffix')}
+          </span>
+        </label>
+        {errors.consent && <p className="field-error" role="alert">{t(errors.consent)}</p>}
+      </div>
       <button type="submit" className="btn btn-gold" disabled={submitting}>
         {submitting && <span className="btn-spinner" aria-hidden="true" />}
         {submitting ? t('join.form.submitting') : t('join.form.submit')}

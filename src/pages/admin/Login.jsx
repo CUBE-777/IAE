@@ -4,12 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../app/providers/AuthProvider';
 import { validateEmail } from '../../utils/validators';
+import { listVerifiedTotpFactors, verifyTotp } from '../../services/supabase/auth.service';
 import ThemeToggle from '../../components/layout/ThemeToggle';
 import '../../styles/admin-login.css';
 
 export default function Login() {
   const { t } = useTranslation();
-  const { status, profile, login } = useAuth();
+  const { status, profile, mfaRequired, login, logout, refresh } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState('');
@@ -18,6 +19,8 @@ export default function Login() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [mfaCode, setMfaCode] = useState('');
+  const needsMfa = status === 'authenticated' && mfaRequired;
 
   useEffect(() => {
     document.title = t('admin.login.pageTitle');
@@ -26,8 +29,8 @@ export default function Login() {
   // إن كانت هناك جلسة نشطة بالفعل، انتقل مباشرة إلى لوحة التحكم (سلوك مطابق للأصل).
   // يُشترط profile نشط حتى لا تنشأ حلقة مع ProtectedRoute أثناء تسجيل خروج حساب غير نشط.
   useEffect(() => {
-    if (status === 'authenticated' && profile?.is_active) navigate('/admin/dashboard', { replace: true });
-  }, [status, profile, navigate]);
+    if (status === 'authenticated' && profile?.is_active && !mfaRequired) navigate('/admin/dashboard', { replace: true });
+  }, [status, profile, mfaRequired, navigate]);
 
   useEffect(() => {
     if (searchParams.get('reason') === 'inactive') setError(t('admin.login.inactive'));
@@ -59,6 +62,67 @@ export default function Login() {
       setSubmitting(false);
     }
   };
+
+  // الخطوة الثانية: رمز تطبيق المصادقة (للحسابات التي فعّلت MFA فقط)
+  const handleMfaSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    const code = mfaCode.replace(/\s/g, '');
+    if (!/^\d{6}$/.test(code)) {
+      setError(t('admin.login.mfaFormat'));
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const factors = await listVerifiedTotpFactors();
+      if (!factors.length) throw new Error('no factor');
+      await verifyTotp(factors[0].id, code);
+      await refresh(); // يرفع الحالة إلى aal2 فينقلك المؤثّر أعلاه إلى لوحة التحكم
+    } catch (err) {
+      const raw = err?.message || '';
+      setError(/network|fetch/i.test(raw) ? t('admin.login.network') : t('admin.login.mfaInvalid'));
+      setMfaCode('');
+      setSubmitting(false);
+    }
+  };
+
+  if (needsMfa) {
+    return (
+      <div className="admin-login-wrap">
+        <ThemeToggle className="theme-toggle-floating" />
+        <form className="admin-login-box" onSubmit={handleMfaSubmit} noValidate aria-busy={submitting}>
+          <img src="/logo.jpg" alt={t('admin.layout.logoAlt')} />
+          <h1>{t('admin.login.mfaTitle')}</h1>
+          <p className="sub">{t('admin.login.mfaSubtitle')}</p>
+
+          {error && <div className="admin-login-error" role="alert">{error}</div>}
+
+          <div className="admin-login-group">
+            <label htmlFor="mfa-code">{t('admin.login.mfaCode')}</label>
+            <input
+              id="mfa-code"
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              dir="ltr"
+              maxLength={7}
+              placeholder="123456"
+              autoFocus
+              value={mfaCode}
+              onChange={(e) => setMfaCode(e.target.value)}
+            />
+          </div>
+          <button type="submit" disabled={submitting}>
+            {submitting && <span className="admin-btn-spinner" aria-hidden="true" />}
+            {submitting ? t('admin.login.submitting') : t('admin.login.mfaSubmit')}
+          </button>
+          <button type="button" className="admin-login-back" style={{ background: 'none', border: 0, cursor: 'pointer' }} onClick={() => logout()}>
+            ← {t('admin.login.mfaCancel')}
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-login-wrap">

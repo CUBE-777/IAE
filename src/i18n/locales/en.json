@@ -176,7 +176,8 @@
     }
   },
   "footer": {
-    "copyright": "© 2026 Embedded Artificial Intelligence Club. All rights reserved."
+    "copyright": "© 2026 Embedded Artificial Intelligence Club. All rights reserved.",
+    "privacy": "Privacy policy"
   },
   "common": {
     "detailsLink": "Details ←",
@@ -289,7 +290,11 @@
     "duplicatePending": "A membership request with this email is already under review.",
     "fixErrors": "Please fix the fields highlighted below.",
     "honeypot": "Do not fill in this field:",
-    "rateLimited": "Too many requests in a short time, please try again in a few minutes."
+    "rateLimited": "Too many requests in a short time, please try again in a few minutes.",
+    "consentPrefix": "I have read the",
+    "consentLink": "privacy policy",
+    "consentSuffix": "and agree to the processing of my data to review my request.",
+    "consentRequired": "Accepting the privacy policy is required to submit the request"
   },
   "person": {
     "age": "Age",
@@ -381,7 +386,9 @@
       "settings": "General settings",
       "projects": "Projects",
       "sectionDocs": "Documents",
-      "internalFiles": "Internal files"
+      "internalFiles": "Internal files",
+      "sectionAccount": "My account",
+      "security": "Account security"
     },
     "roles": {
       "developer": "Developer",
@@ -431,7 +438,14 @@
       "emailRequired": "Enter your email address",
       "emailInvalid": "Invalid email address",
       "passwordRequired": "Enter your password",
-      "network": "Could not reach the server, please check your internet connection."
+      "network": "Could not reach the server, please check your internet connection.",
+      "mfaTitle": "Two-step verification",
+      "mfaSubtitle": "Enter the 6-digit code from the authenticator app on your phone.",
+      "mfaCode": "Verification code",
+      "mfaSubmit": "Confirm",
+      "mfaCancel": "Cancel and sign out",
+      "mfaFormat": "Enter a 6-digit code.",
+      "mfaInvalid": "Incorrect or expired code. Please try again."
     },
     "dashboard": {
       "pageTitle": "Dashboard — Club admin",
@@ -631,6 +645,33 @@
       "recording": "Recording the membership…",
       "recorded": "Membership recorded and income added to the budget",
       "recordFailed": "Could not record the membership"
+    },
+    "security": {
+      "pageTitle": "Account security — Club administration",
+      "title": "Account security",
+      "subtitle": "Protect your admin account with a second verification step",
+      "mfaHeading": "Two-step verification (TOTP)",
+      "loading": "Loading...",
+      "loadError": "Could not load security settings",
+      "offDescription": "Off. Once enabled, a code from your authenticator app (Google Authenticator, Authy…) is required at every sign-in; even if your password is known, nobody can access your account without it.",
+      "enable": "Enable two-step verification",
+      "enrollError": "Could not start setup. Please try again.",
+      "step1": "Install an authenticator app on your phone (Google Authenticator, Authy or Microsoft Authenticator).",
+      "step2": "Scan the QR code below, or enter the key manually.",
+      "step3": "Type the 6-digit code shown by the app, then confirm.",
+      "qrAlt": "QR code to set up the authenticator app",
+      "manualKey": "Manual key:",
+      "warnLost": "Keep the key somewhere safe. If you lose your phone you will not be able to sign in, and the developer will have to remove the factor from your account.",
+      "confirm": "Confirm and enable",
+      "cancel": "Cancel",
+      "enabledOk": "Two-step verification enabled",
+      "disabledOk": "Two-step verification disabled",
+      "disableError": "Could not disable. Please try again.",
+      "onStatus": "Enabled",
+      "onDescription": "The app code is required at every sign-in.",
+      "disable": "Disable two-step verification",
+      "disableConfirm": "Are you sure? Your account will be protected by the password only.",
+      "disableYes": "Yes, disable"
     }
   },
   "membershipForm": {
@@ -766,5 +807,42 @@
       "reload": "Reload page",
       "home": "Back to home"
     }
+  },
+  "privacy": {
+    "metaTitle": "Privacy policy — Embedded Artificial Intelligence club",
+    "crumb": "Privacy",
+    "title": "Privacy policy",
+    "description": "How we collect, use and protect your personal data, and what your rights are.",
+    "updated": "Last updated: October 2026",
+    "sections": [
+      {
+        "title": "Who we are",
+        "body": "This site is run by the “Intelligence Artificielle Embarquée” (IAE) club. The club board is responsible for processing the personal data described on this page."
+      },
+      {
+        "title": "Data we collect",
+        "body": "When you request membership: name, phone, email, class year, track and an optional message. When you complete the membership form through your personal link: the additional information requested, your photo and, if you choose, a photo of your national ID card. Through the contact form: name, email and message. The site uses no advertising trackers; the font is loaded from Google Fonts."
+      },
+      {
+        "title": "Why we use it",
+        "body": "To review and answer membership requests, manage membership and the annual fee, organise club activities and reply to your messages. We do not sell your data or share it with third parties for marketing."
+      },
+      {
+        "title": "Who can see it",
+        "body": "Only authorised club officers, according to their role. Attached documents (photo, national ID) are stored in a private, unpublished space and every access is logged. The public site shows only members’ name, photo, class year, track, university and profession."
+      },
+      {
+        "title": "Retention",
+        "body": "We keep data as long as it is needed to review your request or manage your membership. You can ask for it to be deleted at any time."
+      },
+      {
+        "title": "Your rights",
+        "body": "You have the right to access, correct, object to the processing of, and request deletion of your data, under Moroccan Law 09-08 on the protection of individuals with regard to the processing of personal data; you may also contact the CNDP. To exercise your rights, contact us through the contact form on the home page."
+      },
+      {
+        "title": "Updates to this policy",
+        "body": "We may change this page when our practices change; the last-updated date is shown at the top."
+      }
+    ]
   }
 }

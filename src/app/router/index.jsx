@@ -32,6 +32,8 @@ const AdminUsers = lazy(() => import('../../pages/admin/AdminUsers'));
 const Audit = lazy(() => import('../../pages/admin/Audit'));
 const Settings = lazy(() => import('../../pages/admin/Settings'));
 const Budget = lazy(() => import('../../pages/admin/Budget'));
+const Security = lazy(() => import('../../pages/admin/Security'));
+const Privacy = lazy(() => import('../../pages/public/Privacy'));
 
 /**
  * src/app/router/index.jsx
@@ -71,6 +73,7 @@ export const router = createBrowserRouter([
       { path: '/projects', element: <Projects /> },
       { path: '/projects/:slug', element: <ProjectDetail /> },
       { path: '/thank-you', element: <ThankYou /> },
+      { path: '/privacy', element: <Privacy /> },
       // رابط شخصي لنموذج الانخراط (رمز غير قابل للتخمين) — صفحة غير مفهرسة
       { path: '/membership-form/:token', element: <MembershipFormPage /> },
 
@@ -88,6 +91,7 @@ export const router = createBrowserRouter([
       { path: '/admin/budget', element: protectedAdmin(['developer', 'super_admin', 'deputy_super_admin', 'treasurer', 'deputy_treasurer'], <Budget />) },
       { path: '/admin/admins', element: protectedAdmin(['developer', 'super_admin'], <AdminUsers />) },
       { path: '/admin/audit', element: protectedAdmin(['developer', 'super_admin'], <Audit />) },
+      { path: '/admin/security', element: protectedAdmin([], <Security />) },
       { path: '/admin/settings', element: protectedAdmin(['developer', 'super_admin'], <Settings />) },
 
       // Phase 28 — Fallback 404: أي مسار غير معرّف أعلاه (عام أو إداري) يعرض صفحة

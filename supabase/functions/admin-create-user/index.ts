@@ -28,20 +28,34 @@ const ALLOWED_ROLES = [
 ];
 const CALLER_ROLES = ['super_admin', 'developer'];
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+// CORS: لا نردّ بـ '*'. نسمح بنطاق الموقع ونسخ المعاينة على Netlify والتطوير المحلي، ويمكن إضافة نطاقات
+// (نطاق مخصص مثلًا) عبر السر ALLOWED_ORIGINS (قائمة مفصولة بفواصل):
+//   supabase secrets set ALLOWED_ORIGINS="https://my-domain.org,https://www.my-domain.org"
+// ملاحظة: الدالة تتحقق من الجلسة والدور على أي حال؛ هذا تضييق إضافي لا بديل عن التحقق.
+const DEFAULT_ORIGINS = ['https://fsa-iae.netlify.app', 'http://localhost:5173', 'http://localhost:4173'];
+const PREVIEW_ORIGIN_RE = /^https:\/\/[a-z0-9-]+--fsa-iae\.netlify\.app$/;
+
+function corsFor(req: Request): Record<string, string> {
+  const extra = (Deno.env.get('ALLOWED_ORIGINS') || '').split(',').map((s) => s.trim()).filter(Boolean);
+  const origin = req.headers.get('Origin') || '';
+  const ok = origin !== '' && ([...DEFAULT_ORIGINS, ...extra].includes(origin) || PREVIEW_ORIGIN_RE.test(origin));
+  return {
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    Vary: 'Origin',
+    ...(ok ? { 'Access-Control-Allow-Origin': origin } : {}),
+  };
+}
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json' },
   });
 }
 
-Deno.serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+async function handle(req: Request): Promise<Response> {
+  if (req.method === 'OPTIONS') return new Response('ok');
 
   try {
     if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
@@ -121,4 +135,10 @@ Deno.serve(async (req: Request) => {
     console.error('admin-create-user error:', err);
     return json({ error: 'خطأ داخلي في الخادم' }, 500);
   }
+}
+
+Deno.serve(async (req: Request) => {
+  const res = await handle(req);
+  for (const [k, v] of Object.entries(corsFor(req))) res.headers.set(k, v);
+  return res;
 });

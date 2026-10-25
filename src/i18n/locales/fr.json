@@ -176,7 +176,8 @@
     }
   },
   "footer": {
-    "copyright": "© 2026 Club Intelligence Artificielle Embarquée. Tous droits réservés."
+    "copyright": "© 2026 Club Intelligence Artificielle Embarquée. Tous droits réservés.",
+    "privacy": "Politique de confidentialité"
   },
   "common": {
     "detailsLink": "Détails ←",
@@ -289,7 +290,11 @@
     "duplicatePending": "Une demande d'adhésion avec cet e-mail est déjà en cours d'examen.",
     "fixErrors": "Veuillez corriger les champs indiqués ci-dessous.",
     "honeypot": "Ne remplissez pas ce champ :",
-    "rateLimited": "Trop de demandes en peu de temps, réessayez dans quelques minutes."
+    "rateLimited": "Trop de demandes en peu de temps, réessayez dans quelques minutes.",
+    "consentPrefix": "Je reconnais avoir pris connaissance de la",
+    "consentLink": "politique de confidentialité",
+    "consentSuffix": "et j'accepte le traitement de mes données pour l'étude de ma demande.",
+    "consentRequired": "L'acceptation de la politique de confidentialité est requise pour envoyer la demande"
   },
   "person": {
     "age": "Âge",
@@ -381,7 +386,9 @@
       "settings": "Paramètres généraux",
       "projects": "Projets",
       "sectionDocs": "Documents",
-      "internalFiles": "Fichiers internes"
+      "internalFiles": "Fichiers internes",
+      "sectionAccount": "Mon compte",
+      "security": "Sécurité du compte"
     },
     "roles": {
       "developer": "Développeur",
@@ -431,7 +438,14 @@
       "emailRequired": "Saisissez l'adresse e-mail",
       "emailInvalid": "Adresse e-mail invalide",
       "passwordRequired": "Saisissez le mot de passe",
-      "network": "Connexion au serveur impossible, vérifiez votre connexion Internet."
+      "network": "Connexion au serveur impossible, vérifiez votre connexion Internet.",
+      "mfaTitle": "Vérification en deux étapes",
+      "mfaSubtitle": "Saisissez le code à 6 chiffres de l'application d'authentification de votre téléphone.",
+      "mfaCode": "Code de vérification",
+      "mfaSubmit": "Confirmer",
+      "mfaCancel": "Annuler et se déconnecter",
+      "mfaFormat": "Saisissez un code à 6 chiffres.",
+      "mfaInvalid": "Code incorrect ou expiré. Réessayez."
     },
     "dashboard": {
       "pageTitle": "Tableau de bord — Administration du club",
@@ -631,6 +645,33 @@
       "recording": "Enregistrement de l'adhésion…",
       "recorded": "Adhésion enregistrée et recette ajoutée au budget",
       "recordFailed": "Impossible d'enregistrer l'adhésion"
+    },
+    "security": {
+      "pageTitle": "Sécurité du compte — Administration du club",
+      "title": "Sécurité du compte",
+      "subtitle": "Protégez votre compte administrateur avec une seconde étape de vérification",
+      "mfaHeading": "Vérification en deux étapes (TOTP)",
+      "loading": "Chargement...",
+      "loadError": "Impossible de charger les paramètres de sécurité",
+      "offDescription": "Désactivée. Une fois activée, un code de votre application d'authentification (Google Authenticator, Authy…) sera demandé à chaque connexion ; même avec votre mot de passe, personne ne pourra accéder à votre compte sans lui.",
+      "enable": "Activer la vérification en deux étapes",
+      "enrollError": "Impossible de démarrer l'activation. Réessayez.",
+      "step1": "Installez une application d'authentification sur votre téléphone (Google Authenticator, Authy ou Microsoft Authenticator).",
+      "step2": "Scannez le QR code ci-dessous, ou saisissez la clé manuellement.",
+      "step3": "Saisissez le code à 6 chiffres affiché par l'application, puis confirmez.",
+      "qrAlt": "QR code de configuration de l'application d'authentification",
+      "manualKey": "Clé manuelle :",
+      "warnLost": "Conservez la clé en lieu sûr. Si vous perdez votre téléphone, vous ne pourrez plus vous connecter et le développeur devra retirer le facteur de votre compte.",
+      "confirm": "Confirmer et activer",
+      "cancel": "Annuler",
+      "enabledOk": "Vérification en deux étapes activée",
+      "disabledOk": "Vérification en deux étapes désactivée",
+      "disableError": "Désactivation impossible. Réessayez.",
+      "onStatus": "Activée",
+      "onDescription": "Le code de l'application est demandé à chaque connexion.",
+      "disable": "Désactiver la vérification en deux étapes",
+      "disableConfirm": "Êtes-vous sûr ? Votre compte ne sera plus protégé que par le mot de passe.",
+      "disableYes": "Oui, désactiver"
     }
   },
   "membershipForm": {
@@ -766,5 +807,42 @@
       "reload": "Recharger la page",
       "home": "Retour à l'accueil"
     }
+  },
+  "privacy": {
+    "metaTitle": "Politique de confidentialité — Intelligence Artificielle Embarquée",
+    "crumb": "Confidentialité",
+    "title": "Politique de confidentialité",
+    "description": "Comment nous collectons, utilisons et protégeons vos données personnelles, et quels sont vos droits.",
+    "updated": "Dernière mise à jour : octobre 2026",
+    "sections": [
+      {
+        "title": "Qui sommes-nous",
+        "body": "Ce site est géré par le club « Intelligence Artificielle Embarquée » (IAE). Le bureau du club est responsable du traitement des données personnelles décrites sur cette page."
+      },
+      {
+        "title": "Données collectées",
+        "body": "Lors d'une demande d'adhésion : nom, téléphone, e-mail, promotion, filière et message facultatif. Lors du formulaire d'adhésion via votre lien personnel : les informations complémentaires demandées, votre photo et, si vous le souhaitez, une photo de votre carte nationale. Via le formulaire de contact : nom, e-mail et message. Le site n'utilise aucun outil de suivi publicitaire ; la police de caractères est chargée depuis Google Fonts."
+      },
+      {
+        "title": "Pourquoi nous les utilisons",
+        "body": "Pour étudier les demandes d'adhésion et y répondre, gérer l'adhésion et la cotisation annuelle, organiser les activités du club et répondre à vos messages. Nous ne vendons pas vos données et ne les partageons pas avec des tiers à des fins commerciales."
+      },
+      {
+        "title": "Qui y a accès",
+        "body": "Uniquement les responsables du club habilités, selon leur rôle. Les documents joints (photo, carte nationale) sont stockés dans un espace privé non publié et chaque consultation est journalisée. Le site public n'affiche des membres que le nom, la photo, la promotion, la filière, l'université et la profession."
+      },
+      {
+        "title": "Durée de conservation",
+        "body": "Nous conservons les données tant qu'elles sont nécessaires à l'étude de votre demande ou à la gestion de votre adhésion. Vous pouvez demander leur suppression à tout moment."
+      },
+      {
+        "title": "Vos droits",
+        "body": "Vous avez le droit d'accéder à vos données, de les rectifier, de vous opposer à leur traitement et d'en demander la suppression, conformément à la loi marocaine 09-08 relative à la protection des personnes physiques à l'égard du traitement des données à caractère personnel ; vous pouvez saisir la CNDP. Pour exercer vos droits, contactez-nous via le formulaire de contact de la page d'accueil."
+      },
+      {
+        "title": "Mises à jour",
+        "body": "Nous pouvons modifier cette page lorsque nos pratiques évoluent ; la date de dernière mise à jour figure en haut."
+      }
+    ]
   }
 }

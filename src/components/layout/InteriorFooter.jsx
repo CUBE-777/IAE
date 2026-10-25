@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 export default function InteriorFooter() {
@@ -11,7 +12,9 @@ export default function InteriorFooter() {
             {t('brand.name')}
           </div>
         </div>
-        <div className="interior-copyright">{t('footer.copyright')}</div>
+        <div className="interior-copyright">
+          {t('footer.copyright')} · <Link to="/privacy" style={{ color: 'inherit', textDecoration: 'underline' }}>{t('footer.privacy')}</Link>
+        </div>
       </div>
     </footer>
   );

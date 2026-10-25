@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 export default function Footer({ brandName, copyright }) {
@@ -18,6 +19,7 @@ export default function Footer({ brandName, copyright }) {
           <a href="#members">{t('nav.members')}</a>
           <a href="#join">{t('nav.join')}</a>
           <a href="#contact">{t('nav.contact')}</a>
+          <Link to="/privacy">{t('footer.privacy')}</Link>
         </div>
         <div className="copyright">{copyright || t('footer.copyright')}</div>
       </div>
