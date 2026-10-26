@@ -25,7 +25,6 @@ export default function PeoplePage({
   switchLabel,
   searchPlaceholder,
 }) {
-  const isBoard = listKey === 'board';
   const { t, i18n } = useTranslation();
   const lang = String(i18n.resolvedLanguage || i18n.language || 'ar').slice(0, 2);
   const [people, setPeople] = useState(null); // null = يحمَّل
@@ -99,7 +98,7 @@ export default function PeoplePage({
             </span>
           </div>
 
-          <div className={isBoard ? 'board-grid' : 'members-grid'} id="peopleGrid">
+          <div className="members-grid" id="peopleGrid">
             {people === null && !error && <div className="gallery-empty" role="status">{t('peoplePage.loading')}</div>}
             {error && (
               <div className="gallery-empty" role="alert">
@@ -111,14 +110,12 @@ export default function PeoplePage({
             {people && people.length > 0 && filtered.length === 0 && (
               <div className="gallery-empty">{t('peoplePage.noResults')}</div>
             )}
-            {filtered.map((person, i) => (
+            {filtered.map((person) => (
               <PersonCard
                 key={person._key}
                 person={person}
                 fallbackBadge={fallbackBadge}
-                variant={isBoard ? 'board' : 'member'}
-                featured={isBoard && i === 0 && !query}
-                onOpen={isBoard ? undefined : (p) => setSelectedKey(p._key)}
+                onOpen={(p) => setSelectedKey(p._key)}
               />
             ))}
           </div>

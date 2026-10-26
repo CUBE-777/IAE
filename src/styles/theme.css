@@ -112,7 +112,6 @@ footer .brand img, .interior-footer .brand img { width: 40px !important; height:
 html[data-theme='dark'] .pillar,
 html[data-theme='dark'] .join-card:not(.featured),
 html[data-theme='dark'] .member-card,
-html[data-theme='dark'] .board-card,
 html[data-theme='dark'] .people-link:not(.featured),
 html[data-theme='dark'] .ann-card,
 html[data-theme='dark'] .ann-board-panel,

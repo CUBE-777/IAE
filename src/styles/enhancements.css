@@ -411,150 +411,6 @@ html[dir='ltr'] form select {
   font-family: inherit;
 }
 
-/* ===== المكتب المسير: المنصب ← الشخص ← الاسم ← نبذة ===== */
-.board-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-6);
-}
-.board-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  text-align: center;
-  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
-}
-.board-card:hover,
-.board-card:focus-within {
-  transform: translateY(-4px);
-  border-color: rgba(var(--gold-rgb), 0.5);
-  box-shadow: var(--shadow-md);
-}
-.board-card-position {
-  background: linear-gradient(135deg, var(--navy-mid), var(--navy-deep));
-  color: var(--gold-light);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.2rem;
-  padding: var(--space-4) var(--space-5);
-  border-bottom: 3px solid var(--gold);
-  line-height: var(--leading-tight);
-  overflow-wrap: anywhere;
-}
-.board-card-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-6) var(--space-5) var(--space-6);
-  flex: 1;
-}
-.board-card-photo {
-  width: 104px;
-  height: 104px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid rgba(var(--gold-rgb), 0.55);
-  background: linear-gradient(135deg, var(--navy-mid), var(--navy-deep));
-  margin-top: calc(-1 * var(--space-2));
-}
-.board-card-name {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  color: var(--heading);
-  line-height: var(--leading-tight);
-  margin: 0;
-  overflow-wrap: anywhere;
-}
-.board-card-university {
-  white-space: normal;
-  max-width: 100%;
-  margin-top: 0;
-  overflow: visible;
-  text-overflow: clip;
-  line-height: var(--leading-normal);
-  padding: 4px 12px;
-}
-.board-card-bio {
-  margin: 0;
-  color: var(--muted);
-  font-size: var(--text-small);
-  line-height: var(--leading-relaxed);
-}
-/* أول بطاقة (رأس المكتب بحسب الترتيب) أبرز بصريًا: عرض كامل على الشاشات الواسعة */
-.board-card-featured {
-  grid-column: 1 / -1;
-  flex-direction: row;
-  text-align: start;
-  border-color: rgba(var(--gold-rgb), 0.6);
-  box-shadow: var(--shadow-sm);
-}
-.board-card-featured .board-card-position {
-  writing-mode: horizontal-tb;
-  flex: 0 0 min(34%, 300px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 1.6rem;
-  border-bottom: none;
-  border-inline-end: 4px solid var(--gold);
-}
-.board-card-featured .board-card-main {
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--space-5);
-  padding: var(--space-6);
-}
-.board-card-featured .board-card-photo {
-  width: 132px;
-  height: 132px;
-  margin-top: 0;
-}
-.board-card-featured .board-card-name {
-  font-size: 1.7rem;
-}
-.board-card-featured .board-card-bio {
-  flex-basis: 100%;
-}
-@media (max-width: 1024px) {
-  .board-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 640px) {
-  .board-grid {
-    grid-template-columns: 1fr;
-  }
-  .board-card-featured {
-    flex-direction: column;
-    text-align: center;
-  }
-  .board-card-featured .board-card-position {
-    flex: none;
-    border-inline-end: none;
-    border-bottom: 3px solid var(--gold);
-    font-size: 1.3rem;
-  }
-  .board-card-featured .board-card-main {
-    flex-direction: column;
-    justify-content: center;
-    padding: var(--space-5);
-  }
-  .board-card-featured .board-card-photo {
-    width: 104px;
-    height: 104px;
-  }
-  .board-card-featured .board-card-name {
-    font-size: 1.35rem;
-  }
-}
-
 /* ===== صفحة النشاط ===== */
 .activity-hero .crumb-current,
 .breadcrumbs .crumb-current {
@@ -1226,4 +1082,32 @@ section[id],
   .person-modal-facts {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* ===== بطاقة موحّدة للأعضاء والمكتب: نفس الارتفاع والمحاذاة في كل الشبكة ===== */
+.members-grid { align-items: stretch; }
+.member-card { height: 100%; }
+.member-card-main { flex: 1; }
+.member-body { align-items: flex-start; }
+.member-body .member-facts { width: 100%; }
+.member-body .member-more-btn { margin-top: auto; }
+.member-badge-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.member-badge {
+  white-space: normal;
+  text-align: start;
+  line-height: 1.35;
+}
+/* عضو المكتب: شارة المنصب بلون الهوية (كحلي/ذهبي) وحافة علوية ذهبية رفيعة */
+.member-badge.member-badge-board {
+  background: linear-gradient(135deg, var(--navy-mid), var(--navy-deep));
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+.member-card.member-card-board {
+  border-color: rgba(var(--gold-rgb), 0.45);
+  box-shadow: inset 0 3px 0 var(--gold);
+}
+@media (prefers-reduced-motion: reduce) {
+  .member-card, .member-card:hover { transition: none; transform: none; }
 }

@@ -20,7 +20,8 @@ export function getPersonDetails(person) {
     .filter((it) => it.label && it.value)
     .slice(0, 12);
 
-  const bio = text(person && person.publicBio);
+  // عضو المكتب: النبذة العامة أولًا ثم النبذة المختصرة
+  const bio = text(person && person.publicBio) || text(person && person.bio);
   const studyPath = text(person && person.studyPath);
   return { bio, studyPath, socials, extra, hasAny: !!(bio || studyPath || socials.length || extra.length) };
 }

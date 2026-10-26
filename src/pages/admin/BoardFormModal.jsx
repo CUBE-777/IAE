@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from '../../components/admin/Modal';
 import { uploadImage } from '../../services/supabase/storage.service';
-import { saveBoardMember } from '../../services/supabase/adminBoard.service';
+import { saveBoardMember, fetchMemberOptions } from '../../services/supabase/adminBoard.service';
 import PublicProfileFields, {
   BOARD_TR_FIELDS,
   initProfileState,
@@ -20,7 +20,13 @@ export default function BoardFormModal({ member, onClose, onSaved }) {
     track: member?.track || '',
     bio: member?.bio || '',
     is_active: member?.is_active !== false,
+    show_in_members_list: member?.show_in_members_list !== false,
+    member_id: member?.member_id || '',
   });
+  const [memberOptions, setMemberOptions] = useState([]);
+  useEffect(() => {
+    fetchMemberOptions().then(setMemberOptions).catch(() => setMemberOptions([]));
+  }, []);
   const [profile, setProfile] = useState(() => initProfileState(member, BOARD_TR_FIELDS));
   const [photoFile, setPhotoFile] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -53,7 +59,10 @@ export default function BoardFormModal({ member, onClose, onSaved }) {
         university: values.university.trim() || null,
         bio: values.bio.trim() || null,
         is_active: values.is_active,
+        member_id: values.member_id || null,
       };
+      if ((isEdit && 'show_in_members_list' in member) || !values.show_in_members_list) payload.show_in_members_list = values.show_in_members_list;
+      if (!isEdit && values.show_in_members_list) payload.show_in_members_list = true;
       // سنة التخرج والتخصص (migration 0012): تُرسل فقط إن كان العمودان موجودين أصلًا أو كُتب فيهما شيء
       const promotion = values.promotion.trim();
       const track = values.track.trim();
@@ -122,6 +131,21 @@ export default function BoardFormModal({ member, onClose, onSaved }) {
           source={{ position: values.position, bio: values.bio, track: values.track }}
           bioLabel={tr('النبذة العامة (تظهر في نافذة الملف الشخصي)')}
         />
+        <div className="admin-form-group">
+          <label htmlFor="f_member_id">{tr('ربط بسجل عضو (اختياري)')}</label>
+          <select id="f_member_id" name="member_id" className="admin-select" value={values.member_id} onChange={handleChange}>
+            <option value="">{tr('— بدون ربط —')}</option>
+            {memberOptions.map((m) => <option key={m.id} value={m.id}>{m.full_name}</option>)}
+          </select>
+          <div style={{ fontSize: '.8rem', color: 'var(--admin-text-muted)', marginTop: 4 }}>
+            {tr('إن كان عضو المكتب مسجلاً أيضاً كعضو، اربطه هنا حتى لا يتكرر في قائمة الأعضاء وتظهر صفة المكتب على بطاقته.')}
+          </div>
+        </div>
+        <div className="admin-form-group">
+          <label>
+            <input type="checkbox" name="show_in_members_list" checked={values.show_in_members_list} onChange={handleChange} /> {tr('يظهر أيضاً في قائمة الأعضاء')}
+          </label>
+        </div>
         <div className="admin-form-group">
           <label>
             <input type="checkbox" name="is_active" checked={values.is_active} onChange={handleChange} /> {tr('نشط ويظهر في الموقع')}

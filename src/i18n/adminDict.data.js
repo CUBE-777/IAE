@@ -3,6 +3,50 @@
  * Généré à partir des écrans existants ; arabe = identité, donc non listé ici.
  */
 export const ADMIN_DICT = {
+ "في قائمة الأعضاء": {
+  "fr": "Dans la liste des membres",
+  "en": "In the members list"
+ },
+ "ظاهر": {
+  "fr": "Visible",
+  "en": "Shown"
+ },
+ "مخفي": {
+  "fr": "Masqué",
+  "en": "Hidden"
+ },
+ "سيظهر في قائمة الأعضاء": {
+  "fr": "Apparaîtra dans la liste des membres",
+  "en": "Will appear in the members list"
+ },
+ "أُخفي من قائمة الأعضاء": {
+  "fr": "Retiré de la liste des membres",
+  "en": "Removed from the members list"
+ },
+ "تعذر التحديث (تأكد من تشغيل ملف SQL رقم 0033)": {
+  "fr": "Échec de la mise à jour (vérifiez que le SQL 0033 a été exécuté)",
+  "en": "Update failed (make sure SQL file 0033 has been run)"
+ },
+ "ربط بسجل عضو (اختياري)": {
+  "fr": "Lier à une fiche membre (facultatif)",
+  "en": "Link to a member record (optional)"
+ },
+ "— بدون ربط —": {
+  "fr": "— Aucun lien —",
+  "en": "— No link —"
+ },
+ "إن كان عضو المكتب مسجلاً أيضاً كعضو، اربطه هنا حتى لا يتكرر في قائمة الأعضاء وتظهر صفة المكتب على بطاقته.": {
+  "fr": "Si le membre du bureau est aussi inscrit comme membre, liez-le ici pour éviter le doublon ; son poste s'affichera sur sa carte.",
+  "en": "If this board member is also a registered member, link them here to avoid duplicates; their board position will show on their card."
+ },
+ "يظهر أيضاً في قائمة الأعضاء": {
+  "fr": "Visible aussi dans la liste des membres",
+  "en": "Also shown in the members list"
+ },
+ "عضو مكتب": {
+  "fr": "Membre du bureau",
+  "en": "Board member"
+ },
  "يظهر في صفحة الأعضاء العامة": {
   "fr": "Visible sur la page publique des membres",
   "en": "Visible on the public members page"

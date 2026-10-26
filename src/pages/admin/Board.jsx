@@ -8,7 +8,7 @@ import BoardFormModal from './BoardFormModal';
 import BoardProfileLinkModal from './BoardProfileLinkModal';
 import BoardProfileReviewModal from './BoardProfileReviewModal';
 import StateBox from '../../components/admin/StateBox';
-import { fetchBoardMembers, reorderBoardMembers, deleteBoardMember } from '../../services/supabase/adminBoard.service';
+import { fetchBoardMembers, reorderBoardMembers, deleteBoardMember, setBoardInMembersList } from '../../services/supabase/adminBoard.service';
 import { fetchBoardProfileLinks } from '../../services/supabase/boardProfile.service';
 
 import { tr, trStrong } from '../../i18n/adminDict';
@@ -65,6 +65,22 @@ export default function Board() {
     }
   };
 
+  // مفتاح الإظهار في قائمة الأعضاء: تحديث متفائل يُسترجع عند الفشل
+  const [toggling, setToggling] = useState(null);
+  const toggleInMembers = async (member) => {
+    const value = !(member.show_in_members_list !== false);
+    setToggling(member.id);
+    try {
+      await setBoardInMembersList(member, value);
+      setRows((list) => (list || []).map((r) => (r.id === member.id ? { ...r, show_in_members_list: value } : r)));
+      window.notify?.success(value ? tr('سيظهر في قائمة الأعضاء') : tr('أُخفي من قائمة الأعضاء'));
+    } catch (err) {
+      window.notify?.fromError(err, tr('تعذر التحديث (تأكد من تشغيل ملف SQL رقم 0033)'));
+    } finally {
+      setToggling(null);
+    }
+  };
+
   const doDelete = async (member) => {
     setDeleteTarget(null);
     const t = window.notify?.loading(tr('جاري الحذف...'));
@@ -97,7 +113,7 @@ export default function Board() {
         {rows && rows.length > 0 && (
           <div className="admin-table-wrap">
             <table className="admin-data-table admin-table-cards">
-              <thead><tr><th>#</th><th>{tr('الاسم')}</th><th>{tr('الصفة')}</th><th>{tr('الحالة')}</th><th>{tr('إجراءات')}</th></tr></thead>
+              <thead><tr><th>#</th><th>{tr('الاسم')}</th><th>{tr('الصفة')}</th><th>{tr('الحالة')}</th><th>{tr('في قائمة الأعضاء')}</th><th>{tr('إجراءات')}</th></tr></thead>
               <tbody>
                 {rows.map((b, i) => (
                   <tr key={b.id}>
@@ -110,6 +126,21 @@ export default function Board() {
                     </td>
                     <td data-label={tr('الصفة')}>{b.position}</td>
                     <td data-label={tr('الحالة')}><span className={`admin-badge admin-badge-${b.is_active ? 'approved' : 'rejected'}`}>{b.is_active ? tr('نشط') : tr('غير نشط')}</span></td>
+                    <td data-label={tr('في قائمة الأعضاء')}>
+                      {readOnly ? (
+                        <span className={`admin-badge admin-badge-${b.show_in_members_list !== false ? 'approved' : 'rejected'}`}>{b.show_in_members_list !== false ? tr('ظاهر') : tr('مخفي')}</span>
+                      ) : (
+                        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={b.show_in_members_list !== false}
+                            disabled={toggling === b.id}
+                            onChange={() => toggleInMembers(b)}
+                          />
+                          <span>{b.show_in_members_list !== false ? tr('ظاهر') : tr('مخفي')}</span>
+                        </label>
+                      )}
+                    </td>
                     <td className="admin-cell-actions">
                       {readOnly ? '—' : (<>
                       <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" aria-label={tr('رفع للأعلى')} disabled={i === 0 || moving} onClick={() => move(b, -1)}>↑</button>

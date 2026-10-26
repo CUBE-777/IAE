@@ -87,7 +87,7 @@ export default function PersonModal({ person, fallbackBadge, onClose }) {
           <div className="person-modal-title">
             <h3 id={titleId}>{name}</h3>
             <div className="person-modal-tags">
-              {badge && <span className="member-badge">{badge}</span>}
+              {badge && <span className={`member-badge${person.isBoard ? ' member-badge-board' : ''}`}>{badge}</span>}
               {university && (
                 <span className="member-university member-university-under">
                   <GraduationCap size={12} aria-hidden="true" />

@@ -19,7 +19,7 @@ export async function reorderBoardMembers(orderedIds) {
 
 // يُرجع { degraded } = true إن حُفظت البيانات الأساسية فقط لأن أعمدة الملف العام/الترجمات (0011/0012) غير موجودة بعد.
 // أعمدة اختيارية خاصة بالمكتب (migration 0012): سنة التخرج والتخصص
-const BOARD_OPTIONAL_COLS = ['promotion', 'track'];
+const BOARD_OPTIONAL_COLS = ['promotion', 'track', 'show_in_members_list'];
 
 export async function saveBoardMember(existing, payload) {
   if (existing) {
@@ -48,4 +48,33 @@ export async function deleteBoardMember(member) {
   const { error } = await supabase.from('board_members').delete().eq('id', member.id);
   if (error) throw error;
   await logAction('ADMIN_DELETED_BOARD_MEMBER', 'board_members', member.id, `حذف عضو المكتب ${member.full_name}`);
+}
+
+/** مفتاح سريع: إظهار/إخفاء عضو المكتب في صفحة "الأعضاء" العامة (migration 0033). */
+export async function setBoardInMembersList(member, value) {
+  const { error } = await supabase.from('board_members').update({ show_in_members_list: value }).eq('id', member.id);
+  if (error) throw error;
+  await logAction(
+    'ADMIN_UPDATED_BOARD_MEMBER', 'board_members', member.id,
+    `${value ? 'إظهار' : 'إخفاء'} عضو المكتب ${member.full_name} في قائمة الأعضاء`
+  );
+}
+
+/** الأعضاء المتاحون للربط (id + الاسم) لنموذج عضو المكتب. */
+export async function fetchMemberOptions() {
+  const { data, error } = await supabase
+    .from('members')
+    .select('id, full_name')
+    .is('deleted_at', null)
+    .order('full_name', { ascending: true })
+    .limit(1000);
+  if (error) throw error;
+  return data || [];
+}
+
+/** معرّفات الأعضاء المرتبطين بعضوية مكتب (لإظهار شارة "عضو مكتب" في جدول الأعضاء). */
+export async function fetchLinkedBoardMemberIds() {
+  const { data, error } = await supabase.from('board_members').select('member_id, position').not('member_id', 'is', null);
+  if (error) throw error;
+  return new Map((data || []).map((r) => [r.member_id, r.position]));
 }

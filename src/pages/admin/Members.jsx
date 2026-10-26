@@ -6,6 +6,7 @@ import MembershipDocs from '../../components/admin/MembershipDocs';
 import MemberFormModal from './MemberFormModal';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { downloadCsv } from '../../utils/csvExport';
+import { fetchLinkedBoardMemberIds } from '../../services/supabase/adminBoard.service';
 import {
   fetchMembersPage, softDeleteMember, fetchAllMembersForExport, PAGE_SIZE,
 } from '../../services/supabase/adminMembers.service';
@@ -37,6 +38,11 @@ export default function Members() {
   const [renewTarget, setRenewTarget] = useState(null);
   const [detailTarget, setDetailTarget] = useState(null);
   const [detail, setDetail] = useState(undefined); // undefined = تحميل، null = لا شيء
+
+  const [boardOf, setBoardOf] = useState(new Map());
+  useEffect(() => {
+    fetchLinkedBoardMemberIds().then(setBoardOf).catch(() => {});
+  }, []);
 
   const loadMembership = () => {
     fetchMembershipSettings()
@@ -172,7 +178,9 @@ export default function Members() {
               <tbody>
                 {rows.map((m) => (
                   <tr key={m.id}>
-                    <td data-label={tr('الاسم')}>{m.full_name}</td>
+                    <td data-label={tr('الاسم')}>{m.full_name}
+                      {boardOf.has(m.id) && <> <span className="admin-badge admin-badge-approved" title={boardOf.get(m.id)}>{tr('عضو مكتب')}</span></>}
+                    </td>
                     <td data-label={tr('الجامعة')}>{FIELD(m.university)}</td>
                     <td data-label={tr('الدفعة')}>{FIELD(m.promotion)}</td>
                     <td data-label={tr('المهنة')}>{FIELD(m.profession)}</td>

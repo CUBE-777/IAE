@@ -72,7 +72,8 @@ test('peopleDirectory: يطلب عمود translations (مع احتياط) ويم
   assert.match(src, /tr: row\.translations/);
   assert.match(src, /roleTr/);
   // الاحتياط: إن لم تُشغَّل migration 0011 تعمل الصفحة بالأعمدة الأساسية
-  assert.match(src, /queryBoard\(BOARD_BASE\)/);
+  assert.match(src, /BOARD_COL_STEPS/);
+  assert.match(src, /show_in_members_list/);
   assert.match(src, /queryMembers\(BASE_COLS\)/);
 });
 

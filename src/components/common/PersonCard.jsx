@@ -3,47 +3,16 @@ import { GraduationCap } from 'lucide-react';
 import { getPersonDetails } from '../../utils/personDetails';
 
 /**
- * بطاقة شخص — variant="member" (دليل الأعضاء) أو "board" (المكتب المسير).
- * الأعضاء: الصورة ← الجامعة (كبسولة بنفسجية تحتها) | الاسم ← الشارة ← المعلومات الثانوية.
- * المكتب: المنصب (هو العنوان البصري) ← الصورة ← الاسم ← الجامعة ← نبذة مختصرة.
+ * بطاقة شخص واحدة لعضو النادي وعضو المكتب (نفس البنية والمقاسات في الصفحتين):
+ * الصورة ← الجامعة (كبسولة بنفسجية تحتها) | الاسم ← الصفة ← المعلومات ← زر الملف.
+ * عضو المكتب يتميّز بلون الشارة فقط (member-badge-board) وبرمز التمييز على الحافة.
  * النصوص الثابتة (labels) مترجمة؛ بيانات الأشخاص تُعرض كما هي من قاعدة البيانات.
  */
-export default function PersonCard({ person, fallbackBadge, variant = 'member', featured = false, onOpen }) {
+export default function PersonCard({ person, fallbackBadge, onOpen }) {
   const { t } = useTranslation();
   const name = person.name || t('person.defaultName');
   const university = (person.university || '').trim();
-  const photoProps = {
-    src: person.image || '/logo.jpg',
-    alt: t('a11y.personPhotoAlt', { name }),
-    loading: 'lazy',
-    onError: (e) => {
-      e.currentTarget.onerror = null;
-      e.currentTarget.src = '/logo.jpg';
-    },
-  };
-
-  if (variant === 'board') {
-    const position = person.role || fallbackBadge;
-    return (
-      <article className={`board-card${featured ? ' board-card-featured' : ''}`}>
-        <div className="board-card-position">
-          <span className="sr-only">{t('person.boardPosition')}: </span>
-          {position}
-        </div>
-        <div className="board-card-main">
-          <img className="board-card-photo" {...photoProps} />
-          <h3 className="board-card-name">{name}</h3>
-          {university && (
-            <span className="member-university board-card-university" title={t('person.fullUniversity', { name: university })}>
-              {university}
-            </span>
-          )}
-          {person.bio && <p className="board-card-bio">{person.bio}</p>}
-        </div>
-      </article>
-    );
-  }
-
+  const isBoard = !!person.isBoard;
   const badge = person.role || fallbackBadge;
   const hasDetails = !!onOpen && getPersonDetails(person).hasAny;
   const facts = [
@@ -54,10 +23,19 @@ export default function PersonCard({ person, fallbackBadge, variant = 'member', 
   ].filter(([, value]) => value != null && String(value).trim() !== '');
 
   return (
-    <article className="member-card">
+    <article className={`member-card${isBoard ? ' member-card-board' : ''}`}>
       <div className="member-card-main">
         <div className="member-photo-column">
-          <img className="member-photo" {...photoProps} />
+          <img
+            className="member-photo"
+            src={person.image || '/logo.jpg'}
+            alt={t('a11y.personPhotoAlt', { name })}
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/logo.jpg';
+            }}
+          />
           {university && (
             <span className="member-university member-university-under" title={t('person.fullUniversity', { name: university })}>
               <GraduationCap size={12} aria-hidden="true" />
@@ -67,9 +45,10 @@ export default function PersonCard({ person, fallbackBadge, variant = 'member', 
           )}
         </div>
         <div className="member-body">
-          <div className="member-name-row">
-            <h3>{name}</h3>
-            <span className="member-badge">{badge}</span>
+          <h3>{name}</h3>
+          <div className="member-badge-row">
+            {isBoard && <span className="sr-only">{t('person.boardPosition')}: </span>}
+            <span className={`member-badge${isBoard ? ' member-badge-board' : ''}`}>{badge}</span>
           </div>
           {facts.length > 0 && (
             <ul className="member-facts">
