@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import { useAuth } from '../../app/providers/AuthProvider';
+import { isReadOnlyRole } from '../../constants/roles';
 import StateBox from '../../components/admin/StateBox';
 import InlineTranslationInputs from '../../components/admin/InlineTranslationInputs';
 import { cleanTr, hasTr } from '../../utils/translationForm';
@@ -11,6 +13,7 @@ import { tr } from '../../i18n/adminDict';
 const SECTION_LABELS = { homepage: 'الصفحة الرئيسية', footer: 'الفوتر' };
 
 export default function Content() {
+  const readOnly = isReadOnlyRole(useAuth().profile?.role);
   const [values, setValues] = useState(null); // null = يحمَّل
   const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -91,6 +94,7 @@ export default function Content() {
                 </button>
               ))}
             </div>
+            <fieldset disabled={readOnly} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
             {sections.map((s) => (
               <div key={s} id={`panel_${s}`} role="tabpanel" aria-labelledby={`tab_${s}`} hidden={active !== s}>
                 {CONTENT_FIELDS.filter((f) => f.section === s).map((f) => (
@@ -115,10 +119,11 @@ export default function Content() {
                 ))}
               </div>
             ))}
-            <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>
+            </fieldset>
+            {!readOnly && <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>
               {saving && <span className="admin-btn-spinner" aria-hidden="true" />}
               {saving ? tr('جاري الحفظ...') : tr('حفظ كل التعديلات')}
-            </button>
+            </button>}
           </form>
         )}
       </div>

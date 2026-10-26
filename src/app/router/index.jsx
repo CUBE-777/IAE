@@ -3,7 +3,7 @@ import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import Home from '../../pages/public/Home';
 import ProtectedRoute from '../../components/admin/ProtectedRoute';
 import RouteError from '../../components/common/RouteError';
-import { ROLES_MEMBERS, ROLES_REQUESTS, ROLES_CONTENT, ROLES_INTERNAL_FILES, ROLES_BUDGET, ROLES_SUPER } from '../../constants/roles';
+import { ROLES_MEMBERS, ROLES_REQUESTS, ROLES_CONTENT_VIEW, ROLES_PROJECTS, ROLES_INTERNAL_FILES_VIEW, ROLES_BUDGET, ROLES_SUPER } from '../../constants/roles';
 import PageLoader from '../../components/common/PageLoader';
 
 // Code splitting: الصفحة الرئيسية تبقى في الحزمة الأولى (أسرع ظهور)، وباقي الصفحات — خصوصًا
@@ -87,13 +87,13 @@ export const router = createBrowserRouter([
       { path: '/admin/dashboard', element: protectedAdmin([], <Dashboard />) },
       { path: '/admin/members', element: protectedAdmin(ROLES_MEMBERS, <AdminMembers />) },
       { path: '/admin/requests', element: protectedAdmin(ROLES_REQUESTS, <Requests />) },
-      { path: '/admin/board', element: protectedAdmin(ROLES_CONTENT, <AdminBoard />) },
-      { path: '/admin/activities', element: protectedAdmin(ROLES_CONTENT, <Activities />) },
-      { path: '/admin/projects', element: protectedAdmin(ROLES_CONTENT, <AdminProjects />) },
-      { path: '/admin/gallery', element: protectedAdmin(ROLES_CONTENT, <Gallery />) },
-      { path: '/admin/announcements', element: protectedAdmin(ROLES_CONTENT, <AdminAnnouncements />) },
-      { path: '/admin/content', element: protectedAdmin(ROLES_CONTENT, <Content />) },
-      { path: '/admin/internal-files', element: protectedAdmin(ROLES_INTERNAL_FILES, <InternalFiles />) },
+      { path: '/admin/board', element: protectedAdmin(ROLES_CONTENT_VIEW, <AdminBoard />) },
+      { path: '/admin/activities', element: protectedAdmin(ROLES_CONTENT_VIEW, <Activities />) },
+      { path: '/admin/projects', element: protectedAdmin(ROLES_PROJECTS, <AdminProjects />) },
+      { path: '/admin/gallery', element: protectedAdmin(ROLES_CONTENT_VIEW, <Gallery />) },
+      { path: '/admin/announcements', element: protectedAdmin(ROLES_CONTENT_VIEW, <AdminAnnouncements />) },
+      { path: '/admin/content', element: protectedAdmin(ROLES_CONTENT_VIEW, <Content />) },
+      { path: '/admin/internal-files', element: protectedAdmin(ROLES_INTERNAL_FILES_VIEW, <InternalFiles />) },
       { path: '/admin/budget', element: protectedAdmin(ROLES_BUDGET, <Budget />) },
       { path: '/admin/admins', element: protectedAdmin(ROLES_SUPER, <AdminUsers />) },
       { path: '/admin/audit', element: protectedAdmin(ROLES_SUPER, <Audit />) },

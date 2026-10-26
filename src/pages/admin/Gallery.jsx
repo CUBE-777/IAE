@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import Modal from '../../components/admin/Modal';
+import { useAuth } from '../../app/providers/AuthProvider';
+import { isReadOnlyRole } from '../../constants/roles';
 import StateBox from '../../components/admin/StateBox';
 import GalleryEditModal from './GalleryEditModal';
 import {
@@ -10,6 +12,7 @@ import {
 
 import { tr } from '../../i18n/adminDict';
 export default function Gallery() {
+  const readOnly = isReadOnlyRole(useAuth().profile?.role);
   const [rows, setRows] = useState(null);
   const [error, setError] = useState(false);
   const [activities, setActivities] = useState([]);
@@ -77,12 +80,12 @@ export default function Gallery() {
       <AdminPageHeader
         title={tr('معرض الصور')}
         subtitle={tr('رفع وإدارة صور المعرض العام')}
-        actions={
+        actions={readOnly ? null : (
           <label className="admin-quick-action admin-upload-label">
             {uploading ? tr('جاري الرفع...') : tr('+ رفع صور')}
             <input ref={fileInputRef} type="file" accept="image/*" multiple style={{ display: 'none' }} disabled={uploading} onChange={handleUpload} />
           </label>
-        }
+        )}
       />
 
       <div className="admin-panel">
@@ -101,10 +104,10 @@ export default function Gallery() {
                   <div className="media-title">{g.title || tr('بدون عنوان')}</div>
                   <div className="media-sub">{g.activity_id ? activityTitle(g.activity_id) : tr('غير مرتبطة بنشاط')}</div>
                 </div>
-                <div className="media-actions">
+                {!readOnly && <div className="media-actions">
                   <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" aria-label={tr('تعديل الصورة: {{v1}}', { v1: g.title || 'بدون عنوان' })} onClick={() => setEditTarget(g)}>{tr('تعديل')}</button>
                   <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" aria-label={tr('حذف الصورة: {{v1}}', { v1: g.title || 'بدون عنوان' })} onClick={() => setDeleteTarget(g)}>{tr('حذف')}</button>
-                </div>
+                </div>}
               </div>
             ))}
           </div>

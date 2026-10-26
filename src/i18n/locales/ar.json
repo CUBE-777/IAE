@@ -400,7 +400,8 @@
       "secretary_general": "الكاتب العام",
       "deputy_secretary_general": "نائب الكاتب العام",
       "deputy_treasurer": "نائب أمين المال",
-      "deputy_super_admin": "نائب المسؤول الأعلى"
+      "deputy_super_admin": "نائب المسؤول الأعلى",
+      "consultant": "مستشار"
     },
     "common": {
       "edit": "تعديل",

@@ -7,6 +7,7 @@ import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import StatusBadge from '../../components/admin/StatusBadge';
 import StateBox from '../../components/admin/StateBox';
 import { useAuth } from '../../app/providers/AuthProvider';
+import { isReadOnlyRole } from '../../constants/roles';
 import { fetchDashboardStats, fetchRecentMembershipRequests, fetchRecentAuditLogs } from '../../services/supabase/dashboard.service';
 import { localeFor } from '../../utils/i18nContent';
 
@@ -81,14 +82,14 @@ export default function Dashboard() {
       <AdminPageHeader
         title={t('admin.dashboard.hello', { name: firstName })}
         subtitle={t('admin.dashboard.subtitle')}
-        actions={
+        actions={isReadOnlyRole(profile.role) ? null : (
           <>
             <Link to="/admin/members" className="admin-quick-action"><UserPlus size={15} aria-hidden="true" /> {t('admin.dashboard.addMember')}</Link>
             <Link to="/admin/activities" className="admin-quick-action"><CalendarPlus size={15} aria-hidden="true" /> {t('admin.dashboard.addActivity')}</Link>
             <Link to="/admin/gallery" className="admin-quick-action"><ImagePlus size={15} aria-hidden="true" /> {t('admin.dashboard.uploadImages')}</Link>
             <Link to="/admin/content" className="admin-quick-action"><FileEdit size={15} aria-hidden="true" /> {t('admin.dashboard.editContent')}</Link>
           </>
-        }
+        )}
       />
 
       {statsFailed ? (

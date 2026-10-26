@@ -29,6 +29,8 @@ const ALLOWED_ROLES = [
   'deputy_secretary_general',
   'deputy_treasurer',
   'deputy_super_admin',
+  // دور المستشار (migration 0032): قراءة + إدارة المشاريع
+  'consultant',
 ];
 const CALLER_ROLES = ['super_admin', 'developer'];
 

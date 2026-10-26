@@ -19,6 +19,10 @@ export const ADMIN_DICT = {
   "fr": "Trésorier adjoint",
   "en": "Deputy treasurer"
  },
+ "مستشار": {
+  "fr": "Consultant",
+  "en": "Consultant"
+ },
  "الكاتب العام": {
   "fr": "Secrétaire général",
   "en": "Secretary general"

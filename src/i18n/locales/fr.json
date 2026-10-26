@@ -400,7 +400,8 @@
       "secretary_general": "Secrétaire général",
       "deputy_secretary_general": "Secrétaire général adjoint",
       "deputy_treasurer": "Trésorier adjoint",
-      "deputy_super_admin": "Super administrateur adjoint"
+      "deputy_super_admin": "Super administrateur adjoint",
+      "consultant": "Consultant"
     },
     "common": {
       "edit": "Modifier",

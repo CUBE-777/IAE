@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import Modal from '../../components/admin/Modal';
+import { useAuth } from '../../app/providers/AuthProvider';
+import { isReadOnlyRole } from '../../constants/roles';
 import ActivityFormModal from './ActivityFormModal';
 import {
   fetchActivitiesAdmin, setActivityStatus, softDeleteActivity, STATUS_LABEL,
@@ -11,6 +13,7 @@ import { tr, trStrong, dateLocale } from '../../i18n/adminDict';
 const STATUS_TO_BADGE = { draft: 'pending', published: 'approved', archived: 'rejected' };
 
 export default function Activities() {
+  const readOnly = isReadOnlyRole(useAuth().profile?.role);
   const [rows, setRows] = useState(null);
   const [error, setError] = useState(false);
   const [formTarget, setFormTarget] = useState(undefined);
@@ -70,7 +73,7 @@ export default function Activities() {
       <AdminPageHeader
         title={tr('الأنشطة')}
         subtitle={tr('إدارة أنشطة النادي ونشرها في الموقع')}
-        actions={<button className="admin-quick-action" onClick={() => setFormTarget(null)}>{tr('+ إضافة نشاط')}</button>}
+        actions={readOnly ? null : <button className="admin-quick-action" onClick={() => setFormTarget(null)}>{tr('+ إضافة نشاط')}</button>}
       />
 
       <div className="admin-panel">
@@ -89,6 +92,7 @@ export default function Activities() {
                     <td data-label={tr('التاريخ')}>{a.date ? new Date(a.date).toLocaleDateString(dateLocale()) : '—'}</td>
                     <td data-label={tr('الحالة')}><span className={`admin-badge admin-badge-${STATUS_TO_BADGE[a.status]}`}>{tr(STATUS_LABEL[a.status] || a.status)}</span></td>
                     <td className="admin-cell-actions">
+                      {readOnly ? '—' : (<>
                       <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setFormTarget(a)}>{tr('تعديل')}</button>
                       {a.status !== 'published' ? (
                         <button className="admin-btn admin-btn-primary admin-btn-sm" onClick={() => changeStatus(a, 'published')}>{tr('نشر')}</button>
@@ -96,6 +100,7 @@ export default function Activities() {
                         <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => changeStatus(a, 'archived')}>{tr('أرشفة')}</button>
                       )}
                       <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDeleteTarget(a)}>{tr('حذف')}</button>
+                      </>)}
                     </td>
                   </tr>
                 ))}

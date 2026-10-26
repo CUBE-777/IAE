@@ -11,6 +11,7 @@ const sorted = (a) => [...a].sort();
 const router = read('src/app/router/index.jsx');
 const sql0012 = read('supabase/migrations/0012_budget_and_developer_role.sql');
 const sql0019 = read('supabase/migrations/0019_new_roles_and_file_delete_fix.sql');
+const sql0032 = read('supabase/migrations/0032_consultant_role.sql');
 
 /** مسار → مجموعة الأدوار كما يستعملها الراوتر ([] = أي مسؤول). */
 const routeRoles = {};
@@ -44,7 +45,7 @@ test('الأدوار: كل مسارات /admin معرّفة، وقائمة ال�
 
 test('الأدوار: ALL_ROLES = enum القاعدة = Edge Function = ROLE_LABELS', () => {
   const enumBase = quoted(read('supabase/migrations/0001_extensions_and_types.sql').match(/create type admin_role as enum \(([^)]*)\)/)[1]);
-  const added = [...(sql0012 + sql0019).matchAll(/alter type admin_role add value if not exists '([a-z_]+)'/g)].map((m) => m[1]);
+  const added = [...(sql0012 + sql0019 + sql0032).matchAll(/alter type admin_role add value if not exists '([a-z_]+)'/g)].map((m) => m[1]);
   assert.deepEqual(sorted(R.ALL_ROLES), sorted([...enumBase, ...added]), 'ALL_ROLES ≠ قيم admin_role في SQL');
 
   const edge = read('supabase/functions/admin-create-user/index.ts').match(/const ALLOWED_ROLES = \[([\s\S]*?)\];/)[1];
@@ -54,7 +55,33 @@ test('الأدوار: ALL_ROLES = enum القاعدة = Edge Function = ROLE_LAB
   const labelKeys = [...labels.matchAll(/^\s*([a-z_]+):/gm)].map((m) => m[1]);
   assert.deepEqual(sorted(labelKeys), sorted(R.ALL_ROLES), 'ROLE_LABELS ≠ ALL_ROLES');
 
-  for (const group of [R.ROLES_MEMBERS, R.ROLES_REQUESTS, R.ROLES_CONTENT, R.ROLES_INTERNAL_FILES, R.ROLES_BUDGET, R.ROLES_SUPER]) {
+  for (const group of [R.ROLES_MEMBERS, R.ROLES_REQUESTS, R.ROLES_CONTENT, R.ROLES_INTERNAL_FILES, R.ROLES_BUDGET, R.ROLES_SUPER, R.ROLES_PROJECTS, R.ROLES_CONTENT_VIEW, R.ROLES_INTERNAL_FILES_VIEW, R.ROLES_READONLY]) {
     for (const role of group) assert.ok(R.ALL_ROLES.includes(role), `دور غير معروف: ${role}`);
   }
+});
+
+test('المستشار: مجموعات الواجهة مطابقة لدوال SQL في 0032 ولا يمسّ الأدوار الحالية', () => {
+  assert.deepEqual(sorted(R.ROLES_PROJECTS), sorted(sqlFn(sql0032, 'can_manage_projects')));
+  assert.deepEqual(sorted(R.ROLES_INTERNAL_FILES_VIEW), sorted(sqlFn(sql0032, 'can_read_internal_files')));
+
+  // المستشار يضاف فوق مجموعات موجودة دون تغييرها
+  assert.ok(R.ROLES_CONTENT_VIEW.includes('consultant') && R.ROLES_PROJECTS.includes('consultant'));
+  assert.deepEqual(sorted(R.ROLES_CONTENT_VIEW.filter((r) => r !== 'consultant')), sorted(R.ROLES_CONTENT));
+  assert.deepEqual(sorted(R.ROLES_INTERNAL_FILES_VIEW.filter((r) => r !== 'consultant')), sorted(R.ROLES_INTERNAL_FILES));
+
+  // لا يدخل المستشار أيًّا من المجموعات الحساسة أو الكتابية الأخرى
+  for (const [name, group] of Object.entries({
+    ROLES_MEMBERS: R.ROLES_MEMBERS, ROLES_REQUESTS: R.ROLES_REQUESTS, ROLES_CONTENT: R.ROLES_CONTENT,
+    ROLES_INTERNAL_FILES: R.ROLES_INTERNAL_FILES, ROLES_BUDGET: R.ROLES_BUDGET, ROLES_SUPER: R.ROLES_SUPER,
+  })) {
+    assert.ok(!group.includes('consultant'), `المستشار يجب ألا يكون في ${name}`);
+  }
+  assert.ok(R.isReadOnlyRole('consultant') && !R.isReadOnlyRole('editor'));
+});
+
+test('المستشار: 0032 لا يعدّل دوال الأدوار الحالية ويستثنيه من قراءة سجل العمليات', () => {
+  for (const fn of ['can_manage_content', 'can_manage_members', 'can_access_internal_files', 'can_manage_budget', 'can_handle_membership', 'is_super_admin', 'is_admin', 'current_admin_role']) {
+    assert.ok(!new RegExp(`function public\\.${fn}\\(`).test(sql0032), `0032 يجب ألا يعيد تعريف ${fn}`);
+  }
+  assert.match(sql0032, /audit_logs_admin_read[\s\S]*<> 'consultant'/);
 });

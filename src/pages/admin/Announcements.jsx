@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import Modal from '../../components/admin/Modal';
+import { useAuth } from '../../app/providers/AuthProvider';
+import { isReadOnlyRole } from '../../constants/roles';
 import StateBox from '../../components/admin/StateBox';
 import AnnouncementFormModal from './AnnouncementFormModal';
 import {
@@ -21,6 +23,7 @@ const STATUS_BADGE = { published: 'approved', scheduled: 'pending', expired: 'mu
 
 export default function Announcements() {
   const { t, i18n } = useTranslation();
+  const readOnly = isReadOnlyRole(useAuth().profile?.role);
   const [rows, setRows] = useState(null);
   const [error, setError] = useState(false);
   const [formTarget, setFormTarget] = useState(undefined); // undefined=مغلق، null=جديد، كائن=تعديل
@@ -80,7 +83,7 @@ export default function Announcements() {
       <AdminPageHeader
         title={t('admin.announcements.title')}
         subtitle={t('admin.announcements.subtitle')}
-        actions={<button type="button" className="admin-quick-action" onClick={() => setFormTarget(null)}>{t('admin.announcements.new')}</button>}
+        actions={readOnly ? null : <button type="button" className="admin-quick-action" onClick={() => setFormTarget(null)}>{t('admin.announcements.new')}</button>}
       />
 
       <div className="admin-panel">
@@ -115,6 +118,7 @@ export default function Announcements() {
                         {a.start_at ? formatDate(a.start_at, i18n.language) : dash} → {a.end_at ? formatDate(a.end_at, i18n.language) : dash}
                       </td>
                       <td className="admin-cell-actions">
+                        {readOnly ? '—' : (<>
                         <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" disabled={busy}
                           onClick={() => toggle(a, { is_active: !a.is_active }, a.is_active ? 'unpublishedOk' : 'publishedOk')}>
                           {a.is_active ? t('admin.announcements.unpublish') : t('admin.announcements.publish')}
@@ -125,6 +129,7 @@ export default function Announcements() {
                         </button>
                         <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setFormTarget(a)}>{t('admin.common.edit')}</button>
                         <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDeleteTarget(a)}>{t('admin.common.delete')}</button>
+                        </>)}
                       </td>
                     </tr>
                   );

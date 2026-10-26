@@ -4,6 +4,7 @@ import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import Modal from '../../components/admin/Modal';
 import InternalFileUploadModal from './InternalFileUploadModal';
 import { useAuth } from '../../app/providers/AuthProvider';
+import { isReadOnlyRole } from '../../constants/roles';
 import {
   fetchInternalFiles, getInternalFileDownloadUrl, softDeleteInternalFile,
 } from '../../services/supabase/internalFiles.service';
@@ -18,6 +19,7 @@ const CAN_DELETE_ROLES = ['developer', 'super_admin', 'deputy_super_admin', 'sec
 export default function InternalFiles() {
   const { profile } = useAuth();
   const canDelete = CAN_DELETE_ROLES.includes(profile?.role);
+  const readOnly = isReadOnlyRole(profile?.role);
   const [rows, setRows] = useState(null);
   const [error, setError] = useState(false);
   const [category, setCategory] = useState('');
@@ -89,7 +91,7 @@ export default function InternalFiles() {
       <AdminPageHeader
         title={tr('الملفات الداخلية')}
         subtitle={tr('وثائق النادي الداخلية: متاحة للإدارة فقط ولا تُنشر في الموقع')}
-        actions={<button className="admin-quick-action" onClick={() => setUploadOpen(true)}>{tr('+ رفع ملف')}</button>}
+        actions={readOnly ? null : <button className="admin-quick-action" onClick={() => setUploadOpen(true)}>{tr('+ رفع ملف')}</button>}
       />
 
       <div className="admin-panel">

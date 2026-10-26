@@ -7,7 +7,7 @@
  * مصفوفة فارغة [] في الراوتر/القائمة تعني «أي مسؤول نشط».
  */
 
-export const ALL_ROLES = ['developer', 'super_admin', 'deputy_super_admin', 'editor', 'members_manager', 'treasurer', 'secretary_general', 'deputy_secretary_general', 'deputy_treasurer'];
+export const ALL_ROLES = ['developer', 'super_admin', 'deputy_super_admin', 'editor', 'members_manager', 'treasurer', 'secretary_general', 'deputy_secretary_general', 'deputy_treasurer', 'consultant'];
 
 /** إدارة الأعضاء — يطابق can_manage_members() في SQL */
 export const ROLES_MEMBERS = ['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'secretary_general', 'deputy_secretary_general'];
@@ -26,3 +26,16 @@ export const ROLES_BUDGET = ['developer', 'super_admin', 'deputy_super_admin', '
 
 /** الحسابات الإدارية والسجل والإعدادات — يطابق is_super_admin() (مسؤول أعلى + مطوّر) */
 export const ROLES_SUPER = ['developer', 'super_admin'];
+
+/** مشاريع النادي (إنشاء/تعديل/نشر/حذف منطقي) — يطابق can_manage_projects() في SQL (0032): أدوار المحتوى + المستشار */
+export const ROLES_PROJECTS = [...ROLES_CONTENT, 'consultant'];
+
+/** صفحات المحتوى للاطلاع: تُفتح للمستشار قراءةً فقط (الكتابة تبقى لـ ROLES_CONTENT في RLS) */
+export const ROLES_CONTENT_VIEW = [...ROLES_CONTENT, 'consultant'];
+
+/** الملفات الداخلية: اطلاع وتنزيل — يطابق can_read_internal_files() في SQL (0032)؛ الرفع يبقى لـ ROLES_INTERNAL_FILES */
+export const ROLES_INTERNAL_FILES_VIEW = [...ROLES_INTERNAL_FILES, 'consultant'];
+
+/** أدوار لا ترى أزرار الإضافة والتعديل والحذف في صفحات المحتوى (الخادم يرفض الكتابة على أي حال) */
+export const ROLES_READONLY = ['consultant'];
+export const isReadOnlyRole = (role) => ROLES_READONLY.includes(role);

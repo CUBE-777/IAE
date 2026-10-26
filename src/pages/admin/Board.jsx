@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import Modal from '../../components/admin/Modal';
+import { useAuth } from '../../app/providers/AuthProvider';
+import { isReadOnlyRole } from '../../constants/roles';
 import BoardFormModal from './BoardFormModal';
 import BoardProfileLinkModal from './BoardProfileLinkModal';
 import BoardProfileReviewModal from './BoardProfileReviewModal';
@@ -11,6 +13,7 @@ import { fetchBoardProfileLinks } from '../../services/supabase/boardProfile.ser
 
 import { tr, trStrong } from '../../i18n/adminDict';
 export default function Board() {
+  const readOnly = isReadOnlyRole(useAuth().profile?.role);
   const [rows, setRows] = useState(null);
   const [error, setError] = useState(false);
   const [formTarget, setFormTarget] = useState(undefined);
@@ -81,7 +84,7 @@ export default function Board() {
       <AdminPageHeader
         title={tr('أعضاء المكتب')}
         subtitle={tr('يظهر هذا الترتيب في صفحة "المكتب" على الموقع العام')}
-        actions={<button className="admin-quick-action" onClick={() => setFormTarget(null)}>{tr('+ إضافة عضو مكتب')}</button>}
+        actions={readOnly ? null : <button className="admin-quick-action" onClick={() => setFormTarget(null)}>{tr('+ إضافة عضو مكتب')}</button>}
       />
 
       <div className="admin-panel">
@@ -108,6 +111,7 @@ export default function Board() {
                     <td data-label={tr('الصفة')}>{b.position}</td>
                     <td data-label={tr('الحالة')}><span className={`admin-badge admin-badge-${b.is_active ? 'approved' : 'rejected'}`}>{b.is_active ? tr('نشط') : tr('غير نشط')}</span></td>
                     <td className="admin-cell-actions">
+                      {readOnly ? '—' : (<>
                       <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" aria-label={tr('رفع للأعلى')} disabled={i === 0 || moving} onClick={() => move(b, -1)}>↑</button>
                       <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" aria-label={tr('إنزال للأسفل')} disabled={i === rows.length - 1 || moving} onClick={() => move(b, 1)}>↓</button>
                       {links && links[b.id]?.status === 'submitted' && (
@@ -118,6 +122,7 @@ export default function Board() {
                       )}
                       <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setFormTarget(b)}>{tr('تعديل')}</button>
                       <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDeleteTarget(b)}>{tr('حذف')}</button>
+                      </>)}
                     </td>
                   </tr>
                 ))}

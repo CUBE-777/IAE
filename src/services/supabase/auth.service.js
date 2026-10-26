@@ -111,4 +111,5 @@ export const ROLE_LABELS = {
   deputy_secretary_general: 'نائب الكاتب العام',
   deputy_treasurer: 'نائب أمين المال',
   deputy_super_admin: 'نائب المسؤول الأعلى',
+  consultant: 'مستشار',
 };

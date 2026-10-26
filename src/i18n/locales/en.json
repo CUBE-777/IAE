@@ -400,7 +400,8 @@
       "secretary_general": "Secretary general",
       "deputy_secretary_general": "Deputy secretary general",
       "deputy_treasurer": "Deputy treasurer",
-      "deputy_super_admin": "Deputy super admin"
+      "deputy_super_admin": "Deputy super admin",
+      "consultant": "Consultant"
     },
     "common": {
       "edit": "Edit",

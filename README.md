@@ -112,6 +112,10 @@ src/
 `src/constants/roles.js` هو مصدر مجموعات الأدوار في الراوتر وقائمة التنقل. `tests/roles.test.js` يفشل إن اختلفت عن دوال RLS في SQL
 أو عن `ALLOWED_ROLES` في Edge Function أو `ROLE_LABELS`. لإضافة دور: SQL ثم `roles.js` ثم Edge Function ثم `ROLE_LABELS`.
 
+**المستشار (`consultant`، migration 0032):** يدير المشاريع (`can_manage_projects`) ويقرأ فقط لوحة القيادة والأنشطة والمعرض والإعلانات
+والمكتب ومحتوى الموقع، ويطّلع وينزّل الملفات الداخلية (`can_read_internal_files`) دون رفع أو حذف. لا يصل للأعضاء ولا الانخراط ولا الميزانية
+ولا الحسابات الإدارية ولا سجل العمليات ولا الإعدادات. يُنصح بتفعيل المصادقة الثنائية لحسابه وتعطيله (`is_active = false`) عند انتهاء مهمته.
+
 ### فحص قاعدة البيانات
 
 `supabase/tests/rls_smoke.sql`: ألصقه في SQL Editor بعد أي migration أمنية؛ يعمل داخل معاملة تُلغى ولا يكتب شيئًا،
