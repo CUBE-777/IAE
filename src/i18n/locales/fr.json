@@ -869,5 +869,79 @@
         "body": "Nous pouvons modifier cette page lorsque nos pratiques évoluent ; la date de dernière mise à jour figure en haut."
       }
     ]
+  },
+  "boardProfile": {
+    "pageTitle": "Mon profil — Bureau exécutif",
+    "crumb": "Profil membre du bureau",
+    "title": "Mon profil",
+    "description": "Renseignez vous-même vos informations pour la page du bureau. Rien n'est publié avant la validation de l'administration.",
+    "loading": "Chargement…",
+    "loadErrorTitle": "Impossible de charger la page",
+    "loadErrorText": "Vérifiez votre connexion Internet puis rouvrez le lien.",
+    "state": {
+      "invalid": {
+        "title": "Lien invalide",
+        "text": "Vérifiez que vous avez copié le lien en entier, ou demandez-en un nouveau à l'administration."
+      },
+      "expired": {
+        "title": "Lien expiré",
+        "text": "Demandez à l'administration un nouveau lien pour remplir votre profil."
+      },
+      "approved": {
+        "title": "Votre profil est validé",
+        "text": "Vos informations sont visibles sur le site. Pour les modifier plus tard, demandez un nouveau lien à l'administration."
+      }
+    },
+    "greeting": "Bonjour {{name}} — {{position}}",
+    "intro": "Remplissez ce que vous souhaitez voir sur la page du bureau. Tous les champs sont facultatifs et vous pouvez rouvrir le lien pour modifier votre envoi avant sa validation.",
+    "draftNote": "Vous avez déjà envoyé votre profil, il est en cours de relecture ; vous pouvez le modifier et le renvoyer.",
+    "returned": "Remarque de l'administration :",
+    "groups": {
+      "photo": "Photo et nom",
+      "study": "Études",
+      "about": "À propos de vous",
+      "social": "Réseaux sociaux",
+      "extra": "Informations supplémentaires",
+      "translations": "Traductions (facultatif)"
+    },
+    "fields": {
+      "photo": "Photo personnelle",
+      "nameLatin": "Nom en lettres latines",
+      "university": "Université / établissement",
+      "promotion": "Année de diplôme (promotion)",
+      "track": "Filière",
+      "bio": "Courte présentation (carte du bureau)",
+      "publicBio": "Présentation (fenêtre de votre profil)",
+      "studyPath": "Parcours d'études",
+      "extraLabel": "Intitulé",
+      "extraValue": "Valeur"
+    },
+    "hints": {
+      "photo": "Une photo nette du visage, bien éclairée (JPG, PNG ou WEBP).",
+      "hasPhoto": "Vous avez déjà une photo. Choisissez un nouveau fichier seulement pour la changer.",
+      "studyPath": "Exemple : Bac sciences physiques 2024 → Faculté pluridisciplinaire → Licence en informatique",
+      "bio": "Une ou deux phrases sur vous.",
+      "social": "Collez le lien de votre compte. Laissez vide si vous n'en avez pas.",
+      "extra": "Exemple : intitulé « Langues », valeur « arabe, français, anglais ».",
+      "translations": "Traduisez ici vos textes en français et en anglais. Un champ laissé vide s'affichera en arabe pour le visiteur."
+    },
+    "website": "Site personnel",
+    "extra": {
+      "add": "+ Ajouter une information",
+      "remove": "Supprimer"
+    },
+    "tr": {
+      "tabs": "Langue de traduction",
+      "fr": "Français",
+      "en": "English"
+    },
+    "submit": "Envoyer pour validation",
+    "submitting": "Envoi en cours…",
+    "uploading": "Envoi de la photo…",
+    "submitError": "Impossible d'envoyer votre profil. Réessayez dans quelques instants.",
+    "uploadError": "Impossible d'envoyer la photo. Essayez une autre image ou réessayez.",
+    "successTitle": "Votre profil nous est parvenu",
+    "successText": "Nous le relirons et le publierons bientôt. Vous pouvez rouvrir le même lien pour le modifier avant validation.",
+    "privacy": "Rien n'apparaît sur le site avant la validation de l'administration."
   }
 }

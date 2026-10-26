@@ -38,7 +38,12 @@ begin
       ('anon يقرأ جدول throttle',                'select * from public.membership_request_throttle limit 1'),
       ('anon يستدعي approve_membership_request', 'select public.approve_membership_request(gen_random_uuid())'),
       ('anon يستدعي reject_membership_request',  $q$select public.reject_membership_request(gen_random_uuid(), 'x')$q$),
-      ('anon يستدعي admin_active_members_count', 'select public.admin_active_members_count()')
+      ('anon يستدعي admin_active_members_count', 'select public.admin_active_members_count()'),
+      ('anon يقرأ board_profile_links (0031)',     'select token_hash from public.board_profile_links limit 1'),
+      ('anon يستدعي issue_board_profile_link',    'select public.issue_board_profile_link(gen_random_uuid())'),
+      ('anon يستدعي approve_board_profile',       'select public.approve_board_profile(gen_random_uuid(), null)'),
+      ('anon يستدعي return_board_profile',        'select public.return_board_profile(gen_random_uuid(), null)'),
+      ('anon يستدعي دالة التنظيف الداخلية',        $q$select public._bp_clean('{}'::jsonb)$q$)
     ) as v(label, q)
   loop
     denied := false;

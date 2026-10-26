@@ -3,8 +3,11 @@ import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import Modal from '../../components/admin/Modal';
 import BoardFormModal from './BoardFormModal';
+import BoardProfileLinkModal from './BoardProfileLinkModal';
+import BoardProfileReviewModal from './BoardProfileReviewModal';
 import StateBox from '../../components/admin/StateBox';
 import { fetchBoardMembers, reorderBoardMembers, deleteBoardMember } from '../../services/supabase/adminBoard.service';
+import { fetchBoardProfileLinks } from '../../services/supabase/boardProfile.service';
 
 import { tr, trStrong } from '../../i18n/adminDict';
 export default function Board() {
@@ -12,6 +15,10 @@ export default function Board() {
   const [error, setError] = useState(false);
   const [formTarget, setFormTarget] = useState(undefined);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  // روابط التعبئة الذاتية (migration 0031): إن لم تُشغَّل بعد يفشل الجلب بصمت وتختفي الأزرار الجديدة فقط
+  const [links, setLinks] = useState(null); // null = غير متاح
+  const [linkTarget, setLinkTarget] = useState(null);
+  const [reviewTarget, setReviewTarget] = useState(null);
 
   useEffect(() => {
     document.title = tr('أعضاء المكتب — لوحة إدارة النادي');
@@ -27,6 +34,9 @@ export default function Board() {
         window.notify?.fromError(err, tr('تعذر تحميل أعضاء المكتب'));
         setError(true);
       });
+    fetchBoardProfileLinks()
+      .then((list) => setLinks(Object.fromEntries(list.map((l) => [l.board_member_id, l]))))
+      .catch(() => setLinks(null));
   };
 
   useEffect(load, []);
@@ -89,12 +99,23 @@ export default function Board() {
                 {rows.map((b, i) => (
                   <tr key={b.id}>
                     <td data-label="#">{i + 1}</td>
-                    <td data-label={tr('الاسم')}>{b.full_name}</td>
+                    <td data-label={tr('الاسم')}>
+                      {b.full_name}
+                      {links?.[b.id]?.status === 'submitted' && (
+                        <span className="admin-badge admin-badge-pending" style={{ marginInlineStart: 8 }}>{tr('بانتظار المراجعة')}</span>
+                      )}
+                    </td>
                     <td data-label={tr('الصفة')}>{b.position}</td>
                     <td data-label={tr('الحالة')}><span className={`admin-badge admin-badge-${b.is_active ? 'approved' : 'rejected'}`}>{b.is_active ? tr('نشط') : tr('غير نشط')}</span></td>
                     <td className="admin-cell-actions">
                       <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" aria-label={tr('رفع للأعلى')} disabled={i === 0 || moving} onClick={() => move(b, -1)}>↑</button>
                       <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" aria-label={tr('إنزال للأسفل')} disabled={i === rows.length - 1 || moving} onClick={() => move(b, 1)}>↓</button>
+                      {links && links[b.id]?.status === 'submitted' && (
+                        <button className="admin-btn admin-btn-primary admin-btn-sm" onClick={() => setReviewTarget(b)}>{tr('مراجعة')}</button>
+                      )}
+                      {links && (
+                        <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setLinkTarget(b)}>{tr('رابط التعبئة')}</button>
+                      )}
                       <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setFormTarget(b)}>{tr('تعديل')}</button>
                       <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDeleteTarget(b)}>{tr('حذف')}</button>
                     </td>
@@ -112,6 +133,27 @@ export default function Board() {
           onClose={() => setFormTarget(undefined)}
           onSaved={() => {
             setFormTarget(undefined);
+            load();
+          }}
+        />
+      )}
+
+      {linkTarget && (
+        <BoardProfileLinkModal
+          member={linkTarget}
+          link={links?.[linkTarget.id]}
+          onClose={() => setLinkTarget(null)}
+          onIssued={load}
+        />
+      )}
+
+      {reviewTarget && links?.[reviewTarget.id] && (
+        <BoardProfileReviewModal
+          member={reviewTarget}
+          link={links[reviewTarget.id]}
+          onClose={() => setReviewTarget(null)}
+          onDone={() => {
+            setReviewTarget(null);
             load();
           }}
         />

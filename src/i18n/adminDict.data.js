@@ -1682,5 +1682,137 @@ export const ADMIN_DICT = {
  "الوثائق": {
   "fr": "Documents",
   "en": "Documents"
+ },
+ "تعذر إنشاء الرابط": {
+  "fr": "Impossible de créer le lien",
+  "en": "Couldn't create the link"
+ },
+ "تم نسخ الرابط": {
+  "fr": "Lien copié",
+  "en": "Link copied"
+ },
+ "انسخ الرابط يدويًا من الخانة": {
+  "fr": "Copiez le lien manuellement depuis le champ",
+  "en": "Copy the link manually from the field"
+ },
+ "مرحبًا {{name}}، يرجى ملء ملفك الشخصي على موقع النادي عبر هذا الرابط:": {
+  "fr": "Bonjour {{name}}, merci de remplir votre profil sur le site du club via ce lien :",
+  "en": "Hello {{name}}, please fill in your profile on the club website using this link:"
+ },
+ "رابط تعبئة الملف الشخصي": {
+  "fr": "Lien de saisie du profil",
+  "en": "Profile form link"
+ },
+ "رابط خاص بـ {{name}} ليملأ ملفه العام بنفسه. لا يظهر شيء في الموقع قبل أن تعتمده أنت.": {
+  "fr": "Lien personnel pour que {{name}} remplisse lui-même son profil public. Rien n'apparaît sur le site avant votre validation.",
+  "en": "A personal link so {{name}} can fill in their own public profile. Nothing appears on the site until you approve it."
+ },
+ "يوجد رابط سابق لهذا العضو؛ إنشاء رابط جديد يُبطل القديم.": {
+  "fr": "Un lien existe déjà pour ce membre ; en créer un nouveau invalide l'ancien.",
+  "en": "A link already exists for this member; creating a new one invalidates the old one."
+ },
+ "إنشاء رابط تعبئة": {
+  "fr": "Créer un lien de saisie",
+  "en": "Create a form link"
+ },
+ "صالح حتى {{date}}. يظهر الرابط هنا مرة واحدة فقط.": {
+  "fr": "Valable jusqu'au {{date}}. Le lien n'est affiché qu'une seule fois.",
+  "en": "Valid until {{date}}. The link is shown only once."
+ },
+ "نسخ الرابط": {
+  "fr": "Copier le lien",
+  "en": "Copy link"
+ },
+ "إرسال عبر واتساب": {
+  "fr": "Envoyer par WhatsApp",
+  "en": "Send via WhatsApp"
+ },
+ "جاري الاعتماد...": {
+  "fr": "Validation en cours...",
+  "en": "Approving..."
+ },
+ "تم اعتماد الملف ونشره": {
+  "fr": "Profil validé et publié",
+  "en": "Profile approved and published"
+ },
+ "تعذر الاعتماد": {
+  "fr": "Impossible de valider",
+  "en": "Couldn't approve"
+ },
+ "تمت إعادة الملف للعضو": {
+  "fr": "Profil renvoyé au membre",
+  "en": "Profile sent back to the member"
+ },
+ "تعذر الإرجاع": {
+  "fr": "Impossible de renvoyer",
+  "en": "Couldn't send back"
+ },
+ "مراجعة الملف الذي أرسله {{name}}": {
+  "fr": "Relecture du profil envoyé par {{name}}",
+  "en": "Review the profile sent by {{name}}"
+ },
+ "الصورة الجديدة": {
+  "fr": "Nouvelle photo",
+  "en": "New photo"
+ },
+ "جاري تحميل الصورة...": {
+  "fr": "Chargement de la photo...",
+  "en": "Loading photo..."
+ },
+ "استخدام الصورة الجديدة في الموقع": {
+  "fr": "Utiliser la nouvelle photo sur le site",
+  "en": "Use the new photo on the site"
+ },
+ "لا فروق في النصوص عن الملف الحالي.": {
+  "fr": "Aucune différence de texte avec le profil actuel.",
+  "en": "No text differences from the current profile."
+ },
+ "الحقل": {
+  "fr": "Champ",
+  "en": "Field"
+ },
+ "الحالي": {
+  "fr": "Actuel",
+  "en": "Current"
+ },
+ "المقترح": {
+  "fr": "Proposé",
+  "en": "Proposed"
+ },
+ "ملاحظة للعضو (اختياري، تظهر له عند الإعادة)": {
+  "fr": "Remarque pour le membre (facultatif, affichée au renvoi)",
+  "en": "Note for the member (optional, shown when sent back)"
+ },
+ "اعتماد": {
+  "fr": "Valider",
+  "en": "Approve"
+ },
+ "إعادة للتعديل": {
+  "fr": "Renvoyer pour modification",
+  "en": "Send back for edits"
+ },
+ "حسابات التواصل": {
+  "fr": "Réseaux sociaux",
+  "en": "Social accounts"
+ },
+ "معلومات إضافية": {
+  "fr": "Informations supplémentaires",
+  "en": "Extra information"
+ },
+ "الاسم بالحروف اللاتينية": {
+  "fr": "Nom en lettres latines",
+  "en": "Name in Latin letters"
+ },
+ "بانتظار المراجعة": {
+  "fr": "En attente de relecture",
+  "en": "Awaiting review"
+ },
+ "مراجعة": {
+  "fr": "Relire",
+  "en": "Review"
+ },
+ "رابط التعبئة": {
+  "fr": "Lien de saisie",
+  "en": "Form link"
  }
 };

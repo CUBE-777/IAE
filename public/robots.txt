@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /membership-form/
+Disallow: /board-profile/
 
 Sitemap: https://fsa-iae.netlify.app/sitemap.xml

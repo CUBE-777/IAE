@@ -70,6 +70,7 @@ const PAGES = [
   ['ThankYou', 'src/pages/public/ThankYou.jsx', []],
   ['Privacy', 'src/pages/public/Privacy.jsx', []],
   ['MembershipFormPage', 'src/pages/public/MembershipFormPage.jsx', []],
+  ['BoardProfileFormPage', 'src/pages/public/BoardProfileFormPage.jsx', []],
 ];
 
 for (const [name, entry, layouts] of PAGES) {

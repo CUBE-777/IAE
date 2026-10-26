@@ -869,5 +869,79 @@
         "body": "We may change this page when our practices change; the last-updated date is shown at the top."
       }
     ]
+  },
+  "boardProfile": {
+    "pageTitle": "My profile — Executive board",
+    "crumb": "Board member profile",
+    "title": "My profile",
+    "description": "Fill in your own details for the board page. Nothing is published before the administration reviews it.",
+    "loading": "Loading…",
+    "loadErrorTitle": "Couldn't load the page",
+    "loadErrorText": "Check your internet connection, then reopen the link.",
+    "state": {
+      "invalid": {
+        "title": "Invalid link",
+        "text": "Make sure you copied the whole link, or ask the administration for a new one."
+      },
+      "expired": {
+        "title": "Link expired",
+        "text": "Ask the administration for a new link to fill in your profile."
+      },
+      "approved": {
+        "title": "Your profile has been approved",
+        "text": "Your details are now on the site. To change them later, ask the administration for a new link."
+      }
+    },
+    "greeting": "Hello {{name}} — {{position}}",
+    "intro": "Fill in what you'd like to appear on the board page. Every field is optional, and you can reopen the link to edit what you sent before it is approved.",
+    "draftNote": "You already sent your profile and it is under review; you can edit it and send it again.",
+    "returned": "Note from the administration:",
+    "groups": {
+      "photo": "Photo and name",
+      "study": "Studies",
+      "about": "About you",
+      "social": "Social accounts",
+      "extra": "Extra information",
+      "translations": "Translations (optional)"
+    },
+    "fields": {
+      "photo": "Profile photo",
+      "nameLatin": "Name in Latin letters",
+      "university": "University / institution",
+      "promotion": "Graduation year (class)",
+      "track": "Field of study",
+      "bio": "Short bio (board card)",
+      "publicBio": "Bio (shown in your profile window)",
+      "studyPath": "Study path",
+      "extraLabel": "Label",
+      "extraValue": "Value"
+    },
+    "hints": {
+      "photo": "A clear, well-lit photo of your face (JPG, PNG or WEBP).",
+      "hasPhoto": "You already have a photo. Choose a new file only if you want to change it.",
+      "studyPath": "Example: Physical sciences baccalaureate 2024 → Multidisciplinary Faculty → Bachelor's in Computer Science",
+      "bio": "One or two sentences about you.",
+      "social": "Paste your account link. Leave it empty if you don't have one.",
+      "extra": "Example: label “Languages”, value “Arabic, French, English”.",
+      "translations": "Translate your texts into French and English here. Any empty field will show its Arabic text to visitors."
+    },
+    "website": "Personal website",
+    "extra": {
+      "add": "+ Add an item",
+      "remove": "Remove"
+    },
+    "tr": {
+      "tabs": "Translation language",
+      "fr": "Français",
+      "en": "English"
+    },
+    "submit": "Send for review",
+    "submitting": "Sending…",
+    "uploading": "Uploading photo…",
+    "submitError": "Couldn't send your profile. Please try again in a moment.",
+    "uploadError": "Couldn't upload the photo. Try another image or try again.",
+    "successTitle": "We received your profile",
+    "successText": "We'll review and publish it soon. You can reopen the same link to edit it before approval.",
+    "privacy": "Nothing appears on the site until the administration approves it."
   }
 }

@@ -17,6 +17,7 @@ const Projects = lazy(() => import('../../pages/public/Projects'));
 const ProjectDetail = lazy(() => import('../../pages/public/ProjectDetail'));
 const ThankYou = lazy(() => import('../../pages/public/ThankYou'));
 const MembershipFormPage = lazy(() => import('../../pages/public/MembershipFormPage'));
+const BoardProfileFormPage = lazy(() => import('../../pages/public/BoardProfileFormPage'));
 const NotFound = lazy(() => import('../../pages/public/NotFound'));
 const Login = lazy(() => import('../../pages/admin/Login'));
 const Dashboard = lazy(() => import('../../pages/admin/Dashboard'));
@@ -77,6 +78,8 @@ export const router = createBrowserRouter([
       { path: '/privacy', element: <Privacy /> },
       // رابط شخصي لنموذج الانخراط (رمز غير قابل للتخمين) — صفحة غير مفهرسة
       { path: '/membership-form/:token', element: <MembershipFormPage /> },
+      // رابط شخصي لعضو المكتب ليملأ ملفه العام بنفسه (migration 0031) — صفحة غير مفهرسة
+      { path: '/board-profile/:token', element: <BoardProfileFormPage /> },
 
       // /admin (بلا لاحقة) كان يعرض 404؛ المدخل الوحيد للوحة هو /admin/login (وهو يحوّل المسجَّل إلى اللوحة)
       { path: '/admin', element: <Navigate to="/admin/login" replace /> },
