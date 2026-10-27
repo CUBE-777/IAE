@@ -34,26 +34,31 @@ const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 function validate(v, files) {
   const e = {};
   const set = (k, err) => err && (e[k] = err);
-  // الاسم: بالعربية و/أو بالحروف اللاتينية (واحد منهما على الأقل)
+  // الاسم: بالعربية وبالحروف اللاتينية (كلاهما إلزامي)
   const nameAr = v.full_name.trim();
   const nameLatin = v.name_latin.trim();
   if (!nameAr && !nameLatin) {
     e.full_name = 'membershipForm.errors.nameRequired';
     e.name_latin = 'membershipForm.errors.nameRequired';
   } else {
-    if (nameAr) set('full_name', validateName(nameAr));
-    if (nameLatin) set('name_latin', validateName(nameLatin));
+    set('full_name', nameAr ? validateName(nameAr) : 'forms.required');
+    set('name_latin', nameLatin ? validateName(nameLatin) : 'forms.required');
   }
   set('birth_date', validateRequired(v.birth_date));
   set('phone', validatePhone(v.phone));
-  if (v.email.trim()) set('email', validateEmail(v.email));
+  set('email', validateEmail(v.email)); // إلزامي
   set('city', validateRequired(v.city));
   set('university', validateRequired(v.university));
   set('track', validateRequired(v.track));
   set('level', validateRequired(v.level));
-  // الصورة الشخصية وبطاقة الطالب (الوجهان) اختيارية
+  // كل الحقول إلزامية: الصورة الشخصية، رقم مسار/أبوجي، سنة التخرج، وبطاقة الطالب (الوجهان)
+  if (!files.photo) e.photo = 'membershipForm.errors.photoRequired';
+  set('promotion', validateRequired(v.promotion));
   const apogee = cleanApogee(v.apogee);
-  if (apogee && !APOGEE_RE.test(apogee)) e.apogee = 'membershipForm.errors.apogeeInvalid';
+  if (!apogee) e.apogee = 'membershipForm.errors.apogeeRequired';
+  else if (!APOGEE_RE.test(apogee)) e.apogee = 'membershipForm.errors.apogeeInvalid';
+  if (!files.id) e.id = 'membershipForm.errors.cardFrontRequired';
+  if (!files.idb) e.idb = 'membershipForm.errors.cardBackRequired';
   if (!v.motivation.trim()) e.motivation = 'membershipForm.errors.motivationRequired';
   else set('motivation', validateMaxLength(v.motivation, MOTIVATION_MAX));
   set('skills', validateMaxLength(v.skills, 600));
@@ -205,9 +210,9 @@ export default function MembershipFormPage() {
     let step = 'upload';
     try {
       setStage('uploading');
-      const photoPath = files.photo ? await ensureUploaded('photo') : null; // الصورة اختيارية
-      const idPath = files.id ? await ensureUploaded('id') : null; // بطاقة الطالب (الوجه) اختيارية
-      const idBackPath = files.idb ? await ensureUploaded('idb') : null; // بطاقة الطالب (الظهر) اختيارية
+      const photoPath = await ensureUploaded('photo'); // الصورة الشخصية إلزامية
+      const idPath = await ensureUploaded('id'); // بطاقة الطالب (الوجه) إلزامية
+      const idBackPath = await ensureUploaded('idb'); // بطاقة الطالب (الظهر) إلزامية
       step = 'send';
       setStage('sending');
       const nameAr = values.full_name.trim();
@@ -221,7 +226,7 @@ export default function MembershipFormPage() {
         consent_photo: values.consent_directory === true && values.consent_photo === true,
         apogee: cleanApogee(values.apogee),
         motivation: values.motivation.trim(),
-        ...(photoPath ? { photo_path: photoPath } : {}),
+        photo_path: photoPath,
         ...(idPath ? { id_card_path: idPath } : {}),
         ...(idBackPath ? { id_card_back_path: idBackPath } : {}),
         rules_accepted: true,
@@ -273,16 +278,17 @@ export default function MembershipFormPage() {
                 shape="avatar"
                 label={t('membershipForm.fields.photo')}
                 hint={t('membershipForm.docs.photoHint')}
+                required
                 error={errors.photo}
                 file={files.photo}
                 onPick={(f) => handlePick('photo', f)}
                 disabled={submitting}
               />
               <div className="form-row">
-                <FormField id="mf-name" label={t('membershipForm.fields.nameArabic')} error={errors.full_name}>
+                <FormField id="mf-name" label={t('membershipForm.fields.nameArabic')} required error={errors.full_name}>
                   {input('full_name', { type: 'text', autoComplete: 'name', dir: 'rtl', lang: 'ar' })}
                 </FormField>
-                <FormField id="mf-name-latin" label={t('membershipForm.fields.nameLatin')} error={errors.name_latin}>
+                <FormField id="mf-name-latin" label={t('membershipForm.fields.nameLatin')} required error={errors.name_latin}>
                   {input('name_latin', { type: 'text', autoComplete: 'off', dir: 'ltr', lang: 'fr', placeholder: 'Mohamed El Alaoui' })}
                 </FormField>
               </div>
@@ -296,7 +302,7 @@ export default function MembershipFormPage() {
                 </FormField>
               </div>
               <div className="form-row">
-                <FormField id="mf-email" label={t('membershipForm.fields.email')} error={errors.email}>
+                <FormField id="mf-email" label={t('membershipForm.fields.email')} required error={errors.email}>
                   {input('email', { type: 'email', inputMode: 'email', autoComplete: 'email', dir: 'ltr' })}
                 </FormField>
                 <FormField id="mf-city" label={t('membershipForm.fields.city')} required error={errors.city}>
@@ -324,12 +330,12 @@ export default function MembershipFormPage() {
                     </select>
                   )}
                 </FormField>
-                <FormField id="mf-apogee" label={t('membershipForm.fields.apogee')} error={errors.apogee}>
+                <FormField id="mf-apogee" label={t('membershipForm.fields.apogee')} required error={errors.apogee}>
                   {input('apogee', { type: 'text', dir: 'ltr', autoComplete: 'off', maxLength: 40, placeholder: t('membershipForm.placeholders.apogee') })}
                 </FormField>
               </div>
               <div className="form-row">
-                <FormField id="mf-promo" label={t('membershipForm.fields.promotion')}>
+                <FormField id="mf-promo" label={t('membershipForm.fields.promotion')} required error={errors.promotion}>
                   {input('promotion', { type: 'text', inputMode: 'numeric', dir: 'ltr', maxLength: 40, placeholder: t('membershipForm.placeholders.promotion') })}
                 </FormField>
               </div>
@@ -374,6 +380,7 @@ export default function MembershipFormPage() {
                   shape="card"
                   label={t('membershipForm.fields.studentCardFront')}
                   hint={t('membershipForm.docs.studentFrontHint')}
+                  required
                   error={errors.id}
                   file={files.id}
                   onPick={(f) => handlePick('id', f)}
@@ -384,6 +391,7 @@ export default function MembershipFormPage() {
                   shape="card"
                   label={t('membershipForm.fields.studentCardBack')}
                   hint={t('membershipForm.docs.studentBackHint')}
+                  required
                   error={errors.idb}
                   file={files.idb}
                   onPick={(f) => handlePick('idb', f)}

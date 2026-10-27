@@ -1,9 +1,10 @@
 -- ============================================================
 -- 0034_membership_form_apogee_student_card.sql
 -- تعديلات استمارة الانخراط المرسلة عبر الواتساب:
---   1) حقلان جديدان: apogee (رقم أبوجي / مسار، اختياري) وmotivation (لماذا تريد الانضمام).
---   2) بطاقة الطالب بدل البطاقة الوطنية: الوجه في id_card_path (id-1..3) والظهر في id_card_back_path (idb-1..3).
---   3) الصورة الشخصية أصبحت اختيارية (كانت إلزامية في 0020/0030).
+--   1) حقلان جديدان: apogee (رقم مسار / أبوجي، إلزامي) وmotivation (لماذا تريد الانضمام).
+--   2) بطاقة الطالب بدل البطاقة الوطنية: الوجه في id_card_path (id-1..3) والظهر في id_card_back_path (idb-1..3)، وكلاهما إلزامي.
+--   3) قسما المعلومات الشخصية والدراسية إلزاميان بالكامل: الصورة، الاسم بالعربية واللاتينية، البريد، سنة التخرج،
+--      رقم مسار/أبوجي، وصورتا بطاقة الطالب (إضافة إلى الحقول الإلزامية سابقاً).
 --   4) «الدفعة» أصبحت «سنة التخرج»: تغيير في العنوان فقط، العمود promotion نفسه (انظر 0002).
 -- الحقول الجديدة تُحفظ داخل membership_forms.data ثم member_private.form_data (دالة record_annual_membership لا تتغيّر).
 -- يتطلب 0020 و0030.  آمن لإعادة التشغيل (create or replace).
@@ -137,11 +138,17 @@ begin
   if v_github is not null and v_github !~* '^https?://' then v_github := 'https://' || v_github; end if;
   if v_linkedin is not null and v_linkedin !~* '^https?://' then v_linkedin := 'https://' || v_linkedin; end if;
 
-  -- الصورة الشخصية وبطاقة الطالب (الوجه + الظهر): كلها اختيارية.
+  -- الصورة الشخصية وبطاقة الطالب (الوجه + الظهر): كلها إلزامية.
   -- أي مسار مُرسل يجب أن يكون داخل مجلد هذا الرابط حصراً + الملف موجود فعلاً.
   v_photo  := nullif(btrim(coalesce(p_data->>'photo_path', '')), '');
   v_idcard := nullif(btrim(coalesce(p_data->>'id_card_path', '')), '');
   v_idback := nullif(btrim(coalesce(p_data->>'id_card_back_path', '')), '');
+  if v_photo is null then
+    raise exception 'يرجى رفع الصورة الشخصية';
+  end if;
+  if v_idcard is null or v_idback is null then
+    raise exception 'يرجى رفع بطاقة الطالب (الوجهين)';
+  end if;
   if (v_photo  is not null and v_photo  !~ ('^' || v_form.token_hash || '/photo-[1-3]\.(webp|jpg|png)$'))
      or (v_idcard is not null and v_idcard !~ ('^' || v_form.token_hash || '/id-[1-3]\.(webp|jpg|png)$'))
      or (v_idback is not null and v_idback !~ ('^' || v_form.token_hash || '/idb-[1-3]\.(webp|jpg|png)$')) then
@@ -155,7 +162,7 @@ begin
 
   -- رقم أبوجي / مسار (اختياري): حروف وأرقام فقط، بلا مسافات
   v_apogee := nullif(upper(regexp_replace(coalesce(p_data->>'apogee', ''), '\s+', '', 'g')), '');
-  if v_apogee is not null and v_apogee !~ '^[A-Z0-9]{4,30}$' then
+  if v_apogee is null or v_apogee !~ '^[A-Z0-9]{4,30}$' then
     raise exception 'رقم أبوجي / مسار غير صالح';
   end if;
 
@@ -195,7 +202,10 @@ begin
   ));
 
   -- الحقول الإلزامية
-  if (v_clean->>'full_name') is null or char_length(v_clean->>'full_name') < 2
+  if v_name_ar is null or v_name_latin is null
+     or (v_clean->>'email') is null
+     or (v_clean->>'promotion') is null
+     or (v_clean->>'full_name') is null or char_length(v_clean->>'full_name') < 2
      or (v_clean->>'phone') is null or char_length(v_clean->>'phone') < 6
      or (v_clean->>'city') is null
      or (v_clean->>'university') is null

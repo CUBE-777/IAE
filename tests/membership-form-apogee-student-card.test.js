@@ -10,13 +10,16 @@ const locale = (lg) => JSON.parse(read(`src/i18n/locales/${lg}.json`));
 const sql = read('supabase/migrations/0034_membership_form_apogee_student_card.sql').replace(/--.*$/gm, '');
 const page = read('src/pages/public/MembershipFormPage.jsx');
 
-test('الفورم: أبوجي/مسار + سبب الانضمام + بطاقة الطالب بوجهين، والصورة اختيارية', () => {
+test('الفورم: أبوجي/مسار + سبب الانضمام + بطاقة الطالب بوجهين + الصورة، كلها إلزامية', () => {
   assert.match(page, /apogee: ''/);
   assert.match(page, /motivation: ''/);
   assert.match(page, /ensureUploaded\('idb'\)/);
   assert.match(page, /id_card_back_path/);
-  assert.doesNotMatch(page, /photoRequired/);
-  assert.doesNotMatch(page, /label=\{t\('membershipForm\.fields\.photo'\)\}[\s\S]{0,120}required/);
+  assert.match(page, /photoRequired/);
+  assert.match(page, /cardFrontRequired/);
+  assert.match(page, /cardBackRequired/);
+  assert.match(page, /set\('promotion', validateRequired\(v\.promotion\)\)/);
+  assert.match(page, /set\('email', validateEmail\(v\.email\)\)/);
 });
 
 test('الترجمات: المفاتيح الجديدة بالثلاث لغات والمستويات لم تتغيّر', () => {
@@ -33,8 +36,9 @@ test('الترجمات: المفاتيح الجديدة بالثلاث لغات 
   assert.match(locale('ar').membershipForm.fields.promotion, /التخرج/);
 });
 
-test('0034: الصورة اختيارية، وظهر البطاقة مسموح، وأبوجي/الدافع محفوظان', () => {
-  assert.doesNotMatch(sql, /يرجى رفع الصورة الشخصية/);
+test('0034: الحقول إلزامية، وظهر البطاقة مسموح، وأبوجي/الدافع محفوظان', () => {
+  assert.match(sql, /يرجى رفع الصورة الشخصية/);
+  assert.match(sql, /v_name_ar is null or v_name_latin is null/);
   assert.match(sql, /\(photo\|id\|idb\)-\[1-3\]/);
   assert.match(sql, /\/idb-\[1-3\]/);
   assert.match(sql, /'apogee',\s+v_apogee/);
