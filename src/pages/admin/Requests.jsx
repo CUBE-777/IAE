@@ -20,7 +20,7 @@ import {
 } from '../../services/supabase/membershipFlow.service';
 import { buildWhatsappLink } from '../../utils/whatsapp';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
-import { prepareRequestQuery, matchesRequestSearch } from '../../utils/requestSearch';
+import { prepareRequestQuery, matchesRequestSearch, sortByFormStatus } from '../../utils/requestSearch';
 
 const MANAGER_ROLES = ['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'secretary_general', 'deputy_secretary_general'];
 const FORM_STATUS_KEY = { none: 'formNone', sent: 'formSent', received: 'formReceived' };
@@ -56,8 +56,22 @@ export default function Requests() {
   const search = useDebouncedValue(searchInput, 250);
   // البحث في المتصفح داخل التبويب الحالي (الاسم / الهاتف / البريد)؛ يبقى الاستعلام عند تبديل التبويب
   const query = useMemo(() => prepareRequestQuery(search), [search]);
-  const visibleRows = useMemo(() => (rows ? rows.filter((r) => matchesRequestSearch(r, query)) : null), [rows, query]);
-  const searching = !!(query.text || query.digits);
+  const [formFilter, setFormFilter] = useState(''); // '' = الكل | none | sent | received (تبويب الطلبات المعلّقة فقط)
+  const bySearch = useMemo(() => (rows ? rows.filter((r) => matchesRequestSearch(r, query)) : null), [rows, query]);
+  const activeFilter = tab === 'pending' ? formFilter : '';
+  const [formSort, setFormSort] = useState(''); // '' = الأحدث أولًا | newFirst | sentFirst | receivedFirst
+  const activeSort = tab === 'pending' ? formSort : '';
+  const visibleRows = useMemo(
+    () => (bySearch ? sortByFormStatus(bySearch.filter((r) => !activeFilter || (r.form_status || 'none') === activeFilter), activeSort) : null),
+    [bySearch, activeFilter, activeSort]
+  );
+  // أعداد كل حالة ضمن نتائج البحث الحالية (تظهر في الخيارات)
+  const formCounts = useMemo(() => {
+    const c = { none: 0, sent: 0, received: 0 };
+    (bySearch || []).forEach((r) => { c[r.form_status || 'none'] += 1; });
+    return c;
+  }, [bySearch]);
+  const searching = !!(query.text || query.digits || activeFilter);
 
   useEffect(() => {
     fetchMembershipSettings().then(setSettings).catch(() => setSettings({ fee: null, season: null }));
@@ -233,6 +247,38 @@ export default function Requests() {
             onChange={(e) => setSearchInput(e.target.value)}
             disabled={!rows || rows.length === 0}
           />
+          {tab === 'pending' && (
+            <>
+              <label className="sr-only" htmlFor="requestsFormFilter">{t('admin.requests.filterLabel')}</label>
+              <select
+                id="requestsFormFilter"
+                className="admin-select"
+                style={{ width: 'auto' }}
+                value={formFilter}
+                onChange={(e) => setFormFilter(e.target.value)}
+                disabled={!rows || rows.length === 0}
+              >
+                <option value="">{t('admin.requests.filterAll')} ({bySearch ? bySearch.length : 0})</option>
+                {Object.keys(FORM_STATUS_KEY).map((k) => (
+                  <option key={k} value={k}>{t(`admin.requests.${FORM_STATUS_KEY[k]}`)} ({formCounts[k]})</option>
+                ))}
+              </select>
+              <label className="sr-only" htmlFor="requestsFormSort">{t('admin.requests.sortLabel')}</label>
+              <select
+                id="requestsFormSort"
+                className="admin-select"
+                style={{ width: 'auto' }}
+                value={formSort}
+                onChange={(e) => setFormSort(e.target.value)}
+                disabled={!rows || rows.length === 0}
+              >
+                <option value="">{t('admin.requests.sortDefault')}</option>
+                <option value="newFirst">{t('admin.requests.sortNewFirst')}</option>
+                <option value="sentFirst">{t('admin.requests.sortSentFirst')}</option>
+                <option value="receivedFirst">{t('admin.requests.sortReceivedFirst')}</option>
+              </select>
+            </>
+          )}
           {searching && rows && (
             <span className="admin-hint" aria-live="polite">
               {t('admin.requests.searchCount', { count: visibleRows.length, total: rows.length })}

@@ -36,3 +36,19 @@ export function matchesRequestSearch(row, query) {
   const haystack = [row.full_name, row.email].map(normalizeSearchValue).join(' ');
   return haystack.includes(query.text);
 }
+
+const RANKS = {
+  newFirst: { none: 0, sent: 1, received: 2 },
+  receivedFirst: { received: 0, sent: 1, none: 2 },
+  sentFirst: { sent: 0, none: 1, received: 2 },
+};
+
+/** يرتّب الطلبات حسب حالة النموذج مع إبقاء الترتيب الأصلي (الأحدث أولًا) داخل كل حالة. mode فارغ = بلا ترتيب. */
+export function sortByFormStatus(rows, mode) {
+  const rank = RANKS[mode];
+  if (!rank) return rows;
+  return rows
+    .map((r, i) => ({ r, i }))
+    .sort((a, b) => (rank[a.r.form_status || 'none'] - rank[b.r.form_status || 'none']) || (a.i - b.i))
+    .map((x) => x.r);
+}

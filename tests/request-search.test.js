@@ -35,3 +35,16 @@ test('بحث الطلبات: استعلام فارغ يعرض الكل، وقي�
   assert.equal(find('   ').length, 3);
   assert.deepEqual(find('zzz'), []);
 });
+
+import { sortByFormStatus } from '../src/utils/requestSearch.js';
+
+test('ترتيب الطلبات حسب حالة النموذج: يجمع الحالات الثلاث ويحفظ الترتيب الأصلي داخل كل حالة', () => {
+  const list = [
+    { id: 1, form_status: 'received' }, { id: 2, form_status: 'none' }, { id: 3, form_status: 'sent' },
+    { id: 4, form_status: null }, { id: 5, form_status: 'sent' }, { id: 6, form_status: 'received' },
+  ];
+  assert.deepEqual(sortByFormStatus(list, 'newFirst').map((r) => r.id), [2, 4, 3, 5, 1, 6]);
+  assert.deepEqual(sortByFormStatus(list, 'receivedFirst').map((r) => r.id), [1, 6, 3, 5, 2, 4]);
+  assert.deepEqual(sortByFormStatus(list, 'sentFirst').map((r) => r.id), [3, 5, 2, 4, 1, 6]);
+  assert.equal(sortByFormStatus(list, ''), list);
+});
