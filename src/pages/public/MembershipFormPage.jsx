@@ -14,11 +14,16 @@ import '../../styles/membership-flow.css';
 
 const EMPTY = {
   full_name: '', name_latin: '', birth_date: '', phone: '', email: '', city: '',
-  university: '', track: '', level: '', promotion: '',
-  profession: '', skills: '', interests: '', github: '', linkedin: '', bio: '',
+  university: '', track: '', level: '', apogee: '', promotion: '',
+  profession: '', skills: '', interests: '', github: '', linkedin: '', bio: '', motivation: '',
   consent_directory: false, consent_photo: false,
   rules_accepted: false,
 };
+
+// رقم أبوجي (جامعي) أو رقم مسار (مدرسي): حروف وأرقام فقط، تُحذف المسافات قبل الفحص والإرسال
+const APOGEE_RE = /^[A-Za-z0-9]{4,30}$/;
+const cleanApogee = (v) => String(v || '').replace(/\s+/g, '').toUpperCase();
+const MOTIVATION_MAX = 1000;
 
 const ARABIC_LETTERS = /[\u0600-\u06FF]/;
 
@@ -46,7 +51,11 @@ function validate(v, files) {
   set('university', validateRequired(v.university));
   set('track', validateRequired(v.track));
   set('level', validateRequired(v.level));
-  if (!files.photo) e.photo = 'membershipForm.errors.photoRequired';
+  // الصورة الشخصية وبطاقة الطالب (الوجهان) اختيارية
+  const apogee = cleanApogee(v.apogee);
+  if (apogee && !APOGEE_RE.test(apogee)) e.apogee = 'membershipForm.errors.apogeeInvalid';
+  if (!v.motivation.trim()) e.motivation = 'membershipForm.errors.motivationRequired';
+  else set('motivation', validateMaxLength(v.motivation, MOTIVATION_MAX));
   set('skills', validateMaxLength(v.skills, 600));
   set('interests', validateMaxLength(v.interests, 600));
   set('bio', validateMaxLength(v.bio, 600));
@@ -77,8 +86,8 @@ export default function MembershipFormPage() {
   const [info, setInfo] = useState(null); // réponse de get_membership_form
   const [loadError, setLoadError] = useState(false);
   const [values, setValues] = useState(EMPTY);
-  const [files, setFiles] = useState({ photo: null, id: null });
-  const uploadedRef = useRef({ photo: null, id: null }); // مسارات مرفوعة سلفًا (لا نعيد الرفع عند إعادة المحاولة)
+  const [files, setFiles] = useState({ photo: null, id: null, idb: null }); // id = بطاقة الطالب (الوجه) · idb = (الظهر)
+  const uploadedRef = useRef({ photo: null, id: null, idb: null }); // مسارات مرفوعة سلفًا (لا نعيد الرفع عند إعادة المحاولة)
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -196,8 +205,9 @@ export default function MembershipFormPage() {
     let step = 'upload';
     try {
       setStage('uploading');
-      const photoPath = await ensureUploaded('photo');
-      const idPath = files.id ? await ensureUploaded('id') : null; // البطاقة اختيارية
+      const photoPath = files.photo ? await ensureUploaded('photo') : null; // الصورة اختيارية
+      const idPath = files.id ? await ensureUploaded('id') : null; // بطاقة الطالب (الوجه) اختيارية
+      const idBackPath = files.idb ? await ensureUploaded('idb') : null; // بطاقة الطالب (الظهر) اختيارية
       step = 'send';
       setStage('sending');
       const nameAr = values.full_name.trim();
@@ -209,8 +219,11 @@ export default function MembershipFormPage() {
         name_latin: nameLatin,
         consent_directory: values.consent_directory === true,
         consent_photo: values.consent_directory === true && values.consent_photo === true,
-        photo_path: photoPath,
+        apogee: cleanApogee(values.apogee),
+        motivation: values.motivation.trim(),
+        ...(photoPath ? { photo_path: photoPath } : {}),
         ...(idPath ? { id_card_path: idPath } : {}),
+        ...(idBackPath ? { id_card_back_path: idBackPath } : {}),
         rules_accepted: true,
       });
       setDone(true);
@@ -260,7 +273,6 @@ export default function MembershipFormPage() {
                 shape="avatar"
                 label={t('membershipForm.fields.photo')}
                 hint={t('membershipForm.docs.photoHint')}
-                required
                 error={errors.photo}
                 file={files.photo}
                 onPick={(f) => handlePick('photo', f)}
@@ -312,8 +324,13 @@ export default function MembershipFormPage() {
                     </select>
                   )}
                 </FormField>
+                <FormField id="mf-apogee" label={t('membershipForm.fields.apogee')} error={errors.apogee}>
+                  {input('apogee', { type: 'text', dir: 'ltr', autoComplete: 'off', maxLength: 40, placeholder: t('membershipForm.placeholders.apogee') })}
+                </FormField>
+              </div>
+              <div className="form-row">
                 <FormField id="mf-promo" label={t('membershipForm.fields.promotion')}>
-                  {input('promotion', { type: 'text' })}
+                  {input('promotion', { type: 'text', inputMode: 'numeric', dir: 'ltr', maxLength: 40, placeholder: t('membershipForm.placeholders.promotion') })}
                 </FormField>
               </div>
             </fieldset>
@@ -341,6 +358,9 @@ export default function MembershipFormPage() {
                   {input('profession', { type: 'text' })}
                 </FormField>
               </div>
+              <FormField id="mf-motivation" label={t('membershipForm.fields.motivation')} required error={errors.motivation}>
+                {(a) => <textarea {...a} name="motivation" rows={4} value={values.motivation} onChange={handleChange} placeholder={t('membershipForm.placeholders.motivation')} />}
+              </FormField>
               <FormField id="mf-bio" label={t('membershipForm.fields.bio')} error={errors.bio}>
                 {(a) => <textarea {...a} name="bio" rows={4} value={values.bio} onChange={handleChange} placeholder={t('membershipForm.placeholders.bio')} />}
               </FormField>
@@ -348,16 +368,28 @@ export default function MembershipFormPage() {
 
             <fieldset className="mf-group">
               <legend>{t('membershipForm.groups.documents')}</legend>
-              <ImagePicker
-                id="mf-id"
-                shape="card"
-                label={t('membershipForm.fields.idCard')}
-                hint={t('membershipForm.docs.idHint')}
-                error={errors.id}
-                file={files.id}
-                onPick={(f) => handlePick('id', f)}
-                disabled={submitting}
-              />
+              <div className="form-row">
+                <ImagePicker
+                  id="mf-id"
+                  shape="card"
+                  label={t('membershipForm.fields.studentCardFront')}
+                  hint={t('membershipForm.docs.studentFrontHint')}
+                  error={errors.id}
+                  file={files.id}
+                  onPick={(f) => handlePick('id', f)}
+                  disabled={submitting}
+                />
+                <ImagePicker
+                  id="mf-id-back"
+                  shape="card"
+                  label={t('membershipForm.fields.studentCardBack')}
+                  hint={t('membershipForm.docs.studentBackHint')}
+                  error={errors.idb}
+                  file={files.idb}
+                  onPick={(f) => handlePick('idb', f)}
+                  disabled={submitting}
+                />
+              </div>
               <p className="mf-privacy-note" role="note">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <rect x="4" y="11" width="16" height="9" rx="2" />

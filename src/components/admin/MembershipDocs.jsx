@@ -8,7 +8,8 @@ const DOC_ROLES = ['developer', 'super_admin', 'deputy_super_admin', 'members_ma
 
 const DOCS = [
   ['photo_path', 'عرض الصورة الشخصية'],
-  ['id_card_path', 'عرض البطاقة الوطنية'],
+  ['id_card_path', 'عرض بطاقة الطالب (الوجه)'],
+  ['id_card_back_path', 'عرض بطاقة الطالب (الظهر)'],
 ];
 
 /**

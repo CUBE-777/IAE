@@ -87,6 +87,22 @@ export const ADMIN_DICT = {
   "fr": "Voir la photo personnelle",
   "en": "View profile photo"
  },
+ "عرض بطاقة الطالب (الوجه)": {
+  "fr": "Voir la carte d’étudiant (recto)",
+  "en": "View student card (front)"
+ },
+ "عرض بطاقة الطالب (الظهر)": {
+  "fr": "Voir la carte d’étudiant (verso)",
+  "en": "View student card (back)"
+ },
+ "رقم أبوجي / مسار": {
+  "fr": "Numéro Apogée / Massar",
+  "en": "Apogee / Massar number"
+ },
+ "سبب الانضمام": {
+  "fr": "Motivation",
+  "en": "Reason for joining"
+ },
  "عرض البطاقة الوطنية": {
   "fr": "Voir la carte nationale",
   "en": "View national ID card"

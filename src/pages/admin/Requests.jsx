@@ -23,9 +23,9 @@ import { buildWhatsappLink } from '../../utils/whatsapp';
 const MANAGER_ROLES = ['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'secretary_general', 'deputy_secretary_general'];
 const FORM_STATUS_KEY = { none: 'formNone', sent: 'formSent', received: 'formReceived' };
 const FORM_FIELDS = [
-  ['birth_date', 'fBirthDate'], ['university', 'fUniversity'], ['track', 'fieldTrack'], ['level', 'fLevel'],
+  ['birth_date', 'fBirthDate'], ['university', 'fUniversity'], ['track', 'fieldTrack'], ['level', 'fLevel'], ['apogee', 'fApogee'],
   ['promotion', 'colPromotion'], ['profession', 'fieldProfession'], ['skills', 'fSkills'], ['interests', 'fInterests'],
-  ['github', 'GitHub'], ['linkedin', 'LinkedIn'], ['bio', 'fBio'],
+  ['github', 'GitHub'], ['linkedin', 'LinkedIn'], ['motivation', 'fMotivation'], ['bio', 'fBio'],
   ['emergency_name', 'fEmergencyName'], ['emergency_phone', 'fEmergencyPhone'], ['emergency_relation', 'fEmergencyRelation'],
 ];
 

@@ -622,7 +622,7 @@
       "copyLink": "Copy link",
       "copied": "Copied",
       "copyFailed": "Could not copy the link",
-      "waMessage": "Hello {{name}},\n\nThank you for your interest in joining the Embedded Artificial Intelligence club.\n\nTo complete your application, please fill in the membership form using your personal link:\n{{link}}\n\nIt only takes a few minutes; please have a clear profile photo ready (a photo of your national ID is optional).\nThis link is just for you and is valid until {{date}}.\n\nIf you run into any difficulty, simply reply to this message.\nThe club team",
+      "waMessage": "Hello {{name}},\n\nThank you for your interest in joining the Embedded Artificial Intelligence club.\n\nTo complete your application, please fill in the membership form using your personal link:\n{{link}}\n\nIt only takes a few minutes. Have your Apogee/Massar number, a profile photo and both sides of your student card ready; all of these are optional.\nThis link is just for you and is valid until {{date}}.\n\nIf you run into any difficulty, simply reply to this message.\nThe club team",
       "copyMessage": "Copy message",
       "photoPublishFailed": "The membership was recorded, but the member's photo could not be published automatically. Upload it manually from “Edit member”.",
       "msgEditHint": "Edit the text before sending if you like; it resets to the template when you change the language.",
@@ -649,7 +649,9 @@
       "annualConfirm": "Confirm payment and record membership",
       "recording": "Recording the membership…",
       "recorded": "Membership recorded and income added to the budget",
-      "recordFailed": "Could not record the membership"
+      "recordFailed": "Could not record the membership",
+      "fApogee": "Apogee / Massar number",
+      "fMotivation": "Reason for joining"
     },
     "security": {
       "pageTitle": "Account security — Club administration",
@@ -722,7 +724,7 @@
       "personal": "Personal information",
       "study": "Study information",
       "tech": "Technical information",
-      "documents": "Identity document",
+      "documents": "Student card",
       "visibility": "Visibility on the website"
     },
     "fields": {
@@ -736,18 +738,24 @@
       "university": "University / institution",
       "track": "Field of study",
       "level": "Study level",
-      "promotion": "Cohort / year",
+      "promotion": "Graduation year",
       "profession": "Occupation (optional)",
       "skills": "Skills",
       "interests": "Interests",
       "bio": "About you",
-      "photo": "Profile photo",
-      "idCard": "National ID card photo (optional)"
+      "photo": "Profile photo (optional)",
+      "apogee": "Apogee / Massar number (optional)",
+      "motivation": "Why do you want to join us?",
+      "studentCardFront": "Student card — front (optional)",
+      "studentCardBack": "Student card — back (optional)"
     },
     "placeholders": {
       "skills": "e.g. Python, Arduino, machine learning…",
       "interests": "e.g. robotics, computer vision, IoT…",
-      "bio": "Introduce yourself in a few lines (shown on the members page)"
+      "bio": "Introduce yourself in a few lines (shown on the members page)",
+      "apogee": "e.g. 12345678 or R123456789",
+      "promotion": "e.g. 2027",
+      "motivation": "A few lines about your motivation and what you expect from the club"
     },
     "choose": "— Select —",
     "levels": [
@@ -780,16 +788,19 @@
       "empty": "Tap to choose an image"
     },
     "docs": {
-      "photoHint": "A clear photo of your face, plain background and good lighting.",
-      "idHint": "Optional: a clear photo of the front of your national ID, details readable and no glare.",
+      "photoHint": "Optional: a clear photo of your face, plain background and good lighting.",
       "privacy": "These documents are stored in a private space, never published on the site, and only visible to membership officers; every access is logged.",
-      "formats": "Accepted formats: JPG, PNG or WebP."
+      "formats": "Accepted formats: JPG, PNG or WebP.",
+      "studentFrontHint": "Optional: a clear photo of the front of your student card, details readable and no glare.",
+      "studentBackHint": "Optional: a clear photo of the back of your student card."
     },
     "errors": {
       "photoRequired": "Please attach your profile photo.",
       "nameRequired": "Please enter your name in Arabic or in Latin letters (at least one).",
       "imageType": "Unsupported format: use JPG, PNG or WebP.",
-      "imageTooBig": "Image is too large (10 MB maximum)."
+      "imageTooBig": "Image is too large (10 MB maximum).",
+      "apogeeInvalid": "Invalid Apogee / Massar number: letters and digits only (4 to 30 characters).",
+      "motivationRequired": "Please tell us why you want to join the club."
     },
     "uploading": "Uploading files…",
     "uploadError": "Could not upload the images. Check your connection and try again."

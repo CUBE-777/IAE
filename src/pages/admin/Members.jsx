@@ -265,6 +265,7 @@ export default function Members() {
                 <>
                   <p><strong>{tr('تاريخ الميلاد')}:</strong> {FIELD(detail.priv.birth_date)}</p>
                   <p><strong>{tr('المستوى الدراسي')}:</strong> {FIELD(detail.priv.level)}</p>
+                  <p><strong>{tr('رقم أبوجي / مسار')}:</strong> {FIELD(detail.priv.form_data?.apogee)}</p>
                   <p><strong>{tr('المهارات')}:</strong> {FIELD(detail.priv.skills)}</p>
                   <p><strong>{tr('الاهتمامات')}:</strong> {FIELD(detail.priv.interests)}</p>
                   {(detail.priv.emergency_name || detail.priv.emergency_phone) && (
@@ -272,6 +273,9 @@ export default function Members() {
                       <p><strong>{tr('جهة الاتصال الطارئة')}:</strong> {FIELD(detail.priv.emergency_name)} ({FIELD(detail.priv.emergency_relation)})</p>
                       <p><strong>{tr('هاتف الطوارئ')}:</strong> <span dir="ltr">{FIELD(detail.priv.emergency_phone)}</span></p>
                     </>
+                  )}
+                  {detail.priv.form_data?.motivation && (
+                    <p><strong>{tr('سبب الانضمام')}:</strong> {detail.priv.form_data.motivation}</p>
                   )}
                   <MembershipDocs data={detail.priv.form_data} />
                   <p><strong>{tr('الموافقة على النظام الداخلي')}:</strong> {detail.priv.rules_accepted_at ? tr('نعم') : tr('لا')}</p>
