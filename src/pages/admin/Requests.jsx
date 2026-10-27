@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
@@ -19,6 +19,8 @@ import {
   fetchMembershipSettings,
 } from '../../services/supabase/membershipFlow.service';
 import { buildWhatsappLink } from '../../utils/whatsapp';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
+import { prepareRequestQuery, matchesRequestSearch } from '../../utils/requestSearch';
 
 const MANAGER_ROLES = ['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'secretary_general', 'deputy_secretary_general'];
 const FORM_STATUS_KEY = { none: 'formNone', sent: 'formSent', received: 'formReceived' };
@@ -50,6 +52,24 @@ export default function Requests() {
   const [waCustom, setWaCustom] = useState(null); // نص معدَّل يدويًا؛ null = القالب الجاهز
   const [copied, setCopied] = useState(false);
   const [formData, setFormData] = useState(undefined); // undefined = chargement, null = aucun
+  const [searchInput, setSearchInput] = useState('');
+  const search = useDebouncedValue(searchInput, 250);
+  // البحث في المتصفح داخل التبويب الحالي (الاسم / الهاتف / البريد)؛ يبقى الاستعلام عند تبديل التبويب
+  const query = useMemo(() => prepareRequestQuery(search), [search]);
+  const [formFilter, setFormFilter] = useState(''); // '' = الكل | none | sent | received (تبويب الطلبات المعلّقة فقط)
+  const bySearch = useMemo(() => (rows ? rows.filter((r) => matchesRequestSearch(r, query)) : null), [rows, query]);
+  const activeFilter = tab === 'pending' ? formFilter : '';
+  const visibleRows = useMemo(
+    () => (bySearch ? bySearch.filter((r) => !activeFilter || (r.form_status || 'none') === activeFilter) : null),
+    [bySearch, activeFilter]
+  );
+  // أعداد كل حالة ضمن نتائج البحث الحالية (تظهر في الخيارات)
+  const formCounts = useMemo(() => {
+    const c = { none: 0, sent: 0, received: 0 };
+    (bySearch || []).forEach((r) => { c[r.form_status || 'none'] += 1; });
+    return c;
+  }, [bySearch]);
+  const searching = !!(query.text || query.digits || activeFilter);
 
   useEffect(() => {
     fetchMembershipSettings().then(setSettings).catch(() => setSettings({ fee: null, season: null }));
@@ -213,10 +233,49 @@ export default function Requests() {
       </div>
 
       <div className="admin-panel">
+        <div className="admin-search-row" role="search">
+          <label className="sr-only" htmlFor="requestsSearch">{t('admin.requests.searchLabel')}</label>
+          <input
+            id="requestsSearch"
+            type="search"
+            className="admin-input"
+            placeholder={t('admin.requests.searchPlaceholder')}
+            autoComplete="off"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            disabled={!rows || rows.length === 0}
+          />
+          {tab === 'pending' && (
+            <>
+              <label className="sr-only" htmlFor="requestsFormFilter">{t('admin.requests.filterLabel')}</label>
+              <select
+                id="requestsFormFilter"
+                className="admin-select"
+                style={{ width: 'auto' }}
+                value={formFilter}
+                onChange={(e) => setFormFilter(e.target.value)}
+                disabled={!rows || rows.length === 0}
+              >
+                <option value="">{t('admin.requests.filterAll')} ({bySearch ? bySearch.length : 0})</option>
+                {Object.keys(FORM_STATUS_KEY).map((k) => (
+                  <option key={k} value={k}>{t(`admin.requests.${FORM_STATUS_KEY[k]}`)} ({formCounts[k]})</option>
+                ))}
+              </select>
+            </>
+          )}
+          {searching && rows && (
+            <span className="admin-hint" aria-live="polite">
+              {t('admin.requests.searchCount', { count: visibleRows.length, total: rows.length })}
+            </span>
+          )}
+        </div>
         {rows === null && !error && <div className="admin-state-box">{t('admin.requests.loading')}</div>}
         {error && <div className="admin-state-box">{t('admin.requests.loadError')}</div>}
         {rows && rows.length === 0 && <div className="admin-state-box">{t(`admin.requests.${EMPTY_KEY[tab]}`)}</div>}
-        {rows && rows.length > 0 && (
+        {rows && rows.length > 0 && visibleRows.length === 0 && (
+          <div className="admin-state-box">{t('admin.requests.searchNoResults')}</div>
+        )}
+        {rows && visibleRows.length > 0 && (
           <div className="admin-table-wrap">
             <table className="admin-data-table admin-table-cards">
               <thead>
@@ -232,7 +291,7 @@ export default function Requests() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((r) => (
+                {visibleRows.map((r) => (
                   <tr key={r.id}>
                     <td data-label={t('admin.requests.colName')}>{r.full_name}</td>
                     <td data-label={t('admin.requests.colEmail')}>{r.email}</td>
