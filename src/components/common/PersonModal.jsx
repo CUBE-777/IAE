@@ -5,6 +5,7 @@ import {
   GraduationCap, Instagram, Facebook, Linkedin, Youtube, Twitter, Github, Globe, Music2, X,
 } from 'lucide-react';
 import { getPersonDetails } from '../../utils/personDetails';
+import { DEFAULT_LIST_CONFIG, applyModalConfig } from '../../utils/peopleCardConfig';
 
 // أيقونة لكل منصة؛ منصة جديدة بلا أيقونة تأخذ أيقونة الموقع العامة تلقائيًا.
 const SOCIAL_ICONS = {
@@ -18,17 +19,20 @@ const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1
  * نافذة الملف العام للعضو: نبذة، مسار دراسي، معلومات إضافية، وروابط التواصل.
  * تُرسم عبر portal في body حتى لا يؤثر عليها transform بطاقة العضو.
  * إتاحة: role=dialog، Escape، النقر خارجها، حبس التركيز، وإعادته لزر الفتح.
+ * `config` (اختياري) = إعدادات القائمة { card, modal } من لوحة الإدارة؛ المستعمل هنا جزء modal فقط.
  */
-export default function PersonModal({ person, fallbackBadge, onClose }) {
+export default function PersonModal({ person, fallbackBadge, onClose, config }) {
   const { t } = useTranslation();
   const boxRef = useRef(null);
   const onCloseRef = useRef(onClose);
   const titleId = useId();
   onCloseRef.current = onClose;
-  const details = getPersonDetails(person);
+  const modalCfg = (config && config.modal) || DEFAULT_LIST_CONFIG.modal;
+  const details = applyModalConfig(getPersonDetails(person), modalCfg);
   const name = person.name || t('person.defaultName');
-  const university = (person.university || '').trim();
-  const badge = person.role || fallbackBadge;
+  const university = modalCfg.showUniversity ? (person.university || '').trim() : '';
+  const badge = modalCfg.showBadge ? (person.role || fallbackBadge) : '';
+  const boardStyle = !!person.isBoard && !(config && config.card && config.card.highlightBoard === false);
 
   useEffect(() => {
     const box = boxRef.current;
@@ -64,11 +68,11 @@ export default function PersonModal({ person, fallbackBadge, onClose }) {
     };
   }, []);
 
-  const facts = [
+  const facts = modalCfg.showFacts ? [
     [t('person.promo'), person.promo],
     [t('person.track'), person.track],
     [t('person.profession'), person.profession],
-  ].filter(([, v]) => v != null && String(v).trim() !== '');
+  ].filter(([, v]) => v != null && String(v).trim() !== '') : [];
 
   return createPortal(
     <div className="person-modal-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
@@ -78,16 +82,18 @@ export default function PersonModal({ person, fallbackBadge, onClose }) {
         </button>
 
         <header className="person-modal-head">
-          <img
-            className="person-modal-photo"
-            src={person.image || '/logo.jpg'}
-            alt={t('a11y.personPhotoAlt', { name })}
-            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/logo.jpg'; }}
-          />
+          {modalCfg.showPhoto && (
+            <img
+              className="person-modal-photo"
+              src={person.image || '/logo.jpg'}
+              alt={t('a11y.personPhotoAlt', { name })}
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/logo.jpg'; }}
+            />
+          )}
           <div className="person-modal-title">
             <h3 id={titleId}>{name}</h3>
             <div className="person-modal-tags">
-              {badge && <span className={`member-badge${person.isBoard ? ' member-badge-board' : ''}`}>{badge}</span>}
+              {badge && <span className={`member-badge${boardStyle ? ' member-badge-board' : ''}`}>{badge}</span>}
               {university && (
                 <span className="member-university member-university-under">
                   <GraduationCap size={12} aria-hidden="true" />

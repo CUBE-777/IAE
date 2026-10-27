@@ -10,6 +10,7 @@ export const ADMIN_NAV = [
   { sectionKey: 'sectionMembers', section: 'إدارة الأعضاء' },
   { key: 'members', labelKey: 'members', label: 'جميع الأعضاء', href: '/admin/members', icon: 'users', roles: ROLES_MEMBERS },
   { key: 'requests', labelKey: 'requests', label: 'طلبات الانخراط', href: '/admin/requests', icon: 'user-plus', roles: ROLES_REQUESTS },
+  { key: 'peopleCards', labelKey: 'peopleCards', label: 'تخصيص البطاقات', href: '/admin/people-cards', icon: 'layout-grid', roles: ROLES_CONTENT_VIEW },
   { key: 'board', labelKey: 'board', label: 'أعضاء المكتب', href: '/admin/board', icon: 'shield', roles: ROLES_CONTENT_VIEW },
   { sectionKey: 'sectionContent', section: 'المحتوى' },
   { key: 'activities', labelKey: 'activities', label: 'الأنشطة', href: '/admin/activities', icon: 'calendar', roles: ROLES_CONTENT_VIEW },

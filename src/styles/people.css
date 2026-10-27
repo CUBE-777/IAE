@@ -216,3 +216,79 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ===== شكل البطاقات القابل للتخصيص من لوحة الإدارة (utils/peopleCardConfig.js) =====
+   الافتراضي (3 أعمدة، صورة دائرية متوسطة، تخطيط جانبي) لا يحتاج أيًّا مما يلي. محددات بخصوصية أعلى
+   حتى تغلب قواعد enhancements.css العامة. */
+
+/* عدد الأعمدة على الشاشات الواسعة فقط (الهاتف واللوح يبقيان عمودين/عمودًا واحدًا كما هو) */
+@media (min-width: 1025px) {
+  .members-grid.members-grid--cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .members-grid.members-grid--cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* حجم الصورة */
+.member-card.member-card--size-sm .member-photo {
+  width: 60px;
+  height: 60px;
+}
+
+.member-card.member-card--size-lg .member-photo {
+  width: 100px;
+  height: 100px;
+}
+
+.member-card.member-card--size-lg .member-photo-column {
+  max-width: 132px;
+}
+
+/* شكل الصورة */
+.member-card.member-card--shape-rounded .member-photo {
+  border-radius: 22%;
+}
+
+.member-card.member-card--shape-square .member-photo {
+  border-radius: 6px;
+}
+
+/* تخطيط عمودي: الصورة في الأعلى والمحتوى مركزي تحتها */
+.member-card.member-card--stacked {
+  text-align: center;
+}
+
+.member-card--stacked .member-card-main {
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.member-card--stacked .member-photo-column {
+  max-width: 100%;
+}
+
+.member-card--stacked .member-body {
+  align-items: center;
+  width: 100%;
+  text-align: center;
+}
+
+.member-card--stacked .member-badge-row {
+  justify-content: center;
+}
+
+.member-card--stacked .member-facts strong {
+  text-align: center;
+}
+
+.member-card--stacked .member-body .member-more-btn {
+  align-self: center;
+}
+
+.member-card--stacked .member-facts li {
+  align-items: center;
+}

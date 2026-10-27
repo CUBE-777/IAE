@@ -373,6 +373,7 @@
       "sectionMembers": "Gestion des membres",
       "members": "Tous les membres",
       "requests": "Demandes d'adhésion",
+      "peopleCards": "Personnalisation des cartes",
       "board": "Membres du bureau",
       "sectionContent": "Contenu",
       "activities": "Activités",
@@ -622,7 +623,7 @@
       "copyLink": "Copier le lien",
       "copied": "Copié",
       "copyFailed": "Impossible de copier le lien",
-      "waMessage": "Bonjour {{name}},\n\nMerci de votre intérêt pour le club Intelligence Artificielle Embarquée.\n\nPour finaliser votre demande, merci de remplir le formulaire d'adhésion via votre lien personnel :\n{{link}}\n\nCela ne prend que quelques minutes. Préparez une photo personnelle nette, votre numéro Massar/Apogée et les deux faces de votre carte d'étudiant ; tout est obligatoire.\nCe lien vous est réservé et reste valable jusqu'au {{date}}.\n\nSi vous rencontrez la moindre difficulté, répondez simplement à ce message.\nL'équipe du club",
+      "waMessage": "Bonjour {{name}},\n\nMerci de votre intérêt pour le club Intelligence Artificielle Embarquée.\n\nPour finaliser votre demande, merci de remplir le formulaire d'adhésion via votre lien personnel :\n{{link}}\n\nCela ne prend que quelques minutes ; prévoyez une photo d'identité nette (la photo de la carte nationale est facultative).\nCe lien vous est réservé et reste valable jusqu'au {{date}}.\n\nSi vous rencontrez la moindre difficulté, répondez simplement à ce message.\nL'équipe du club",
       "copyMessage": "Copier le message",
       "photoPublishFailed": "L'adhésion est enregistrée, mais la photo du membre n'a pas pu être publiée automatiquement. Ajoutez-la manuellement via « Modifier le membre ».",
       "msgEditHint": "Modifiez le texte avant l'envoi si besoin ; il revient au modèle si vous changez de langue.",
@@ -649,9 +650,7 @@
       "annualConfirm": "Confirmer le paiement et enregistrer l'adhésion",
       "recording": "Enregistrement de l'adhésion…",
       "recorded": "Adhésion enregistrée et recette ajoutée au budget",
-      "recordFailed": "Impossible d'enregistrer l'adhésion",
-      "fApogee": "Numéro Apogée / Massar",
-      "fMotivation": "Motivation"
+      "recordFailed": "Impossible d'enregistrer l'adhésion"
     },
     "security": {
       "pageTitle": "Sécurité du compte — Administration du club",
@@ -724,7 +723,7 @@
       "personal": "Informations personnelles",
       "study": "Informations d'études",
       "tech": "Informations techniques",
-      "documents": "Carte d'étudiant",
+      "documents": "Pièce d’identité",
       "visibility": "Visibilité sur le site"
     },
     "fields": {
@@ -738,24 +737,18 @@
       "university": "Université / établissement",
       "track": "Filière",
       "level": "Niveau d'études",
-      "promotion": "Année d'obtention du diplôme",
+      "promotion": "Promotion / année",
       "profession": "Profession (facultatif)",
       "skills": "Compétences",
       "interests": "Centres d'intérêt",
       "bio": "Présentation",
       "photo": "Photo personnelle",
-      "apogee": "Numéro Massar / Apogée",
-      "motivation": "Pourquoi souhaitez-vous rejoindre le club ?",
-      "studentCardFront": "Carte d'étudiant — recto",
-      "studentCardBack": "Carte d'étudiant — verso"
+      "idCard": "Photo de la carte nationale (facultatif)"
     },
     "placeholders": {
       "skills": "Ex. : Python, Arduino, apprentissage automatique…",
       "interests": "Ex. : robotique, vision par ordinateur, IoT…",
-      "bio": "Présentez-vous en quelques lignes (affiché sur la page des membres)",
-      "apogee": "Ex. : 12345678 ou R123456789",
-      "promotion": "Ex. : 2027",
-      "motivation": "Quelques lignes sur vos motivations et ce que vous attendez du club"
+      "bio": "Présentez-vous en quelques lignes (affiché sur la page des membres)"
     },
     "choose": "— Choisir —",
     "levels": [
@@ -768,7 +761,7 @@
       "Doctorat",
       "Autre"
     ],
-    "nameHint": "Saisissez votre nom en arabe et en lettres latines. Le nom latin s'affiche sur les pages françaises et anglaises du site.",
+    "nameHint": "Saisissez au moins un nom (en arabe ou en lettres latines). Le nom latin s'affiche sur les pages françaises et anglaises du site.",
     "consentDirectory": "J'accepte que mon nom et mes informations d'études et de profession apparaissent sur la page publique des membres du club.",
     "consentPhoto": "J'accepte que ma photo soit publiée sur cette page (sinon le logo du club s'affiche à la place).",
     "consentNote": "Ce choix est entièrement facultatif et n'influence pas l'acceptation de votre demande. Votre photo et votre carte restent réservées à l'administration, et vous pouvez demander à tout moment le retrait de vos informations en contactant le club.",
@@ -789,21 +782,15 @@
     },
     "docs": {
       "photoHint": "Une photo nette de votre visage, fond simple et bonne lumière.",
+      "idHint": "Facultatif : photo nette du recto de la carte nationale, informations lisibles et sans reflet.",
       "privacy": "Ces documents sont conservés dans un espace privé, jamais publiés sur le site, et visibles uniquement par les responsables des membres ; chaque consultation est journalisée.",
-      "formats": "Formats acceptés : JPG, PNG ou WebP.",
-      "studentFrontHint": "Photo nette du recto de la carte d'étudiant, informations lisibles et sans reflet.",
-      "studentBackHint": "Photo nette du verso de la carte d'étudiant."
+      "formats": "Formats acceptés : JPG, PNG ou WebP."
     },
     "errors": {
       "photoRequired": "Veuillez joindre votre photo personnelle.",
-      "nameRequired": "Saisissez votre nom en arabe et en lettres latines.",
+      "nameRequired": "Saisissez au moins votre nom en arabe ou en lettres latines.",
       "imageType": "Format non accepté : utilisez JPG, PNG ou WebP.",
-      "imageTooBig": "Image trop volumineuse (10 Mo maximum).",
-      "apogeeInvalid": "Numéro Apogée / Massar invalide : lettres et chiffres uniquement (4 à 30 caractères).",
-      "motivationRequired": "Dites-nous pourquoi vous souhaitez rejoindre le club.",
-      "apogeeRequired": "Veuillez saisir votre numéro Massar ou Apogée.",
-      "cardFrontRequired": "Veuillez joindre le recto de votre carte d'étudiant.",
-      "cardBackRequired": "Veuillez joindre le verso de votre carte d'étudiant."
+      "imageTooBig": "Image trop volumineuse (10 Mo maximum)."
     },
     "uploading": "Envoi des fichiers…",
     "uploadError": "Impossible d’envoyer les images. Vérifiez votre connexion et réessayez."

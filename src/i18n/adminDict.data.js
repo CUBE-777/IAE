@@ -87,22 +87,6 @@ export const ADMIN_DICT = {
   "fr": "Voir la photo personnelle",
   "en": "View profile photo"
  },
- "عرض بطاقة الطالب (الوجه)": {
-  "fr": "Voir la carte d’étudiant (recto)",
-  "en": "View student card (front)"
- },
- "عرض بطاقة الطالب (الظهر)": {
-  "fr": "Voir la carte d’étudiant (verso)",
-  "en": "View student card (back)"
- },
- "رقم أبوجي / مسار": {
-  "fr": "Numéro Apogée / Massar",
-  "en": "Apogee / Massar number"
- },
- "سبب الانضمام": {
-  "fr": "Motivation",
-  "en": "Reason for joining"
- },
  "عرض البطاقة الوطنية": {
   "fr": "Voir la carte nationale",
   "en": "View national ID card"
@@ -1878,5 +1862,233 @@ export const ADMIN_DICT = {
  "رابط التعبئة": {
   "fr": "Lien de saisie",
   "en": "Form link"
+ },
+ "تخصيص البطاقات": {
+  "fr": "Personnalisation des cartes",
+  "en": "Card customization"
+ },
+ "تخصيص البطاقات — لوحة إدارة النادي": {
+  "fr": "Personnalisation des cartes — Administration du club",
+  "en": "Card customization — Club admin"
+ },
+ "تحكّم في شكل بطاقات الأعضاء وأعضاء المكتب وفي المعلومات الظاهرة للزوار": {
+  "fr": "Contrôlez l'apparence des cartes des membres et du bureau et les informations visibles par les visiteurs",
+  "en": "Control how member and board cards look and which information visitors see"
+ },
+ "تعذر تحميل إعدادات البطاقات": {
+  "fr": "Échec du chargement des réglages des cartes",
+  "en": "Failed to load card settings"
+ },
+ "تعذر تحميل إعدادات البطاقات.": {
+  "fr": "Échec du chargement des réglages des cartes.",
+  "en": "Failed to load card settings."
+ },
+ "القائمة": {
+  "fr": "Liste",
+  "en": "List"
+ },
+ "إظهار الصورة": {
+  "fr": "Afficher la photo",
+  "en": "Show photo"
+ },
+ "إظهار الصفة / المنصب": {
+  "fr": "Afficher le titre / poste",
+  "en": "Show title / position"
+ },
+ "إظهار الجامعة": {
+  "fr": "Afficher l'université",
+  "en": "Show university"
+ },
+ "إظهار الفوج": {
+  "fr": "Afficher la promotion",
+  "en": "Show cohort"
+ },
+ "إظهار المسار": {
+  "fr": "Afficher la filière",
+  "en": "Show track"
+ },
+ "إظهار المهنة": {
+  "fr": "Afficher la profession",
+  "en": "Show profession"
+ },
+ "إظهار زر «عرض الملف»": {
+  "fr": "Afficher le bouton « Voir le profil »",
+  "en": "Show the “View profile” button"
+ },
+ "تمييز بطاقة عضو المكتب (حافة ذهبية وشارة داكنة)": {
+  "fr": "Mettre en valeur la carte du membre du bureau (bordure dorée, badge foncé)",
+  "en": "Highlight board member cards (gold edge, dark badge)"
+ },
+ "الصورة": {
+  "fr": "Photo",
+  "en": "Photo"
+ },
+ "الصفة / المنصب": {
+  "fr": "Titre / poste",
+  "en": "Title / position"
+ },
+ "الفوج والمسار والمهنة": {
+  "fr": "Promotion, filière et profession",
+  "en": "Cohort, track and profession"
+ },
+ "النبذة": {
+  "fr": "Présentation",
+  "en": "About"
+ },
+ "المعلومات الإضافية": {
+  "fr": "Informations complémentaires",
+  "en": "Additional information"
+ },
+ "روابط التواصل": {
+  "fr": "Liens de contact",
+  "en": "Contact links"
+ },
+ "تخطيط البطاقة": {
+  "fr": "Disposition de la carte",
+  "en": "Card layout"
+ },
+ "الصورة بجانب البيانات": {
+  "fr": "Photo à côté des données",
+  "en": "Photo beside the details"
+ },
+ "الصورة في الأعلى (مركزي)": {
+  "fr": "Photo en haut (centré)",
+  "en": "Photo on top (centered)"
+ },
+ "عدد الأعمدة على الشاشات الكبيرة": {
+  "fr": "Nombre de colonnes sur grand écran",
+  "en": "Columns on large screens"
+ },
+ "عمودان": {
+  "fr": "2 colonnes",
+  "en": "2 columns"
+ },
+ "3 أعمدة": {
+  "fr": "3 colonnes",
+  "en": "3 columns"
+ },
+ "4 أعمدة": {
+  "fr": "4 colonnes",
+  "en": "4 columns"
+ },
+ "شكل الصورة": {
+  "fr": "Forme de la photo",
+  "en": "Photo shape"
+ },
+ "دائرية": {
+  "fr": "Ronde",
+  "en": "Circle"
+ },
+ "مربعة بزوايا مدوّرة": {
+  "fr": "Carrée aux coins arrondis",
+  "en": "Rounded square"
+ },
+ "مربعة": {
+  "fr": "Carrée",
+  "en": "Square"
+ },
+ "حجم الصورة": {
+  "fr": "Taille de la photo",
+  "en": "Photo size"
+ },
+ "صغير": {
+  "fr": "Petite",
+  "en": "Small"
+ },
+ "متوسط": {
+  "fr": "Moyenne",
+  "en": "Medium"
+ },
+ "كبير": {
+  "fr": "Grande",
+  "en": "Large"
+ },
+ "شكل البطاقة": {
+  "fr": "Apparence de la carte",
+  "en": "Card appearance"
+ },
+ "المعلومات الظاهرة على البطاقة": {
+  "fr": "Informations affichées sur la carte",
+  "en": "Information shown on the card"
+ },
+ "الاسم يظهر دائمًا. العمر والبريد والهاتف والمدينة لا تُعرض للزوار أبدًا حمايةً للخصوصية.": {
+  "fr": "Le nom est toujours affiché. L'âge, l'e-mail, le téléphone et la ville ne sont jamais montrés aux visiteurs (confidentialité).",
+  "en": "The name is always shown. Age, email, phone and city are never shown to visitors (privacy)."
+ },
+ "نافذة الملف الشخصي (عند الضغط على «عرض الملف»)": {
+  "fr": "Fenêtre du profil (au clic sur « Voir le profil »)",
+  "en": "Profile window (when “View profile” is clicked)"
+ },
+ "إن عُطِّل كل محتوى النافذة لشخص ما فلا يظهر له زر «عرض الملف».": {
+  "fr": "Si tout le contenu de la fenêtre est désactivé pour une personne, son bouton « Voir le profil » n'apparaît pas.",
+  "en": "If all window content is disabled for someone, their “View profile” button is not shown."
+ },
+ "معاينة مباشرة": {
+  "fr": "Aperçu en direct",
+  "en": "Live preview"
+ },
+ "المعاينة ببيانات تجريبية. عدد الأعمدة يظهر على صفحة الموقع نفسها.": {
+  "fr": "Aperçu avec des données fictives. Le nombre de colonnes se voit sur la page du site.",
+  "en": "Preview uses sample data. The column count shows on the site page itself."
+ },
+ "معاينة نافذة الملف الشخصي": {
+  "fr": "Aperçu de la fenêtre du profil",
+  "en": "Preview profile window"
+ },
+ "نسخ هذه الإعدادات إلى": {
+  "fr": "Copier ces réglages vers",
+  "en": "Copy these settings to"
+ },
+ "استرجاع الشكل الافتراضي": {
+  "fr": "Rétablir l'apparence par défaut",
+  "en": "Restore default appearance"
+ },
+ "نُسخت الإعدادات إلى القائمة الأخرى. اضغط «حفظ» لتثبيتها.": {
+  "fr": "Réglages copiés vers l'autre liste. Cliquez sur « Enregistrer » pour confirmer.",
+  "en": "Settings copied to the other list. Click “Save” to confirm."
+ },
+ "تم حفظ شكل البطاقات. يظهر للزوار فورًا.": {
+  "fr": "Apparence des cartes enregistrée. Visible immédiatement par les visiteurs.",
+  "en": "Card appearance saved. Visitors see it immediately."
+ },
+ "اسم الشخص (مثال)": {
+  "fr": "Nom de la personne (exemple)",
+  "en": "Person name (example)"
+ },
+ "رئيس النادي": {
+  "fr": "Président du club",
+  "en": "Club president"
+ },
+ "جامعة المثال": {
+  "fr": "Université exemple",
+  "en": "Sample University"
+ },
+ "الذكاء الاصطناعي": {
+  "fr": "Intelligence artificielle",
+  "en": "Artificial intelligence"
+ },
+ "طالب": {
+  "fr": "Étudiant",
+  "en": "Student"
+ },
+ "نبذة تعريفية قصيرة تظهر في نافذة الملف الشخصي.": {
+  "fr": "Courte présentation affichée dans la fenêtre du profil.",
+  "en": "Short bio shown in the profile window."
+ },
+ "مسار دراسي: الإعلاميات ثم الأنظمة المدمجة.": {
+  "fr": "Parcours : informatique puis systèmes embarqués.",
+  "en": "Study path: computer science then embedded systems."
+ },
+ "الهواية": {
+  "fr": "Loisir",
+  "en": "Hobby"
+ },
+ "البرمجة": {
+  "fr": "Programmation",
+  "en": "Programming"
+ },
+ "عضو": {
+  "fr": "Membre",
+  "en": "Member"
  }
 };

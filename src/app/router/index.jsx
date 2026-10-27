@@ -23,6 +23,7 @@ const Login = lazy(() => import('../../pages/admin/Login'));
 const Dashboard = lazy(() => import('../../pages/admin/Dashboard'));
 const Requests = lazy(() => import('../../pages/admin/Requests'));
 const AdminMembers = lazy(() => import('../../pages/admin/Members'));
+const PeopleCards = lazy(() => import('../../pages/admin/PeopleCards'));
 const AdminBoard = lazy(() => import('../../pages/admin/Board'));
 const Activities = lazy(() => import('../../pages/admin/Activities'));
 const AdminProjects = lazy(() => import('../../pages/admin/Projects'));
@@ -87,6 +88,7 @@ export const router = createBrowserRouter([
       { path: '/admin/dashboard', element: protectedAdmin([], <Dashboard />) },
       { path: '/admin/members', element: protectedAdmin(ROLES_MEMBERS, <AdminMembers />) },
       { path: '/admin/requests', element: protectedAdmin(ROLES_REQUESTS, <Requests />) },
+      { path: '/admin/people-cards', element: protectedAdmin(ROLES_CONTENT_VIEW, <PeopleCards />) },
       { path: '/admin/board', element: protectedAdmin(ROLES_CONTENT_VIEW, <AdminBoard />) },
       { path: '/admin/activities', element: protectedAdmin(ROLES_CONTENT_VIEW, <Activities />) },
       { path: '/admin/projects', element: protectedAdmin(ROLES_PROJECTS, <AdminProjects />) },

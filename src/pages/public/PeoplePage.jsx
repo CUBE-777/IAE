@@ -5,6 +5,8 @@ import PageHero from '../../components/layout/PageHero';
 import PersonCard from '../../components/common/PersonCard';
 import PersonModal from '../../components/common/PersonModal';
 import { fetchPeopleDirectory } from '../../services/supabase/peopleDirectory.service';
+import { fetchPeopleCardConfig } from '../../services/supabase/peopleCardConfig.service';
+import { DEFAULT_LIST_CONFIG } from '../../utils/peopleCardConfig';
 import { normalizeSearchValue, matchesMemberSearch } from '../../utils/arabicSearch';
 import { localizePerson } from '../../utils/personTranslations';
 
@@ -28,6 +30,7 @@ export default function PeoplePage({
   const { t, i18n } = useTranslation();
   const lang = String(i18n.resolvedLanguage || i18n.language || 'ar').slice(0, 2);
   const [people, setPeople] = useState(null); // null = يحمَّل
+  const [cardConfig, setCardConfig] = useState(DEFAULT_LIST_CONFIG); // شكل البطاقات من لوحة الإدارة (تُجلب مع القائمة فلا يتغير الشكل بعد الظهور)
   const [query, setQuery] = useState('');
   const [error, setError] = useState(false);
   const [selectedKey, setSelectedKey] = useState(null); // مفتاح العضو المعروض ملفه (نشتق الكائن من القائمة ليتبع لغة الزائر)
@@ -36,8 +39,13 @@ export default function PeoplePage({
     let alive = true;
     setError(false);
     setPeople(null);
-    fetchPeopleDirectory(listKey)
-      .then((data) => alive && setPeople(data))
+    // الإعدادات لا تفشل أبدًا (ترجع الافتراضي عند أي خطأ)، فلا تعطّل ظهور القائمة
+    Promise.all([fetchPeopleDirectory(listKey), fetchPeopleCardConfig()])
+      .then(([data, cfg]) => {
+        if (!alive) return;
+        setCardConfig(cfg[listKey] || DEFAULT_LIST_CONFIG);
+        setPeople(data);
+      })
       .catch((err) => {
         console.error('تعذر تحميل البيانات من Supabase:', err);
         if (alive) setError(true);
@@ -98,7 +106,7 @@ export default function PeoplePage({
             </span>
           </div>
 
-          <div className="members-grid" id="peopleGrid">
+          <div className={`members-grid members-grid--cols-${cardConfig.card.columns}`} id="peopleGrid">
             {people === null && !error && <div className="gallery-empty" role="status">{t('peoplePage.loading')}</div>}
             {error && (
               <div className="gallery-empty" role="alert">
@@ -115,6 +123,7 @@ export default function PeoplePage({
                 key={person._key}
                 person={person}
                 fallbackBadge={fallbackBadge}
+                config={cardConfig}
                 onOpen={(p) => setSelectedKey(p._key)}
               />
             ))}
@@ -127,7 +136,7 @@ export default function PeoplePage({
           </div>
         </div>
       </section>
-      {selected && <PersonModal person={selected} fallbackBadge={fallbackBadge} onClose={() => setSelectedKey(null)} />}
+      {selected && <PersonModal person={selected} fallbackBadge={fallbackBadge} config={cardConfig} onClose={() => setSelectedKey(null)} />}
     </InteriorLayout>
   );
 }
