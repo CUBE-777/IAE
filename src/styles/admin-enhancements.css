@@ -445,3 +445,31 @@ html:not([data-theme='dark']) .admin-badge.admin-badge-sent {
   background: rgba(234, 88, 12, 0.13);
   color: #c2410c;
 }
+
+/* ===== شريط البحث في طلبات الانخراط ===== */
+.admin-search-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4, 16px);
+}
+.admin-search-row .admin-input {
+  flex: 1;
+  min-width: 220px;
+}
+.admin-search-row .admin-hint {
+  margin: 0;
+  white-space: nowrap;
+}
+.admin-search-row .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

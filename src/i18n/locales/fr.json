@@ -602,8 +602,6 @@
       "searchLabel": "Rechercher dans les demandes",
       "searchNoResults": "Aucune demande ne correspond à la recherche.",
       "searchCount": "{{count}} sur {{total}}",
-      "filterLabel": "Filtrer par état du formulaire",
-      "filterAll": "Tous les états",
       "colForm": "État du formulaire",
       "formNone": "Nouvelle demande",
       "formSent": "Formulaire envoyé",

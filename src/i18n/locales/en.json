@@ -602,8 +602,6 @@
       "searchLabel": "Search requests",
       "searchNoResults": "No requests match your search.",
       "searchCount": "{{count}} of {{total}}",
-      "filterLabel": "Filter by form status",
-      "filterAll": "All statuses",
       "colForm": "Form status",
       "formNone": "New request",
       "formSent": "Form sent",

@@ -602,8 +602,6 @@
       "searchLabel": "بحث في الطلبات",
       "searchNoResults": "لا توجد طلبات مطابقة للبحث.",
       "searchCount": "{{count}} من {{total}}",
-      "filterLabel": "تصفية حسب حالة النموذج",
-      "filterAll": "كل الحالات",
       "colForm": "حالة النموذج",
       "formNone": "طلب جديد",
       "formSent": "أُرسل النموذج",
