@@ -23,9 +23,9 @@ import { buildWhatsappLink } from '../../utils/whatsapp';
 const MANAGER_ROLES = ['developer', 'super_admin', 'deputy_super_admin', 'members_manager', 'secretary_general', 'deputy_secretary_general'];
 const FORM_STATUS_KEY = { none: 'formNone', sent: 'formSent', received: 'formReceived' };
 const FORM_FIELDS = [
-  ['birth_date', 'fBirthDate'], ['university', 'fUniversity'], ['track', 'fieldTrack'], ['level', 'fLevel'], ['apogee', 'fApogee'],
+  ['birth_date', 'fBirthDate'], ['university', 'fUniversity'], ['track', 'fieldTrack'], ['level', 'fLevel'],
   ['promotion', 'colPromotion'], ['profession', 'fieldProfession'], ['skills', 'fSkills'], ['interests', 'fInterests'],
-  ['github', 'GitHub'], ['linkedin', 'LinkedIn'], ['motivation', 'fMotivation'], ['bio', 'fBio'],
+  ['github', 'GitHub'], ['linkedin', 'LinkedIn'], ['bio', 'fBio'],
   ['emergency_name', 'fEmergencyName'], ['emergency_phone', 'fEmergencyPhone'], ['emergency_relation', 'fEmergencyRelation'],
 ];
 
@@ -242,7 +242,7 @@ export default function Requests() {
                     {tab !== 'renewals' && <td data-label={t('admin.requests.colDate')}>{formatDate(r.created_at, i18n.language)}</td>}
                     {tab === 'pending' && (
                       <td data-label={t('admin.requests.colForm')}>
-                        <span className={`admin-badge admin-badge-${r.form_status === 'received' ? 'approved' : 'pending'}`}>
+                        <span className={`admin-badge admin-badge-${r.form_status === 'received' ? 'approved' : r.form_status === 'sent' ? 'sent' : 'pending'}`}>
                           {t(`admin.requests.${FORM_STATUS_KEY[r.form_status || 'none']}`)}
                         </span>
                       </td>
