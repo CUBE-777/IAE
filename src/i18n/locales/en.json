@@ -634,7 +634,7 @@
       "copyLink": "Copy link",
       "copied": "Copied",
       "copyFailed": "Could not copy the link",
-      "waMessage": "Hello {{name}},\n\nThank you for your interest in joining the Embedded Artificial Intelligence club.\n\nTo complete your application, please fill in the membership form using your personal link:\n{{link}}\n\nIt only takes a few minutes; please have a clear profile photo ready (a photo of your national ID is optional).\nThis link is just for you and is valid until {{date}}.\n\nIf you run into any difficulty, simply reply to this message.\nThe club team",
+      "waMessage": "Hello {{name}},\n\nThank you for your interest in joining the Embedded Artificial Intelligence club.\n\nTo complete your application, please fill in the membership form using your personal link:\n{{link}}\n\nIt only takes a few minutes; please have ready photos of both sides of your student card (front and back) and your Apogee / Massar number (a profile photo is optional).\nThis link is just for you and is valid until {{date}}.\n\nIf you run into any difficulty, simply reply to this message.\nThe club team",
       "copyMessage": "Copy message",
       "photoPublishFailed": "The membership was recorded, but the member's photo could not be published automatically. Upload it manually from “Edit member”.",
       "msgEditHint": "Edit the text before sending if you like; it resets to the template when you change the language.",
@@ -645,6 +645,8 @@
       "fSkills": "Skills",
       "fInterests": "Interests",
       "fBio": "Bio",
+      "fApogee": "Apogee / Massar number",
+      "fMotivation": "Reason for joining",
       "fEmergencyName": "Emergency contact",
       "fEmergencyPhone": "Emergency phone",
       "fEmergencyRelation": "Relationship",
@@ -748,18 +750,24 @@
       "university": "University / institution",
       "track": "Field of study",
       "level": "Study level",
-      "promotion": "Cohort / year",
+      "promotion": "Graduation year",
       "profession": "Occupation (optional)",
       "skills": "Skills",
       "interests": "Interests",
       "bio": "About you",
-      "photo": "Profile photo",
-      "idCard": "National ID card photo (optional)"
+      "photo": "Profile photo (optional)",
+      "apogee": "Apogee / Massar number",
+      "motivation": "Why do you want to join us?",
+      "studentCardFront": "Student card (front)",
+      "studentCardBack": "Student card (back)"
     },
     "placeholders": {
       "skills": "e.g. Python, Arduino, machine learning…",
       "interests": "e.g. robotics, computer vision, IoT…",
-      "bio": "Introduce yourself in a few lines (shown on the members page)"
+      "bio": "Introduce yourself in a few lines (shown on the members page)",
+      "apogee": "e.g. D130012345",
+      "motivation": "Tell us in a few lines why you want to join the club",
+      "promotion": "e.g. 2027"
     },
     "choose": "— Select —",
     "levels": [
@@ -793,7 +801,8 @@
     },
     "docs": {
       "photoHint": "A clear photo of your face, plain background and good lighting.",
-      "idHint": "Optional: a clear photo of the front of your national ID, details readable and no glare.",
+      "studentFrontHint": "A clear photo of the front of your student card, details readable and no glare.",
+      "studentBackHint": "A clear photo of the back of your student card, details readable and no glare.",
       "privacy": "These documents are stored in a private space, never published on the site, and only visible to membership officers; every access is logged.",
       "formats": "Accepted formats: JPG, PNG or WebP."
     },
@@ -801,7 +810,12 @@
       "photoRequired": "Please attach your profile photo.",
       "nameRequired": "Please enter your name in Arabic or in Latin letters (at least one).",
       "imageType": "Unsupported format: use JPG, PNG or WebP.",
-      "imageTooBig": "Image is too large (10 MB maximum)."
+      "imageTooBig": "Image is too large (10 MB maximum).",
+      "apogeeRequired": "Please enter your Apogee / Massar number.",
+      "apogeeInvalid": "Invalid Apogee / Massar number: letters and digits only (4 to 30 characters).",
+      "cardFrontRequired": "Please attach a photo of the front of your student card.",
+      "cardBackRequired": "Please attach a photo of the back of your student card.",
+      "motivationRequired": "Please tell us why you want to join."
     },
     "uploading": "Uploading files…",
     "uploadError": "Could not upload the images. Check your connection and try again."
@@ -859,7 +873,7 @@
       },
       {
         "title": "Data we collect",
-        "body": "When you request membership: name, phone, email, class year, track and an optional message. When you complete the membership form through your personal link: the additional information requested, your photo and, if you choose, a photo of your national ID card. Through the contact form: name, email and message. The site uses no advertising trackers; the font is loaded from Google Fonts."
+        "body": "When you request membership: name, phone, email, class year, track and an optional message. When you complete the membership form through your personal link: the additional information requested, your photo, your Apogee / Massar number and photos of both sides of your student card. Through the contact form: name, email and message. The site uses no advertising trackers; the font is loaded from Google Fonts."
       },
       {
         "title": "Why we use it",
@@ -867,7 +881,7 @@
       },
       {
         "title": "Who can see it",
-        "body": "Only authorised club officers, according to their role. Attached documents (photo, national ID) are stored in a private, unpublished space and every access is logged. The public site shows only members’ name, photo, class year, track, university and profession."
+        "body": "Only authorised club officers, according to their role. Attached documents (photo, student card) are stored in a private, unpublished space and every access is logged. The public site shows only members’ name, photo, class year, track, university and profession."
       },
       {
         "title": "Retention",

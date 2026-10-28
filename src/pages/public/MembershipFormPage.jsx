@@ -52,7 +52,6 @@ function validate(v, files) {
   set('track', validateRequired(v.track));
   set('level', validateRequired(v.level));
   // كل الحقول إلزامية: الصورة الشخصية، رقم مسار/أبوجي، سنة التخرج، وبطاقة الطالب (الوجهان)
-  if (!files.photo) e.photo = 'membershipForm.errors.photoRequired';
   set('promotion', validateRequired(v.promotion));
   const apogee = cleanApogee(v.apogee);
   if (!apogee) e.apogee = 'membershipForm.errors.apogeeRequired';
@@ -210,7 +209,7 @@ export default function MembershipFormPage() {
     let step = 'upload';
     try {
       setStage('uploading');
-      const photoPath = await ensureUploaded('photo'); // الصورة الشخصية إلزامية
+      const photoPath = files.photo ? await ensureUploaded('photo') : null; // الصورة الشخصية اختيارية
       const idPath = await ensureUploaded('id'); // بطاقة الطالب (الوجه) إلزامية
       const idBackPath = await ensureUploaded('idb'); // بطاقة الطالب (الظهر) إلزامية
       step = 'send';
@@ -226,7 +225,7 @@ export default function MembershipFormPage() {
         consent_photo: values.consent_directory === true && values.consent_photo === true,
         apogee: cleanApogee(values.apogee),
         motivation: values.motivation.trim(),
-        photo_path: photoPath,
+        ...(photoPath ? { photo_path: photoPath } : {}),
         ...(idPath ? { id_card_path: idPath } : {}),
         ...(idBackPath ? { id_card_back_path: idBackPath } : {}),
         rules_accepted: true,
@@ -278,7 +277,6 @@ export default function MembershipFormPage() {
                 shape="avatar"
                 label={t('membershipForm.fields.photo')}
                 hint={t('membershipForm.docs.photoHint')}
-                required
                 error={errors.photo}
                 file={files.photo}
                 onPick={(f) => handlePick('photo', f)}

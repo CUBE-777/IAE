@@ -3,7 +3,7 @@
 -- تعديلات استمارة الانخراط المرسلة عبر الواتساب:
 --   1) حقلان جديدان: apogee (رقم مسار / أبوجي، إلزامي) وmotivation (لماذا تريد الانضمام).
 --   2) بطاقة الطالب بدل البطاقة الوطنية: الوجه في id_card_path (id-1..3) والظهر في id_card_back_path (idb-1..3)، وكلاهما إلزامي.
---   3) قسما المعلومات الشخصية والدراسية إلزاميان بالكامل: الصورة، الاسم بالعربية واللاتينية، البريد، سنة التخرج،
+--   3) قسما المعلومات الشخصية والدراسية إلزاميان بالكامل (ما عدا الصورة الشخصية فاختيارية): الاسم بالعربية واللاتينية، البريد، سنة التخرج،
 --      رقم مسار/أبوجي، وصورتا بطاقة الطالب (إضافة إلى الحقول الإلزامية سابقاً).
 --   4) «الدفعة» أصبحت «سنة التخرج»: تغيير في العنوان فقط، العمود promotion نفسه (انظر 0002).
 -- الحقول الجديدة تُحفظ داخل membership_forms.data ثم member_private.form_data (دالة record_annual_membership لا تتغيّر).
@@ -138,14 +138,11 @@ begin
   if v_github is not null and v_github !~* '^https?://' then v_github := 'https://' || v_github; end if;
   if v_linkedin is not null and v_linkedin !~* '^https?://' then v_linkedin := 'https://' || v_linkedin; end if;
 
-  -- الصورة الشخصية وبطاقة الطالب (الوجه + الظهر): كلها إلزامية.
+  -- بطاقة الطالب (الوجه + الظهر): إلزامية. الصورة الشخصية: اختيارية.
   -- أي مسار مُرسل يجب أن يكون داخل مجلد هذا الرابط حصراً + الملف موجود فعلاً.
   v_photo  := nullif(btrim(coalesce(p_data->>'photo_path', '')), '');
   v_idcard := nullif(btrim(coalesce(p_data->>'id_card_path', '')), '');
   v_idback := nullif(btrim(coalesce(p_data->>'id_card_back_path', '')), '');
-  if v_photo is null then
-    raise exception 'يرجى رفع الصورة الشخصية';
-  end if;
   if v_idcard is null or v_idback is null then
     raise exception 'يرجى رفع بطاقة الطالب (الوجهين)';
   end if;
@@ -160,7 +157,7 @@ begin
     raise exception 'لم يكتمل رفع الملفات، أعد المحاولة';
   end if;
 
-  -- رقم أبوجي / مسار (اختياري): حروف وأرقام فقط، بلا مسافات
+  -- رقم أبوجي / مسار (إلزامي): حروف وأرقام فقط، بلا مسافات
   v_apogee := nullif(upper(regexp_replace(coalesce(p_data->>'apogee', ''), '\s+', '', 'g')), '');
   if v_apogee is null or v_apogee !~ '^[A-Z0-9]{4,30}$' then
     raise exception 'رقم أبوجي / مسار غير صالح';
@@ -172,7 +169,7 @@ begin
 
   -- الموافقتان اختياريتان ولا تُفترضان: نشر الاسم/المعلومات في صفحة الأعضاء، ونشر الصورة (لا نشر للصورة دون الأولى)
   v_consent_dir   := coalesce(p_data->>'consent_directory', '') = 'true';
-  v_consent_photo := v_consent_dir and coalesce(p_data->>'consent_photo', '') = 'true';
+  v_consent_photo := v_consent_dir and v_photo is not null and coalesce(p_data->>'consent_photo', '') = 'true';
 
   v_clean := jsonb_strip_nulls(jsonb_build_object(
     'full_name',          coalesce(v_name_ar, v_name_latin),

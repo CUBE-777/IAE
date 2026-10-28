@@ -15,7 +15,7 @@ test('الفورم: أبوجي/مسار + سبب الانضمام + بطاقة �
   assert.match(page, /motivation: ''/);
   assert.match(page, /ensureUploaded\('idb'\)/);
   assert.match(page, /id_card_back_path/);
-  assert.match(page, /photoRequired/);
+  assert.doesNotMatch(page, /photoRequired/); // الصورة الشخصية اختيارية
   assert.match(page, /cardFrontRequired/);
   assert.match(page, /cardBackRequired/);
   assert.match(page, /set\('promotion', validateRequired\(v\.promotion\)\)/);
@@ -37,7 +37,8 @@ test('الترجمات: المفاتيح الجديدة بالثلاث لغات 
 });
 
 test('0034: الحقول إلزامية، وظهر البطاقة مسموح، وأبوجي/الدافع محفوظان', () => {
-  assert.match(sql, /يرجى رفع الصورة الشخصية/);
+  assert.doesNotMatch(sql, /يرجى رفع الصورة الشخصية/); // الصورة الشخصية اختيارية
+  assert.match(sql, /يرجى رفع بطاقة الطالب/);
   assert.match(sql, /v_name_ar is null or v_name_latin is null/);
   assert.match(sql, /\(photo\|id\|idb\)-\[1-3\]/);
   assert.match(sql, /\/idb-\[1-3\]/);
