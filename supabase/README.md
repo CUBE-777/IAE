@@ -72,3 +72,14 @@ Prérequis : 0002, 0008, 0009, 0012. Corrige « Database error deleting user » 
 
 ## 0029 — slug المشاريع وسياسة profiles
 Prérequis : 0003 et 0016. Remplace la contrainte `projects_slug_key` par un index unique partiel (`where deleted_at is null`) : le slug d'un projet supprimé est libéré. Ajoute `WITH CHECK` à la politique de mise à jour de `profiles`. Idempotente. Ne pas rejouer 0016 après celle-ci.
+
+## 0035 — حسابات الأعضاء (أساس نظام الأعضاء، المرحلة 2)
+شروطه المسبقة: 0002 و0004 و0019 و0024. إضافة فقط؛ لا يمسّ `profiles` ولا `admin_role` ولا أي دالة `can_*` قائمة، ولا تغيير في الواجهة.
+1. **تجربة جافة:** في `migrations/0035_member_accounts.sql` استبدل السطر الأخير `commit;` بـ `rollback;` وشغّل الملف في SQL Editor. غياب الأخطاء = الملف سليم.
+2. **التنفيذ الفعلي:** أعد `commit;` ونفّذ الملف.
+3. **التحقق:** شغّل `tests/rls_smoke.sql` كاملًا؛ يجب أن تظهر رسالتا النجاح (الفحوص الأصلية وفحوص 0035).
+4. **الرجوع:** `rollback/0035_member_accounts_down.sql` (يحذف الكائنات الجديدة فقط).
+
+قاعدة لكل migration يضيف جداول أو دوال: Supabase يمنح `anon` و`authenticated` صلاحيات كاملة تلقائيًا على كل جدول جديد، و`EXECUTE` لـ `anon` على كل دالة جديدة؛
+لذلك نكتب `revoke all ... from public, anon, authenticated` مباشرة بعد كل `create table` / `create function` ثم نمنح الحد الأدنى.
+ودوال pgcrypto (`gen_random_bytes` و`digest`) موجودة في المخطط `extensions`، فتُستدعى بالاسم الكامل داخل الدوال ذات `search_path = public, pg_temp`.

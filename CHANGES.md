@@ -1,3 +1,20 @@
+# ميزة (المرحلة 2 من نظام الأعضاء): أساس حسابات الأعضاء — قاعدة البيانات فقط
+
+لا تغيير في الواجهة ولا في الموقع الحالي ولا في أي Edge Function. إضافة صرفة في قاعدة البيانات:
+- جدول جديد `member_accounts` (ربط 1:1 بين مستخدم Supabase Auth وسجل العضو، خاص: لا كتابة من أي عميل).
+- دالة `can_manage_member_system()` — الأدوار الأربعة فقط: super_admin وdeveloper وsecretary_general وmembers_manager (لا نواب).
+- دالة `current_member_id()` — هوية العضو الحالي (null لغير الأعضاء ولمن له صف في `profiles`).
+- مشغّل حماية على الجدول الجديد فقط: يرفض ربط حساب عضو بمستخدم له `profiles` (فصل الحساب الإداري عن حساب العضو)،
+  ويرفض عضوًا محذوفًا، ويجعل الربط غير قابل للتغيير.
+- لا يُعدَّل: `profiles` وسياساته، `admin_role`، `is_admin` و`current_admin_role` و`mfa_satisfied` و`can_manage_members`، `members`، `auth.users`.
+ملفات جديدة: `supabase/migrations/0035_member_accounts.sql` و`supabase/rollback/0035_member_accounts_down.sql` و`tests/member-accounts-sql.test.js`.
+ملفات معدَّلة (إلحاق فقط): `supabase/tests/rls_smoke.sql` (قسم فحوص 0035) و`supabase/README.md` و`CHANGES.md`.
+ترتيب النشر: (1) تجربة جافة: استبدل `commit;` الأخيرة بـ `rollback;` في 0035 وشغّله في SQL Editor، (2) أعدها `commit;` ونفّذه فعليًا،
+(3) شغّل `supabase/tests/rls_smoke.sql` كاملًا وتأكد من ظهور «فحوص 0035 ... كل الفحوص نجحت ✔»، (4) لا حاجة لنشر الواجهة.
+الرجوع: `supabase/rollback/0035_member_accounts_down.sql`.
+
+---
+
 # تعديل: استمارة الانخراط المرسلة عبر الواتساب (`/membership-form/:token`)
 
 - حقل جديد **رقم مسار / أبوجي** (إلزامي، حروف وأرقام فقط) وحقل **لماذا تريد الانضمام إلينا؟** (إلزامي، حتى 1000 حرف).
