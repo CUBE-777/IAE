@@ -1,3 +1,23 @@
+# ميزة (المرحلة 3 من نظام الأعضاء): «فضاء المنخرطين» — حسابات الأعضاء بالتفعيل الشخصي وطلبات تعديل البطاقة — القاعدة والخادم فقط
+
+لا تغيير في الواجهة ولا في الموقع الحالي. إضافة صرفة لا تعدّل أي جدول أو دالة أو سياسة موجودة.
+- `member_activation_links`: رابط تفعيل شخصي لكل عضو (رمز مُجزَّأ، 7 أيام، يُستعمل مرة واحدة). يُصدره مسؤولو نظام الأعضاء الأربعة فقط.
+- `member_card_requests`: طلبات تعديل البطاقة العامة (صورة، نبذة، مسار دراسي، روابط، معلومات إضافية، ترجمات، المهنة، الظهور في الدليل).
+  لا يُنشر شيء قبل اعتماد الإدارة (`approve_member_card_request`) أو رفضه (`reject_member_card_request`) مع ملاحظة.
+- Edge Function جديدة `member-activate`: تنشئ حساب Auth ببريد العضو المسجّل عند الإدارة (لا بريد من العميل) وبكلمة مرور يختارها بنفسه، ثم تربطه عبر `finalize_member_activation`، وتتراجع عند أي فشل.
+- دوال العضو: `get_my_member` / `update_my_member_private` (الهاتف والمدينة والمهنة فورًا + سحب الظهور في الدليل فورًا) / `submit_member_card_request` / `cancel_my_member_card_request`.
+  العضو لا يكتب في `members` مباشرة أبدًا؛ `bio` (الخاص بالإدارة) والاسم والبريد خارج ما يستطيع تغييره.
+- تخزين: يرفع العضو صورته المقترحة إلى `member-<id>/` في bucket الخاص `membership-docs` (سقف 10 ملفات)، وللإدارة وحدها قراءتها.
+ملفات جديدة: `supabase/migrations/0036_member_space_activation_and_card_requests.sql` و`supabase/rollback/0036_member_space_down.sql` و`supabase/functions/member-activate/index.ts` و`tests/member-space-sql.test.js`.
+ملفات معدَّلة (إلحاق فقط): `supabase/config.toml` و`CHANGES.md`.
+ترتيب النشر: (1) تجربة جافة: استبدل `commit;` الأخيرة بـ `rollback;` في 0036 وشغّله في SQL Editor، (2) أعدها `commit;` ونفّذه فعليًا،
+(3) `supabase functions deploy member-activate`، (4) في لوحة Supabase: Authentication → Sign In / Providers → عطّل «Allow new users to sign up»،
+(5) شغّل `supabase/tests/rls_smoke.sql` وتأكد أن فحوصه السابقة لا تزال تنجح. لا حاجة لنشر الواجهة في هذه المرحلة.
+الرجوع: `supabase/rollback/0036_member_space_down.sql`.
+المتبقي (مراحل لاحقة): واجهة `/member/*` وصفحة `/member/activate/:token` وأزرار الإدارة، ثم بطاقة QR والحضور والأنشطة الخاصة بالأعضاء، ثم الإعلانات والملفات الداخلية للأعضاء.
+
+---
+
 # ميزة (المرحلة 2 من نظام الأعضاء): أساس حسابات الأعضاء — قاعدة البيانات فقط
 
 لا تغيير في الواجهة ولا في الموقع الحالي ولا في أي Edge Function. إضافة صرفة في قاعدة البيانات:

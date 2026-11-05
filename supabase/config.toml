@@ -1,2 +1,5 @@
 [functions.admin-create-user]
 verify_jwt = false
+
+[functions.member-activate]
+verify_jwt = false
