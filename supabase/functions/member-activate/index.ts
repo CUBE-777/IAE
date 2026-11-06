@@ -9,6 +9,7 @@
 //      البريد لا يأتي من العميل أبدًا، فلا يستطيع أحد تفعيل حساب ببريد غير المسجّل للعضو.
 //   2) auth.admin.createUser(email, password)  ← كلمة المرور يختارها العضو بنفسه.
 //   3) finalize_member_activation(token, user_id) ← يربط المستخدم بالعضو ويُبطل الرمز. عند أي فشل يُحذف المستخدم (تراجع).
+//   (0037) إن كان للعضو حساب: prepare تعيد existing_user_id فتُغيَّر كلمة مروره فقط (updateUserById) ولا يُحذف الحساب عند أي فشل.
 //
 // النشر:  supabase functions deploy member-activate
 // ملاحظة: يجب تعطيل التسجيل الذاتي في Supabase (Authentication → Sign In / Providers → Allow new users to sign up = off)
@@ -91,7 +92,30 @@ async function handle(req: Request): Promise<Response> {
       return json({ error: INVALID_LINK }, 400);
     }
 
-    // 2) إنشاء حساب Auth بكلمة المرور التي اختارها العضو
+    // 2) حساب جديد بكلمة المرور التي اختارها العضو، أو (0037: استعادة الدخول) تغيير كلمة مرور الحساب القائم فقط
+    const existingUserId: string | null = typeof prep.existing_user_id === 'string' ? prep.existing_user_id : null;
+
+    if (existingUserId) {
+      const { error: pwErr } = await adminClient.auth.admin.updateUserById(existingUserId, { password });
+      if (pwErr) {
+        console.error('member-activate: updateUser failed:', pwErr);
+        const msg = String(pwErr.message || '').toLowerCase();
+        if (msg.includes('password')) return json({ error: 'كلمة المرور غير مقبولة (اختر كلمة أقوى)' }, 400);
+        return json({ error: 'تعذر تغيير كلمة المرور' }, 400);
+      }
+      // لا نحذف المستخدم القائم أبدًا؛ إن فشل الإنهاء يبقى الرابط صالحًا فيعيد العضو المحاولة
+      const { error: finErr } = await adminClient.rpc('finalize_member_activation', {
+        p_token: token,
+        p_user_id: existingUserId,
+      });
+      if (finErr) {
+        console.error('member-activate: finalize (reset) failed:', finErr);
+        if (String(finErr.message || '').includes('activation_link_invalid')) return json({ error: INVALID_LINK }, 400);
+        return json({ error: 'تعذر إكمال العملية' }, 400);
+      }
+      return json({ ok: true, email: prep.email, reset: true });
+    }
+
     const { data: created, error: createErr } = await adminClient.auth.admin.createUser({
       email: prep.email,
       password,
@@ -110,7 +134,7 @@ async function handle(req: Request): Promise<Response> {
       return json({ error: 'تعذر إنشاء الحساب' }, 400);
     }
 
-    // 3) الربط وإبطال الرمز؛ عند الفشل نتراجع فلا يبقى مستخدم Auth بلا عضو
+    // 3) الربط وإبطال الرمز؛ عند الفشل نتراجع فلا يبقى مستخدم Auth بلا عضو (للمستخدم المُنشأ هنا فقط)
     const { error: finErr } = await adminClient.rpc('finalize_member_activation', {
       p_token: token,
       p_user_id: created.user.id,

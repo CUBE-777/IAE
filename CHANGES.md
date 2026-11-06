@@ -1,3 +1,25 @@
+# ميزة (المرحلة 4 من نظام الأعضاء): واجهة «فضاء المنخرطين» + صفحة التفعيل + أزرار الإدارة
+
+الواجهة تعتمد على 0036 (القاعدة) و`member-activate`، مع تعديل صغير في 0037 لاستعادة الدخول.
+- **المسارات (كلها غير مفهرسة وفي robots.txt):** `/member/login` دخول، `/member/activate/:token` تفعيل الحساب (أو تغيير كلمة المرور إن كان للعضو حساب)،
+  `/member` ملفي (بطاقتي المنشورة، حالة آخر طلب، الهاتف والمدينة فورًا، إخفاء بطاقتي فورًا)، `/member/card` اقتراح تعديل البطاقة (صورة، نبذة، مسار، روابط، معلومات إضافية، ترجمات fr/en، المهنة، الموافقة على الظهور).
+  الحارس `MemberLayout` يعتمد `get_my_member()` لا الجلسة وحدها؛ من دخل بحساب ليس لعضو (مسؤول مثلًا) يرى رسالة وزر خروج ولا يُسجَّل خروجه تلقائيًا.
+  العضو لا يكتب في `members` أبدًا: كل شيء عبر دوال 0036. لغات الواجهة ar/fr/en (مفتاح `member` في ملفات i18n الثلاثة).
+- **المهنة** تظهر علنًا (0007) فتمر عبر طلب البطاقة (مراجعة الإدارة) وليس عبر الحفظ الفوري، رغم أن `update_my_member_private` تقبلها.
+- **الإدارة (/admin/members):** زر «رابط التفعيل» لكل عضو نشط (نسخ + واتساب بلغة يختارها المسؤول)، وزر «طلبات تعديل البطاقات (عدد)» يفتح المراجعة: فروق عن المنشور، معاينة الصورة، اعتماد (ينشر ويرفع الصورة إلى الـ bucket العام) أو رفض بملاحظة.
+  الزران للأدوار الأربعة فقط (`ROLES_MEMBER_SYSTEM`، يطابق `can_manage_member_system()` في 0035 ويفحصه الاختبار)، رغم أن صفحة الأعضاء نفسها تفتح لنواب أيضًا.
+- **استعادة الدخول (0037):** يُسمح بإعادة إصدار الرابط لعضو له حساب؛ تبقى هوية مستخدم Auth وربطه بالعضو كما هي وتُغيَّر كلمة مروره فقط (`updateUserById` في `member-activate`)، ويُسجَّل ذلك في `audit_logs`.
+  الجلسات المفتوحة سابقًا لا تُنهى عند تغيير كلمة المرور (سلوك Supabase الافتراضي).
+- ملفات جديدة: `supabase/migrations/0037_member_reactivation.sql` و`supabase/rollback/0037_member_reactivation_down.sql` و`src/services/supabase/memberSpace.service.js`
+  و`src/layouts/MemberLayout.jsx` و`src/components/member/MemberPage.jsx` و`src/pages/member/*` (4 صفحات) و`src/pages/admin/MemberActivationModal.jsx` و`MemberCardRequestsModal.jsx`
+  و`src/styles/member.css` و`src/hooks/useNoindex.js` و`tests/member-space-ui.test.js`.
+- ملفات معدَّلة: `supabase/functions/member-activate/index.ts` و`router/index.jsx` و`constants/roles.js` و`pages/admin/Members.jsx` وملفات i18n الثلاثة و`adminDict.data.js` (25 نصًا، منها نصّان قديمان كانا بلا ترجمة) و`public/robots.txt`.
+- ترتيب النشر: (1) 0036 إن لم تُنفَّذ ثم 0037 (تجربة جافة بـ `rollback;` أولًا)، (2) `supabase functions deploy member-activate`، (3) عطّل «Allow new users to sign up» في Authentication، (4) انشر الواجهة، (5) `rls_smoke.sql`.
+- لم تُشغَّل `npm run lint` ولا `vite build` في بيئة التطوير هذه (لا شبكة لتثبيت الحزم): فحصتُ صياغة الملفات الجديدة بـ esbuild وشغّلتُ `node --test` (150 ناجح؛ يفشل 3 قديمة: `.gitignore` و`.env.example` غير موجودين في الأرشيف، و`sanitize` يحتاج dompurify). شغّل `npm run check` عندك قبل النشر.
+- المتبقي: بطاقة QR والحضور والأنشطة الخاصة بالأعضاء (المرحلة 5)، ثم الإعلانات والملفات الداخلية للأعضاء (المرحلة 6). لا رابط لفضاء المنخرطين في ترويسة الموقع بعد.
+
+---
+
 # ميزة (المرحلة 3 من نظام الأعضاء): «فضاء المنخرطين» — حسابات الأعضاء بالتفعيل الشخصي وطلبات تعديل البطاقة — القاعدة والخادم فقط
 
 لا تغيير في الواجهة ولا في الموقع الحالي. إضافة صرفة لا تعدّل أي جدول أو دالة أو سياسة موجودة.

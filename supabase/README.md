@@ -83,3 +83,6 @@ Prérequis : 0003 et 0016. Remplace la contrainte `projects_slug_key` par un ind
 قاعدة لكل migration يضيف جداول أو دوال: Supabase يمنح `anon` و`authenticated` صلاحيات كاملة تلقائيًا على كل جدول جديد، و`EXECUTE` لـ `anon` على كل دالة جديدة؛
 لذلك نكتب `revoke all ... from public, anon, authenticated` مباشرة بعد كل `create table` / `create function` ثم نمنح الحد الأدنى.
 ودوال pgcrypto (`gen_random_bytes` و`digest`) موجودة في المخطط `extensions`، فتُستدعى بالاسم الكامل داخل الدوال ذات `search_path = public, pg_temp`.
+
+## 0037 — إعادة إصدار رابط التفعيل لعضو له حساب (استعادة الدخول)
+شروطه المسبقة: 0035 و0036. يستبدل أربع دوال من 0036 بنفس التواقيع (لا جداول ولا سياسات). بعده أعد نشر `member-activate` (النسخة القديمة لا تعرف `existing_user_id`). الرجوع: `rollback/0037_member_reactivation_down.sql` (يعيد تنفيذ 0036).

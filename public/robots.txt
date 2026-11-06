@@ -3,5 +3,6 @@ Allow: /
 Disallow: /admin/
 Disallow: /membership-form/
 Disallow: /board-profile/
+Disallow: /member/
 
 Sitemap: https://fsa-iae.netlify.app/sitemap.xml
