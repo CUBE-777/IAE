@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useBlocker, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MemberPage from '../../components/member/MemberPage';
 import FormField from '../../components/common/FormField';
 import ImagePicker from '../../components/common/ImagePicker';
+import PersonCard from '../../components/common/PersonCard';
 import { compressImage } from '../../utils/imageCompress';
 import { submitCardRequest, uploadMemberCardPhoto } from '../../services/supabase/memberSpace.service';
 import { initProfileState, buildProfile, MEMBER_TR_FIELDS, MAX_EXTRA_ITEMS } from '../../components/admin/PublicProfileFields';
@@ -17,6 +18,12 @@ const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_PICK_BYTES = 10 * 1024 * 1024;
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 const s = (v) => (typeof v === 'string' ? v : '');
+
+/** عدّاد أحرف تحت الحقول ذات الحد الأقصى (إرشادي؛ maxLength على الحقل هو الذي يمنع التجاوز). */
+function Counter({ value, max }) {
+  const n = (value || '').length;
+  return <span className={`member-counter${n >= max ? ' member-counter-full' : ''}`} aria-hidden="true">{n}/{max}</span>;
+}
 
 /**
  * اقتراح تعديل على بطاقة العضو العامة. لا يُنشر شيء قبل اعتماد الإدارة.
@@ -39,6 +46,36 @@ export default function MemberCard() {
   const [submitting, setSubmitting] = useState(false);
   const [stage, setStage] = useState('idle');
   const [done, setDone] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState(null);
+  const leaveRef = useRef(null);
+
+  // لقطة الحالة الابتدائية (الطلب المعلّق إن وُجد وإلا المنشور): أي اختلاف عنها = تعديلات غير مرسلة
+  const snapshot = JSON.stringify({ values, showInDirectory, profile });
+  const [initialSnapshot] = useState(snapshot);
+  const dirty = !done && (!!photo || snapshot !== initialSnapshot);
+
+  // معاينة الصورة المختارة للبطاقة الحية
+  useEffect(() => {
+    if (!photo) { setPhotoUrl(null); return undefined; }
+    const url = URL.createObjectURL(photo);
+    setPhotoUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photo]);
+
+  // تحذير مغادرة الصفحة (إغلاق التبويب/تحديثه) وتحذير التنقل داخل التطبيق
+  useEffect(() => {
+    if (!dirty) return undefined;
+    const warn = (e) => { e.preventDefault(); e.returnValue = ''; };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [dirty]);
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => dirty && currentLocation.pathname !== nextLocation.pathname);
+  useEffect(() => {
+    if (blocker.state === 'blocked' && leaveRef.current) {
+      leaveRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      leaveRef.current.focus({ preventScroll: true });
+    }
+  }, [blocker.state]);
 
   const handleChange = (e) => setValues((v) => ({ ...v, [e.target.name]: e.target.value }));
   const patch = (p) => setProfile((v) => ({ ...v, ...p }));
@@ -144,6 +181,34 @@ export default function MemberCard() {
         <p className="mf-privacy" role="note">{t('member.card.intro')}</p>
         {pending && <p className="mf-privacy" role="note">{t('member.card.pendingNote')}</p>}
         {formError && <div className="form-alert form-alert-error" role="alert">{formError}</div>}
+        {blocker.state === 'blocked' && (
+          <div ref={leaveRef} tabIndex={-1} className="member-confirm" role="alertdialog" aria-labelledby="mc-leave-title" aria-describedby="mc-leave-text">
+            <strong id="mc-leave-title">{t('member.card.leaveTitle')}</strong>
+            <p id="mc-leave-text" className="mf-hint">{t('member.card.leaveText')}</p>
+            <div className="member-actions">
+              <button type="button" className="btn btn-gold" onClick={() => blocker.reset()}>{t('member.card.stay')}</button>
+              <button type="button" className="btn btn-ghost" onClick={() => blocker.proceed()}>{t('member.card.leave')}</button>
+            </div>
+          </div>
+        )}
+
+        <fieldset className="mf-group">
+          <legend>{t('member.card.previewTitle')}</legend>
+          <p className="mf-hint">{t('member.card.previewText')}</p>
+          <div className="member-preview">
+            <PersonCard
+              person={{
+                name: member.full_name,
+                image: photoUrl || member.photo_url,
+                university: values.university,
+                promo: values.promotion,
+                track: values.track,
+                profession: values.profession,
+                role: t('person.memberRole'),
+              }}
+            />
+          </div>
+        </fieldset>
 
         <fieldset className="mf-group">
           <legend>{t('boardProfile.groups.photo')}</legend>
@@ -180,8 +245,11 @@ export default function MemberCard() {
           </FormField>
           <FormField id="mc-study" label={fieldLabel('studyPath')}>
             {(a) => (
-              <textarea {...a} rows={3} maxLength={800} placeholder={t('boardProfile.hints.studyPath')}
-                value={profile.study_path} onChange={(e) => patch({ study_path: e.target.value })} />
+              <>
+                <textarea {...a} rows={3} maxLength={800} placeholder={t('boardProfile.hints.studyPath')}
+                  value={profile.study_path} onChange={(e) => patch({ study_path: e.target.value })} />
+                <Counter value={profile.study_path} max={800} />
+              </>
             )}
           </FormField>
         </fieldset>
@@ -192,7 +260,12 @@ export default function MemberCard() {
             {(a) => <input {...a} name="profession" type="text" maxLength={150} value={values.profession} onChange={handleChange} />}
           </FormField>
           <FormField id="mc-public-bio" label={fieldLabel('publicBio')}>
-            {(a) => <textarea {...a} rows={4} maxLength={600} value={profile.public_bio} onChange={(e) => patch({ public_bio: e.target.value })} />}
+            {(a) => (
+              <>
+                <textarea {...a} rows={4} maxLength={600} value={profile.public_bio} onChange={(e) => patch({ public_bio: e.target.value })} />
+                <Counter value={profile.public_bio} max={600} />
+              </>
+            )}
           </FormField>
         </fieldset>
 
@@ -256,7 +329,12 @@ export default function MemberCard() {
             const common = { dir: 'ltr', maxLength: f.max, value: profile.tr[trLang][f.key], onChange: (e) => setTr(trLang, f.key, e.target.value) };
             return (
               <FormField key={id} id={id} label={fieldLabel(f.key === 'public_bio' ? 'publicBio' : f.key === 'study_path' ? 'studyPath' : f.key)}>
-                {(a) => (f.rows ? <textarea {...a} rows={f.rows} {...common} /> : <input {...a} type="text" {...common} />)}
+                {(a) => (f.rows ? (
+                  <>
+                    <textarea {...a} rows={f.rows} {...common} />
+                    <Counter value={common.value} max={f.max} />
+                  </>
+                ) : <input {...a} type="text" {...common} />)}
               </FormField>
             );
           })}
@@ -281,6 +359,7 @@ export default function MemberCard() {
           </label>
         </div>
 
+        {dirty && <p className="mf-hint member-unsaved" role="status">{t('member.card.unsaved')}</p>}
         <button type="submit" className="btn btn-gold mf-submit" disabled={submitting}>
           {submitting ? (stage === 'uploading' ? t('member.card.uploading') : t('member.card.submitting')) : t('member.card.submit')}
         </button>
