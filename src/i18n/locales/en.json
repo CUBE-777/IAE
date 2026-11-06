@@ -970,5 +970,146 @@
     "successTitle": "We received your profile",
     "successText": "We'll review and publish it soon. You can reopen the same link to edit it before approval.",
     "privacy": "Nothing appears on the site until the administration approves it."
+  },
+  "member": {
+    "crumb": "Members' space",
+    "loading": "Loading…",
+    "nav": {
+      "label": "Members' space menu",
+      "home": "My profile",
+      "card": "Edit my card",
+      "logout": "Log out"
+    },
+    "login": {
+      "pageTitle": "Members' login",
+      "title": "Members' space",
+      "description": "Log in with the email registered with the club and the password you chose when activating your account.",
+      "email": "Email",
+      "password": "Password",
+      "show": "Show password",
+      "hide": "Hide password",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "emailRequired": "Enter your email",
+      "emailInvalid": "Invalid email",
+      "passwordRequired": "Enter your password",
+      "invalid": "Incorrect email or password",
+      "network": "Can't connect. Check your internet connection and try again.",
+      "generic": "Couldn't log in. Try again later.",
+      "forgot": "Forgot your password? Ask the administration for a new recovery link.",
+      "noAccount": "No account yet? The activation invitation is sent by the club administration."
+    },
+    "activate": {
+      "pageTitle": "Activate member account",
+      "crumb": "Account activation",
+      "title": "Activate your account",
+      "descriptionNew": "Choose a password for your account. You will then log in with the email registered with the club.",
+      "descriptionReset": "Choose a new password to regain access to your account.",
+      "greeting": "Hello {{name}}",
+      "emailLabel": "Login email: {{email}}",
+      "password": "Password",
+      "confirm": "Confirm password",
+      "hint": "At least 8 characters.",
+      "tooShort": "The password must be at least 8 characters",
+      "tooLong": "The password is longer than 72 characters",
+      "mismatch": "The two passwords don't match",
+      "submit": "Activate account",
+      "submitReset": "Change password",
+      "submitting": "Saving…",
+      "successNewTitle": "Your account is activated",
+      "successNewText": "You can now log in with your email and the password you chose.",
+      "successResetTitle": "Password changed",
+      "successResetText": "Log in with your new password.",
+      "goLogin": "Go to the login page",
+      "loadErrorTitle": "Couldn't load the page",
+      "loadErrorText": "Check your internet connection, then reopen the link.",
+      "error": "The operation failed. Try again or ask the administration for a new link.",
+      "state": {
+        "invalid": {
+          "title": "Invalid link",
+          "text": "Make sure you copied the whole link, or ask the administration for a new one."
+        },
+        "used": {
+          "title": "Link already used",
+          "text": "This link has already been used. If your account is active, log in; otherwise ask for a new link."
+        },
+        "expired": {
+          "title": "Link expired",
+          "text": "Ask the administration for a new link."
+        }
+      }
+    },
+    "home": {
+      "pageTitle": "My profile — Members' space",
+      "title": "My profile",
+      "description": "Your details at the club and the status of your card change requests.",
+      "loadErrorTitle": "Couldn't load your profile",
+      "loadErrorText": "Check your internet connection and try again.",
+      "retry": "Try again",
+      "notMemberTitle": "This is not a member account",
+      "notMemberText": "The account you used isn't linked to an active member. Log out and use your member account.",
+      "hello": "Hello {{name}}",
+      "cardTitle": "Your card on the site",
+      "cardText": "This is the information published on the members page. Any change is reviewed by the administration before it goes live.",
+      "editCard": "Suggest a change to my card",
+      "fields": {
+        "university": "University",
+        "promotion": "Graduation year (class)",
+        "track": "Field of study",
+        "profession": "Profession",
+        "email": "Email"
+      },
+      "inDirectory": "Your name and card are visible on the members page.",
+      "notInDirectory": "Your card is not visible on the members page.",
+      "request": {
+        "title": "Latest change request",
+        "pending": "Under review",
+        "approved": "Approved and published",
+        "rejected": "Not approved — you can edit it and send it again",
+        "cancelled": "Cancelled by you",
+        "note": "Note from the administration:",
+        "sentAt": "Sent on {{date}}",
+        "cancel": "Cancel the request",
+        "cancelled_ok": "Request cancelled",
+        "cancelError": "Couldn't cancel the request"
+      },
+      "private": {
+        "title": "Contact details (private)",
+        "text": "Not shown to visitors, saved immediately. Only club officers can see them.",
+        "phone": "Phone",
+        "city": "City",
+        "save": "Save",
+        "saving": "Saving…",
+        "saved": "Your details were saved",
+        "error": "Couldn't save. Check the phone number.",
+        "phoneInvalid": "Invalid phone number"
+      },
+      "hide": {
+        "title": "Visibility on the members page",
+        "text": "You can withdraw your consent at any time, effective immediately. To appear again, send a change request that the administration approves.",
+        "button": "Hide my card now",
+        "done": "Your card is now hidden from the members page",
+        "error": "Couldn't hide the card"
+      }
+    },
+    "card": {
+      "pageTitle": "Edit my card — Members' space",
+      "title": "Edit my card",
+      "description": "Suggest the changes you want. Nothing is published before the administration approves it.",
+      "intro": "Your name, email and some administrative fields can't be changed here. Contact the administration if you need to change them.",
+      "pendingNote": "You have a request under review; you can edit it and send it again, and it will replace the previous one.",
+      "profession": "Profession",
+      "showInDirectory": "I agree that my card (my name, photo and the details above) is shown on the members page",
+      "submit": "Send for review",
+      "submitting": "Sending…",
+      "uploading": "Uploading the photo…",
+      "successTitle": "Your request was sent",
+      "successText": "The administration will review it. You can follow its status in “My profile”.",
+      "backToProfile": "Back to my profile",
+      "uploadError": "Couldn't upload the photo. Try another image.",
+      "submitError": "Couldn't send the request. Try again.",
+      "rateLimited": "Too many requests today. Try again tomorrow.",
+      "privacy": "This information is published only after the administration approves it."
+    }
   }
 }

@@ -2090,5 +2090,105 @@ export const ADMIN_DICT = {
  "عضو": {
   "fr": "Membre",
   "en": "Member"
+ },
+ "إنشاء رابط": {
+  "fr": "Créer un lien",
+  "en": "Create a link"
+ },
+ "إنشاء رابط جديد يُبطل أي رابط سابق لهذا العضو. إن كان له حساب فالرابط يتيح له اختيار كلمة مرور جديدة فقط (استعادة الدخول).": {
+  "fr": "Créer un nouveau lien annule tout lien précédent de ce membre. S'il a déjà un compte, le lien lui permet seulement de choisir un nouveau mot de passe (récupération d'accès).",
+  "en": "Creating a new link cancels any previous link for this member. If they already have an account, the link only lets them choose a new password (access recovery)."
+ },
+ "الصورة المقترحة": {
+  "fr": "Photo proposée",
+  "en": "Proposed photo"
+ },
+ "الظهور في صفحة الأعضاء": {
+  "fr": "Visibilité sur la page des membres",
+  "en": "Visibility on the members page"
+ },
+ "تعذر الرفض": {
+  "fr": "Échec du refus",
+  "en": "Couldn't reject"
+ },
+ "تعذر تحميل الطلبات": {
+  "fr": "Impossible de charger les demandes",
+  "en": "Couldn't load the requests"
+ },
+ "تعذر تحميل الطلبات.": {
+  "fr": "Impossible de charger les demandes.",
+  "en": "Couldn't load the requests."
+ },
+ "تم اعتماد التعديل ونشره": {
+  "fr": "Modification validée et publiée",
+  "en": "Change approved and published"
+ },
+ "تم رفض الطلب": {
+  "fr": "Demande refusée",
+  "en": "Request rejected"
+ },
+ "رابط التفعيل": {
+  "fr": "Lien d'activation",
+  "en": "Activation link"
+ },
+ "رابط تفعيل حساب العضو": {
+  "fr": "Lien d'activation du compte du membre",
+  "en": "Member account activation link"
+ },
+ "رابط خاص بـ <strong>{{name}}</strong> ليفعّل حسابه في فضاء المنخرطين ويختار كلمة مروره بنفسه. يدخل ببريده المسجّل لدينا: {{email}}": {
+  "fr": "Lien personnel pour <strong>{{name}}</strong> afin d'activer son compte de l'espace adhérents et de choisir son mot de passe. Il se connecte avec l'e-mail enregistré chez nous : {{email}}",
+  "en": "Personal link for <strong>{{name}}</strong> to activate their members' space account and choose their own password. They log in with the email we have on record: {{email}}"
+ },
+ "رفض": {
+  "fr": "Refuser",
+  "en": "Reject"
+ },
+ "رقم أبوجي / مسار": {
+  "fr": "N° Apogée / Massar",
+  "en": "Apogee / Massar number"
+ },
+ "سبب الانضمام": {
+  "fr": "Motif d'adhésion",
+  "en": "Reason for joining"
+ },
+ "طلبات تعديل البطاقات": {
+  "fr": "Demandes de modification de cartes",
+  "en": "Card change requests"
+ },
+ "طلبات تعديل بطاقات الأعضاء": {
+  "fr": "Demandes de modification des cartes des membres",
+  "en": "Member card change requests"
+ },
+ "غير ظاهر": {
+  "fr": "Masquée",
+  "en": "Hidden"
+ },
+ "لا توجد طلبات قيد المراجعة.": {
+  "fr": "Aucune demande en attente de validation.",
+  "en": "No requests awaiting review."
+ },
+ "لا فروق في النصوص عن البطاقة الحالية.": {
+  "fr": "Aucune différence de texte avec la carte actuelle.",
+  "en": "No text differences from the current card."
+ },
+ "لا يوجد بريد لهذا العضو؛ أضفه من «تعديل» أولًا.": {
+  "fr": "Ce membre n'a pas d'e-mail ; ajoutez-le d'abord via « Modifier ».",
+  "en": "This member has no email; add it first via “Edit”."
+ },
+ "لا يُنشر أي تعديل في الموقع قبل اعتماده هنا.": {
+  "fr": "Aucune modification n'est publiée sur le site avant d'être validée ici.",
+  "en": "No change is published on the site before it is approved here."
+ },
+ "لغة الرسالة": {
+  "fr": "Langue du message",
+  "en": "Message language"
+ },
+ "لهذا العضو حساب بالفعل: الرابط لاستعادة الدخول (تغيير كلمة المرور).": {
+  "fr": "Ce membre a déjà un compte : le lien sert à récupérer l'accès (changement de mot de passe).",
+  "en": "This member already has an account: the link is for access recovery (password change)."
+ },
+ "ملاحظة للعضو (اختياري، تظهر له عند الرفض)": {
+  "fr": "Note pour le membre (facultatif, visible en cas de refus)",
+  "en": "Note for the member (optional, shown on rejection)"
  }
 };

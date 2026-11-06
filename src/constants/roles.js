@@ -39,3 +39,9 @@ export const ROLES_INTERNAL_FILES_VIEW = [...ROLES_INTERNAL_FILES, 'consultant']
 /** أدوار لا ترى أزرار الإضافة والتعديل والحذف في صفحات المحتوى (الخادم يرفض الكتابة على أي حال) */
 export const ROLES_READONLY = ['consultant'];
 export const isReadOnlyRole = (role) => ROLES_READONLY.includes(role);
+
+/**
+ * نظام الأعضاء (حسابات، روابط تفعيل، مراجعة تعديل البطاقة) — يطابق can_manage_member_system() في SQL (0035).
+ * الأدوار الأربعة فقط: لا نواب. صفحة الأعضاء تفتح لـ ROLES_MEMBERS (أوسع)، فأزرار هذا النظام تُخفى عن بقية الأدوار.
+ */
+export const ROLES_MEMBER_SYSTEM = ['developer', 'super_admin', 'secretary_general', 'members_manager'];

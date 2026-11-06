@@ -970,5 +970,146 @@
     "successTitle": "Votre profil nous est parvenu",
     "successText": "Nous le relirons et le publierons bientôt. Vous pouvez rouvrir le même lien pour le modifier avant validation.",
     "privacy": "Rien n'apparaît sur le site avant la validation de l'administration."
+  },
+  "member": {
+    "crumb": "Espace adhérents",
+    "loading": "Chargement…",
+    "nav": {
+      "label": "Menu de l'espace adhérents",
+      "home": "Mon profil",
+      "card": "Modifier ma carte",
+      "logout": "Se déconnecter"
+    },
+    "login": {
+      "pageTitle": "Connexion adhérents",
+      "title": "Espace adhérents",
+      "description": "Connectez-vous avec l'e-mail enregistré auprès du club et le mot de passe choisi lors de l'activation de votre compte.",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "show": "Afficher le mot de passe",
+      "hide": "Masquer le mot de passe",
+      "submit": "Se connecter",
+      "submitting": "Connexion…",
+      "emailRequired": "Saisissez votre e-mail",
+      "emailInvalid": "E-mail invalide",
+      "passwordRequired": "Saisissez votre mot de passe",
+      "invalid": "E-mail ou mot de passe incorrect",
+      "network": "Connexion impossible. Vérifiez votre accès Internet puis réessayez.",
+      "generic": "Connexion impossible. Réessayez plus tard.",
+      "forgot": "Mot de passe oublié ? Demandez à l'administration un nouveau lien de récupération.",
+      "noAccount": "Pas encore de compte ? L'invitation d'activation vous est envoyée par l'administration du club."
+    },
+    "activate": {
+      "pageTitle": "Activation du compte adhérent",
+      "crumb": "Activation du compte",
+      "title": "Activez votre compte",
+      "descriptionNew": "Choisissez un mot de passe pour votre compte. Vous vous connecterez ensuite avec l'e-mail enregistré auprès du club.",
+      "descriptionReset": "Choisissez un nouveau mot de passe pour retrouver l'accès à votre compte.",
+      "greeting": "Bonjour {{name}}",
+      "emailLabel": "E-mail de connexion : {{email}}",
+      "password": "Mot de passe",
+      "confirm": "Confirmer le mot de passe",
+      "hint": "8 caractères minimum.",
+      "tooShort": "Le mot de passe doit contenir au moins 8 caractères",
+      "tooLong": "Le mot de passe dépasse 72 caractères",
+      "mismatch": "Les deux mots de passe ne correspondent pas",
+      "submit": "Activer le compte",
+      "submitReset": "Changer le mot de passe",
+      "submitting": "Enregistrement…",
+      "successNewTitle": "Votre compte est activé",
+      "successNewText": "Vous pouvez maintenant vous connecter avec votre e-mail et le mot de passe choisi.",
+      "successResetTitle": "Mot de passe modifié",
+      "successResetText": "Connectez-vous avec le nouveau mot de passe.",
+      "goLogin": "Aller à la page de connexion",
+      "loadErrorTitle": "Impossible de charger la page",
+      "loadErrorText": "Vérifiez votre connexion Internet puis rouvrez le lien.",
+      "error": "L'opération a échoué. Réessayez ou demandez un nouveau lien à l'administration.",
+      "state": {
+        "invalid": {
+          "title": "Lien invalide",
+          "text": "Vérifiez que vous avez copié tout le lien, ou demandez-en un nouveau à l'administration."
+        },
+        "used": {
+          "title": "Lien déjà utilisé",
+          "text": "Ce lien a déjà été utilisé. Si votre compte est activé, connectez-vous ; sinon demandez un nouveau lien."
+        },
+        "expired": {
+          "title": "Lien expiré",
+          "text": "Demandez un nouveau lien à l'administration."
+        }
+      }
+    },
+    "home": {
+      "pageTitle": "Mon profil — Espace adhérents",
+      "title": "Mon profil",
+      "description": "Vos informations au sein du club et l'état de vos demandes de modification de carte.",
+      "loadErrorTitle": "Impossible de charger votre profil",
+      "loadErrorText": "Vérifiez votre connexion Internet puis réessayez.",
+      "retry": "Réessayer",
+      "notMemberTitle": "Ce compte n'est pas un compte adhérent",
+      "notMemberText": "Le compte utilisé n'est lié à aucun membre actif. Déconnectez-vous et utilisez votre compte adhérent.",
+      "hello": "Bonjour {{name}}",
+      "cardTitle": "Votre carte sur le site",
+      "cardText": "Voici les informations publiées sur la page des membres. Toute modification est validée par l'administration avant publication.",
+      "editCard": "Proposer une modification de ma carte",
+      "fields": {
+        "university": "Université",
+        "promotion": "Année de diplôme (promotion)",
+        "track": "Filière",
+        "profession": "Profession",
+        "email": "E-mail"
+      },
+      "inDirectory": "Votre nom et votre carte sont visibles sur la page des membres.",
+      "notInDirectory": "Votre carte n'est pas visible sur la page des membres.",
+      "request": {
+        "title": "Dernière demande de modification",
+        "pending": "En cours de validation",
+        "approved": "Validée et publiée",
+        "rejected": "Non validée — vous pouvez la modifier et la renvoyer",
+        "cancelled": "Annulée par vous",
+        "note": "Note de l'administration :",
+        "sentAt": "Envoyée le {{date}}",
+        "cancel": "Annuler la demande",
+        "cancelled_ok": "Demande annulée",
+        "cancelError": "Impossible d'annuler la demande"
+      },
+      "private": {
+        "title": "Coordonnées (privées)",
+        "text": "Non visibles par les visiteurs, enregistrées immédiatement. Seuls les responsables du club les voient.",
+        "phone": "Téléphone",
+        "city": "Ville",
+        "save": "Enregistrer",
+        "saving": "Enregistrement…",
+        "saved": "Vos informations sont enregistrées",
+        "error": "Enregistrement impossible. Vérifiez le numéro de téléphone.",
+        "phoneInvalid": "Numéro de téléphone invalide"
+      },
+      "hide": {
+        "title": "Visibilité sur la page des membres",
+        "text": "Vous pouvez retirer votre accord à tout moment, avec effet immédiat. Pour réapparaître, envoyez une demande de modification validée par l'administration.",
+        "button": "Masquer ma carte maintenant",
+        "done": "Votre carte est masquée de la page des membres",
+        "error": "Impossible de masquer la carte"
+      }
+    },
+    "card": {
+      "pageTitle": "Modifier ma carte — Espace adhérents",
+      "title": "Modifier ma carte",
+      "description": "Proposez les modifications souhaitées. Rien n'est publié avant la validation de l'administration.",
+      "intro": "Votre nom, votre e-mail et certains champs administratifs ne se modifient pas ici. Contactez l'administration si nécessaire.",
+      "pendingNote": "Une demande est en cours de validation ; vous pouvez la modifier et la renvoyer, elle remplacera la précédente.",
+      "profession": "Profession",
+      "showInDirectory": "J'accepte que ma carte (nom, photo et informations ci-dessus) soit visible sur la page des membres",
+      "submit": "Envoyer pour validation",
+      "submitting": "Envoi…",
+      "uploading": "Envoi de la photo…",
+      "successTitle": "Votre demande est envoyée",
+      "successText": "L'administration va l'examiner. Son état apparaît dans « Mon profil ».",
+      "backToProfile": "Retour à mon profil",
+      "uploadError": "Impossible d'envoyer la photo. Essayez une autre image.",
+      "submitError": "Impossible d'envoyer la demande. Réessayez.",
+      "rateLimited": "Trop de demandes aujourd'hui. Réessayez demain.",
+      "privacy": "Ces informations ne sont publiées qu'après validation par l'administration."
+    }
   }
 }
