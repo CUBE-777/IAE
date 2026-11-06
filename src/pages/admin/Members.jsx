@@ -4,6 +4,11 @@ import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import Modal from '../../components/admin/Modal';
 import MembershipDocs from '../../components/admin/MembershipDocs';
 import MemberFormModal from './MemberFormModal';
+import MemberActivationModal from './MemberActivationModal';
+import MemberCardRequestsModal from './MemberCardRequestsModal';
+import { useAuth } from '../../app/providers/AuthProvider';
+import { ROLES_MEMBER_SYSTEM } from '../../constants/roles';
+import { countPendingCardRequests } from '../../services/supabase/memberSpace.service';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { downloadCsv } from '../../utils/csvExport';
 import { fetchLinkedBoardMemberIds } from '../../services/supabase/adminBoard.service';
@@ -19,6 +24,19 @@ const FIELD = (v) => (v == null || v === '' ? '—' : v);
 const CSV_HEADERS = ['full_name', 'university', 'promotion', 'track', 'profession', 'city', 'email', 'phone', 'status'];
 
 export default function Members() {
+  // نظام الأعضاء للأدوار الأربعة فقط (can_manage_member_system)؛ صفحة الأعضاء نفسها أوسع (تشمل النواب)
+  const { profile } = useAuth();
+  const canMemberSystem = ROLES_MEMBER_SYSTEM.includes(profile?.role);
+  const [activationTarget, setActivationTarget] = useState(null);
+  const [requestsOpen, setRequestsOpen] = useState(false);
+  const [pendingCards, setPendingCards] = useState(0);
+  const loadPendingCards = () => {
+    if (!canMemberSystem) return;
+    // فشل العدّ (مثلًا قبل تشغيل 0036) لا يكسر الصفحة: يبقى الزر بلا عدّاد
+    countPendingCardRequests().then(setPendingCards).catch(() => {});
+  };
+  useEffect(loadPendingCards, [canMemberSystem]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
   const [status, setStatus] = useState('');
@@ -143,6 +161,11 @@ export default function Members() {
         subtitle={tr('إدارة جميع أعضاء النادي')}
         actions={
           <>
+            {canMemberSystem && (
+              <button className="admin-quick-action" onClick={() => setRequestsOpen(true)}>
+                {tr('طلبات تعديل البطاقات')}{pendingCards > 0 ? ` (${pendingCards})` : ''}
+              </button>
+            )}
             <button className="admin-quick-action" disabled={exporting} onClick={exportCsv}>{tr('تصدير CSV')}</button>
             <button className="admin-quick-action" onClick={() => setFormTarget(null)}>{tr('+ إضافة عضو')}</button>
           </>
@@ -199,6 +222,9 @@ export default function Members() {
                     </td>
                     <td className="admin-cell-actions">
                       <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => openDetails(m)}>{tr('تفاصيل')}</button>
+                      {canMemberSystem && m.status === 'active' && (
+                        <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setActivationTarget(m)}>{tr('رابط التفعيل')}</button>
+                      )}
                       {settings.season && !paid.has(m.id) && (
                         <button className="admin-btn admin-btn-primary admin-btn-sm" onClick={() => setRenewTarget(m)}>{tr('تجديد')}</button>
                       )}
@@ -236,6 +262,14 @@ export default function Members() {
             setFormTarget(undefined);
             load();
           }}
+        />
+      )}
+
+      {activationTarget && <MemberActivationModal member={activationTarget} onClose={() => setActivationTarget(null)} />}
+      {requestsOpen && (
+        <MemberCardRequestsModal
+          onClose={() => setRequestsOpen(false)}
+          onChanged={() => { loadPendingCards(); load(); }}
         />
       )}
 

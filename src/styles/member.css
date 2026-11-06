@@ -1,0 +1,14 @@
+/* فضاء المنخرطين: يعتمد على أصناف membership-flow.css (mf-*) ويضيف شريط التنقل وبطاقات الملخص فقط */
+.member-nav { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; padding: 14px 0 0; background: var(--cream); }
+.member-nav a, .member-nav button { padding: 8px 18px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--heading); font: inherit; font-weight: 600; cursor: pointer; text-decoration: none; }
+.member-nav a[aria-current='page'] { background: var(--navy-mid); color: var(--white); border-color: var(--navy-mid); }
+.member-grid { display: grid; gap: 14px 24px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); padding-bottom: 18px; }
+.member-grid dt { font-size: 0.85rem; color: var(--muted); }
+.member-grid dd { margin: 2px 0 0; font-weight: 600; color: var(--heading); word-break: break-word; }
+.member-badge { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; border: 1px solid var(--border); background: var(--surface); }
+.member-badge-pending { background: rgba(var(--gold-rgb), 0.12); border-color: rgba(var(--gold-rgb), 0.4); }
+.member-badge-approved { background: #e5f4ec; border-color: #b7dfc8; color: var(--success); }
+.member-badge-rejected { background: var(--danger-soft); border-color: #f0c2bf; color: var(--danger); }
+.member-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding-bottom: 18px; }
+.member-login { max-width: 460px; margin: 0 auto; }
+@media (max-width: 560px) { .member-nav a, .member-nav button { flex: 1 1 100%; text-align: center; } }
