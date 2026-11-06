@@ -1,3 +1,14 @@
+# أمان: حدّ محاولات تفعيل حساب المنخرط في القاعدة (migration 0038)
+- **المشكلة:** الحدّ في `member-activate` كان خريطة في ذاكرة النسخة (`recentCalls`) تُصفَّر مع كل cold start وتتوزع على النسخ، والدالة عامة (`verify_jwt = false`) وتعمل بـ `service_role`.
+- **الحل:** `0038_member_activation_throttle.sql`: جدول `member_activation_throttle` مغلق على العملاء (RLS + سحب كل الصلاحيات) ودالة `member_activation_throttle_hit(p_key)` (`SECURITY DEFINER`، لـ `service_role` فقط). 8 محاولات لكل عنوان خلال 10 دقائق (كما كان)، والعنوان لا يُخزَّن خامًا بل `sha256` بالملح السرّي نفسه في `membership_throttle_secret` (0026)، وقفل استشاري يمنع تجاوز الحدّ بطلبات متزامنة، وتنظيف عشوائي للسجلات الأقدم من يوم.
+- **`member-activate`:** يسأل القاعدة أولًا. إن فشل الاستدعاء أو كان العنوان مجهولًا (حتى لا يتشارك الجميع دلوًا واحدًا فيُحجبوا) يعود إلى الحدّ المحلي القديم احتياطًا، فلا يتعطل التفعيل بسبب عطل في الحدّ.
+- **قرار: لا استعادة ذاتية لكلمة المرور الآن.** المشروع على الخطة المجانية بلا SMTP مخصّص، وخدمة البريد المدمجة في Supabase محدودة جدًا ومخصّصة للتجربة، فلن تصل رسائل الاستعادة لأعضاء حقيقيين. تبقى الاستعادة عبر رابط تصدره الإدارة (0037). تُراجع عند تفعيل SMTP (صفحتا `/member/forgot` و`/member/reset` مع حارس `PASSWORD_RECOVERY`، وإضافة `/member/reset` إلى Redirect URLs).
+- **التنفيذ بالترتيب:** شغّل `0038_member_activation_throttle.sql` ثم `supabase functions deploy member-activate --no-verify-jwt`. الرجوع: `supabase/rollback/0038_member_activation_throttle_down.sql` (الدالة الجديدة تعود تلقائيًا للحدّ المحلي).
+- **خارج النطاق:** `get_member_activation_link` (RPC عامة لـ anon تفحص صلاحية الرمز من المتصفح) لا تمرّ بـ Edge Function فلا يشملها هذا الحدّ؛ حمايتها عشوائية الرمز (256 بت).
+- ملفات جديدة: `supabase/migrations/0038_member_activation_throttle.sql` و`supabase/rollback/0038_member_activation_throttle_down.sql` و`tests/member-activation-throttle.test.js`. معدَّلة: `supabase/functions/member-activate/index.ts`.
+
+---
+
 # تحسين: فضاء المنخرطين — الدفعة الرابعة (سجل الطلبات السابقة)
 - **«طلباتي السابقة» في `/member` (تبويب بطاقتي):** قائمة بآخر 5 طلبات تعديل قبل الطلب الأخير (الحالة، تاريخ الإرسال، تاريخ الرد، وملاحظة الإدارة). كان العضو يفقد ملاحظة الرفض بمجرد إرسال طلب جديد لأن `get_my_member` تعيد آخر طلب فقط. يُخفى القسم إن لم توجد طلبات سابقة، وعند فشل التحميل تظهر رسالة مع «إعادة المحاولة»، ويتجدّد السجل عند الإرسال/الإلغاء/المراجعة.
 - **بلا migration:** القراءة مباشرة من `member_card_requests` عبر السياسة الموجودة `member_card_requests_own_read` + `grant select` (0036)، مع `.eq('member_id', …)` تحصينًا إضافيًا. لا يُقرأ العمود `data` (قد يبلغ 30KB للطلب) بل أعمدة العرض فقط. تبقى `get_my_member` كما هي، فلا تغيير في القاعدة ولا في Edge Functions.

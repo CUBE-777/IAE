@@ -36,8 +36,9 @@ function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 }
 
-// حدّ بسيط (best-effort) لكل نسخة تشغيل: 8 محاولات لكل عنوان خلال 10 دقائق. الحماية الحقيقية هي عشوائية
-// الرمز (256 بت) وأنه يُستعمل مرة واحدة.
+// الحدّ الأساسي في القاعدة (0038: member_activation_throttle_hit، 8 محاولات لكل عنوان خلال 10 دقائق، مشترك بين كل النسخ).
+// الحدّ المحلي أدناه احتياطي فقط (best-effort لكل نسخة تشغيل) يُستعمل إن فشل استدعاء القاعدة أو كان العنوان مجهولًا.
+// الحماية الحقيقية هي عشوائية الرمز (256 بت) وأنه يُستعمل مرة واحدة.
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_MAX = 8;
 const recentCalls = new Map<string, number[]>();
@@ -55,6 +56,23 @@ function rateLimited(key: string): boolean {
   return false;
 }
 
+/** true = ممنوع، false = مسموح، null = تعذّر السؤال (نعود للحدّ المحلي). لا نُفشل التفعيل بسبب عطل في الحدّ. */
+type RpcClient = { rpc: (fn: string, args: Record<string, unknown>) => PromiseLike<{ data: unknown; error: unknown }> };
+
+async function dbRateLimited(client: RpcClient, key: string): Promise<boolean | null> {
+  try {
+    const { data, error } = await client.rpc('member_activation_throttle_hit', { p_key: key });
+    if (error) {
+      console.error('member-activate: throttle rpc failed:', error);
+      return null;
+    }
+    return data === true;
+  } catch (err) {
+    console.error('member-activate: throttle rpc error:', err);
+    return null;
+  }
+}
+
 const INVALID_LINK = 'رابط التفعيل غير صالح أو منتهي أو مستعمل. اطلب رابطًا جديدًا من الإدارة.';
 
 async function handle(req: Request): Promise<Response> {
@@ -63,8 +81,16 @@ async function handle(req: Request): Promise<Response> {
   try {
     if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
 
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const adminClient = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+
     const ip = (req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for') || 'unknown').split(',')[0].trim();
-    if (rateLimited(ip)) return json({ error: 'محاولات كثيرة، حاول لاحقًا' }, 429);
+    // عنوان مجهول: لا نشارك به دلوًا واحدًا في القاعدة (يحجب الجميع)، فنكتفي بالحدّ المحلي
+    const limited = ip === 'unknown' ? null : await dbRateLimited(adminClient, ip);
+    if (limited === true || (limited === null && rateLimited(ip))) return json({ error: 'محاولات كثيرة، حاول لاحقًا' }, 429);
 
     const body = await req.json().catch(() => ({}));
     const token = String(body.token || '').trim();
@@ -75,12 +101,6 @@ async function handle(req: Request): Promise<Response> {
     if (password.length < 8 || password.length > 72) {
       return json({ error: 'كلمة المرور يجب أن تكون بين 8 و72 حرفًا' }, 400);
     }
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const adminClient = createClient(supabaseUrl, serviceRoleKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
 
     // 1) التحقق من الرمز وجلب البريد المسجّل للعضو
     const { data: prep, error: prepErr } = await adminClient.rpc('prepare_member_activation', { p_token: token });
