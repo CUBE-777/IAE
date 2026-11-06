@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import InteriorLayout from '../../layouts/InteriorLayout';
 import PageHero from '../../components/layout/PageHero';
 import FormField from '../../components/common/FormField';
+import { useAuth } from '../../app/providers/AuthProvider';
 import { getActivationLink, activateMember } from '../../services/supabase/memberSpace.service';
 import { useNoindex } from '../../hooks/useNoindex';
 import { SUPPORTED_LANGUAGES, applyDocumentDirection } from '../../i18n';
@@ -12,6 +13,20 @@ import '../../styles/member.css';
 
 const MIN_LEN = 8;
 const MAX_LEN = 72;
+
+const STRENGTH_KEYS = {
+  weak: 'member.activate.strengthWeak',
+  medium: 'member.activate.strengthMedium',
+  strong: 'member.activate.strengthStrong',
+};
+
+/** مؤشر قوة إرشادي فقط (لا يمنع شيئًا): الطول وتنوّع الأصناف. null إن كانت أقصر من الحد الأدنى. */
+function passwordStrength(pw) {
+  if (pw.length < MIN_LEN) return null;
+  const classes = [/[a-z\u0600-\u06FF]/, /[A-Z]/, /\d/, /[^A-Za-z0-9\u0600-\u06FF]/].filter((re) => re.test(pw)).length;
+  const points = (pw.length >= 10 ? 1 : 0) + (pw.length >= 14 ? 1 : 0) + (classes >= 2 ? 1 : 0) + (classes >= 3 ? 1 : 0);
+  return points >= 3 ? 'strong' : points === 2 ? 'medium' : 'weak';
+}
 
 function StateBox({ title, text, action }) {
   return (
@@ -32,10 +47,13 @@ export default function MemberActivate() {
   const { token } = useParams();
   const [searchParams] = useSearchParams();
   const { t, i18n } = useTranslation();
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [info, setInfo] = useState(null);
   const [loadError, setLoadError] = useState(false);
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [show, setShow] = useState(false);
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -80,7 +98,16 @@ export default function MemberActivate() {
     setSubmitting(true);
     try {
       const res = await activateMember(token, password);
-      setDone({ reset: !!res?.reset || !!info?.existing });
+      const reset = !!res?.reset || !!info?.existing;
+      // دخول مباشر بعد التفعيل؛ إن فشل لأي سبب نعرض رسالة النجاح مع رابط صفحة الدخول كما كان
+      try {
+        await login(res?.email || '', password);
+        navigate('/member', { replace: true });
+        return;
+      } catch (loginErr) {
+        console.error('auto login after activation failed', loginErr);
+      }
+      setDone({ reset });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       console.error('member activation failed', err);
@@ -92,6 +119,7 @@ export default function MemberActivate() {
   };
 
   const reset = !!info?.existing;
+  const strength = passwordStrength(password);
   let body;
   if (loadError) {
     body = <StateBox title={t('member.activate.loadErrorTitle')} text={t('member.activate.loadErrorText')} />;
@@ -124,12 +152,20 @@ export default function MemberActivate() {
             {formError && <div className="form-alert form-alert-error" role="alert">{formError}</div>}
             <fieldset className="mf-group">
               <FormField id="ma-password" label={t('member.activate.password')} required error={errors.password}>
-                {(a) => <input {...a} type="password" dir="ltr" autoComplete="new-password" maxLength={MAX_LEN} value={password} onChange={(e) => setPassword(e.target.value)} />}
+                {(a) => <input {...a} type={show ? 'text' : 'password'} dir="ltr" autoComplete="new-password" maxLength={MAX_LEN} value={password} onChange={(e) => setPassword(e.target.value)} />}
               </FormField>
               <p className="mf-hint">{t('member.activate.hint')}</p>
+              {strength && (
+                <p className={`mf-hint member-strength member-strength-${strength}`} role="status">
+                  {t('member.activate.strengthLabel', { level: t(STRENGTH_KEYS[strength]) })}
+                </p>
+              )}
               <FormField id="ma-confirm" label={t('member.activate.confirm')} required error={errors.confirm}>
-                {(a) => <input {...a} type="password" dir="ltr" autoComplete="new-password" maxLength={MAX_LEN} value={confirm} onChange={(e) => setConfirm(e.target.value)} />}
+                {(a) => <input {...a} type={show ? 'text' : 'password'} dir="ltr" autoComplete="new-password" maxLength={MAX_LEN} value={confirm} onChange={(e) => setConfirm(e.target.value)} />}
               </FormField>
+              <label className="mf-hint member-show-pw">
+                <input type="checkbox" checked={show} onChange={(e) => setShow(e.target.checked)} /> {t('member.activate.show')}
+              </label>
             </fieldset>
             <button type="submit" className="btn btn-gold mf-submit" disabled={submitting}>
               {submitting ? t('member.activate.submitting') : t(reset ? 'member.activate.submitReset' : 'member.activate.submit')}

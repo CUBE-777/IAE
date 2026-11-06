@@ -10,7 +10,8 @@
     "announcements": "Announcements",
     "menu": "Main menu",
     "projects": "Projects",
-    "more": "More"
+    "more": "More",
+    "memberSpace": "Member area"
   },
   "brand": {
     "name": "Embedded Artificial Intelligence",
@@ -1012,6 +1013,11 @@
       "password": "Password",
       "confirm": "Confirm password",
       "hint": "At least 8 characters.",
+      "show": "Show password",
+      "strengthWeak": "weak",
+      "strengthMedium": "medium",
+      "strengthStrong": "strong",
+      "strengthLabel": "Password strength: {{level}}",
       "tooShort": "The password must be at least 8 characters",
       "tooLong": "The password is longer than 72 characters",
       "mismatch": "The two passwords don't match",
@@ -1091,7 +1097,11 @@
         "text": "You can withdraw your consent at any time, effective immediately. To appear again, send a change request that the administration approves.",
         "button": "Hide my card now",
         "done": "Your card is now hidden from the members page",
-        "error": "Couldn't hide the card"
+        "error": "Couldn't hide the card",
+        "confirmTitle": "Hide your card?",
+        "confirmText": "Your card will disappear from the members page right away. To show it again you will need to send an edit request approved by the administration.",
+        "confirm": "Yes, hide my card",
+        "cancel": "Cancel"
       }
     },
     "card": {

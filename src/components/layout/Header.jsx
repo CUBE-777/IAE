@@ -55,6 +55,7 @@ export default function Header({ brandName }) {
     { key: 'gallery', label: t('nav.gallery'), href: '#gallery' },
     { key: 'announcements', label: t('nav.announcements'), to: '/announcements' },
     { key: 'contact', label: t('nav.contact'), href: '#contact' },
+    { key: 'member', label: t('nav.memberSpace'), to: '/member' },
   ];
 
   return (

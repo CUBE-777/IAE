@@ -11,4 +11,18 @@
 .member-badge-rejected { background: var(--danger-soft); border-color: #f0c2bf; color: var(--danger); }
 .member-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding-bottom: 18px; }
 .member-login { max-width: 460px; margin: 0 auto; }
-@media (max-width: 560px) { .member-nav a, .member-nav button { flex: 1 1 100%; text-align: center; } }
+/* جوال: شريط تبويبات مضغوط في سطر واحد (بدل أزرار بعرض كامل تتكدّس فوق المحتوى) */
+@media (max-width: 560px) {
+  .member-nav { flex-wrap: nowrap; gap: 6px; padding: 12px 12px 0; overflow-x: auto; justify-content: flex-start; scrollbar-width: none; }
+  .member-nav::-webkit-scrollbar { display: none; }
+  .member-nav a, .member-nav button { flex: 1 0 auto; padding: 8px 14px; font-size: 0.9rem; text-align: center; white-space: nowrap; }
+}
+.member-confirm { border: 1px solid rgba(var(--gold-rgb), 0.4); background: rgba(var(--gold-rgb), 0.08); border-radius: 12px; padding: 14px 16px; margin-bottom: 18px; }
+.member-confirm p { margin: 6px 0 12px; }
+.member-confirm .member-actions { padding-bottom: 0; }
+.member-show-pw { display: flex; gap: 8px; align-items: center; cursor: pointer; }
+.member-strength { font-weight: 600; }
+.member-strength-weak { color: var(--danger); }
+.member-strength-medium { color: var(--heading); }
+.member-strength-strong { color: var(--success); }
+

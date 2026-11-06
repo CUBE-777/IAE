@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MemberPage from '../../components/member/MemberPage';
@@ -16,9 +16,18 @@ export default function MemberHome() {
   const [phoneError, setPhoneError] = useState('');
   const [msg, setMsg] = useState(null); // { kind: 'ok' | 'error', text }
   const [busy, setBusy] = useState(false);
+  const [confirmHide, setConfirmHide] = useState(false);
+  const msgRef = useRef(null);
   const req = member.latest_request;
 
   const flash = (kind, text) => setMsg({ kind, text });
+
+  // الرسالة أعلى الصفحة بينما أزرار الحفظ أسفلها: نمرّر إليها ونقرأها لقارئ الشاشة ليراها العضو دائمًا
+  useEffect(() => {
+    if (!msg || !msgRef.current) return;
+    msgRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    msgRef.current.focus({ preventScroll: true });
+  }, [msg]);
 
   const savePrivate = async (e) => {
     e.preventDefault();
@@ -41,6 +50,7 @@ export default function MemberHome() {
 
   const hideCard = async () => {
     setMsg(null);
+    setConfirmHide(false);
     setBusy(true);
     try {
       await updateMyPrivate({ hide_from_directory: 'true' });
@@ -81,7 +91,7 @@ export default function MemberHome() {
   return (
     <MemberPage titleKey="member.home.title" descriptionKey="member.home.description" pageTitleKey="member.home.pageTitle">
       <div className="mf-form">
-        {msg && <div className={`form-alert ${msg.kind === 'ok' ? 'form-alert-success' : 'form-alert-error'}`} role={msg.kind === 'ok' ? 'status' : 'alert'}>{msg.text}</div>}
+        {msg && <div ref={msgRef} tabIndex={-1} className={`form-alert ${msg.kind === 'ok' ? 'form-alert-success' : 'form-alert-error'}`} role={msg.kind === 'ok' ? 'status' : 'alert'}>{msg.text}</div>}
 
         <div className="mf-fee" role="note">{t('member.home.hello', { name: member.full_name })}</div>
 
@@ -139,9 +149,20 @@ export default function MemberHome() {
           <fieldset className="mf-group">
             <legend>{t('member.home.hide.title')}</legend>
             <p className="mf-hint">{t('member.home.hide.text')}</p>
-            <div className="member-actions">
-              <button type="button" className="btn btn-ghost" onClick={hideCard} disabled={busy}>{t('member.home.hide.button')}</button>
-            </div>
+            {confirmHide ? (
+              <div className="member-confirm" role="alertdialog" aria-labelledby="mh-hide-title" aria-describedby="mh-hide-text">
+                <strong id="mh-hide-title">{t('member.home.hide.confirmTitle')}</strong>
+                <p id="mh-hide-text" className="mf-hint">{t('member.home.hide.confirmText')}</p>
+                <div className="member-actions">
+                  <button type="button" className="btn btn-gold" onClick={hideCard} disabled={busy} autoFocus>{t('member.home.hide.confirm')}</button>
+                  <button type="button" className="btn btn-ghost" onClick={() => setConfirmHide(false)} disabled={busy}>{t('member.home.hide.cancel')}</button>
+                </div>
+              </div>
+            ) : (
+              <div className="member-actions">
+                <button type="button" className="btn btn-ghost" onClick={() => setConfirmHide(true)} disabled={busy}>{t('member.home.hide.button')}</button>
+              </div>
+            )}
           </fieldset>
         )}
       </div>

@@ -14,6 +14,7 @@ export default function InteriorFooter() {
         </div>
         <div className="interior-copyright">
           {t('footer.copyright')} · <Link to="/privacy" style={{ color: 'inherit', textDecoration: 'underline' }}>{t('footer.privacy')}</Link>
+          {' · '}<Link to="/member" style={{ color: 'inherit', textDecoration: 'underline' }}>{t('nav.memberSpace')}</Link>
         </div>
       </div>
     </footer>

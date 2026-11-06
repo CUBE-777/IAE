@@ -12,6 +12,7 @@ function activeKeyFor(pathname) {
   if (pathname.startsWith('/activity')) return 'activities';
   if (pathname.startsWith('/projects')) return 'projects';
   if (pathname.startsWith('/announcement')) return 'announcements';
+  if (pathname.startsWith('/member/') || pathname === '/member') return 'member';
   return '';
 }
 
@@ -34,6 +35,7 @@ export default function InteriorHeader() {
     { key: 'gallery', label: t('nav.gallery'), href: '/#gallery' },
     { key: 'announcements', label: t('nav.announcements'), to: '/announcements' },
     { key: 'contact', label: t('nav.contact'), href: '/#contact' },
+    { key: 'member', label: t('nav.memberSpace'), to: '/member' },
   ];
 
   return (

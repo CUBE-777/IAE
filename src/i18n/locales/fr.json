@@ -10,7 +10,8 @@
     "announcements": "Annonces",
     "menu": "Menu principal",
     "projects": "Projets",
-    "more": "Plus"
+    "more": "Plus",
+    "memberSpace": "Espace membres"
   },
   "brand": {
     "name": "Intelligence Artificielle Embarquée",
@@ -1012,6 +1013,11 @@
       "password": "Mot de passe",
       "confirm": "Confirmer le mot de passe",
       "hint": "8 caractères minimum.",
+      "show": "Afficher le mot de passe",
+      "strengthWeak": "faible",
+      "strengthMedium": "moyenne",
+      "strengthStrong": "forte",
+      "strengthLabel": "Robustesse du mot de passe : {{level}}",
       "tooShort": "Le mot de passe doit contenir au moins 8 caractères",
       "tooLong": "Le mot de passe dépasse 72 caractères",
       "mismatch": "Les deux mots de passe ne correspondent pas",
@@ -1091,7 +1097,11 @@
         "text": "Vous pouvez retirer votre accord à tout moment, avec effet immédiat. Pour réapparaître, envoyez une demande de modification validée par l'administration.",
         "button": "Masquer ma carte maintenant",
         "done": "Votre carte est masquée de la page des membres",
-        "error": "Impossible de masquer la carte"
+        "error": "Impossible de masquer la carte",
+        "confirmTitle": "Masquer votre carte ?",
+        "confirmText": "Votre carte disparaîtra immédiatement de la page des membres. Pour la réafficher, vous devrez envoyer une demande de modification validée par l'administration.",
+        "confirm": "Oui, masquer ma carte",
+        "cancel": "Annuler"
       }
     },
     "card": {

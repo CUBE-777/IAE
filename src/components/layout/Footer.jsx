@@ -19,6 +19,7 @@ export default function Footer({ brandName, copyright }) {
           <a href="#members">{t('nav.members')}</a>
           <a href="#join">{t('nav.join')}</a>
           <a href="#contact">{t('nav.contact')}</a>
+          <Link to="/member">{t('nav.memberSpace')}</Link>
           <Link to="/privacy">{t('footer.privacy')}</Link>
         </div>
         <div className="copyright">{copyright || t('footer.copyright')}</div>
