@@ -981,7 +981,8 @@
       "label": "Menu de l'espace adhérents",
       "home": "Mon profil",
       "card": "Modifier ma carte",
-      "logout": "Se déconnecter"
+      "logout": "Se déconnecter",
+      "security": "Sécurité"
     },
     "login": {
       "pageTitle": "Connexion adhérents",
@@ -1056,6 +1057,7 @@
       "retry": "Réessayer",
       "notMemberTitle": "Ce compte n'est pas un compte adhérent",
       "notMemberText": "Le compte utilisé n'est lié à aucun membre actif. Déconnectez-vous et utilisez votre compte adhérent.",
+      "goAdmin": "Aller à l'espace d'administration",
       "tabs": { "label": "Sections de mon profil", "overview": "Ma carte", "private": "Mes données privées" },
       "completeness": {
         "title": "Complétude de votre carte",
@@ -1118,6 +1120,37 @@
         "confirmText": "Votre carte disparaîtra immédiatement de la page des membres. Pour la réafficher, vous devrez envoyer une demande de modification validée par l'administration.",
         "confirm": "Oui, masquer ma carte",
         "cancel": "Annuler"
+      }
+    },
+    "security": {
+      "pageTitle": "Sécurité",
+      "title": "Sécurité de mon compte",
+      "description": "Changez votre mot de passe et gérez les sessions ouvertes sur vos appareils.",
+      "accountTitle": "Compte",
+      "email": "Adresse e-mail",
+      "password": {
+        "title": "Changer le mot de passe",
+        "text": "Pour votre protection, nous demandons le mot de passe actuel avant d'en définir un nouveau.",
+        "current": "Mot de passe actuel",
+        "new": "Nouveau mot de passe",
+        "confirm": "Confirmer le nouveau mot de passe",
+        "endOthers": "Fermer mes sessions sur les autres appareils après le changement",
+        "submit": "Enregistrer le mot de passe",
+        "submitting": "Enregistrement…",
+        "currentRequired": "Saisissez le mot de passe actuel",
+        "wrongCurrent": "Le mot de passe actuel est incorrect",
+        "same": "Le nouveau mot de passe est identique à l'actuel",
+        "saved": "Mot de passe modifié.",
+        "savedOthers": "Mot de passe modifié et sessions des autres appareils fermées.",
+        "error": "Impossible de changer le mot de passe. Réessayez plus tard."
+      },
+      "sessions": {
+        "title": "Sessions ouvertes",
+        "text": "Si vous vous êtes connecté sur un appareil partagé ou avez perdu un appareil, fermez les sessions des autres appareils. Votre session actuelle reste ouverte.",
+        "button": "Fermer les sessions des autres appareils",
+        "busy": "Fermeture…",
+        "done": "Les sessions des autres appareils ont été fermées.",
+        "error": "Impossible de fermer les sessions. Réessayez plus tard."
       }
     },
     "card": {

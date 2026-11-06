@@ -52,6 +52,52 @@ export async function getMyMember() {
   return data || null;
 }
 
+/**
+ * يغيّر كلمة مرور العضو الحالي بعد إعادة التحقق من كلمته الحالية (لا نعتمد على الجلسة وحدها).
+ * يرمي Error بـ code: WRONG_CURRENT (الحالية خاطئة) | SAME (الجديدة مطابقة للحالية) | NO_SESSION، وغير ذلك خطأ Supabase كما هو.
+ * إن طُلب إنهاء الجلسات الأخرى ففشله لا يُفشل التغيير، ويُرجع { othersEnded: false }.
+ */
+export async function changeMyPassword(currentPassword, newPassword, { endOthers = true } = {}) {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const email = sessionData?.session?.user?.email;
+  if (!email) {
+    const e = new Error('no session');
+    e.code = 'NO_SESSION';
+    throw e;
+  }
+  const { error: reauthError } = await supabase.auth.signInWithPassword({ email, password: currentPassword });
+  if (reauthError) {
+    if (/invalid login credentials/i.test(reauthError.message || '')) {
+      const e = new Error('wrong current password');
+      e.code = 'WRONG_CURRENT';
+      throw e;
+    }
+    throw reauthError; // شبكة/خادم: تُعرض كخطأ عام أو اتصال
+  }
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) {
+    if (/different from the old password/i.test(error.message || '')) {
+      const e = new Error('same password');
+      e.code = 'SAME';
+      throw e;
+    }
+    throw error;
+  }
+  let othersEnded = false;
+  if (endOthers) othersEnded = await signOutOtherSessions();
+  return { othersEnded };
+}
+
+/** يُنهي جلسات هذا الحساب على كل الأجهزة الأخرى ويُبقي الجلسة الحالية. يُرجع true عند النجاح. */
+export async function signOutOtherSessions() {
+  const { error } = await supabase.auth.signOut({ scope: 'others' });
+  if (error) {
+    console.error('sign out others failed', error);
+    return false;
+  }
+  return true;
+}
+
 /** الهاتف والمدينة فورًا، و hide_from_directory لسحب الظهور فورًا. (المهنة تمر عبر طلب البطاقة لأنها عامة.) */
 export async function updateMyPrivate(payload) {
   const { error } = await supabase.rpc('update_my_member_private', { p_data: payload });

@@ -24,6 +24,7 @@ const MemberActivate = lazy(() => import('../../pages/member/MemberActivate'));
 const MemberLayout = lazy(() => import('../../layouts/MemberLayout'));
 const MemberHome = lazy(() => import('../../pages/member/MemberHome'));
 const MemberCard = lazy(() => import('../../pages/member/MemberCard'));
+const MemberSecurity = lazy(() => import('../../pages/member/MemberSecurity'));
 const NotFound = lazy(() => import('../../pages/public/NotFound'));
 const Login = lazy(() => import('../../pages/admin/Login'));
 const Dashboard = lazy(() => import('../../pages/admin/Dashboard'));
@@ -100,6 +101,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <MemberHome /> },
           { path: 'card', element: <MemberCard /> },
+          { path: 'security', element: <MemberSecurity /> },
         ],
       },
 

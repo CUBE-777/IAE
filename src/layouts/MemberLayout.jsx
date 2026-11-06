@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import InteriorLayout from './InteriorLayout';
 import PageHero from '../components/layout/PageHero';
@@ -15,7 +15,7 @@ import '../styles/member.css';
  */
 export default function MemberLayout() {
   const { t } = useTranslation();
-  const { status, session, logout } = useAuth();
+  const { status, session, profile, logout } = useAuth();
   const location = useLocation();
   const userId = session?.user?.id || null;
   const [state, setState] = useState({ phase: 'loading', member: null });
@@ -58,7 +58,10 @@ export default function MemberLayout() {
         <div className="mf-state" role="alert">
           <h2>{t('member.home.notMemberTitle')}</h2>
           <p>{t('member.home.notMemberText')}</p>
-          <button type="button" className="btn btn-gold" onClick={() => logout()}>{t('member.nav.logout')}</button>
+          <div className="member-actions">
+            {profile?.is_active && <Link className="btn btn-ghost" to="/admin/dashboard">{t('member.home.goAdmin')}</Link>}
+            <button type="button" className="btn btn-gold" onClick={() => logout()}>{t('member.nav.logout')}</button>
+          </div>
         </div>
       </div></section>
     );

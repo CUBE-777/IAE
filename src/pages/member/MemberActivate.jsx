@@ -7,26 +7,10 @@ import FormField from '../../components/common/FormField';
 import { useAuth } from '../../app/providers/AuthProvider';
 import { getActivationLink, activateMember } from '../../services/supabase/memberSpace.service';
 import { useNoindex } from '../../hooks/useNoindex';
+import { MIN_LEN, MAX_LEN, STRENGTH_KEYS, passwordStrength } from '../../utils/passwordStrength';
 import { SUPPORTED_LANGUAGES, applyDocumentDirection } from '../../i18n';
 import '../../styles/membership-flow.css';
 import '../../styles/member.css';
-
-const MIN_LEN = 8;
-const MAX_LEN = 72;
-
-const STRENGTH_KEYS = {
-  weak: 'member.activate.strengthWeak',
-  medium: 'member.activate.strengthMedium',
-  strong: 'member.activate.strengthStrong',
-};
-
-/** مؤشر قوة إرشادي فقط (لا يمنع شيئًا): الطول وتنوّع الأصناف. null إن كانت أقصر من الحد الأدنى. */
-function passwordStrength(pw) {
-  if (pw.length < MIN_LEN) return null;
-  const classes = [/[a-z\u0600-\u06FF]/, /[A-Z]/, /\d/, /[^A-Za-z0-9\u0600-\u06FF]/].filter((re) => re.test(pw)).length;
-  const points = (pw.length >= 10 ? 1 : 0) + (pw.length >= 14 ? 1 : 0) + (classes >= 2 ? 1 : 0) + (classes >= 3 ? 1 : 0);
-  return points >= 3 ? 'strong' : points === 2 ? 'medium' : 'weak';
-}
 
 function StateBox({ title, text, action }) {
   return (

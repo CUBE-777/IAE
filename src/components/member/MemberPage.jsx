@@ -5,7 +5,7 @@ import PageHero from '../layout/PageHero';
 import { useAuth } from '../../app/providers/AuthProvider';
 import { useNoindex } from '../../hooks/useNoindex';
 
-/** هيكل صفحات العضو: عنوان + شريط تنقل (يكبر في المراحل اللاحقة: QR، حضور، إعلانات…) + محتوى. */
+/** هيكل صفحات العضو: عنوان + شريط تنقل (ملفي، البطاقة، الأمان؛ يكبر لاحقًا: إعلانات، QR…) + محتوى. */
 export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, children }) {
   const { t } = useTranslation();
   const { logout } = useAuth();
@@ -20,6 +20,7 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
       <nav className="member-nav" aria-label={t('member.nav.label')}>
         <NavLink to="/member" end>{t('member.nav.home')}</NavLink>
         <NavLink to="/member/card">{t('member.nav.card')}</NavLink>
+        <NavLink to="/member/security">{t('member.nav.security')}</NavLink>
         <button type="button" onClick={() => logout()}>{t('member.nav.logout')}</button>
       </nav>
       <section className="mf-section">

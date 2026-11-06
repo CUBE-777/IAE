@@ -18,7 +18,7 @@ const get = (o, path) => path.split('.').reduce((a, k) => (a == null ? undefined
 const MEMBER_FILES = [
   'src/layouts/MemberLayout.jsx', 'src/components/member/MemberPage.jsx',
   'src/pages/member/MemberLogin.jsx', 'src/pages/member/MemberActivate.jsx',
-  'src/pages/member/MemberHome.jsx', 'src/pages/member/MemberCard.jsx',
+  'src/pages/member/MemberHome.jsx', 'src/pages/member/MemberCard.jsx', 'src/pages/member/MemberSecurity.jsx',
 ];
 
 test('الأدوار: ROLES_MEMBER_SYSTEM يطابق can_manage_member_system في 0035 (الأربعة بلا نواب)', () => {
@@ -42,7 +42,7 @@ test('الخدمة: كل RPC وبارامتراتها موجودة في 0036 ب�
 });
 
 test('الراوتر: مسارات /member/* مسجّلة وتُحمَّل عند الطلب، والعضو الفرعي خلف MemberLayout', () => {
-  for (const p of ["'/member/login'", "'/member/activate/:token'", "path: '/member'", "path: 'card'"]) assert.ok(router.includes(p), p);
+  for (const p of ["'/member/login'", "'/member/activate/:token'", "path: '/member'", "path: 'card'", "path: 'security'"]) assert.ok(router.includes(p), p);
   assert.match(router, /path: '\/member',\s*element: <MemberLayout \/>/);
   assert.doesNotMatch(router, /^import .*pages\/member\//m);
   assert.match(read('public/robots.txt'), /Disallow: \/member\//);
@@ -118,4 +118,28 @@ test('member-activate: مسار الاستعادة يغيّر كلمة المر�
   assert.doesNotMatch(edge, /body\.email/);
   const resetPart = edge.slice(edge.indexOf('if (existingUserId)'), edge.indexOf('const { data: created'));
   assert.doesNotMatch(resetPart, /deleteUser/);
+});
+
+test('الأمان: تغيير كلمة المرور يعيد التحقق من الحالية قبل updateUser، ويحدّ الجلسات الأخرى فقط', () => {
+  const fn = service.slice(service.indexOf('export async function changeMyPassword'), service.indexOf('export async function signOutOtherSessions'));
+  assert.ok(fn.indexOf('signInWithPassword') > -1 && fn.indexOf('signInWithPassword') < fn.indexOf('updateUser'), 'إعادة التحقق قبل التغيير');
+  assert.match(fn, /WRONG_CURRENT/);
+  assert.match(fn, /SAME/);
+  assert.match(service, /signOut\(\{ scope: 'others' \}\)/);   // لا نُنهي الجلسة الحالية
+  assert.doesNotMatch(service, /scope: 'global'/);
+  const page = read('src/pages/member/MemberSecurity.jsx');
+  assert.match(page, /changeMyPassword\(current, next/);
+  assert.doesNotMatch(page, /enrollTotp|listVerifiedTotpFactors/); // MFA للأعضاء غير مفروض في الخادم، فلا نعرضه
+});
+
+test('الأمان: الصفحة في شريط التنقل وفي الراوتر خلف MemberLayout، والمشاركة مع التفعيل عبر util واحد', () => {
+  assert.match(read('src/components/member/MemberPage.jsx'), /to="\/member\/security"/);
+  assert.match(read('src/pages/member/MemberActivate.jsx'), /from '..\/..\/utils\/passwordStrength'/);
+  assert.doesNotMatch(read('src/pages/member/MemberActivate.jsx'), /function passwordStrength/);
+});
+
+test('MemberLayout: حساب إداري يرى رابط لوحة الإدارة مع زر الخروج ولا يُسجَّل خروجه', () => {
+  const layout = read('src/layouts/MemberLayout.jsx');
+  assert.match(layout, /profile\?\.is_active[\s\S]{0,120}\/admin\/dashboard/);
+  assert.match(layout, /notMember/);
 });

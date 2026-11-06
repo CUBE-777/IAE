@@ -981,7 +981,8 @@
       "label": "Members' space menu",
       "home": "My profile",
       "card": "Edit my card",
-      "logout": "Log out"
+      "logout": "Log out",
+      "security": "Security"
     },
     "login": {
       "pageTitle": "Members' login",
@@ -1056,6 +1057,7 @@
       "retry": "Try again",
       "notMemberTitle": "This is not a member account",
       "notMemberText": "The account you used isn't linked to an active member. Log out and use your member account.",
+      "goAdmin": "Go to the admin area",
       "tabs": { "label": "My profile sections", "overview": "My card", "private": "My private details" },
       "completeness": {
         "title": "Card completeness",
@@ -1118,6 +1120,37 @@
         "confirmText": "Your card will disappear from the members page right away. To show it again you will need to send an edit request approved by the administration.",
         "confirm": "Yes, hide my card",
         "cancel": "Cancel"
+      }
+    },
+    "security": {
+      "pageTitle": "Security",
+      "title": "My account security",
+      "description": "Change your password and manage the sessions open on your devices.",
+      "accountTitle": "Account",
+      "email": "Email",
+      "password": {
+        "title": "Change password",
+        "text": "For your protection we ask for your current password before setting a new one.",
+        "current": "Current password",
+        "new": "New password",
+        "confirm": "Confirm new password",
+        "endOthers": "Sign me out on my other devices after the change",
+        "submit": "Save password",
+        "submitting": "Saving…",
+        "currentRequired": "Enter your current password",
+        "wrongCurrent": "The current password is incorrect",
+        "same": "The new password is the same as the current one",
+        "saved": "Password changed.",
+        "savedOthers": "Password changed and your other devices were signed out.",
+        "error": "Couldn't change the password. Please try again later."
+      },
+      "sessions": {
+        "title": "Open sessions",
+        "text": "If you signed in on a shared device or lost a device, sign out the other sessions. Your current session stays open.",
+        "button": "Sign out my other devices",
+        "busy": "Signing out…",
+        "done": "Your other devices were signed out.",
+        "error": "Couldn't sign out the other sessions. Please try again later."
       }
     },
     "card": {
