@@ -10,6 +10,7 @@ import { ADMIN_NAV } from '../constants/adminNav';
 import { useAuth } from '../app/providers/AuthProvider';
 import LanguageSwitcher from '../components/layout/LanguageSwitcher';
 import ThemeToggle from '../components/layout/ThemeToggle';
+import InstallAppButton from '../components/admin/InstallAppButton';
 
 const ICONS = {
   'layout-dashboard': LayoutDashboard,
@@ -156,6 +157,7 @@ export default function AdminLayout({ children }) {
               <strong>{profile.full_name}</strong>
               <span className="role">{t(`admin.roles.${profile.role}`, { defaultValue: profile.role })}</span>
             </div>
+            <InstallAppButton />
             <button type="button" className="admin-logout-btn" onClick={logout}>
               <LogOut size={14} aria-hidden="true" style={{ verticalAlign: 'middle' }} />
               {t('admin.layout.logout')}

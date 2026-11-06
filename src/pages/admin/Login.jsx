@@ -6,6 +6,7 @@ import { useAuth } from '../../app/providers/AuthProvider';
 import { validateEmail } from '../../utils/validators';
 import { listVerifiedTotpFactors, verifyTotp } from '../../services/supabase/auth.service';
 import ThemeToggle from '../../components/layout/ThemeToggle';
+import InstallAppButton from '../../components/admin/InstallAppButton';
 import '../../styles/admin-login.css';
 
 export default function Login() {
@@ -180,6 +181,7 @@ export default function Login() {
           {submitting ? t('admin.login.submitting') : t('admin.login.submit')}
         </button>
         <Link to="/" className="admin-login-back">← {t('admin.login.back')}</Link>
+        <InstallAppButton />
       </form>
     </div>
   );

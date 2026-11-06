@@ -55,3 +55,16 @@
   for = "/theme-init.js"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# PWA الإدارة: الـ service worker يخدم مساره /admin/ رغم أن ملفه في الجذر، ويجب إعادة التحقق منه دائمًا.
+[[headers]]
+  for = "/admin-sw.js"
+  [headers.values]
+    Service-Worker-Allowed = "/admin/"
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/admin.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+    Cache-Control = "public, max-age=0, must-revalidate"

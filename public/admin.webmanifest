@@ -1,0 +1,19 @@
+{
+  "id": "/admin/",
+  "name": "لوحة إدارة نادي الذكاء الاصطناعي المدمج — IAE Admin",
+  "short_name": "IAE Admin",
+  "description": "لوحة إدارة نادي الذكاء الاصطناعي المدمج (IAE).",
+  "start_url": "/admin/login",
+  "scope": "/admin/",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "ar",
+  "dir": "rtl",
+  "background_color": "#ffffff",
+  "theme_color": "#0a66c8",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

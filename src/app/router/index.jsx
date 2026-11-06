@@ -1,10 +1,11 @@
 import { lazy, Suspense } from 'react';
-import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
+import { createBrowserRouter, Navigate, Outlet, useLocation } from 'react-router-dom';
 import Home from '../../pages/public/Home';
 import ProtectedRoute from '../../components/admin/ProtectedRoute';
 import RouteError from '../../components/common/RouteError';
 import { ROLES_MEMBERS, ROLES_REQUESTS, ROLES_CONTENT_VIEW, ROLES_PROJECTS, ROLES_INTERNAL_FILES_VIEW, ROLES_BUDGET, ROLES_SUPER } from '../../constants/roles';
 import PageLoader from '../../components/common/PageLoader';
+import { useAdminPwa } from '../../hooks/useAdminPwa';
 
 // Code splitting: الصفحة الرئيسية تبقى في الحزمة الأولى (أسرع ظهور)، وباقي الصفحات — خصوصًا
 // لوحة الإدارة — تُحمَّل عند الطلب فقط، فلا يحمّل الزائر العادي كود الإدارة وقاموسها.
@@ -57,6 +58,9 @@ function protectedAdmin(roles, element) {
 
 // Suspense واحد يغلّف كل الصفحات المحمّلة عند الطلب. فشل تحميل جزء (بعد نشر جديد) يلتقطه RouteError.
 function RootLayout() {
+  // تطبيق PWA مستقل للإدارة: manifest وservice worker خاصان بمسارات /admin/ فقط
+  const { pathname } = useLocation();
+  useAdminPwa(pathname.startsWith('/admin'));
   return (
     <Suspense fallback={<PageLoader />}>
       <Outlet />

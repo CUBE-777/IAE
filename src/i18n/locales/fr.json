@@ -371,7 +371,9 @@
       "expand": "Développer le menu",
       "logout": "Se déconnecter",
       "logoAlt": "Logo du club",
-      "sidebar": "Menu d'administration"
+      "sidebar": "Menu d'administration",
+      "installApp": "Installer l'espace admin comme application",
+      "installIosHint": "Sur iPhone : touchez Partager puis « Sur l'écran d'accueil »."
     },
     "nav": {
       "dashboard": "Tableau de bord",

@@ -371,7 +371,9 @@
       "expand": "Expand menu",
       "logout": "Log out",
       "logoAlt": "Club logo",
-      "sidebar": "Admin menu"
+      "sidebar": "Admin menu",
+      "installApp": "Install admin panel as an app",
+      "installIosHint": "On iPhone: tap Share, then “Add to Home Screen”."
     },
     "nav": {
       "dashboard": "Dashboard",

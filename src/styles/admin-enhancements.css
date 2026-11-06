@@ -473,3 +473,25 @@ html:not([data-theme='dark']) .admin-badge.admin-badge-sent {
   white-space: nowrap;
   border: 0;
 }
+
+/* ===== زر تثبيت لوحة الإدارة كتطبيق (PWA) ===== */
+.admin-install { margin-bottom: 8px; }
+.admin-install-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px;
+  background: transparent;
+  border: 1px dashed var(--admin-border);
+  color: var(--admin-text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.82rem;
+  transition: all var(--transition-base);
+}
+.admin-install-btn:hover { border-color: var(--primary, #0a66c8); color: var(--primary, #0a66c8); }
+.admin-install-hint { margin: 8px 0 0; font-size: 0.75rem; line-height: 1.6; color: var(--admin-text-muted); }
+.admin-login-box .admin-install { margin: 14px 0 0; }
