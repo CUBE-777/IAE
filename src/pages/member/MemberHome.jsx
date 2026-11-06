@@ -5,7 +5,8 @@ import MemberPage from '../../components/member/MemberPage';
 import FormField from '../../components/common/FormField';
 import PersonCard from '../../components/common/PersonCard';
 import { memberCompleteness } from '../../utils/memberCompleteness';
-import { updateMyPrivate, cancelCardRequest } from '../../services/supabase/memberSpace.service';
+import { updateMyPrivate, cancelCardRequest, listMyCardRequests } from '../../services/supabase/memberSpace.service';
+import { HISTORY_LIMIT, olderRequests } from '../../utils/memberRequests';
 import { validatePhone } from '../../utils/validators';
 
 const COMPLETENESS_KEYS = {
@@ -31,6 +32,21 @@ export default function MemberHome() {
   const [tab, setTab] = useState('overview'); // 'overview' | 'private'
   const msgRef = useRef(null);
   const req = member.latest_request;
+  const [history, setHistory] = useState(null); // null = جارٍ التحميل | 'error' | مصفوفة
+  const [historyTick, setHistoryTick] = useState(0);
+
+  // يُحدَّث السجل عند تغيّر آخر طلب (إرسال/إلغاء/اعتماد/رفض) أو عند «إعادة المحاولة»
+  useEffect(() => {
+    let alive = true;
+    setHistory(null);
+    listMyCardRequests(member.id, HISTORY_LIMIT)
+      .then((rows) => alive && setHistory(rows))
+      .catch((err) => {
+        console.error('request history failed', err);
+        if (alive) setHistory('error');
+      });
+    return () => { alive = false; };
+  }, [member.id, req?.id, req?.status, historyTick]);
 
   const flash = (kind, text) => setMsg({ kind, text });
 
@@ -211,6 +227,37 @@ export default function MemberHome() {
                     <button type="button" className="btn btn-ghost" onClick={cancelRequest} disabled={busy}>{t('member.home.request.cancel')}</button>
                   </div>
                 )}
+              </fieldset>
+            )}
+
+            {history === 'error' && (
+              <fieldset className="mf-group">
+                <legend>{t('member.history.title')}</legend>
+                <p className="mf-hint" role="alert">{t('member.history.loadError')}</p>
+                <div className="member-actions">
+                  <button type="button" className="btn btn-ghost" onClick={() => setHistoryTick((n) => n + 1)}>{t('member.home.retry')}</button>
+                </div>
+              </fieldset>
+            )}
+            {Array.isArray(history) && olderRequests(history, req?.id).length > 0 && (
+              <fieldset className="mf-group">
+                <legend>{t('member.history.title')}</legend>
+                <p className="mf-hint">{t('member.history.text')}</p>
+                <ul className="member-history">
+                  {olderRequests(history, req?.id).map((r) => {
+                    const fmt = (d) => new Date(d).toLocaleDateString(i18n.language === 'ar' ? 'ar-MA' : i18n.language);
+                    return (
+                      <li key={r.id}>
+                        <p>
+                          <span className={`member-badge member-badge-${r.status}`}>{t(`member.history.status.${r.status}`)}</span>{' '}
+                          <span className="mf-hint">{t('member.home.request.sentAt', { date: fmt(r.created_at) })}</span>
+                          {r.reviewed_at && <span className="mf-hint"> · {t('member.history.reviewedAt', { date: fmt(r.reviewed_at) })}</span>}
+                        </p>
+                        {r.review_note && <p className="member-history-note"><strong>{t('member.home.request.note')}</strong> {r.review_note}</p>}
+                      </li>
+                    );
+                  })}
+                </ul>
               </fieldset>
             )}
 

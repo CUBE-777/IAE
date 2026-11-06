@@ -104,6 +104,21 @@ export async function updateMyPrivate(payload) {
   if (error) throw error;
 }
 
+/**
+ * سجل طلباتي (الأحدث أولًا) مباشرةً من الجدول: سياسة member_card_requests_own_read (0036) تحصر الصفوف بصاحبها
+ * ولا حاجة لـ migration. لا نقرأ data (قد تبلغ 30KB للطلب) بل ما يلزم للعرض فقط.
+ */
+export async function listMyCardRequests(memberId, limit = 6) {
+  const { data, error } = await supabase
+    .from('member_card_requests')
+    .select('id, status, review_note, created_at, reviewed_at')
+    .eq('member_id', memberId)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return data || [];
+}
+
 export async function submitCardRequest(payload, photoPath = null) {
   const { data, error } = await supabase.rpc('submit_member_card_request', { p_data: payload, p_photo_path: photoPath });
   if (error) throw error;

@@ -1122,6 +1122,18 @@
         "cancel": "Cancel"
       }
     },
+    "history": {
+      "title": "My previous requests",
+      "text": "Your latest card edit requests before the most recent one, with the administration's notes where any.",
+      "loadError": "Couldn't load your request history.",
+      "reviewedAt": "Reviewed on {{date}}",
+      "status": {
+        "pending": "Under review",
+        "approved": "Approved",
+        "rejected": "Not approved",
+        "cancelled": "Cancelled"
+      }
+    },
     "security": {
       "pageTitle": "Security",
       "title": "My account security",

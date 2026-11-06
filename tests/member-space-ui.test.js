@@ -55,6 +55,7 @@ test('الواجهة: كل مفتاح ترجمة member.* و boardProfile.* مس
     const keys = new Set([...src.matchAll(/['"`]((?:member|boardProfile)\.[A-Za-z_.]+)['"`]/g)].map((m) => m[1]));
     // مفاتيح ديناميكية: member.home.request.${status} و member.activate.state.${key} و boardProfile.tr.${code}
     for (const k of ['pending', 'approved', 'rejected', 'cancelled']) keys.add(`member.home.request.${k}`);
+    for (const k of ['pending', 'approved', 'rejected', 'cancelled']) keys.add(`member.history.status.${k}`);
     for (const k of ['invalid', 'used', 'expired']) { keys.add(`member.activate.state.${k}.title`); keys.add(`member.activate.state.${k}.text`); }
     for (const k of ['university', 'promotion', 'track', 'profession', 'email']) keys.add(`member.home.fields.${k}`);
     for (const l of ['ar', 'fr', 'en']) for (const k of keys) {
@@ -142,4 +143,17 @@ test('MemberLayout: حساب إداري يرى رابط لوحة الإدارة 
   const layout = read('src/layouts/MemberLayout.jsx');
   assert.match(layout, /profile\?\.is_active[\s\S]{0,120}\/admin\/dashboard/);
   assert.match(layout, /notMember/);
+});
+
+test('السجل: يُقرأ من الجدول بسياسة صاحبه (بلا migration) ويقتصر على أعمدة العرض ولا يقرأ data', () => {
+  const fn = service.slice(service.indexOf('export async function listMyCardRequests'), service.indexOf('export async function submitCardRequest'));
+  assert.match(fn, /\.from\('member_card_requests'\)/);
+  assert.match(fn, /\.eq\('member_id', memberId\)/);
+  assert.match(fn, /\.select\('id, status, review_note, created_at, reviewed_at'\)/);
+  assert.doesNotMatch(fn, /\.(insert|update|delete|upsert)\(/);
+  // الاعتماد على سياسة 0036: صاحب الطلب يقرأ طلباته فقط عبر SELECT
+  assert.match(sql36, /grant select on public\.member_card_requests to authenticated/);
+  assert.match(sql36, /member_card_requests_own_read[\s\S]*?using \(member_id = public\.current_member_id\(\)\)/);
+  const home = read('src/pages/member/MemberHome.jsx');
+  assert.match(home, /olderRequests\(history, req\?\.id\)/); // آخر طلب لا يتكرر في السجل
 });

@@ -1122,6 +1122,18 @@
         "cancel": "Annuler"
       }
     },
+    "history": {
+      "title": "Mes demandes précédentes",
+      "text": "Vos dernières demandes de modification de carte avant la plus récente, avec les remarques de l'administration le cas échéant.",
+      "loadError": "Impossible de charger l'historique des demandes.",
+      "reviewedAt": "Traitée le {{date}}",
+      "status": {
+        "pending": "En cours d'examen",
+        "approved": "Approuvée",
+        "rejected": "Non approuvée",
+        "cancelled": "Annulée"
+      }
+    },
     "security": {
       "pageTitle": "Sécurité",
       "title": "Sécurité de mon compte",
