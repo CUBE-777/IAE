@@ -59,3 +59,9 @@
 /* ---- المرحلة 4: نقطة «إعلانات جديدة» على تبويب الإعلانات ---- */
 .member-nav a { position: relative; }
 .member-nav-dot { display: inline-block; width: 9px; height: 9px; margin-inline-start: 8px; border-radius: 50%; background: var(--gold); vertical-align: middle; }
+
+/* ---- إتاحة الوصول: أهداف لمس ≥ 44px وتقليل الحركة ---- */
+.member-nav a, .member-nav button, .member-tabs button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; }
+@media (prefers-reduced-motion: reduce) {
+  .member-meter > span { transition: none; }
+}

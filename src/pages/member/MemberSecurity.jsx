@@ -5,6 +5,7 @@ import MemberPage from '../../components/member/MemberPage';
 import FormField from '../../components/common/FormField';
 import { changeMyPassword, signOutOtherSessions } from '../../services/supabase/memberSpace.service';
 import { MIN_LEN, MAX_LEN, STRENGTH_KEYS, passwordStrength } from '../../utils/passwordStrength';
+import { scrollBehavior } from '../../utils/motion';
 
 /**
  * أمان الحساب: تغيير كلمة المرور (بعد إعادة التحقق من الحالية) وإنهاء الجلسات على الأجهزة الأخرى.
@@ -27,7 +28,7 @@ export default function MemberSecurity() {
   // الرسالة أعلى الصفحة وأزرار الحفظ أسفلها: نمرّر إليها وننقل التركيز لتصل لقارئ الشاشة
   useEffect(() => {
     if (!msg || !msgRef.current) return;
-    msgRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    msgRef.current.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
     msgRef.current.focus({ preventScroll: true });
   }, [msg]);
 

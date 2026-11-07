@@ -9,6 +9,7 @@ import { compressImage } from '../../utils/imageCompress';
 import { submitCardRequest, uploadMemberCardPhoto } from '../../services/supabase/memberSpace.service';
 import { initProfileState, buildProfile, MEMBER_TR_FIELDS, MAX_EXTRA_ITEMS } from '../../components/admin/PublicProfileFields';
 import { SOCIAL_PLATFORMS } from '../../constants/socialPlatforms';
+import { scrollBehavior } from '../../utils/motion';
 import '../../styles/membership-flow.css';
 
 // المهنة لا تُترجم في الخادم (_bp_clean يقبل track/bio/public_bio/study_path فقط)، فلا نعرض خانة ترجمتها
@@ -72,7 +73,7 @@ export default function MemberCard() {
   const blocker = useBlocker(({ currentLocation, nextLocation }) => dirty && currentLocation.pathname !== nextLocation.pathname);
   useEffect(() => {
     if (blocker.state === 'blocked' && leaveRef.current) {
-      leaveRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      leaveRef.current.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
       leaveRef.current.focus({ preventScroll: true });
     }
   }, [blocker.state]);
@@ -146,7 +147,7 @@ export default function MemberCard() {
         photoPath,
       );
       setDone(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: scrollBehavior() });
     } catch (err) {
       console.error('card request failed', err);
       if (!navigator.onLine) setFormError(t('forms.networkError'));

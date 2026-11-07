@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
+import { Link, useOutletContext, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MemberPage from '../../components/member/MemberPage';
 import FormField from '../../components/common/FormField';
@@ -8,6 +8,7 @@ import { memberCompleteness } from '../../utils/memberCompleteness';
 import { updateMyPrivate, cancelCardRequest, listMyCardRequests } from '../../services/supabase/memberSpace.service';
 import { HISTORY_LIMIT, olderRequests } from '../../utils/memberRequests';
 import { validatePhone } from '../../utils/validators';
+import { scrollBehavior } from '../../utils/motion';
 
 const COMPLETENESS_KEYS = {
   photo: 'member.home.completeness.items.photo',
@@ -29,7 +30,9 @@ export default function MemberHome() {
   const [msg, setMsg] = useState(null); // { kind: 'ok' | 'error', text }
   const [busy, setBusy] = useState(false);
   const [confirmHide, setConfirmHide] = useState(false);
-  const [tab, setTab] = useState('overview'); // 'overview' | 'private'
+  // التبويب في الرابط (?tab=private): يبقى بعد التحديث ويمكن مشاركته/الرجوع إليه، ولا يُسجَّل في سجل المتصفح
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get('tab') === 'private' ? 'private' : 'overview'; // 'overview' | 'private'
   const msgRef = useRef(null);
   const req = member.latest_request;
   const [history, setHistory] = useState(null); // null = جارٍ التحميل | 'error' | مصفوفة
@@ -49,11 +52,32 @@ export default function MemberHome() {
   }, [member.id, req?.id, req?.status, historyTick]);
 
   const flash = (kind, text) => setMsg({ kind, text });
+  const setTab = (next) => {
+    setMsg(null);
+    setSearchParams((prev) => {
+      const p = new URLSearchParams(prev);
+      if (next === 'private') p.set('tab', 'private'); else p.delete('tab');
+      return p;
+    }, { replace: true });
+  };
+
+  // بعد الحفظ/إعادة التحميل تعكس الحقول ما في الخادم (مقصوصًا)، ولا تتغير ما دام الهاتف والمدينة كما هما
+  useEffect(() => {
+    setPhone(member.phone || '');
+    setCity(member.city || '');
+  }, [member.phone, member.city]);
+
+  // رسالة النجاح تزول وحدها؛ رسالة الخطأ تبقى حتى يتصرف العضو
+  useEffect(() => {
+    if (msg?.kind !== 'ok') return undefined;
+    const id = setTimeout(() => setMsg(null), 8000);
+    return () => clearTimeout(id);
+  }, [msg]);
 
   // الرسالة أعلى الصفحة بينما أزرار الحفظ أسفلها: نمرّر إليها ونقرأها لقارئ الشاشة ليراها العضو دائمًا
   useEffect(() => {
     if (!msg || !msgRef.current) return;
-    msgRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    msgRef.current.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
     msgRef.current.focus({ preventScroll: true });
   }, [msg]);
 

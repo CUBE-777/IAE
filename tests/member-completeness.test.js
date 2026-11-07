@@ -46,3 +46,22 @@ test('MemberHome: تبويبات بأدوار ARIA، ومؤشر اكتمال، �
   assert.match(home, /memberCompleteness\(member\)/);
   assert.doesNotMatch(home, /\.from\('members'\)/);
 });
+
+import { scrollBehavior } from '../src/utils/motion.js';
+
+test('MemberHome: التبويب في الرابط، ورسالة النجاح تزول وحدها، والحقول تتزامن مع الخادم', () => {
+  assert.match(home, /useSearchParams\(\)/);
+  assert.match(home, /searchParams\.get\('tab'\) === 'private'/);
+  assert.match(home, /\{ replace: true \}/);
+  assert.match(home, /msg\?\.kind !== 'ok'[\s\S]{0,120}setTimeout\(\(\) => setMsg\(null\), 8000\)/);
+  assert.match(home, /\[member\.phone, member\.city\]/);
+});
+
+test('التمرير يحترم «تقليل الحركة» في صفحات الفضاء', () => {
+  for (const f of ['MemberHome', 'MemberCard', 'MemberSecurity', 'MemberActivate']) {
+    const src = fs.readFileSync(new URL(`../src/pages/member/${f}.jsx`, import.meta.url), 'utf8');
+    assert.match(src, /behavior: scrollBehavior\(\)/, f);
+    assert.doesNotMatch(src, /behavior: 'smooth'/, f);
+  }
+  assert.equal(scrollBehavior(), 'smooth'); // بلا window (Node): الافتراضي لا ينكسر
+});

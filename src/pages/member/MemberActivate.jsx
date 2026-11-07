@@ -8,6 +8,7 @@ import { useAuth } from '../../app/providers/AuthProvider';
 import { getActivationLink, activateMember } from '../../services/supabase/memberSpace.service';
 import { useNoindex } from '../../hooks/useNoindex';
 import { MIN_LEN, MAX_LEN, STRENGTH_KEYS, passwordStrength } from '../../utils/passwordStrength';
+import { scrollBehavior } from '../../utils/motion';
 import { SUPPORTED_LANGUAGES, applyDocumentDirection } from '../../i18n';
 import '../../styles/membership-flow.css';
 import '../../styles/member.css';
@@ -92,7 +93,7 @@ export default function MemberActivate() {
         console.error('auto login after activation failed', loginErr);
       }
       setDone({ reset });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: scrollBehavior() });
     } catch (err) {
       console.error('member activation failed', err);
       // رسائل الخادم بالعربية؛ نعرضها كما هي في اللغة العربية فقط وإلا الرسالة العامة المترجمة
