@@ -982,7 +982,9 @@
       "home": "Mon profil",
       "card": "Modifier ma carte",
       "logout": "Se déconnecter",
-      "security": "Sécurité"
+      "security": "Sécurité",
+      "announcements": "Annonces",
+      "newAnnouncements": "Nouvelles annonces"
     },
     "login": {
       "pageTitle": "Connexion adhérents",
@@ -1001,7 +1003,8 @@
       "network": "Connexion impossible. Vérifiez votre accès Internet puis réessayez.",
       "generic": "Connexion impossible. Réessayez plus tard.",
       "forgot": "Mot de passe oublié ? Demandez à l'administration un nouveau lien de récupération.",
-      "noAccount": "Pas encore de compte ? L'invitation d'activation vous est envoyée par l'administration du club."
+      "noAccount": "Pas encore de compte ? L'invitation d'activation vous est envoyée par l'administration du club.",
+      "helpLink": "Demander de l'aide pour se connecter"
     },
     "activate": {
       "pageTitle": "Activation du compte adhérent",
@@ -1121,6 +1124,25 @@
         "confirm": "Oui, masquer ma carte",
         "cancel": "Annuler"
       }
+    },
+    "announcements": {
+      "pageTitle": "Annonces du club",
+      "title": "Annonces du club",
+      "description": "Les dernières annonces et actualités du club, sans quitter l'espace adhérents."
+    },
+    "help": {
+      "pageTitle": "Aide à la connexion",
+      "title": "Aide à la connexion",
+      "description": "Mot de passe oublié ou lien d'activation non reçu ? Demandez un nouveau lien à l'administration.",
+      "intro": "Saisissez l'adresse e-mail enregistrée auprès du club. Votre demande parvient à l'administration, qui vous envoie un nouveau lien via votre numéro de téléphone enregistré (souvent WhatsApp).",
+      "submit": "Envoyer la demande",
+      "submitting": "Envoi…",
+      "privacy": "Pour votre protection, nous ne révélons pas si l'adresse est enregistrée. Le lien n'est envoyé qu'au moyen de contact enregistré du membre auprès du club.",
+      "doneTitle": "Demande reçue",
+      "doneText": "Si cette adresse est enregistrée auprès du club, votre demande est parvenue à l'administration et un nouveau lien sera envoyé à votre numéro de téléphone enregistré. Sans nouvelles sous quelques jours, contactez directement l'administration.",
+      "backToLogin": "Retour à la connexion",
+      "rateLimited": "Trop de tentatives. Réessayez plus tard.",
+      "error": "Impossible d'envoyer la demande. Réessayez plus tard."
     },
     "history": {
       "title": "Mes demandes précédentes",

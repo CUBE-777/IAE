@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import InteriorLayout from '../../layouts/InteriorLayout';
 import PageHero from '../../components/layout/PageHero';
@@ -76,7 +76,7 @@ export default function MemberLogin() {
             <button type="submit" className="btn btn-gold mf-submit" disabled={submitting}>
               {submitting ? t('member.login.submitting') : t('member.login.submit')}
             </button>
-            <p className="mf-privacy">{t('member.login.forgot')}</p>
+            <p className="mf-privacy">{t('member.login.forgot')} <Link to="/member/help">{t('member.login.helpLink')}</Link></p>
             <p className="mf-privacy">{t('member.login.noAccount')}</p>
           </form>
         </div>

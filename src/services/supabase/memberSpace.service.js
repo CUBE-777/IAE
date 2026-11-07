@@ -143,6 +143,17 @@ export async function uploadMemberCardPhoto(memberId, file) {
   return path;
 }
 
+/* ---------- طلب مساعدة في الدخول (0039) ---------- */
+
+/**
+ * زائر بلا جلسة يطلب رابط تفعيل/استعادة. لا يُرجع الخادم شيئًا مهما كان البريد (لا تعداد)، فالنجاح لا يعني أن البريد مسجّل.
+ * يرمي خطأ يحتوي rate_limited عند تجاوز الحدّ.
+ */
+export async function requestAccessHelp(email) {
+  const { error } = await supabase.rpc('request_member_access_help', { p_email: String(email || '').trim() });
+  if (error) throw error;
+}
+
 /* ---------- الإدارة ---------- */
 
 /** { token, expires_at, existing }: الرمز يظهر مرة واحدة ولا يُخزَّن؛ إعادة الإصدار تُبطل الرابط السابق. */
@@ -199,5 +210,34 @@ export async function approveCardRequest(requestId, photoUrl = null) {
 
 export async function rejectCardRequest(requestId, note = '') {
   const { error } = await supabase.rpc('reject_member_card_request', { p_request_id: requestId, p_note: note || null });
+  if (error) throw error;
+}
+
+/* ---------- طلبات المساعدة في الدخول (الإدارة) ---------- */
+
+const ACCESS_SELECT = 'id, member_id, status, created_at, members(id, full_name, email, phone, status)';
+
+export async function fetchPendingAccessRequests() {
+  const { data, error } = await supabase
+    .from('member_access_requests')
+    .select(ACCESS_SELECT)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function countPendingAccessRequests() {
+  const { count, error } = await supabase
+    .from('member_access_requests')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'pending');
+  if (error) throw error;
+  return count || 0;
+}
+
+/** status: 'handled' (بعد إصدار الرابط) أو 'dismissed' (تجاهل). */
+export async function resolveAccessRequest(requestId, status = 'handled') {
+  const { error } = await supabase.rpc('resolve_member_access_request', { p_request_id: requestId, p_status: status });
   if (error) throw error;
 }

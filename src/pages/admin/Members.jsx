@@ -5,10 +5,11 @@ import Modal from '../../components/admin/Modal';
 import MembershipDocs from '../../components/admin/MembershipDocs';
 import MemberFormModal from './MemberFormModal';
 import MemberActivationModal from './MemberActivationModal';
+import MemberAccessRequestsModal from './MemberAccessRequestsModal';
 import MemberCardRequestsModal from './MemberCardRequestsModal';
 import { useAuth } from '../../app/providers/AuthProvider';
 import { ROLES_MEMBER_SYSTEM } from '../../constants/roles';
-import { countPendingCardRequests } from '../../services/supabase/memberSpace.service';
+import { countPendingCardRequests, countPendingAccessRequests } from '../../services/supabase/memberSpace.service';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { downloadCsv } from '../../utils/csvExport';
 import { fetchLinkedBoardMemberIds } from '../../services/supabase/adminBoard.service';
@@ -30,10 +31,13 @@ export default function Members() {
   const [activationTarget, setActivationTarget] = useState(null);
   const [requestsOpen, setRequestsOpen] = useState(false);
   const [pendingCards, setPendingCards] = useState(0);
+  const [accessOpen, setAccessOpen] = useState(false);
+  const [pendingAccess, setPendingAccess] = useState(0);
   const loadPendingCards = () => {
     if (!canMemberSystem) return;
     // فشل العدّ (مثلًا قبل تشغيل 0036) لا يكسر الصفحة: يبقى الزر بلا عدّاد
     countPendingCardRequests().then(setPendingCards).catch(() => {});
+    countPendingAccessRequests().then(setPendingAccess).catch(() => {}); // قبل تشغيل 0039: يبقى الزر بلا عدّاد
   };
   useEffect(loadPendingCards, [canMemberSystem]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -166,6 +170,11 @@ export default function Members() {
                 {tr('طلبات تعديل البطاقات')}{pendingCards > 0 ? ` (${pendingCards})` : ''}
               </button>
             )}
+            {canMemberSystem && (
+              <button className="admin-quick-action" onClick={() => setAccessOpen(true)}>
+                {tr('طلبات المساعدة في الدخول')}{pendingAccess > 0 ? ` (${pendingAccess})` : ''}
+              </button>
+            )}
             <button className="admin-quick-action" disabled={exporting} onClick={exportCsv}>{tr('تصدير CSV')}</button>
             <button className="admin-quick-action" onClick={() => setFormTarget(null)}>{tr('+ إضافة عضو')}</button>
           </>
@@ -266,6 +275,7 @@ export default function Members() {
       )}
 
       {activationTarget && <MemberActivationModal member={activationTarget} onClose={() => setActivationTarget(null)} />}
+      {accessOpen && <MemberAccessRequestsModal onClose={() => setAccessOpen(false)} onChanged={loadPendingCards} />}
       {requestsOpen && (
         <MemberCardRequestsModal
           onClose={() => setRequestsOpen(false)}

@@ -5,6 +5,7 @@
  * فلا يمكن لأي استعلام عام أن يرى مسودة أو إعلانًا منتهيًا.
  */
 import { supabase } from './client';
+import { latestStamp } from '../../utils/announcementSeen';
 
 export const ANNOUNCEMENT_TYPES = ['general', 'important', 'event', 'membership', 'notice'];
 export const ANNOUNCEMENTS_PAGE_SIZE = 9;
@@ -29,6 +30,21 @@ export async function fetchPublishedAnnouncements({ limit = ANNOUNCEMENTS_PAGE_S
   if (error) throw error;
   const rows = data || [];
   return { rows: rows.slice(0, limit), hasMore: rows.length > limit };
+}
+
+/**
+ * أحدث وقت ظهور بين الإعلانات المنشورة (رقم بالميلي ثانية) أو null. لنقطة «إعلانات جديدة» في فضاء المنخرطين:
+ * نقرأ عمودين فقط لأحدث 20 صفًا (RLS تحصر المنشور) ونحسب الأقصى في العميل.
+ */
+export async function fetchLatestAnnouncementStamp() {
+  const { data, error } = await supabase
+    .from('announcements')
+    .select('start_at, created_at')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .limit(20);
+  if (error) throw error;
+  return latestStamp(data || []);
 }
 
 export async function fetchAnnouncementBySlug(slug) {

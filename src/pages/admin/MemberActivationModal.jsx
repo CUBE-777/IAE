@@ -28,7 +28,7 @@ const fill = (text, vars) => text.replace(/\{\{(\w+)\}\}/g, (m, k) => vars[k] ??
  * يُصدر رابط تفعيل (أو استعادة دخول إن كان للعضو حساب). الإصدار يُبطل أي رابط سابق، فلا يتم إلا بضغطة صريحة.
  * الرمز لا يُخزَّن (مجزّأ فقط في القاعدة)، فيظهر هنا مرة واحدة ولا يمكن استرجاعه.
  */
-export default function MemberActivationModal({ member, onClose }) {
+export default function MemberActivationModal({ member, onClose, onIssued }) {
   const [busy, setBusy] = useState(false);
   const [issued, setIssued] = useState(null); // { token, expires_at, existing }
   const [lang, setLang] = useState('ar');
@@ -36,7 +36,9 @@ export default function MemberActivationModal({ member, onClose }) {
   const issue = async () => {
     setBusy(true);
     try {
-      setIssued(await issueMemberActivationLink(member.id));
+      const res = await issueMemberActivationLink(member.id);
+      setIssued(res);
+      onIssued?.(res);
     } catch (err) {
       window.notify?.fromError(err, tr('تعذر إنشاء الرابط'));
     } finally {

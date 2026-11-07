@@ -2190,5 +2190,41 @@ export const ADMIN_DICT = {
  "ملاحظة للعضو (اختياري، تظهر له عند الرفض)": {
   "fr": "Note pour le membre (facultatif, visible en cas de refus)",
   "en": "Note for the member (optional, shown on rejection)"
+ },
+ "طلبات المساعدة في الدخول": {
+  "fr": "Demandes d'aide à la connexion",
+  "en": "Sign-in help requests"
+ },
+ "أعضاء طلبوا رابط تفعيل أو استعادة دخول. أرسل الرابط إلى رقم العضو المسجّل لدينا فقط، وليس إلى من قدّم الطلب.": {
+  "fr": "Des membres ont demandé un lien d'activation ou de récupération d'accès. Envoyez le lien uniquement au numéro enregistré du membre, pas à la personne qui a fait la demande.",
+  "en": "Members asked for an activation or access-recovery link. Send the link only to the member's number on file, not to whoever made the request."
+ },
+ "لا توجد طلبات مساعدة قيد الانتظار.": {
+  "fr": "Aucune demande d'aide en attente.",
+  "en": "No pending help requests."
+ },
+ "تاريخ الطلب": {
+  "fr": "Date de la demande",
+  "en": "Request date"
+ },
+ "إنشاء رابط وإرساله": {
+  "fr": "Créer et envoyer un lien",
+  "en": "Create and send a link"
+ },
+ "تجاهل": {
+  "fr": "Ignorer",
+  "en": "Dismiss"
+ },
+ "تم تجاهل الطلب": {
+  "fr": "Demande ignorée",
+  "en": "Request dismissed"
+ },
+ "تعذر تحديث الطلب": {
+  "fr": "Impossible de mettre à jour la demande",
+  "en": "Couldn't update the request"
+ },
+ "تمت معالجة الطلب": {
+  "fr": "Demande traitée",
+  "en": "Request handled"
  }
 };

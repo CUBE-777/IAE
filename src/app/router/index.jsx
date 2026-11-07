@@ -21,10 +21,12 @@ const MembershipFormPage = lazy(() => import('../../pages/public/MembershipFormP
 const BoardProfileFormPage = lazy(() => import('../../pages/public/BoardProfileFormPage'));
 const MemberLogin = lazy(() => import('../../pages/member/MemberLogin'));
 const MemberActivate = lazy(() => import('../../pages/member/MemberActivate'));
+const MemberHelp = lazy(() => import('../../pages/member/MemberHelp'));
 const MemberLayout = lazy(() => import('../../layouts/MemberLayout'));
 const MemberHome = lazy(() => import('../../pages/member/MemberHome'));
 const MemberCard = lazy(() => import('../../pages/member/MemberCard'));
 const MemberSecurity = lazy(() => import('../../pages/member/MemberSecurity'));
+const MemberAnnouncements = lazy(() => import('../../pages/member/MemberAnnouncements'));
 const NotFound = lazy(() => import('../../pages/public/NotFound'));
 const Login = lazy(() => import('../../pages/admin/Login'));
 const Dashboard = lazy(() => import('../../pages/admin/Dashboard'));
@@ -95,12 +97,14 @@ export const router = createBrowserRouter([
       // فضاء المنخرطين (المرحلة 4): دخول وتفعيل عامّان، وما بعدهما خلف حارس حساب العضو (MemberLayout). كلها غير مفهرسة
       { path: '/member/login', element: <MemberLogin /> },
       { path: '/member/activate/:token', element: <MemberActivate /> },
+      { path: '/member/help', element: <MemberHelp /> },
       {
         path: '/member',
         element: <MemberLayout />,
         children: [
           { index: true, element: <MemberHome /> },
           { path: 'card', element: <MemberCard /> },
+          { path: 'announcements', element: <MemberAnnouncements /> },
           { path: 'security', element: <MemberSecurity /> },
         ],
       },

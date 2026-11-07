@@ -7,6 +7,7 @@ const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), 'utf8')
 const stripSql = (sql) => sql.replace(/--.*$/gm, '');
 const sql36 = stripSql(read('supabase/migrations/0036_member_space_activation_and_card_requests.sql'));
 const sql37 = stripSql(read('supabase/migrations/0037_member_reactivation.sql'));
+const sql39 = stripSql(read('supabase/migrations/0039_member_access_requests.sql'));
 const sql35 = read('supabase/migrations/0035_member_accounts.sql');
 const edge = read('supabase/functions/member-activate/index.ts');
 const service = read('src/services/supabase/memberSpace.service.js');
@@ -19,6 +20,7 @@ const MEMBER_FILES = [
   'src/layouts/MemberLayout.jsx', 'src/components/member/MemberPage.jsx',
   'src/pages/member/MemberLogin.jsx', 'src/pages/member/MemberActivate.jsx',
   'src/pages/member/MemberHome.jsx', 'src/pages/member/MemberCard.jsx', 'src/pages/member/MemberSecurity.jsx',
+  'src/pages/member/MemberHelp.jsx', 'src/pages/member/MemberAnnouncements.jsx',
 ];
 
 test('الأدوار: ROLES_MEMBER_SYSTEM يطابق can_manage_member_system في 0035 (الأربعة بلا نواب)', () => {
@@ -29,12 +31,12 @@ test('الأدوار: ROLES_MEMBER_SYSTEM يطابق can_manage_member_system ف
   for (const r of R.ROLES_MEMBER_SYSTEM) assert.ok(R.ALL_ROLES.includes(r));
 });
 
-test('الخدمة: كل RPC وبارامتراتها موجودة في 0036 بالأسماء نفسها', () => {
+test('الخدمة: كل RPC وبارامتراتها موجودة في migrations الأعضاء (0036/0039) بالأسماء نفسها', () => {
   const calls = [...service.matchAll(/rpc\('([a-z_]+)'(?:, \{([^}]*)\})?/g)];
   assert.ok(calls.length >= 8);
   for (const [, name, args] of calls) {
-    const m = sql36.match(new RegExp(`function public\\.${name}\\(([^)]*)\\)`));
-    assert.ok(m, `الدالة ${name} غير معرّفة في 0036`);
+    const m = (sql36 + sql39).match(new RegExp(`function public\\.${name}\\(([^)]*)\\)`));
+    assert.ok(m, `الدالة ${name} غير معرّفة في 0036/0039`);
     const declared = [...m[1].matchAll(/\b(p_[a-z_]+)\b/g)].map((x) => x[1]);
     const used = args ? [...args.matchAll(/\b(p_[a-z_]+)\b/g)].map((x) => x[1]) : [];
     for (const u of used) assert.ok(declared.includes(u), `${name}: المعامل ${u} غير موجود`);
@@ -42,7 +44,7 @@ test('الخدمة: كل RPC وبارامتراتها موجودة في 0036 ب�
 });
 
 test('الراوتر: مسارات /member/* مسجّلة وتُحمَّل عند الطلب، والعضو الفرعي خلف MemberLayout', () => {
-  for (const p of ["'/member/login'", "'/member/activate/:token'", "path: '/member'", "path: 'card'", "path: 'security'"]) assert.ok(router.includes(p), p);
+  for (const p of ["'/member/login'", "'/member/activate/:token'", "path: '/member'", "path: 'card'", "path: 'security'", "path: 'announcements'", "'/member/help'"]) assert.ok(router.includes(p), p);
   assert.match(router, /path: '\/member',\s*element: <MemberLayout \/>/);
   assert.doesNotMatch(router, /^import .*pages\/member\//m);
   assert.match(read('public/robots.txt'), /Disallow: \/member\//);
@@ -156,4 +158,34 @@ test('السجل: يُقرأ من الجدول بسياسة صاحبه (بلا m
   assert.match(sql36, /member_card_requests_own_read[\s\S]*?using \(member_id = public\.current_member_id\(\)\)/);
   const home = read('src/pages/member/MemberHome.jsx');
   assert.match(home, /olderRequests\(history, req\?\.id\)/); // آخر طلب لا يتكرر في السجل
+});
+
+test('الإعلانات: تبويب في الفضاء بنقطة «جديد»، وتستعمل الجلب العام نفسه (RLS) دون جداول جديدة', () => {
+  assert.match(read('src/components/member/MemberPage.jsx'), /to="\/member\/announcements"/);
+  assert.match(read('src/components/member/MemberPage.jsx'), /useNewAnnouncement\(\)/);
+  const page = read('src/pages/member/MemberAnnouncements.jsx');
+  assert.match(page, /fetchPublishedAnnouncements/);
+  assert.match(page, /AnnouncementCard/);
+  const svc = read('src/services/supabase/announcements.service.js');
+  const fn = svc.slice(svc.indexOf('export async function fetchLatestAnnouncementStamp'), svc.indexOf('export async function fetchAnnouncementBySlug'));
+  assert.match(fn, /\.select\('start_at, created_at'\)/);
+  assert.doesNotMatch(fn, /\.(insert|update|delete|upsert)\(/);
+});
+
+test('طلب المساعدة: الصفحة العامة تستدعي RPC دون إظهار رابط، ورسالة النجاح لا تعتمد على وجود البريد', () => {
+  const page = read('src/pages/member/MemberHelp.jsx');
+  assert.match(page, /requestAccessHelp\(email\)/);
+  assert.doesNotMatch(page, /token|activate\//);               // لا رابط يظهر لمقدّم الطلب
+  assert.match(page, /setDone\(true\)/);
+  assert.match(read('src/pages/member/MemberLogin.jsx'), /to="\/member\/help"/);
+  assert.match(service, /rpc\('request_member_access_help', \{ p_email:/);
+});
+
+test('طلب المساعدة: لوحة الإدارة خلف can_manage_member_system، وإصدار الرابط يُعلِّم الطلب معالَجًا', () => {
+  assert.match(membersPage, /canMemberSystem && \(\s*<button className="admin-quick-action" onClick=\{\(\) => setAccessOpen\(true\)\}/);
+  const modal = read('src/pages/admin/MemberAccessRequestsModal.jsx');
+  assert.match(modal, /onIssued=/);
+  assert.match(modal, /resolveAccessRequest\(request\.id, 'handled'\)/);
+  assert.match(modal, /resolveAccessRequest\(request\.id, 'dismissed'\)/);
+  assert.match(read('src/pages/admin/MemberActivationModal.jsx'), /onIssued\?\.\(res\)/);
 });

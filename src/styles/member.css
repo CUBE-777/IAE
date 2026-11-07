@@ -55,3 +55,7 @@
 .member-history p { margin: 0; }
 .member-history-note { margin-top: 6px; color: var(--heading); }
 .member-badge-cancelled { color: var(--muted); }
+
+/* ---- المرحلة 4: نقطة «إعلانات جديدة» على تبويب الإعلانات ---- */
+.member-nav a { position: relative; }
+.member-nav-dot { display: inline-block; width: 9px; height: 9px; margin-inline-start: 8px; border-radius: 50%; background: var(--gold); vertical-align: middle; }

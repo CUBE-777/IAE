@@ -982,7 +982,9 @@
       "home": "My profile",
       "card": "Edit my card",
       "logout": "Log out",
-      "security": "Security"
+      "security": "Security",
+      "announcements": "Announcements",
+      "newAnnouncements": "New announcements"
     },
     "login": {
       "pageTitle": "Members' login",
@@ -1001,7 +1003,8 @@
       "network": "Can't connect. Check your internet connection and try again.",
       "generic": "Couldn't log in. Try again later.",
       "forgot": "Forgot your password? Ask the administration for a new recovery link.",
-      "noAccount": "No account yet? The activation invitation is sent by the club administration."
+      "noAccount": "No account yet? The activation invitation is sent by the club administration.",
+      "helpLink": "Ask for sign-in help"
     },
     "activate": {
       "pageTitle": "Activate member account",
@@ -1121,6 +1124,25 @@
         "confirm": "Yes, hide my card",
         "cancel": "Cancel"
       }
+    },
+    "announcements": {
+      "pageTitle": "Club announcements",
+      "title": "Club announcements",
+      "description": "The latest club announcements and news, without leaving the members' space."
+    },
+    "help": {
+      "pageTitle": "Sign-in help",
+      "title": "Sign-in help",
+      "description": "Forgot your password or didn't get your activation link? Ask the administration for a new one.",
+      "intro": "Enter the email registered with the club. Your request reaches the administration, which sends you a new link via your registered phone number (usually WhatsApp).",
+      "submit": "Send request",
+      "submitting": "Sending…",
+      "privacy": "For your protection we don't reveal whether the email is registered. The link is only sent to the member's contact details on file with the club.",
+      "doneTitle": "Request received",
+      "doneText": "If this email is registered with the club, your request has reached the administration and a new link will be sent to your registered phone number. If nothing arrives within a few days, contact the administration directly.",
+      "backToLogin": "Back to sign in",
+      "rateLimited": "Too many attempts. Please try again later.",
+      "error": "Couldn't send the request. Please try again later."
     },
     "history": {
       "title": "My previous requests",
