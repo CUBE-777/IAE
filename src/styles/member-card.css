@@ -1,0 +1,58 @@
+/* بطاقة العضوية الرقمية (/member/id) وصفحة التحقق العامة (/verify/:token) وشارة الانخراط.
+   لون رمز QR وخلفيته ثابتان بالحرف (لا متغيّرات): الوضع الداكن لا يقلبهما فيبقى الرمز قابلًا للمسح. */
+
+.member-link-btn { background: none; border: 0; padding: 10px 6px; min-height: 44px; font: inherit; font-weight: 700; color: var(--accent-ink); text-decoration: underline; cursor: pointer; }
+
+/* ---- شارة الانخراط: أيقونة + نص + لون ---- */
+.member-membership { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 14px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--heading); font-weight: 700; }
+.member-membership svg { flex: none; }
+.member-membership-active { background: #e5f4ec; border-color: #b7dfc8; color: #14573a; }
+.member-membership-lapsed { background: #fff1de; border-color: #f0cf9f; color: #7a4300; }
+.member-membership-none { background: var(--danger-soft); border-color: #f0c2bf; color: #8a1d17; }
+.member-membership-unset { background: var(--cream); border-color: var(--border); color: var(--muted); }
+.member-id-status-loading { margin: 0 0 14px; }
+
+/* ---- البطاقة ---- */
+.member-id-card { display: grid; gap: 12px; justify-items: center; text-align: center; padding: 20px 16px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
+.member-qr { width: min(100%, 320px); aspect-ratio: 1; background: #fff; border: 1px solid #d9e4f2; border-radius: 12px; padding: 6px; display: grid; place-items: center; }
+.member-qr-svg { display: block; width: 100%; height: 100%; background: #fff; }
+.member-qr-empty { color: #52627f; font-size: 0.95rem; padding: 12px; }
+.member-id-countdown { margin: 0; font-weight: 700; color: var(--heading); font-variant-numeric: tabular-nums; }
+.member-id-live { margin: 0; min-height: 1.4em; }
+.member-id-actions { justify-content: center; padding-bottom: 0; }
+.member-id-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; min-width: 44px; }
+.member-id-card .mf-hint { margin: 0; max-width: 520px; }
+
+/* ---- ملء الشاشة (طبقة داخل الصفحة؛ ألوانها ثابتة) ---- */
+.member-qr-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 16px; background: #fff; color: #0b1220; overflow: auto; }
+.member-qr-overlay .member-id-countdown { color: #0b1220; }
+.member-qr-overlay .member-qr-large { width: min(88vw, 88vh, 560px); border: 0; }
+.member-qr-close { position: absolute; top: 12px; inset-inline-end: 12px; min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; gap: 6px; background: #fff; color: #0b1220; border: 1px solid #c9d8ec; }
+
+/* ---- صفحة التحقق العامة ---- */
+.verify-card-wrap { max-width: 520px; margin: 0 auto; display: grid; gap: 18px; }
+.verify-card { border-radius: 16px; border: 2px solid var(--border); background: var(--surface); overflow: hidden; }
+.verify-banner { display: flex; align-items: center; gap: 10px; margin: 0; padding: 16px 18px; font-size: 1.15rem; font-weight: 800; }
+.verify-banner svg { flex: none; }
+.verify-person { display: flex; gap: 16px; align-items: center; padding: 18px 18px 6px; }
+.verify-person h2 { margin: 0 0 4px; font-size: 1.25rem; color: var(--heading); }
+.verify-person .mf-hint { margin: 2px 0 0; }
+.verify-avatar { width: 84px; height: 84px; flex: none; border-radius: 50%; object-fit: cover; border: 2px solid rgba(var(--gold-rgb), 0.5); background: var(--surface); }
+.verify-text { margin: 0; padding: 12px 18px 18px; color: var(--heading); }
+.verify-card .member-actions { padding: 0 18px 18px; }
+.verify-card-active { border-color: #1f7a4d; }
+.verify-card-active .verify-banner { background: #e5f4ec; color: #14573a; }
+.verify-card-inactive, .verify-card-unknown { border-color: #d98a1f; }
+.verify-card-inactive .verify-banner, .verify-card-unknown .verify-banner { background: #fff1de; color: #7a4300; }
+.verify-card-invalid { border-color: #b3261e; }
+.verify-card-invalid .verify-banner { background: var(--danger-soft); color: #8a1d17; }
+.verify-card-problem .verify-banner { background: var(--cream); color: var(--heading); }
+.verify-another { display: grid; gap: 10px; justify-items: center; }
+.verify-help { max-width: 460px; text-align: center; margin: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .member-qr-overlay, .member-id-card, .verify-card { transition: none; animation: none; }
+}
+@media (max-width: 560px) {
+  .verify-avatar { width: 68px; height: 68px; }
+}

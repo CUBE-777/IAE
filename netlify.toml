@@ -21,7 +21,7 @@
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=()"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(self), payment=()"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
     Content-Security-Policy = """
       default-src 'self';
@@ -43,6 +43,15 @@
   for = "/admin/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
+
+# بطاقة العضوية الرقمية (0040): صفحة التحقق العامة /verify/:token — الرمز في المسار، فلا فهرسة ولا Referer ولا تخزين.
+# (Permissions-Policy: camera=(self) منذ 0041 لماسح الحضور داخل الموقع (صفحة المنظِّم)؛ لا يُسمح بها لأي إطار خارجي.)
+[[headers]]
+  for = "/verify/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "no-referrer"
+    Cache-Control = "no-store"
 
 # المرحلة 3: ملفات Vite المبنية في /assets/ أسماؤها تحوي hash، فيمكن تخزينها سنة كاملة.
 # index.html وtheme-init.js يبقيان بلا تخزين طويل ليصل أي نشر جديد للزوار فورًا.

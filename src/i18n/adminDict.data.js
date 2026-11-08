@@ -2226,5 +2226,145 @@ export const ADMIN_DICT = {
  "تمت معالجة الطلب": {
   "fr": "Demande traitée",
   "en": "Request handled"
+ },
+ "أُعيد إصدار الرموز": {
+  "fr": "Codes réémis",
+  "en": "Codes reissued"
+ },
+ "إعادة إصدار الرموز": {
+  "fr": "Réémettre les codes",
+  "en": "Reissue codes"
+ },
+ "إعادة نشر البطاقة (رموز جديدة)": {
+  "fr": "Republier la carte (nouveaux codes)",
+  "en": "Republish the card (new codes)"
+ },
+ "إغلاق البطاقة": {
+  "fr": "Fermer la carte",
+  "en": "Close the card"
+ },
+ "إغلاق البطاقة يمنع تسجيل أي حضور جديد بها. متابعة؟": {
+  "fr": "Fermer la carte empêche tout nouvel enregistrement de présence avec elle. Continuer ?",
+  "en": "Closing the card prevents any new attendance from being recorded with it. Continue?"
+ },
+ "إلغاء الحضور": {
+  "fr": "Annuler la présence",
+  "en": "Undo attendance"
+ },
+ "إلغاء تسجيل حضور هذا العضو؟": {
+  "fr": "Annuler l'enregistrement de présence de ce membre ?",
+  "en": "Undo this member's attendance?"
+ },
+ "إيقاف الكاميرا": {
+  "fr": "Arrêter la caméra",
+  "en": "Stop camera"
+ },
+ "البطاقة مغلقة أو العضو غير نشط": {
+  "fr": "Carte fermée ou membre inactif",
+  "en": "The card is closed or the member is inactive"
+ },
+ "البطاقة مغلقة أو منتهية.": {
+  "fr": "La carte est fermée ou expirée.",
+  "en": "The card is closed or expired."
+ },
+ "الحضور ({{n}})": {
+  "fr": "Présence ({{n}})",
+  "en": "Attendance ({{n}})"
+ },
+ "الحضور: {{n}} من {{total}}": {
+  "fr": "Présence : {{n}} sur {{total}}",
+  "en": "Attendance: {{n}} of {{total}}"
+ },
+ "النشاط: <strong>{{name}}</strong>": {
+  "fr": "Activité : <strong>{{name}}</strong>",
+  "en": "Activity: <strong>{{name}}</strong>"
+ },
+ "بحث بالاسم...": {
+  "fr": "Rechercher par nom...",
+  "en": "Search by name..."
+ },
+ "بطاقة الحضور": {
+  "fr": "Carte de présence",
+  "en": "Attendance card"
+ },
+ "تسجيل يدوي": {
+  "fr": "Enregistrer manuellement",
+  "en": "Record manually"
+ },
+ "تشغيل الكاميرا للمسح": {
+  "fr": "Activer la caméra pour scanner",
+  "en": "Turn on the camera to scan"
+ },
+ "تعذّر إغلاق البطاقة": {
+  "fr": "Impossible de fermer la carte",
+  "en": "Couldn't close the card"
+ },
+ "تعذّر التحديث": {
+  "fr": "Mise à jour impossible",
+  "en": "Couldn't update"
+ },
+ "تعذّر تحميل بيانات الحضور.": {
+  "fr": "Impossible de charger les données de présence.",
+  "en": "Couldn't load attendance data."
+ },
+ "تعذّر تسجيل الحضور": {
+  "fr": "Impossible d'enregistrer la présence",
+  "en": "Couldn't record attendance"
+ },
+ "تعذّر تشغيل الكاميرا على هذا الجهاز. استعمل القائمة أدناه لتسجيل الحضور.": {
+  "fr": "Impossible d'activer la caméra sur cet appareil. Utilisez la liste ci-dessous pour enregistrer la présence.",
+  "en": "Couldn't start the camera on this device. Use the list below to record attendance."
+ },
+ "تعذّر نشر بطاقة الحضور": {
+  "fr": "Impossible de publier la carte de présence",
+  "en": "Couldn't publish the attendance card"
+ },
+ "تم تسجيل الحضور": {
+  "fr": "Présence enregistrée",
+  "en": "Attendance recorded"
+ },
+ "جاري تشغيل الكاميرا...": {
+  "fr": "Activation de la caméra...",
+  "en": "Starting the camera..."
+ },
+ "رمز غير صالح لهذا النشاط": {
+  "fr": "Code invalide pour cette activité",
+  "en": "Invalid code for this activity"
+ },
+ "ستتغيّر رموز كل الأعضاء وتبطل الرموز السابقة (للحالات التي يتسرّب فيها رمز). متابعة؟": {
+  "fr": "Les codes de tous les membres vont changer et les anciens seront invalidés (en cas de fuite d'un code). Continuer ?",
+  "en": "All members' codes will change and the previous ones will stop working (for when a code leaks). Continue?"
+ },
+ "لا نتائج.": {
+  "fr": "Aucun résultat.",
+  "en": "No results."
+ },
+ "لم تُنشر بطاقة الحضور لهذا النشاط بعد. عند النشر يرى كل عضو نشط رمزه الخاص بهذا النشاط وحده في صفحة بطاقته.": {
+  "fr": "La carte de présence n'est pas encore publiée pour cette activité. Une fois publiée, chaque membre actif voit son code personnel, valable pour cette seule activité, sur sa page de carte.",
+  "en": "The attendance card hasn't been published for this activity yet. Once published, every active member sees their personal code, valid for this activity only, on their card page."
+ },
+ "لم يُسمح باستعمال الكاميرا. اسمح بها من إعدادات المتصفح للموقع أو استعمل القائمة أدناه.": {
+  "fr": "L'accès à la caméra n'a pas été autorisé. Autorisez-le dans les réglages du navigateur pour le site ou utilisez la liste ci-dessous.",
+  "en": "Camera access wasn't allowed. Allow it in the browser settings for this site, or use the list below."
+ },
+ "محاولات كثيرة، انتظر قليلًا": {
+  "fr": "Trop de tentatives, patientez un instant",
+  "en": "Too many attempts, wait a moment"
+ },
+ "مسجّل مسبقًا": {
+  "fr": "Déjà enregistré",
+  "en": "Already recorded"
+ },
+ "نشر بطاقة الحضور": {
+  "fr": "Publier la carte de présence",
+  "en": "Publish the attendance card"
+ },
+ "نُشرت بطاقة الحضور": {
+  "fr": "Carte de présence publiée",
+  "en": "Attendance card published"
+ },
+ "هذا المتصفح لا يدعم المسح بالكاميرا (يعمل في Chrome على أندرويد). استعمل القائمة أدناه لتسجيل الحضور.": {
+  "fr": "Ce navigateur ne prend pas en charge le scan par caméra (fonctionne dans Chrome sur Android). Utilisez la liste ci-dessous pour enregistrer la présence.",
+  "en": "This browser doesn't support camera scanning (it works in Chrome on Android). Use the list below to record attendance."
  }
 };

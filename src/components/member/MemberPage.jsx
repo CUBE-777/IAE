@@ -6,7 +6,7 @@ import { useAuth } from '../../app/providers/AuthProvider';
 import { useNoindex } from '../../hooks/useNoindex';
 import { useNewAnnouncement } from '../../hooks/useNewAnnouncement';
 
-/** هيكل صفحات العضو: عنوان + شريط تنقل (ملفي، البطاقة، الأمان؛ يكبر لاحقًا: إعلانات، QR…) + محتوى. */
+/** هيكل صفحات العضو: عنوان + شريط تنقل (ملفي، بطاقة العضوية QR، تعديل البطاقة، الإعلانات، الأمان) + محتوى. */
 export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, children }) {
   const { t } = useTranslation();
   const { logout } = useAuth();
@@ -21,6 +21,7 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
       <PageHero crumbs={[{ label: t('member.crumb') }]} title={t(titleKey)} description={t(descriptionKey)} />
       <nav className="member-nav" aria-label={t('member.nav.label')}>
         <NavLink to="/member" end>{t('member.nav.home')}</NavLink>
+        <NavLink to="/member/id">{t('member.nav.id')}</NavLink>
         <NavLink to="/member/card">{t('member.nav.card')}</NavLink>
         <NavLink to="/member/announcements">
           {t('member.nav.announcements')}

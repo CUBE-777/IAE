@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import Modal from '../../components/admin/Modal';
 import { useAuth } from '../../app/providers/AuthProvider';
 import { isReadOnlyRole } from '../../constants/roles';
 import ActivityFormModal from './ActivityFormModal';
+import ActivityAttendanceModal from './ActivityAttendanceModal';
+import { getAttendanceCardsOverview } from '../../services/supabase/adminAttendance.service';
 import {
   fetchActivitiesAdmin, setActivityStatus, softDeleteActivity, STATUS_LABEL,
 } from '../../services/supabase/adminActivities.service';
@@ -18,6 +20,8 @@ export default function Activities() {
   const [error, setError] = useState(false);
   const [formTarget, setFormTarget] = useState(undefined);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [attendanceTarget, setAttendanceTarget] = useState(null);
+  const [attendance, setAttendance] = useState({}); // activity_id → { open, attended } (قبل 0041 يبقى فارغًا ولا يكسر الصفحة)
 
   useEffect(() => {
     document.title = tr('الأنشطة — لوحة إدارة النادي');
@@ -36,6 +40,13 @@ export default function Activities() {
   };
 
   useEffect(load, []);
+
+  const loadAttendance = useCallback(() => {
+    getAttendanceCardsOverview()
+      .then((rows) => setAttendance(Object.fromEntries(rows.map((r) => [r.activity_id, r]))))
+      .catch(() => setAttendance({}));
+  }, []);
+  useEffect(() => { if (!readOnly) loadAttendance(); }, [readOnly, loadAttendance]);
 
   const changeStatus = async (activity, status) => {
     if (status === 'published' && (!activity.title || !activity.date || !activity.description)) {
@@ -99,6 +110,9 @@ export default function Activities() {
                       ) : (
                         <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => changeStatus(a, 'archived')}>{tr('أرشفة')}</button>
                       )}
+                      <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setAttendanceTarget(a)}>
+                        {attendance[a.id] ? tr('الحضور ({{n}})', { n: attendance[a.id].attended }) : tr('بطاقة الحضور')}
+                      </button>
                       <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDeleteTarget(a)}>{tr('حذف')}</button>
                       </>)}
                     </td>
@@ -118,6 +132,14 @@ export default function Activities() {
             setFormTarget(undefined);
             load();
           }}
+        />
+      )}
+
+      {attendanceTarget && (
+        <ActivityAttendanceModal
+          activity={attendanceTarget}
+          onClose={() => setAttendanceTarget(null)}
+          onChanged={loadAttendance}
         />
       )}
 

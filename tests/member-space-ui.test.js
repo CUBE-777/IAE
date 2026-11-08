@@ -8,6 +8,8 @@ const stripSql = (sql) => sql.replace(/--.*$/gm, '');
 const sql36 = stripSql(read('supabase/migrations/0036_member_space_activation_and_card_requests.sql'));
 const sql37 = stripSql(read('supabase/migrations/0037_member_reactivation.sql'));
 const sql39 = stripSql(read('supabase/migrations/0039_member_access_requests.sql'));
+const sql40 = stripSql(read('supabase/migrations/0040_member_card_tokens.sql'));
+const sql41 = stripSql(read('supabase/migrations/0041_activity_attendance.sql'));
 const sql35 = read('supabase/migrations/0035_member_accounts.sql');
 const edge = read('supabase/functions/member-activate/index.ts');
 const service = read('src/services/supabase/memberSpace.service.js');
@@ -21,6 +23,7 @@ const MEMBER_FILES = [
   'src/pages/member/MemberLogin.jsx', 'src/pages/member/MemberActivate.jsx',
   'src/pages/member/MemberHome.jsx', 'src/pages/member/MemberCard.jsx', 'src/pages/member/MemberSecurity.jsx',
   'src/pages/member/MemberHelp.jsx', 'src/pages/member/MemberAnnouncements.jsx',
+  'src/pages/member/MemberIdCard.jsx', 'src/components/member/MembershipBadge.jsx', 'src/components/member/MemberAttendanceCards.jsx', 'src/pages/public/VerifyCard.jsx',
 ];
 
 test('الأدوار: ROLES_MEMBER_SYSTEM يطابق can_manage_member_system في 0035 (الأربعة بلا نواب)', () => {
@@ -31,11 +34,11 @@ test('الأدوار: ROLES_MEMBER_SYSTEM يطابق can_manage_member_system ف
   for (const r of R.ROLES_MEMBER_SYSTEM) assert.ok(R.ALL_ROLES.includes(r));
 });
 
-test('الخدمة: كل RPC وبارامتراتها موجودة في migrations الأعضاء (0036/0039) بالأسماء نفسها', () => {
+test('الخدمة: كل RPC وبارامتراتها موجودة في migrations الأعضاء (0036/0039/0040/0041) بالأسماء نفسها', () => {
   const calls = [...service.matchAll(/rpc\('([a-z_]+)'(?:, \{([^}]*)\})?/g)];
-  assert.ok(calls.length >= 8);
+  assert.ok(calls.length >= 11);
   for (const [, name, args] of calls) {
-    const m = (sql36 + sql39).match(new RegExp(`function public\\.${name}\\(([^)]*)\\)`));
+    const m = (sql36 + sql39 + sql40 + sql41).match(new RegExp(`function public\\.${name}\\(([^)]*)\\)`));
     assert.ok(m, `الدالة ${name} غير معرّفة في 0036/0039`);
     const declared = [...m[1].matchAll(/\b(p_[a-z_]+)\b/g)].map((x) => x[1]);
     const used = args ? [...args.matchAll(/\b(p_[a-z_]+)\b/g)].map((x) => x[1]) : [];
@@ -44,7 +47,7 @@ test('الخدمة: كل RPC وبارامتراتها موجودة في migratio
 });
 
 test('الراوتر: مسارات /member/* مسجّلة وتُحمَّل عند الطلب، والعضو الفرعي خلف MemberLayout', () => {
-  for (const p of ["'/member/login'", "'/member/activate/:token'", "path: '/member'", "path: 'card'", "path: 'security'", "path: 'announcements'", "'/member/help'"]) assert.ok(router.includes(p), p);
+  for (const p of ["'/member/login'", "'/member/activate/:token'", "path: '/member'", "path: 'card'", "path: 'id'", "path: 'security'", "path: 'announcements'", "'/member/help'"]) assert.ok(router.includes(p), p);
   assert.match(router, /path: '\/member',\s*element: <MemberLayout \/>/);
   assert.doesNotMatch(router, /^import .*pages\/member\//m);
   assert.match(read('public/robots.txt'), /Disallow: \/member\//);
@@ -54,12 +57,15 @@ test('الواجهة: كل مفتاح ترجمة member.* و boardProfile.* مس
   const missing = [];
   for (const f of MEMBER_FILES) {
     const src = read(f);
-    const keys = new Set([...src.matchAll(/['"`]((?:member|boardProfile)\.[A-Za-z_.]+)['"`]/g)].map((m) => m[1]));
+    const keys = new Set([...src.matchAll(/['"`]((?:member|boardProfile|verify)\.[A-Za-z_.]+)['"`]/g)].map((m) => m[1]));
     // مفاتيح ديناميكية: member.home.request.${status} و member.activate.state.${key} و boardProfile.tr.${code}
     for (const k of ['pending', 'approved', 'rejected', 'cancelled']) keys.add(`member.home.request.${k}`);
     for (const k of ['pending', 'approved', 'rejected', 'cancelled']) keys.add(`member.history.status.${k}`);
     for (const k of ['invalid', 'used', 'expired']) { keys.add(`member.activate.state.${k}.title`); keys.add(`member.activate.state.${k}.text`); }
     for (const k of ['university', 'promotion', 'track', 'profession', 'email']) keys.add(`member.home.fields.${k}`);
+    // بطاقة العضوية: member.id.badge.${state} و verify.state.${state}.title/text
+    for (const k of ['active', 'lapsed', 'none', 'unset']) keys.add(`member.id.badge.${k}`);
+    for (const k of ['active', 'inactive', 'unknown', 'invalid', 'problem']) { keys.add(`verify.state.${k}.title`); keys.add(`verify.state.${k}.text`); }
     for (const l of ['ar', 'fr', 'en']) for (const k of keys) {
       if (k.endsWith('.')) continue;
       if (typeof get(locales[l], k) !== 'string') missing.push(`${l}:${k}`);
@@ -188,4 +194,173 @@ test('طلب المساعدة: لوحة الإدارة خلف can_manage_member_
   assert.match(modal, /resolveAccessRequest\(request\.id, 'handled'\)/);
   assert.match(modal, /resolveAccessRequest\(request\.id, 'dismissed'\)/);
   assert.match(read('src/pages/admin/MemberActivationModal.jsx'), /onIssued\?\.\(res\)/);
+});
+
+/* ---------- بطاقة العضوية الرقمية (0040): المسارات والتنقل والترجمة والتخزين والخصوصية ---------- */
+
+test('البطاقة: مسار /member/id داخل MemberLayout و/verify/:token عام خارجه، كلاهما lazy، والتبويب في التنقل', () => {
+  assert.match(router, /const MemberIdCard = lazy\(\(\) => import\('\.\.\/\.\.\/pages\/member\/MemberIdCard'\)\)/);
+  assert.match(router, /const VerifyCard = lazy\(\(\) => import\('\.\.\/\.\.\/pages\/public\/VerifyCard'\)\)/);
+  assert.match(router, /path: '\/member',\s*element: <MemberLayout \/>,\s*children: \[[\s\S]*?\{ path: 'id', element: <MemberIdCard \/> \}/);
+  assert.match(router, /\{ path: '\/verify\/:token', element: <VerifyCard \/> \}/);
+  // /verify ليس ضمن أبناء /member (لا يمرّ بحارس الجلسة)
+  const memberBlock = router.slice(router.indexOf("path: '/member',"), router.indexOf("// /admin (بلا لاحقة)"));
+  assert.doesNotMatch(memberBlock, /verify/);
+  assert.match(read('src/components/member/MemberPage.jsx'), /<NavLink to="\/member\/id">\{t\('member\.nav\.id'\)\}<\/NavLink>/);
+});
+
+test('البطاقة: مفاتيح member.id.* و member.nav.id و verify.* موجودة في اللغات الثلاث (بنصوص غير فارغة)', () => {
+  const must = [
+    'member.nav.id', 'member.id.title', 'member.id.description', 'member.id.pageTitle', 'member.id.qrLabel', 'member.id.refresh',
+    'member.id.fullscreen', 'member.id.close', 'member.id.expiresIn', 'member.id.status.ready', 'member.id.problem.rateLimited',
+    'member.id.problem.network', 'member.id.problem.forbidden', 'member.id.badge.active', 'member.id.badge.lapsed',
+    'member.id.badge.none', 'member.id.badge.unset', 'verify.pageTitle', 'verify.title', 'verify.scanAnother', 'verify.scanHelp',
+    'verify.state.active.title', 'verify.state.inactive.title', 'verify.state.invalid.title', 'verify.state.invalid.text',
+  ];
+  for (const l of ['ar', 'fr', 'en']) for (const k of must) {
+    const v = get(locales[l], k);
+    assert.ok(typeof v === 'string' && v.trim().length > 0, `${l}:${k}`);
+  }
+  // نصّ المنتهي/المجهول واحد (لا تفريق): لا مفتاح expired ولا unknownToken
+  assert.equal(get(locales.ar, 'verify.state.expired'), undefined);
+  assert.equal(get(locales.ar, 'verify.state.notFound'), undefined);
+  // التجديد المذكور للمستخدم يطابق الحقيقة (90ث/دقيقتان)
+  assert.match(get(locales.ar, 'member.id.badge.active'), /\{\{season\}\}/);
+});
+
+test('البطاقة: الرمز لا يُخزَّن في أي storage ولا رابط ولا console (hook والصفحتان والخدمات)', () => {
+  for (const f of [
+    'src/hooks/useMemberCardToken.js', 'src/pages/member/MemberIdCard.jsx', 'src/pages/public/VerifyCard.jsx',
+    'src/utils/memberCardToken.js', 'src/components/member/MembershipBadge.jsx', 'src/hooks/useMyMembershipStatus.js',
+    'src/components/member/QrImage.jsx', 'src/components/member/MemberAttendanceCards.jsx', 'src/pages/admin/AttendanceScanner.jsx', 'src/utils/attendanceCode.js',
+  ]) {
+    const src = read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, ''); // بلا تعليقات (تذكر الكلمات المحظورة للتوضيح)
+    assert.doesNotMatch(src, /localStorage|sessionStorage|indexedDB|document\.cookie/, f);
+    assert.doesNotMatch(src, /console\./, f);
+    assert.doesNotMatch(src, /history\.(pushState|replaceState)|setSearchParams|navigate\(/, f);
+  }
+  const svc = service.slice(service.indexOf('بطاقة العضوية الرقمية (0040)')).replace(/\/\*[\s\S]*?\*\//g, '');
+  assert.doesNotMatch(svc, /console\.|localStorage|sessionStorage/);
+});
+
+test('البطاقة: hook التجديد — 90ث، توقف عند الإخفاء، تنظيف المؤقتات، إبقاء الرمز الأخير، لا حدّ ثابت خاطئ', () => {
+  const hook = read('src/hooks/useMemberCardToken.js');
+  assert.match(hook, /CARD_REFRESH_MS/);
+  assert.match(hook, /addEventListener\('visibilitychange'/);
+  assert.match(hook, /removeEventListener\('visibilitychange'/);
+  assert.match(hook, /document\.hidden/);
+  assert.match(hook, /clearTimeout\(timerRef\.current\)/);
+  assert.match(hook, /return \(\) => clearInterval\(id\)/);
+  assert.match(hook, /aliveRef\.current = false/);
+  assert.match(hook, /classifyIssueError\(err\)/);
+  assert.match(hook, /token: current && left > 0 \? current\.value : null/); // ينتهي الرمز المحلي فيختفي بعد 120ث فقط
+  assert.match(hook, /if \(inflightRef\.current\) return;/);                // لا طلبان متوازيان (يحمي حدّ الإصدار)
+  assert.match(read('src/utils/memberCardToken.js'), /CARD_REFRESH_MS = 90_000/);
+});
+
+test('البطاقة: MemberIdCard — SVG داخلي بلا canvas/خارجي، ألوان ثابتة، aria، reduced-motion، أهداف لمس 44px', () => {
+  const page = read('src/pages/member/MemberIdCard.jsx');
+  const qrImg = read('src/components/member/QrImage.jsx');
+  assert.doesNotMatch(page + qrImg, /<canvas|new Image\(|qrserver|chart\.googleapis|api\.qrcode/i);
+  assert.match(qrImg, /<svg[^>]*role="img"[^>]*aria-label=\{label\}/);
+  assert.match(qrImg, /const QR_DARK = '#[0-9a-f]{6}'/i);
+  assert.match(qrImg, /const QR_LIGHT = '#ffffff'/i);
+  assert.match(page, /import QrImage from '..\/..\/components\/member\/QrImage'/);
+  assert.match(page, /aria-live="polite"/);
+  assert.match(page, /scrollBehavior\(\)/);
+  assert.match(page, /role="dialog"\s+aria-modal="true"/);
+  assert.match(page, /e\.key === 'Escape'/);
+  const css = read('src/styles/member-card.css');
+  assert.match(css, /prefers-reduced-motion: reduce/);
+  assert.match(css, /\.member-id-btn \{[^}]*min-height: 44px/);
+  assert.match(css, /\.member-qr \{[^}]*background: #fff/);
+  assert.doesNotMatch(css.slice(css.indexOf('.member-qr {'), css.indexOf('.member-qr-empty')), /var\(--/); // القناع الداكن لا يقلب ألوان الرمز
+  // لا حركة في العدّ التنازلي: لا animation/transition عليه ولا شريط متحرك
+  assert.doesNotMatch(css.slice(css.indexOf('.member-id-countdown'), css.indexOf('.member-id-live')), /transition|animation/);
+});
+
+test('البطاقة: VerifyCard لا يعرض غير الحقول المسموحة ولا الرمز، ويوحّد المنتهي والمجهول', () => {
+  const page = read('src/pages/public/VerifyCard.jsx');
+  const used = new Set([...page.matchAll(/\b(?:person|result)\??\.([a-z_]+)/g)].map((m) => m[1]));
+  const allowed = new Set(['full_name', 'photo_url', 'university', 'promotion', 'track', 'membership', 'valid']);
+  assert.deepEqual([...used].filter((k) => !allowed.has(k)), []);
+  assert.doesNotMatch(page, /\b(phone|email|city|profession|member_id)\b/);
+  // الرمز يُمرَّر للخدمة فقط ولا يُعرض (لا {token} في JSX ولا في نص)
+  assert.match(page, /verifyMemberCard\(token\)/);
+  assert.doesNotMatch(page, /\{token\}|\$\{token\}|\{t\([^)]*token/);
+  assert.match(page, /useNoindex\(\)/);
+  assert.doesNotMatch(page, /InteriorLayout/); // يكتب canonical وog:url بمسار فيه الرمز
+  // لون + أيقونة + نص
+  assert.match(page, /const ICONS = \{ active: Check, inactive: AlertTriangle, unknown: AlertTriangle, invalid: X, problem: HelpCircle \}/);
+  assert.match(page, /verify\.state\.\$\{state\}\.title/);
+  // «مسح رمز آخر» يوضّح أن الماسح كاميرا الهاتف ولا يفتح كاميرا الموقع
+  assert.match(page, /verify\.scanAnother/);
+  assert.match(page, /verify\.scanHelp/);
+  assert.doesNotMatch(page, /getUserMedia|BarcodeDetector|mediaDevices/);
+  assert.match(get(locales.ar, 'verify.scanHelp'), /كاميرا هاتفك العادية/);
+  // شكل واحد للأحمر: العنوان والنص مفتاحان ثابتان للحالة invalid
+  assert.equal(get(locales.ar, 'verify.state.invalid.title'), 'رمز غير صالح أو منتهٍ');
+});
+
+test('البطاقة: الخدمات تستدعي الدوال الثلاث بأسمائها، وشارة الانخراط في MemberHome', () => {
+  assert.match(service, /rpc\('issue_member_card_token'\)/);
+  assert.match(service, /rpc\('verify_member_card', \{ p_token: String\(token \|\| ''\) \}\)/);
+  assert.match(service, /rpc\('get_my_membership_status'\)/);
+  const home = read('src/pages/member/MemberHome.jsx');
+  assert.match(home, /import MembershipBadge from '..\/..\/components\/member\/MembershipBadge'/);
+  assert.match(home, /<MembershipBadge status=\{membership\.status\}/);
+});
+
+test('البطاقة: netlify يضع noindex وno-referrer وno-store لـ /verify/*، وrobots يمنعه، وcamera=(self) للماسح داخل الموقع', () => {
+  const toml = read('netlify.toml');
+  const block = toml.match(/\[\[headers\]\]\s*for = "\/verify\/\*"[\s\S]*?(?=\n\[\[headers\]\]|\n# |$)/)[0];
+  assert.match(block, /X-Robots-Tag = "noindex, nofollow"/);
+  assert.match(block, /Referrer-Policy = "no-referrer"/);
+  assert.match(block, /Cache-Control = "no-store"/);
+  assert.match(toml, /Permissions-Policy = "geolocation=\(\), microphone=\(\), camera=\(self\), payment=\(\)"/); // 0041: ماسح الحضور داخل الموقع
+  assert.doesNotMatch(block, /Permissions-Policy/);
+  assert.match(read('public/robots.txt'), /^Disallow: \/verify\/$/m);
+  assert.match(read('public/robots.txt'), /^Disallow: \/member\/$/m);
+});
+
+/* ---------- حضور الأنشطة (0041) ---------- */
+
+test('الحضور: الخدمات تطابق دوال 0041، وزر البطاقة في الأنشطة للمخوَّلين فقط (ليس للقراءة فقط)', () => {
+  const adm = read('src/services/supabase/adminAttendance.service.js') + service;
+  for (const m of adm.matchAll(/rpc\('([a-z_]+)'(?:, \{([^}]*)\})?/g)) {
+    if (!/attendance/.test(m[1])) continue;
+    const def = sql41.match(new RegExp(`function public\\.${m[1]}\\(([^)]*)\\)`));
+    assert.ok(def, `rpc ${m[1]} غير معرّفة في 0041`);
+    const wanted = (m[2] || '').split(',').map((x) => x.split(':')[0].trim()).filter(Boolean);
+    const have = def[1].split(',').map((x) => x.trim().split(/\s+/)[0]).filter(Boolean);
+    assert.deepEqual(wanted.sort(), have.sort(), m[1]);
+  }
+  const act = read('src/pages/admin/Activities.jsx');
+  assert.match(act, /\{readOnly \? '—' : \(<>[\s\S]*?setAttendanceTarget\(a\)/);
+  assert.match(act, /if \(!readOnly\) loadAttendance\(\)/);
+});
+
+test('الحضور: الماسح داخل الموقع — BarcodeDetector محلي، لا رفع صور ولا تخزين، إيقاف الكاميرا، وقائمة يدوية احتياطية', () => {
+  const sc = read('src/pages/admin/AttendanceScanner.jsx');
+  assert.match(sc, /new window\.BarcodeDetector\(\{ formats: \['qr_code'\] \}\)/);
+  assert.match(sc, /getTracks\(\)\.forEach\(\(t\) => t\.stop\(\)\)/);
+  assert.match(sc, /clearInterval\(timerRef\.current\)/);
+  assert.match(sc, /visibilitychange/);
+  assert.doesNotMatch(sc, /fetch\(|XMLHttpRequest|toDataURL|toBlob|drawImage|supabase/);
+  const modal = read('src/pages/admin/ActivityAttendanceModal.jsx');
+  assert.match(modal, /scannerSupported\(\)/);
+  assert.match(modal, /recordAttendanceManual/);
+  assert.match(modal, /tr\('مسجّل مسبقًا'\)|مسجّل مسبقًا/);
+  assert.match(modal, /window\.confirm\(tr\('ستتغيّر رموز/);
+});
+
+test('الحضور: بطاقة العضو — نص مبهم، لا رابط، تظهر في /member/id، وتفاتيح i18n موجودة بالثلاث لغات', () => {
+  assert.match(read('src/pages/member/MemberIdCard.jsx'), /<MemberAttendanceCards \/>/);
+  const comp = read('src/components/member/MemberAttendanceCards.jsx');
+  assert.match(comp, /attendanceCodeText\(c\.token\)/);
+  assert.doesNotMatch(comp, /verifyUrl|window\.location/);
+  for (const l of ['ar', 'fr', 'en']) for (const k of ['title', 'hint', 'error', 'attended', 'qrLabel']) {
+    const v = get(locales[l], `member.id.attendance.${k}`);
+    assert.ok(typeof v === 'string' && v.trim(), `${l}:${k}`);
+  }
 });

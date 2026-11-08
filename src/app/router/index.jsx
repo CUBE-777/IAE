@@ -25,8 +25,10 @@ const MemberHelp = lazy(() => import('../../pages/member/MemberHelp'));
 const MemberLayout = lazy(() => import('../../layouts/MemberLayout'));
 const MemberHome = lazy(() => import('../../pages/member/MemberHome'));
 const MemberCard = lazy(() => import('../../pages/member/MemberCard'));
+const MemberIdCard = lazy(() => import('../../pages/member/MemberIdCard'));
 const MemberSecurity = lazy(() => import('../../pages/member/MemberSecurity'));
 const MemberAnnouncements = lazy(() => import('../../pages/member/MemberAnnouncements'));
+const VerifyCard = lazy(() => import('../../pages/public/VerifyCard'));
 const NotFound = lazy(() => import('../../pages/public/NotFound'));
 const Login = lazy(() => import('../../pages/admin/Login'));
 const Dashboard = lazy(() => import('../../pages/admin/Dashboard'));
@@ -94,6 +96,9 @@ export const router = createBrowserRouter([
       // رابط شخصي لعضو المكتب ليملأ ملفه العام بنفسه (migration 0031) — صفحة غير مفهرسة
       { path: '/board-profile/:token', element: <BoardProfileFormPage /> },
 
+      // صفحة التحقق العامة من بطاقة العضوية الرقمية (0040): يفتحها من يمسح الرمز بكاميرا الهاتف — غير مفهرسة وبلا تخزين
+      { path: '/verify/:token', element: <VerifyCard /> },
+
       // فضاء المنخرطين (المرحلة 4): دخول وتفعيل عامّان، وما بعدهما خلف حارس حساب العضو (MemberLayout). كلها غير مفهرسة
       { path: '/member/login', element: <MemberLogin /> },
       { path: '/member/activate/:token', element: <MemberActivate /> },
@@ -104,6 +109,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <MemberHome /> },
           { path: 'card', element: <MemberCard /> },
+          { path: 'id', element: <MemberIdCard /> },
           { path: 'announcements', element: <MemberAnnouncements /> },
           { path: 'security', element: <MemberSecurity /> },
         ],

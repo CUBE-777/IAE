@@ -241,3 +241,42 @@ export async function resolveAccessRequest(requestId, status = 'handled') {
   const { error } = await supabase.rpc('resolve_member_access_request', { p_request_id: requestId, p_status: status });
   if (error) throw error;
 }
+
+/* ---------- بطاقة العضوية الرقمية (0040) ---------- */
+
+/**
+ * رمز QR جديد للعضو النشط: { token, expires_at }. الرمز الخام يُعاد مرة واحدة ولا يُخزَّن في أي مكان (لا storage ولا رابط ولا سجل).
+ * يرمي خطأ رسالته rate_limited عند تجاوز 30 رمزًا/ساعة، أو غير مصرّح إن لم يكن الحساب لعضو نشط.
+ */
+export async function issueMemberCardToken() {
+  const { data, error } = await supabase.rpc('issue_member_card_token');
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * تحقق عام (زائر بلا جلسة): { valid: false } أو { valid: true, full_name, photo_url, university, promotion, track, membership: { season, active } }.
+ * لا يُفرَّق بين المنتهي وغير المعروف. يرمي خطأ رسالته rate_limited عند تجاوز 30 محاولة/10 دقائق.
+ */
+export async function verifyMemberCard(token) {
+  const { data, error } = await supabase.rpc('verify_member_card', { p_token: String(token || '') });
+  if (error) throw error;
+  return data && typeof data === 'object' ? data : { valid: false };
+}
+
+/** حالة انخراطي للموسم الحالي: { season, active, paid_at, has_previous } أو null إن لم تكن الجلسة لعضو. */
+export async function getMyMembershipStatus() {
+  const { data, error } = await supabase.rpc('get_my_membership_status');
+  if (error) throw error;
+  return data || null;
+}
+
+/**
+ * بطاقات الحضور المفتوحة للعضو (0041): [{ activity_id, title, date, token, attended }]. الرمز ثابت لنفس (نشاط، عضو).
+ * لا يُخزَّن في المتصفح؛ يُجلب عند فتح الصفحة.
+ */
+export async function getMyAttendanceCards() {
+  const { data, error } = await supabase.rpc('get_my_attendance_cards');
+  if (error) throw error;
+  return Array.isArray(data) ? data : [];
+}

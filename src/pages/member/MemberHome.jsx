@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useOutletContext, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MemberPage from '../../components/member/MemberPage';
+import MembershipBadge from '../../components/member/MembershipBadge';
+import { useMyMembershipStatus } from '../../hooks/useMyMembershipStatus';
 import FormField from '../../components/common/FormField';
 import PersonCard from '../../components/common/PersonCard';
 import { memberCompleteness } from '../../utils/memberCompleteness';
@@ -24,6 +26,7 @@ const show = (v) => (v == null || String(v).trim() === '' ? '—' : v);
 export default function MemberHome() {
   const { t, i18n } = useTranslation();
   const { member, reload } = useOutletContext();
+  const membership = useMyMembershipStatus();
   const [phone, setPhone] = useState(member.phone || '');
   const [city, setCity] = useState(member.city || '');
   const [phoneError, setPhoneError] = useState('');
@@ -170,6 +173,7 @@ export default function MemberHome() {
           <div className="member-profile-meta">
             <h2>{t('member.home.hello', { name: member.full_name })}</h2>
             <p className="mf-hint">{[member.university, member.promotion].filter((v) => v && String(v).trim()).join(' · ')}</p>
+            <MembershipBadge status={membership.status} failed={membership.failed} onRetry={membership.reload} />
           </div>
         </header>
 

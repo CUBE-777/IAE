@@ -984,7 +984,8 @@
       "logout": "Log out",
       "security": "Security",
       "announcements": "Announcements",
-      "newAnnouncements": "New announcements"
+      "newAnnouncements": "New announcements",
+      "id": "Membership card"
     },
     "login": {
       "pageTitle": "Members' login",
@@ -1144,6 +1145,49 @@
       "rateLimited": "Too many attempts. Please try again later.",
       "error": "Couldn't send the request. Please try again later."
     },
+    "id": {
+      "title": "Membership card",
+      "description": "A rotating QR code that proves you belong to the IAE club and shows your membership status for the current season.",
+      "pageTitle": "Membership card",
+      "sectionLabel": "Membership verification code",
+      "qrLabel": "QR code to verify your membership, refreshed automatically",
+      "refresh": "Refresh now",
+      "fullscreen": "Full screen",
+      "fullscreenLabel": "Membership code in full screen",
+      "close": "Close",
+      "expiresIn": "This code expires in {{seconds}} s",
+      "noCode": "No code right now",
+      "retryHint": "Press “Refresh now” to try again.",
+      "howTo": "The other person scans the code with their phone's regular camera and a verification page opens showing your name and membership status.",
+      "privacy": "The code holds no personal data, refreshes about every 90 seconds and expires after 2 minutes, so photographing it is pointless.",
+      "paidAt": "Membership date: {{date}}",
+      "attendance": {
+        "title": "Activity attendance cards",
+        "hint": "Each published activity has your personal code, valid for that activity only. Show it to the organizer, who scans it from the site and your attendance is recorded.",
+        "error": "Couldn't load the attendance cards.",
+        "attended": "Your attendance is recorded",
+        "qrLabel": "Attendance code for the activity {{title}}"
+      },
+      "status": {
+        "loading": "Creating the code…",
+        "ready": "The code is ready to scan."
+      },
+      "problem": {
+        "forbidden": "Couldn't issue the code: your account isn't active right now. Please contact the administration.",
+        "rateLimited": "You've generated too many codes in a short time. Wait a moment, then press “Refresh now”.",
+        "rateLimitedKeep": "Couldn't refresh the code right now (too many codes). The current code stays valid until it expires.",
+        "network": "Couldn't reach the server. Check your connection, then press “Refresh now”.",
+        "networkKeep": "Couldn't refresh the code right now. The current code stays valid until it expires and we'll retry automatically."
+      },
+      "badge": {
+        "loading": "Loading membership status…",
+        "error": "Couldn't load your membership status.",
+        "active": "Member · season {{season}}",
+        "lapsed": "Membership not renewed · season {{season}}",
+        "none": "Not a member · season {{season}}",
+        "unset": "Season not set yet"
+      }
+    },
     "history": {
       "title": "My previous requests",
       "text": "Your latest card edit requests before the most recent one, with the administration's notes where any.",
@@ -1212,6 +1256,38 @@
       "submitError": "Couldn't send the request. Try again.",
       "rateLimited": "Too many requests today. Try again tomorrow.",
       "privacy": "This information is published only after the administration approves it."
+    }
+  },
+  "verify": {
+    "pageTitle": "Membership card verification",
+    "crumb": "Membership verification",
+    "title": "Membership card verification",
+    "description": "Result of checking an IAE club member's code.",
+    "loading": "Verifying…",
+    "retry": "Try again",
+    "scanAnother": "Scan another code",
+    "scanHelp": "This page doesn't scan codes. To scan another one, open your phone's regular camera, point it at the member's QR code, then open the link that appears.",
+    "state": {
+      "active": {
+        "title": "Active member",
+        "text": "This member is a paid-up member of the IAE club for the {{season}} season."
+      },
+      "inactive": {
+        "title": "Valid member — not paid up",
+        "text": "This member is known to the club but is not a member for the {{season}} season."
+      },
+      "unknown": {
+        "title": "Valid member — season not set",
+        "text": "This member is known to the club, but the current membership season hasn't been set yet, so their membership can't be confirmed."
+      },
+      "invalid": {
+        "title": "Invalid or expired code",
+        "text": "This code can't be accepted. Ask the member to refresh the code on their card, then scan again."
+      },
+      "problem": {
+        "title": "Can't verify right now",
+        "text": "There was a connection problem, or too many attempts from this device. Wait a moment and try again. This doesn't mean the code is invalid."
+      }
     }
   }
 }
