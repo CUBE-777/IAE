@@ -23,6 +23,7 @@ import {
 } from '../../services/supabase/membershipFlow.service';
 const FIELD = (v) => (v == null || v === '' ? '—' : v);
 const CSV_HEADERS = ['full_name', 'university', 'promotion', 'track', 'profession', 'city', 'email', 'phone', 'status'];
+const CSV_HEADERS_WITH_MEMBERSHIP = [...CSV_HEADERS, 'membership'];
 
 export default function Members() {
   // نظام الأعضاء للأدوار الأربعة فقط (can_manage_member_system)؛ صفحة الأعضاء نفسها أوسع (تشمل النواب)
@@ -44,6 +45,7 @@ export default function Members() {
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
   const [status, setStatus] = useState('');
+  const [paidFilter, setPaidFilter] = useState(''); // '' | 'paid' | 'unpaid' (للموسم الحالي)
   const search = useDebouncedValue(searchInput, 350);
 
   const [rows, setRows] = useState(null);
@@ -108,12 +110,12 @@ export default function Members() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, status]);
+  }, [search, status, paidFilter]);
 
   const load = () => {
     setRows(null);
     setError(false);
-    fetchMembersPage({ page, search, status })
+    fetchMembersPage({ page, search, status, paid: paidFilter, season: settings.season })
       .then(({ rows: r, total: t }) => {
         setRows(r);
         setTotal(t);
@@ -125,7 +127,7 @@ export default function Members() {
       });
   };
 
-  useEffect(load, [page, search, status]);
+  useEffect(load, [page, search, status, paidFilter, settings.season]);
 
   const doDelete = async (member) => {
     setDeleteTarget(null);
@@ -145,8 +147,8 @@ export default function Members() {
     setExporting(true);
     const t = window.notify?.loading(tr('جاري تجهيز الملف...'));
     try {
-      const data = await fetchAllMembersForExport();
-      downloadCsv('members.csv', data, CSV_HEADERS);
+      const data = await fetchAllMembersForExport({ paidIds: settings.season ? paid : null });
+      downloadCsv('members.csv', data, settings.season ? CSV_HEADERS_WITH_MEMBERSHIP : CSV_HEADERS);
       t?.remove();
     } catch (err) {
       t?.remove();
@@ -196,6 +198,13 @@ export default function Members() {
             <option value="active">{tr('نشط')}</option>
             <option value="inactive">{tr('غير نشط')}</option>
           </select>
+          {settings.season && (
+            <select className="admin-select" style={{ width: 'auto' }} value={paidFilter} onChange={(e) => setPaidFilter(e.target.value)} aria-label={tr('الانخراط')}>
+              <option value="">{tr('كل حالات الانخراط')}</option>
+              <option value="unpaid">{tr('غير منخرط هذا الموسم')}</option>
+              <option value="paid">{tr('منخرط هذا الموسم')}</option>
+            </select>
+          )}
         </div>
 
         {rows === null && !error && <div className="admin-state-box">{tr('جاري التحميل...')}</div>}

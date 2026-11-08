@@ -8,6 +8,7 @@ import { diffBoardProfile } from '../../utils/boardProfileDiff';
 import { tr, dateLocale } from '../../i18n/adminDict';
 
 const cell = { whiteSpace: 'pre-wrap', wordBreak: 'break-word', verticalAlign: 'top' };
+const isStaleRequestError = (err) => /تغيّر الطلب أثناء مراجعتك|لا يوجد طلب قيد المراجعة/.test(err?.message || '');
 const show = (v) => (v === '' || v == null ? '—' : v);
 
 /** فروق الطلب عن البطاقة المنشورة: حقول الملف المشترك + المهنة + الموافقة على الظهور. members.bio خاصة بالإدارة ولا تدخل المقارنة. */
@@ -52,7 +53,7 @@ function ReviewRow({ request, onDone }) {
     let publicUrl = null;
     try {
       if (request.photo_path && usePhoto) publicUrl = await publishCardRequestPhoto(request.photo_path, m.id);
-      await approveCardRequest(request.id, publicUrl);
+      await approveCardRequest(request.id, publicUrl, request.updated_at);
       t?.remove();
       window.notify?.success(tr('تم اعتماد التعديل ونشره'));
       onDone();
@@ -61,18 +62,20 @@ function ReviewRow({ request, onDone }) {
       if (publicUrl) await deleteImageByUrl(publicUrl); // لا نترك صورة يتيمة في الـ bucket العام
       window.notify?.fromError(err, tr('تعذر الاعتماد'));
       setBusy(false);
+      if (isStaleRequestError(err)) onDone(); // أعد تحميل القائمة ليرى المسؤول النسخة الجديدة
     }
   };
 
   const reject = async () => {
     setBusy(true);
     try {
-      await rejectCardRequest(request.id, note.trim());
+      await rejectCardRequest(request.id, note.trim(), request.updated_at);
       window.notify?.success(tr('تم رفض الطلب'));
       onDone();
     } catch (err) {
       window.notify?.fromError(err, tr('تعذر الرفض'));
       setBusy(false);
+      if (isStaleRequestError(err)) onDone();
     }
   };
 

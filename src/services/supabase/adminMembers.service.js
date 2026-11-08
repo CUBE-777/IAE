@@ -18,8 +18,14 @@ const withoutProfileCols = (payload) => {
 const hasProfileCols = (payload) => PROFILE_COLS.some((k) => k in payload);
 const hasOptionalCols = (payload) => hasProfileCols(payload) || DIRECTORY_COL in payload;
 
-export async function fetchMembersPage({ page, search, status }) {
-  let query = supabase.from('members').select('*', { count: 'exact' }).is('deleted_at', null);
+// paid: 'unpaid' | 'paid' | '' مع season؛ نربط member_memberships (FK member_id) ونصفّي بالموسم داخل الربط
+export async function fetchMembersPage({ page, search, status, paid = '', season = null }) {
+  const byPaid = !!season && (paid === 'paid' || paid === 'unpaid');
+  let query = byPaid
+    ? supabase.from('members').select('*, mm:member_memberships(season)', { count: 'exact' }).eq('mm.season', season)
+    : supabase.from('members').select('*', { count: 'exact' });
+  query = query.is('deleted_at', null);
+  if (byPaid) query = paid === 'paid' ? query.not('mm', 'is', null) : query.is('mm', null);
   if (status) query = query.eq('status', status);
   if (search) {
     const s = search.replace(/[%_]/g, '');
@@ -63,11 +69,12 @@ export async function softDeleteMember(member) {
   await logAction('ADMIN_DELETED_MEMBER', 'members', member.id, `حذف العضو ${member.full_name}`);
 }
 
-export async function fetchAllMembersForExport() {
+export async function fetchAllMembersForExport({ paidIds = null } = {}) {
   const { data, error } = await supabase
     .from('members')
-    .select('full_name,university,promotion,track,profession,city,email,phone,status')
+    .select('id,full_name,university,promotion,track,profession,city,email,phone,status')
     .is('deleted_at', null);
   if (error) throw error;
-  return data || [];
+  // paidIds (Set) اختياري: يضيف عمود حالة الانخراط في الموسم الحالي
+  return (data || []).map(({ id, ...r }) => (paidIds ? { ...r, membership: paidIds.has(id) ? 'منخرط' : 'غير منخرط' } : r));
 }

@@ -11,6 +11,7 @@ const sql39 = stripSql(read('supabase/migrations/0039_member_access_requests.sql
 const sql40 = stripSql(read('supabase/migrations/0040_member_card_tokens.sql'));
 const sql41 = stripSql(read('supabase/migrations/0041_activity_attendance.sql'));
 const sql42 = stripSql(read('supabase/migrations/0042_member_card_permanent_token.sql'));
+const sql44 = read('supabase/migrations/0044_card_request_review_race.sql'); // توقيعات approve/reject الأحدث
 const sql35 = read('supabase/migrations/0035_member_accounts.sql');
 const edge = read('supabase/functions/member-activate/index.ts');
 const service = read('src/services/supabase/memberSpace.service.js');
@@ -35,11 +36,11 @@ test('الأدوار: ROLES_MEMBER_SYSTEM يطابق can_manage_member_system ف
   for (const r of R.ROLES_MEMBER_SYSTEM) assert.ok(R.ALL_ROLES.includes(r));
 });
 
-test('الخدمة: كل RPC وبارامتراتها موجودة في migrations الأعضاء (0036/0039/0040/0041/0042) بالأسماء نفسها', () => {
+test('الخدمة: كل RPC وبارامتراتها موجودة في migrations الأعضاء (0036/0039/0040/0041/0042/0044) بالأسماء نفسها', () => {
   const calls = [...service.matchAll(/rpc\('([a-z_]+)'(?:, \{([^}]*)\})?/g)];
   assert.ok(calls.length >= 11);
   for (const [, name, args] of calls) {
-    const m = (sql36 + sql39 + sql40 + sql41 + sql42).match(new RegExp(`function public\\.${name}\\(([^)]*)\\)`));
+    const m = (sql44 + sql36 + sql39 + sql40 + sql41 + sql42).match(new RegExp(`function public\\.${name}\\(([^)]*)\\)`));
     assert.ok(m, `الدالة ${name} غير معرّفة في 0036/0039`);
     const declared = [...m[1].matchAll(/\b(p_[a-z_]+)\b/g)].map((x) => x[1]);
     const used = args ? [...args.matchAll(/\b(p_[a-z_]+)\b/g)].map((x) => x[1]) : [];

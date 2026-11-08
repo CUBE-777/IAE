@@ -80,7 +80,9 @@ window.notify = {
 window.notify.fromError = function (err, fallback) {
   const raw = (err && (err.message || err.error_description || String(err))) || '';
   let msg = fallback || i18n.t('admin.errors.unexpected');
-  if (/permission|policy|RLS/i.test(raw)) msg = i18n.t('admin.errors.permission');
+  // رسائل raise exception المكتوبة عربيًا في دوال SQL مقصودة للمستخدم؛ أخطاء Postgres الداخلية إنجليزية فتبقى للـ console فقط
+  if (/[\u0600-\u06FF]/.test(raw)) msg = raw;
+  else if (/permission|policy|RLS/i.test(raw)) msg = i18n.t('admin.errors.permission');
   else if (/duplicate|unique/i.test(raw)) msg = i18n.t('admin.errors.duplicate');
   else if (/network|fetch/i.test(raw)) msg = i18n.t('admin.errors.network');
   else if (/JWT|auth|session/i.test(raw)) msg = i18n.t('admin.errors.session');

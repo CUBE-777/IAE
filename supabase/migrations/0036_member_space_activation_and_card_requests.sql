@@ -443,7 +443,7 @@ begin
   select * into v_m from public.members where id = v_r.member_id and deleted_at is null for update;
   if not found then raise exception 'العضو غير موجود'; end if;
 
-  if p_photo_url is not null and p_photo_url !~ '^https://[^[:space:]]{8,500}$' then
+  if p_photo_url is not null and (p_photo_url !~ '^https://[^[:space:]]{8,}$' or length(p_photo_url) > 508) then
     raise exception 'رابط الصورة غير صالح';
   end if;
 

@@ -164,3 +164,15 @@ test('member-activate: لا تثق بالبريد القادم من العميل
   assert.match(edge, /\^\[0-9a-f\]\{64\}\$/);
   assert.doesNotMatch(edge, /Access-Control-Allow-Origin': '\*'/);
 });
+
+test('لا يتجاوز أي تكرار {n,m} في تعبيرات SQL حدّ PostgreSQL (255)', () => {
+  const dir = new URL('../supabase/migrations/', import.meta.url);
+  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.sql'))) {
+    const body = stripSql(fs.readFileSync(new URL(f, dir), 'utf8'));
+    for (const m of body.matchAll(/\{(\d+)(?:,(\d*))?\}/g)) {
+      for (const n of [m[1], m[2]]) {
+        if (n) assert.ok(Number(n) <= 255, `${f}: ${m[0]} يتجاوز 255`);
+      }
+    }
+  }
+});

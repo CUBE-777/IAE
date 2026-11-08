@@ -1223,6 +1223,18 @@ export const ADMIN_DICT = {
   "fr": "Rechercher par nom, université, profession, ville, promotion…",
   "en": "Search by name, university, occupation, city, cohort…"
  },
+ "كل حالات الانخراط": {
+  "fr": "Toutes les adhésions",
+  "en": "All membership statuses"
+ },
+ "غير منخرط هذا الموسم": {
+  "fr": "Non adhérent cette saison",
+  "en": "Not a member this season"
+ },
+ "منخرط هذا الموسم": {
+  "fr": "Adhérent cette saison",
+  "en": "Member this season"
+ },
  "كل الحالات": {
   "fr": "Tous les statuts",
   "en": "All statuses"

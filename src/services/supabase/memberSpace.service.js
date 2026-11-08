@@ -164,7 +164,7 @@ export async function issueMemberActivationLink(memberId) {
 }
 
 const REQUEST_SELECT =
-  'id, member_id, status, data, photo_path, review_note, created_at, ' +
+  'id, member_id, status, data, photo_path, review_note, created_at, updated_at, ' +
   'members(id, full_name, photo_url, university, promotion, track, profession, public_bio, study_path, socials, extra, translations, show_in_directory)';
 
 export async function fetchPendingCardRequests() {
@@ -203,13 +203,18 @@ export async function publishCardRequestPhoto(path, memberId) {
   return uploadImage(file, 'members');
 }
 
-export async function approveCardRequest(requestId, photoUrl = null) {
-  const { error } = await supabase.rpc('approve_member_card_request', { p_request_id: requestId, p_photo_url: photoUrl });
+// expectedUpdatedAt: قيمة updated_at كما رآها المسؤول (نصًا كما وصلت، دون تحويلها إلى Date) لمنع اعتماد طلب عدّله العضو بعد فتحه
+export async function approveCardRequest(requestId, photoUrl = null, expectedUpdatedAt = null) {
+  const { error } = await supabase.rpc('approve_member_card_request', {
+    p_request_id: requestId, p_photo_url: photoUrl, p_expected_updated_at: expectedUpdatedAt,
+  });
   if (error) throw error;
 }
 
-export async function rejectCardRequest(requestId, note = '') {
-  const { error } = await supabase.rpc('reject_member_card_request', { p_request_id: requestId, p_note: note || null });
+export async function rejectCardRequest(requestId, note = '', expectedUpdatedAt = null) {
+  const { error } = await supabase.rpc('reject_member_card_request', {
+    p_request_id: requestId, p_note: note || null, p_expected_updated_at: expectedUpdatedAt,
+  });
   if (error) throw error;
 }
 

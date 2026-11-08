@@ -137,7 +137,7 @@ begin
     end if;
     v_url := public._bp_text(v_val, 300);
     if v_url is null then continue; end if;
-    if v_url !~* '^https?://[^[:space:]<>"'']{4,290}$' then
+    if (v_url !~* '^https?://[^[:space:]<>"'']{4,}$' or length(v_url) > 300) then
       raise exception 'رابط غير صالح';
     end if;
     v_socials := v_socials || jsonb_build_object(v_key, v_url);
@@ -390,7 +390,7 @@ begin
   select * into v_b from public.board_members where id = v_link.board_member_id for update;
   if not found then raise exception 'عضو المكتب غير موجود'; end if;
 
-  if p_photo_url is not null and p_photo_url !~ '^https://[^[:space:]]{8,500}$' then
+  if p_photo_url is not null and (p_photo_url !~ '^https://[^[:space:]]{8,}$' or length(p_photo_url) > 508) then
     raise exception 'رابط الصورة غير صالح';
   end if;
 
