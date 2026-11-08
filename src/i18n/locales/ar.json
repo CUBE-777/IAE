@@ -985,7 +985,7 @@
       "security": "الأمان",
       "announcements": "الإعلانات",
       "newAnnouncements": "إعلانات جديدة",
-      "more": "المزيد", "moreLabel": "المزيد من الخيارات", "tabsLabel": "التنقل السريع", "memberSince": "منخرط",
+      "more": "المزيد", "moreLabel": "المزيد من الخيارات", "tabsLabel": "التنقل السريع", "memberSince": "منخرط", "install": "تثبيت التطبيق", "installIosHint": "على الآيفون: اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية».",
       "id": "بطاقة العضوية"
     },
     "login": {

@@ -142,3 +142,28 @@ html[data-theme='dark'] .member-membership-none, html[data-theme='dark'] .member
 .ms-main > * { animation: ms-in 0.28s ease-out both; }
 @keyframes ms-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .ms-main > * { animation: none; } }
+
+/* ======== المرحلة 3: التثبيت، الأمان، بطاقة العضوية ======== */
+.ms-install { display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 14px; width: 100%; margin-top: 8px; border: 1px dashed var(--border); border-radius: var(--radius-md); background: transparent; color: var(--accent-ink); font: inherit; font-weight: 700; cursor: pointer; text-align: start; }
+.ms-hint { margin: 6px 4px 0; font-size: var(--text-small); color: var(--muted); line-height: var(--leading-normal); }
+.ms-actions .btn { min-height: 48px; }
+.ms-main .mf-group .ma-strength { margin: 4px 0 8px; }
+.ms-main .mf-group .pw-wrap input { min-height: 48px; }
+
+/* بطاقة العضوية: رمز أكبر وأزرار بعرض كامل على الهاتف */
+.ms-main .member-id-card { padding: 22px 16px; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
+.ms-main .member-qr { width: min(100%, 340px); box-shadow: var(--shadow-sm); }
+@media (max-width: 560px) {
+  .ms-main .member-id-actions { width: 100%; flex-direction: column; align-items: stretch; }
+  .ms-main .member-id-actions .btn { width: 100%; min-height: 50px; }
+  .ms-main .member-profile-head { display: none; } /* الاسم والصورة ظاهران أصلًا في الغلاف/بطاقة الترحيب */
+}
+
+/* إعلانات: بطاقات بعرض كامل ومسافات مريحة على الهاتف */
+@media (max-width: 640px) { .ms-main .ann-grid { grid-template-columns: 1fr; gap: 14px; } }
+
+/* شاشات عريضة جدًا: لا تتمدد البطاقات بلا حدّ */
+@media (min-width: 1400px) { .ms { max-width: 1280px; } }
+
+/* وضوح التركيز بلوحة المفاتيح داخل الغلاف */
+.ms-wrap :focus-visible, .ma-wrap :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }

@@ -985,7 +985,7 @@
       "security": "Sécurité",
       "announcements": "Annonces",
       "newAnnouncements": "Nouvelles annonces",
-      "more": "Plus", "moreLabel": "Plus d'options", "tabsLabel": "Navigation rapide", "memberSince": "Adhérent",
+      "more": "Plus", "moreLabel": "Plus d'options", "tabsLabel": "Navigation rapide", "memberSince": "Adhérent", "install": "Installer l'application", "installIosHint": "Sur iPhone : touchez Partager puis « Sur l'écran d'accueil ».",
       "id": "Carte de membre"
     },
     "login": {

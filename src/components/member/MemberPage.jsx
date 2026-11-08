@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Bell, MoreHorizontal, Home, LogOut, Pencil, QrCode, ShieldCheck } from 'lucide-react';
+import { Bell, Download, MoreHorizontal, Home, LogOut, Pencil, QrCode, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../app/providers/AuthProvider';
 import { useNoindex } from '../../hooks/useNoindex';
 import { useNewAnnouncement } from '../../hooks/useNewAnnouncement';
+import { useInstallState } from '../../hooks/useAdminPwa';
+import { promptInstall } from '../../utils/pwaInstall';
 import '../../styles/member-shell.css';
 
 /**
@@ -20,6 +22,10 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
   const location = useLocation();
   const hasNewAnnouncement = useNewAnnouncement();
   const [moreOpen, setMoreOpen] = useState(false);
+  const [iosHint, setIosHint] = useState(false);
+  const { canPrompt, installed, ios } = useInstallState();
+  const canInstall = !installed && (canPrompt || ios);
+  const onInstall = () => { if (canPrompt) promptInstall(); else setIosHint((v) => !v); };
   const moreRef = useRef(null);
   useNoindex();
 
@@ -67,6 +73,8 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
           <NavLink to="/member/announcements"><Bell size={20} aria-hidden="true" />{t('member.nav.announcements')}{dot}</NavLink>
           <NavLink to="/member/security"><ShieldCheck size={20} aria-hidden="true" />{t('member.nav.security')}</NavLink>
         </nav>
+        {canInstall && <button type="button" className="ms-install" onClick={onInstall}><Download size={20} aria-hidden="true" />{t('member.nav.install')}</button>}
+        {iosHint && !canPrompt && <p className="ms-hint">{t('member.nav.installIosHint')}</p>}
         <button type="button" className="ms-logout" onClick={() => logout()}><LogOut size={20} aria-hidden="true" />{t('member.nav.logout')}</button>
       </aside>
 
@@ -97,6 +105,8 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
             <div className="ms-sheet" role="menu">
               <NavLink to="/member/card" role="menuitem"><Pencil size={20} aria-hidden="true" />{t('member.nav.card')}</NavLink>
               <NavLink to="/member/security" role="menuitem"><ShieldCheck size={20} aria-hidden="true" />{t('member.nav.security')}</NavLink>
+              {canInstall && <button type="button" role="menuitem" onClick={onInstall}><Download size={20} aria-hidden="true" />{t('member.nav.install')}</button>}
+              {iosHint && !canPrompt && <p className="ms-hint">{t('member.nav.installIosHint')}</p>}
               <button type="button" role="menuitem" className="ms-sheet-out" onClick={() => logout()}><LogOut size={20} aria-hidden="true" />{t('member.nav.logout')}</button>
             </div>
           )}

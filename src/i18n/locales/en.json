@@ -985,7 +985,7 @@
       "security": "Security",
       "announcements": "Announcements",
       "newAnnouncements": "New announcements",
-      "more": "More", "moreLabel": "More options", "tabsLabel": "Quick navigation", "memberSince": "Member",
+      "more": "More", "moreLabel": "More options", "tabsLabel": "Quick navigation", "memberSince": "Member", "install": "Install app", "installIosHint": "On iPhone: tap Share, then “Add to Home Screen”.",
       "id": "Membership card"
     },
     "login": {

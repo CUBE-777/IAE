@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MemberPage from '../../components/member/MemberPage';
 import FormField from '../../components/common/FormField';
+import PasswordInput from '../../components/member/PasswordInput';
 import { changeMyPassword, signOutOtherSessions } from '../../services/supabase/memberSpace.service';
 import { MIN_LEN, MAX_LEN, STRENGTH_KEYS, passwordStrength } from '../../utils/passwordStrength';
 import { scrollBehavior } from '../../utils/motion';
@@ -33,7 +34,6 @@ export default function MemberSecurity() {
   }, [msg]);
 
   const strength = passwordStrength(next);
-  const type = show ? 'text' : 'password';
 
   const submit = async (e) => {
     e.preventDefault();
@@ -90,27 +90,25 @@ export default function MemberSecurity() {
             <legend>{t('member.security.password.title')}</legend>
             <p className="mf-hint">{t('member.security.password.text')}</p>
             <FormField id="ms-current" label={t('member.security.password.current')} required error={errors.current}>
-              {(a) => <input {...a} type={type} dir="ltr" autoComplete="current-password" maxLength={MAX_LEN} value={current} onChange={(e) => setCurrent(e.target.value)} />}
+              {(a) => <PasswordInput {...a} show={show} onToggle={() => setShow((v) => !v)} autoComplete="current-password" maxLength={MAX_LEN} value={current} onChange={(e) => setCurrent(e.target.value)} />}
             </FormField>
             <FormField id="ms-new" label={t('member.security.password.new')} required error={errors.next}>
-              {(a) => <input {...a} type={type} dir="ltr" autoComplete="new-password" maxLength={MAX_LEN} value={next} onChange={(e) => setNext(e.target.value)} />}
+              {(a) => <PasswordInput {...a} show={show} onToggle={() => setShow((v) => !v)} autoComplete="new-password" maxLength={MAX_LEN} value={next} onChange={(e) => setNext(e.target.value)} />}
             </FormField>
             <p className="mf-hint">{t('member.activate.hint')}</p>
             {strength && (
-              <p className={`mf-hint member-strength member-strength-${strength}`} role="status">
-                {t('member.activate.strengthLabel', { level: t(STRENGTH_KEYS[strength]) })}
-              </p>
+              <div className={`ma-strength ma-strength-${strength}`} role="status">
+                <span className="ma-strength-bar" aria-hidden="true"><i /></span>
+                <span className="member-strength">{t('member.activate.strengthLabel', { level: t(STRENGTH_KEYS[strength]) })}</span>
+              </div>
             )}
             <FormField id="ms-confirm" label={t('member.security.password.confirm')} required error={errors.confirm}>
-              {(a) => <input {...a} type={type} dir="ltr" autoComplete="new-password" maxLength={MAX_LEN} value={confirm} onChange={(e) => setConfirm(e.target.value)} />}
+              {(a) => <PasswordInput {...a} show={show} onToggle={() => setShow((v) => !v)} autoComplete="new-password" maxLength={MAX_LEN} value={confirm} onChange={(e) => setConfirm(e.target.value)} />}
             </FormField>
-            <label className="mf-hint member-show-pw">
-              <input type="checkbox" checked={show} onChange={(e) => setShow(e.target.checked)} /> {t('member.activate.show')}
-            </label>
             <label className="mf-hint member-show-pw">
               <input type="checkbox" checked={endOthers} onChange={(e) => setEndOthers(e.target.checked)} /> {t('member.security.password.endOthers')}
             </label>
-            <div className="member-actions">
+            <div className="member-actions ms-actions">
               <button type="submit" className="btn btn-gold" disabled={busy}>
                 {busy ? t('member.security.password.submitting') : t('member.security.password.submit')}
               </button>

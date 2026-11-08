@@ -55,6 +55,29 @@ export default function MemberIdCard() {
     };
   }, [full]);
 
+  // إبقاء الشاشة مضاءة أثناء عرض الرمز (حيث يُدعم Wake Lock) حتى لا تنطفئ أمام الماسح
+  useEffect(() => {
+    let lock = null;
+    let alive = true;
+    const acquire = async () => {
+      try {
+        if (document.visibilityState === 'visible' && navigator.wakeLock?.request) {
+          const l = await navigator.wakeLock.request('screen');
+          if (alive) lock = l; else l.release?.().catch?.(() => {});
+        }
+      } catch {
+        /* غير مدعوم أو مرفوض: لا شيء */
+      }
+    };
+    acquire();
+    document.addEventListener('visibilitychange', acquire);
+    return () => {
+      alive = false;
+      document.removeEventListener('visibilitychange', acquire);
+      lock?.release?.().catch?.(() => {});
+    };
+  }, []);
+
   // رسالة الحالة لقارئ الشاشة (polite): لا نُعلن العدّ التنازلي كل ثانية
   let statusText = '';
   if (!token && problem === 'forbidden') statusText = t('member.id.problem.forbidden');

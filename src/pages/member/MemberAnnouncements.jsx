@@ -46,7 +46,11 @@ export default function MemberAnnouncements() {
 
   return (
     <MemberPage titleKey="member.announcements.title" descriptionKey="member.announcements.description" pageTitleKey="member.announcements.pageTitle">
-      {status === 'loading' && <div className="ann-state" role="status">{t('announcements.loading')}</div>}
+      {status === 'loading' && (
+        <div role="status" aria-busy="true" aria-label={t('announcements.loading')}>
+          <div className="sk sk-card" /><div className="sk sk-card" /><div className="sk sk-card" />
+        </div>
+      )}
       {status === 'error' && (
         <div className="ann-state ann-state-error" role="alert">
           <span>{t('announcements.error')}</span>

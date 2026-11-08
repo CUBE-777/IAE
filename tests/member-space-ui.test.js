@@ -206,7 +206,7 @@ test('البطاقة: مسار /member/id داخل MemberLayout و/verify/:token
   // /verify ليس ضمن أبناء /member (لا يمرّ بحارس الجلسة)
   const memberBlock = router.slice(router.indexOf("path: '/member',"), router.indexOf("// /admin (بلا لاحقة)"));
   assert.doesNotMatch(memberBlock, /verify/);
-  assert.match(read('src/components/member/MemberPage.jsx'), /<NavLink to="\/member\/id">\{t\('member\.nav\.id'\)\}<\/NavLink>/);
+  assert.match(read('src/components/member/MemberPage.jsx'), /<NavLink to="\/member\/id">[\s\S]*?\{t\('member\.nav\.id'\)\}[\s\S]*?<\/NavLink>/);
 });
 
 test('البطاقة: مفاتيح member.id.* و member.nav.id و verify.* موجودة في اللغات الثلاث (بنصوص غير فارغة)', () => {
