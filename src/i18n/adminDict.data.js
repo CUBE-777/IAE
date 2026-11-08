@@ -1235,6 +1235,26 @@ export const ADMIN_DICT = {
   "fr": "Adhérent cette saison",
   "en": "Member this season"
  },
+ "عرض المحذوفين": {
+  "fr": "Afficher les supprimés",
+  "en": "Show deleted"
+ },
+ "استرجاع": {
+  "fr": "Restaurer",
+  "en": "Restore"
+ },
+ "تم استرجاع العضو": {
+  "fr": "Membre restauré",
+  "en": "Member restored"
+ },
+ "تعذر الاسترجاع": {
+  "fr": "Impossible de restaurer",
+  "en": "Couldn't restore"
+ },
+ "جاري الاسترجاع...": {
+  "fr": "Restauration en cours...",
+  "en": "Restoring..."
+ },
  "كل الحالات": {
   "fr": "Tous les statuts",
   "en": "All statuses"
@@ -1495,9 +1515,9 @@ export const ADMIN_DICT = {
   "fr": "Voulez-vous supprimer l'activité <strong>{{name}}</strong> ?",
   "en": "Do you want to delete the activity <strong>{{name}}</strong>?"
  },
- "هل تريد حذف العضو <strong>{{name}}</strong>؟ يمكن استرجاعه لاحقًا من قاعدة البيانات.": {
-  "fr": "Voulez-vous supprimer le membre <strong>{{name}}</strong> ? Il pourra être restauré plus tard depuis la base de données.",
-  "en": "Do you want to delete the member <strong>{{name}}</strong>? It can be restored later from the database."
+ "هل تريد حذف العضو <strong>{{name}}</strong>؟ يمكنك استرجاعه لاحقًا بخيار «عرض المحذوفين».": {
+  "fr": "Voulez-vous supprimer le membre <strong>{{name}}</strong> ? Vous pourrez le restaurer plus tard via l’option « Afficher les supprimés ».",
+  "en": "Do you want to delete the member <strong>{{name}}</strong>? You can restore them later with the “Show deleted” option."
  },
  "يجب أن يبدأ الرابط بـ https:// ويكون صالحًا.": {
   "fr": "Le lien doit commencer par https:// et être valide.",

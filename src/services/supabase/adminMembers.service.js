@@ -19,12 +19,12 @@ const hasProfileCols = (payload) => PROFILE_COLS.some((k) => k in payload);
 const hasOptionalCols = (payload) => hasProfileCols(payload) || DIRECTORY_COL in payload;
 
 // paid: 'unpaid' | 'paid' | '' مع season؛ نربط member_memberships (FK member_id) ونصفّي بالموسم داخل الربط
-export async function fetchMembersPage({ page, search, status, paid = '', season = null }) {
+export async function fetchMembersPage({ page, search, status, paid = '', season = null, deleted = false }) {
   const byPaid = !!season && (paid === 'paid' || paid === 'unpaid');
   let query = byPaid
     ? supabase.from('members').select('*, mm:member_memberships(season)', { count: 'exact' }).eq('mm.season', season)
     : supabase.from('members').select('*', { count: 'exact' });
-  query = query.is('deleted_at', null);
+  query = deleted ? query.not('deleted_at', 'is', null) : query.is('deleted_at', null); // المحذوفون: يقرؤهم المسؤولون فقط (members_admin_read_all)
   if (byPaid) query = paid === 'paid' ? query.not('mm', 'is', null) : query.is('mm', null);
   if (status) query = query.eq('status', status);
   if (search) {
@@ -32,7 +32,7 @@ export async function fetchMembersPage({ page, search, status, paid = '', season
     query = query.or(`full_name.ilike.%${s}%,profession.ilike.%${s}%,city.ilike.%${s}%,promotion.ilike.%${s}%,university.ilike.%${s}%`);
   }
   const from = (page - 1) * PAGE_SIZE;
-  query = query.order('created_at', { ascending: false }).range(from, from + PAGE_SIZE - 1);
+  query = query.order(deleted ? 'deleted_at' : 'created_at', { ascending: false }).range(from, from + PAGE_SIZE - 1);
   const { data, error, count } = await query;
   if (error) throw error;
   return { rows: data || [], total: count || 0 };
@@ -67,6 +67,12 @@ export async function softDeleteMember(member) {
   const { error } = await supabase.from('members').update({ deleted_at: new Date().toISOString() }).eq('id', member.id);
   if (error) throw error;
   await logAction('ADMIN_DELETED_MEMBER', 'members', member.id, `حذف العضو ${member.full_name}`);
+}
+
+export async function restoreMember(member) {
+  const { error } = await supabase.from('members').update({ deleted_at: null }).eq('id', member.id);
+  if (error) throw error;
+  await logAction('ADMIN_RESTORED_MEMBER', 'members', member.id, `استرجاع العضو ${member.full_name}`);
 }
 
 export async function fetchAllMembersForExport({ paidIds = null } = {}) {

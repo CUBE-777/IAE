@@ -12,9 +12,10 @@ import { ROLES_MEMBER_SYSTEM } from '../../constants/roles';
 import { countPendingCardRequests, countPendingAccessRequests } from '../../services/supabase/memberSpace.service';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { downloadCsv } from '../../utils/csvExport';
+import { pageWindow } from '../../utils/pagination';
 import { fetchLinkedBoardMemberIds } from '../../services/supabase/adminBoard.service';
 import {
-  fetchMembersPage, softDeleteMember, fetchAllMembersForExport, PAGE_SIZE,
+  fetchMembersPage, softDeleteMember, restoreMember, fetchAllMembersForExport, PAGE_SIZE,
 } from '../../services/supabase/adminMembers.service';
 
 import { tr, trStrong } from '../../i18n/adminDict';
@@ -45,6 +46,7 @@ export default function Members() {
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
   const [status, setStatus] = useState('');
+  const [showDeleted, setShowDeleted] = useState(false); // عرض المحذوفين للاسترجاع
   const [paidFilter, setPaidFilter] = useState(''); // '' | 'paid' | 'unpaid' (للموسم الحالي)
   const search = useDebouncedValue(searchInput, 350);
 
@@ -110,12 +112,12 @@ export default function Members() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, status, paidFilter]);
+  }, [search, status, paidFilter, showDeleted]);
 
   const load = () => {
     setRows(null);
     setError(false);
-    fetchMembersPage({ page, search, status, paid: paidFilter, season: settings.season })
+    fetchMembersPage({ page, search, status, paid: showDeleted ? '' : paidFilter, season: settings.season, deleted: showDeleted })
       .then(({ rows: r, total: t }) => {
         setRows(r);
         setTotal(t);
@@ -127,7 +129,7 @@ export default function Members() {
       });
   };
 
-  useEffect(load, [page, search, status, paidFilter, settings.season]);
+  useEffect(load, [page, search, status, paidFilter, showDeleted, settings.season]);
 
   const doDelete = async (member) => {
     setDeleteTarget(null);
@@ -140,6 +142,19 @@ export default function Members() {
     } catch (err) {
       t?.remove();
       window.notify?.fromError(err, tr('تعذر الحذف'));
+    }
+  };
+
+  const doRestore = async (member) => {
+    const t = window.notify?.loading(tr('جاري الاسترجاع...'));
+    try {
+      await restoreMember(member);
+      t?.remove();
+      window.notify?.success(tr('تم استرجاع العضو'));
+      load();
+    } catch (err) {
+      t?.remove();
+      window.notify?.fromError(err, tr('تعذر الاسترجاع'));
     }
   };
 
@@ -198,7 +213,10 @@ export default function Members() {
             <option value="active">{tr('نشط')}</option>
             <option value="inactive">{tr('غير نشط')}</option>
           </select>
-          {settings.season && (
+          <label style={{ display: 'inline-flex', gap: 6, alignItems: 'center', fontSize: '.9rem' }}>
+            <input type="checkbox" checked={showDeleted} onChange={(e) => setShowDeleted(e.target.checked)} /> {tr('عرض المحذوفين')}
+          </label>
+          {settings.season && !showDeleted && (
             <select className="admin-select" style={{ width: 'auto' }} value={paidFilter} onChange={(e) => setPaidFilter(e.target.value)} aria-label={tr('الانخراط')}>
               <option value="">{tr('كل حالات الانخراط')}</option>
               <option value="unpaid">{tr('غير منخرط هذا الموسم')}</option>
@@ -239,6 +257,10 @@ export default function Members() {
                       ) : '—'}
                     </td>
                     <td className="admin-cell-actions">
+                      {showDeleted ? (
+                        <button className="admin-btn admin-btn-primary admin-btn-sm" onClick={() => doRestore(m)}>{tr('استرجاع')}</button>
+                      ) : (
+                        <>
                       <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => openDetails(m)}>{tr('تفاصيل')}</button>
                       {canMemberSystem && m.status === 'active' && (
                         <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setActivationTarget(m)}>{tr('رابط التفعيل')}</button>
@@ -248,6 +270,8 @@ export default function Members() {
                       )}
                       <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setFormTarget(m)}>{tr('تعديل')}</button>
                       <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDeleteTarget(m)}>{tr('حذف')}</button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -258,16 +282,19 @@ export default function Members() {
 
         {totalPages > 1 && (
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 16 }}>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            {pageWindow(page, totalPages).map((p, i) => (p === '…' ? (
+              <span key={`gap-${i}`} aria-hidden="true" style={{ alignSelf: 'center', padding: '0 4px' }}>…</span>
+            ) : (
               <button
                 key={p}
                 className="admin-btn admin-btn-ghost admin-btn-sm"
+                aria-current={p === page ? 'page' : undefined}
                 style={p === page ? { background: 'var(--admin-accent)', color: 'var(--admin-bg)', borderColor: 'var(--admin-accent)' } : undefined}
                 onClick={() => setPage(p)}
               >
                 {p}
               </button>
-            ))}
+            )))}
           </div>
         )}
       </div>
@@ -355,7 +382,7 @@ export default function Members() {
       {deleteTarget && (
         <Modal onClose={() => setDeleteTarget(null)}>
           <h3>{tr('تأكيد الحذف')}</h3>
-          <p>{trStrong('هل تريد حذف العضو <strong>{{name}}</strong>؟ يمكن استرجاعه لاحقًا من قاعدة البيانات.', { name: deleteTarget.full_name })}</p>
+          <p>{trStrong('هل تريد حذف العضو <strong>{{name}}</strong>؟ يمكنك استرجاعه لاحقًا بخيار «عرض المحذوفين».', { name: deleteTarget.full_name })}</p>
           <div className="admin-modal-actions">
             <button className="admin-btn admin-btn-danger" onClick={() => doDelete(deleteTarget)}>{tr('حذف')}</button>
             <button className="admin-btn admin-btn-ghost" onClick={() => setDeleteTarget(null)}>{tr('إلغاء')}</button>

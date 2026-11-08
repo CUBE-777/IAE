@@ -35,3 +35,27 @@ test('الواجهة تمرّر updated_at عند الاعتماد والرفض'
   assert.match(modal, /approveCardRequest\(request\.id, publicUrl, request\.updated_at\)/);
   assert.match(modal, /rejectCardRequest\(request\.id, note\.trim\(\), request\.updated_at\)/);
 });
+
+import { pageWindow } from '../src/utils/pagination.js';
+
+test('pageWindow: ترقيم مختصر بالأولى والأخيرة وما حول الحالية', () => {
+  assert.deepEqual(pageWindow(1, 1), [1]);
+  assert.deepEqual(pageWindow(2, 5), [1, 2, 3, 4, 5]);
+  assert.deepEqual(pageWindow(7, 20), [1, '…', 6, 7, 8, '…', 20]);
+  assert.deepEqual(pageWindow(1, 20), [1, 2, '…', 20]);
+  assert.deepEqual(pageWindow(20, 20), [1, '…', 19, 20]);
+  assert.deepEqual(pageWindow(4, 20), [1, 2, 3, 4, 5, '…', 20]);
+  assert.deepEqual(pageWindow(1, 0), []);
+  assert.deepEqual(pageWindow(99, 3), [1, 2, 3]);
+});
+
+test('المحذوفون: استعلام للمسؤولين واسترجاع بتسجيل في سجل التدقيق، وواجهة تمرّر deleted', () => {
+  const svc = read('src/services/supabase/adminMembers.service.js');
+  assert.match(svc, /deleted \? query\.not\('deleted_at', 'is', null\) : query\.is\('deleted_at', null\)/);
+  assert.match(svc, /update\(\{ deleted_at: null \}\)/);
+  assert.match(svc, /ADMIN_RESTORED_MEMBER/);
+  const page = read('src/pages/admin/Members.jsx');
+  assert.match(page, /deleted: showDeleted/);
+  assert.match(page, /doRestore\(m\)/);
+  assert.match(page, /pageWindow\(page, totalPages\)/);
+});
