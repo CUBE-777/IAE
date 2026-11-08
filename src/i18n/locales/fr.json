@@ -985,6 +985,7 @@
       "security": "Sécurité",
       "announcements": "Annonces",
       "newAnnouncements": "Nouvelles annonces",
+      "more": "Plus", "moreLabel": "Plus d'options", "tabsLabel": "Navigation rapide", "memberSince": "Adhérent",
       "id": "Carte de membre"
     },
     "login": {

@@ -985,6 +985,7 @@
       "security": "الأمان",
       "announcements": "الإعلانات",
       "newAnnouncements": "إعلانات جديدة",
+      "more": "المزيد", "moreLabel": "المزيد من الخيارات", "tabsLabel": "التنقل السريع", "memberSince": "منخرط",
       "id": "بطاقة العضوية"
     },
     "login": {

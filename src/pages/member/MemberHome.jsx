@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { QrCode } from 'lucide-react';
 import { Link, useOutletContext, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MemberPage from '../../components/member/MemberPage';
@@ -163,17 +164,20 @@ export default function MemberHome() {
   return (
     <MemberPage titleKey="member.home.title" descriptionKey="member.home.description" pageTitleKey="member.home.pageTitle">
       <div className="mf-form">
-        <header className="member-profile-head">
+        <header className="member-hero">
           <img
-            className="member-avatar"
+            className="member-hero-avatar"
             src={member.photo_url || '/logo.jpg'}
             alt={t('a11y.personPhotoAlt', { name: member.full_name })}
             onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/logo.jpg'; }}
           />
-          <div className="member-profile-meta">
+          <div className="member-hero-meta">
             <h2>{t('member.home.hello', { name: member.full_name })}</h2>
-            <p className="mf-hint">{[member.university, member.promotion].filter((v) => v && String(v).trim()).join(' · ')}</p>
+            <p>{[member.university, member.promotion].filter((v) => v && String(v).trim()).join(' · ')}</p>
+          </div>
+          <div className="member-hero-foot">
             <MembershipBadge status={membership.status} failed={membership.failed} onRetry={membership.reload} />
+            <Link className="member-hero-cta" to="/member/id"><QrCode size={18} aria-hidden="true" />{t('member.nav.id')}</Link>
           </div>
         </header>
 
@@ -201,10 +205,9 @@ export default function MemberHome() {
           <div id="mh-panel-overview" role="tabpanel" aria-labelledby="mh-tab-overview">
             <fieldset className="mf-group">
               <legend>{t('member.home.completeness.title')}</legend>
-              <div className="member-meter" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={completeness.percent} aria-label={t('member.home.completeness.title')}>
-                <span style={{ width: `${completeness.percent}%` }} />
+              <div className="member-ring" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={completeness.percent} aria-label={t('member.home.completeness.title')} style={{ '--p': completeness.percent }}>
+                <span>{completeness.percent}%</span>
               </div>
-              <p className="member-meter-value">{completeness.percent}%</p>
               {completeness.missing.length === 0 ? (
                 <p className="mf-hint">{t('member.home.completeness.done')}</p>
               ) : (
@@ -268,8 +271,8 @@ export default function MemberHome() {
               </fieldset>
             )}
             {Array.isArray(history) && olderRequests(history, req?.id).length > 0 && (
-              <fieldset className="mf-group">
-                <legend>{t('member.history.title')}</legend>
+              <details className="mf-group member-fold">
+                <summary>{t('member.history.title')}</summary>
                 <p className="mf-hint">{t('member.history.text')}</p>
                 <ul className="member-history">
                   {olderRequests(history, req?.id).map((r) => {
@@ -286,12 +289,12 @@ export default function MemberHome() {
                     );
                   })}
                 </ul>
-              </fieldset>
+              </details>
             )}
 
             {member.show_in_directory && (
-              <fieldset className="mf-group">
-                <legend>{t('member.home.hide.title')}</legend>
+              <details className="mf-group member-fold">
+                <summary>{t('member.home.hide.title')}</summary>
                 <p className="mf-hint">{t('member.home.hide.text')}</p>
                 {confirmHide ? (
                   <div className="member-confirm" role="alertdialog" aria-labelledby="mh-hide-title" aria-describedby="mh-hide-text">
@@ -307,7 +310,7 @@ export default function MemberHome() {
                     <button type="button" className="btn btn-ghost" onClick={() => setConfirmHide(true)} disabled={busy}>{t('member.home.hide.button')}</button>
                   </div>
                 )}
-              </fieldset>
+              </details>
             )}
           </div>
         )}

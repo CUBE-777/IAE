@@ -1,0 +1,94 @@
+/* غلاف فضاء المنخرط: قائمة جانبية (≥ 900px) + شريط سفلي ثابت (< 900px). خصائص منطقية فقط ليعمل RTL/LTR. */
+.ms-wrap { background: var(--cream); min-height: 100vh; }
+.ms { --ms-top: 92px; padding: var(--ms-top) var(--space-4) var(--space-12); }
+.ms-main { min-width: 0; max-width: 900px; margin: 0 auto; }
+.ms-main .mf-form { max-width: none; margin: 0; }
+
+.ms-head { padding: var(--space-2) 0 var(--space-5); }
+.ms-head h1 { margin: 0; font-size: clamp(1.35rem, 4.5vw, 1.9rem); line-height: var(--leading-tight); color: var(--heading); }
+.ms-head p { margin: 6px 0 0; color: var(--muted); font-size: var(--text-body); line-height: var(--leading-normal); }
+
+/* ---- القائمة الجانبية ---- */
+.ms-side { display: none; }
+.ms-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; flex: none; border: 2px solid rgba(var(--gold-rgb), 0.5); background: var(--surface); }
+.ms-id { display: flex; align-items: center; gap: 12px; padding: 4px 4px 16px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+.ms-id-text { display: grid; min-width: 0; }
+.ms-id-text strong { color: var(--heading); overflow-wrap: anywhere; line-height: 1.3; }
+.ms-id-text span { color: var(--muted); font-size: var(--text-small); }
+.ms-side-nav { display: grid; gap: 4px; }
+.ms-side-nav a, .ms-logout, .ms-sheet a, .ms-sheet button {
+  display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 14px; border-radius: var(--radius-md);
+  color: var(--heading); font: inherit; font-weight: 600; text-decoration: none; background: transparent; border: 0; cursor: pointer; text-align: start; width: 100%;
+}
+.ms-side-nav a:hover, .ms-logout:hover, .ms-sheet a:hover, .ms-sheet button:hover { background: rgba(var(--gold-rgb), 0.1); }
+.ms-side-nav a[aria-current='page'], .ms-sheet a[aria-current='page'] { background: var(--control-strong); color: var(--on-control-strong); }
+.ms-logout { margin-top: 12px; color: var(--danger); border-top: 1px solid var(--border); border-radius: 0 0 var(--radius-md) var(--radius-md); padding-top: 4px; }
+.ms-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); margin-inline-start: auto; flex: none; }
+.ms a:focus-visible, .ms button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* ---- الشريط السفلي (هاتف/لوحي صغير) ---- */
+.ms { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+.ms-tabbar {
+  position: fixed; inset-inline: 0; bottom: 0; z-index: 90; display: grid; grid-template-columns: repeat(4, 1fr);
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); background: var(--surface); border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
+}
+.ms-tabbar a, .ms-tabbar > .ms-more > button {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 54px; width: 100%;
+  border: 0; background: transparent; border-radius: var(--radius-md); color: var(--muted); font: inherit; font-size: 0.72rem; font-weight: 700;
+  text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.ms-tabbar a[aria-current='page'], .ms-tabbar .ms-more > button.active { color: var(--accent-ink); background: rgba(var(--gold-rgb), 0.12); }
+.ms-tabbar span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ms-ico { position: relative; display: inline-flex; }
+.ms-ico .ms-dot { position: absolute; top: -2px; inset-inline-end: -4px; margin: 0; border: 2px solid var(--surface); box-sizing: content-box; width: 8px; height: 8px; }
+.ms-more { position: relative; }
+.ms-sheet {
+  position: absolute; bottom: calc(100% + 10px); inset-inline-end: 0; width: min(260px, calc(100vw - 24px)); padding: 6px; z-index: 2;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); animation: ms-pop 0.16s ease-out;
+}
+.ms-sheet-out { color: var(--danger); }
+@keyframes ms-pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* الشريط السفلي يحجب تذييل الموقع: نترك له مساحة ونخفي الحدّ الفاصل */
+@media (max-width: 899px) { .ms-main .mf-group { margin-inline: 0; } }
+
+/* ---- حاسوب ---- */
+@media (min-width: 900px) {
+  .ms { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: var(--space-8); align-items: start; max-width: 1180px; margin: 0 auto; padding: 120px var(--space-6) var(--space-16); }
+  .ms-side { display: block; position: sticky; top: 104px; padding: 16px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+  .ms-tabbar { display: none; }
+  .ms-main { max-width: none; margin: 0; }
+  .ms-head { padding-top: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .ms-sheet { animation: none; } }
+
+body:has(.ms-tabbar) .interior-footer { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+@media (min-width: 900px) { body:has(.ms-tabbar) .interior-footer { padding-bottom: 0; } }
+
+/* ---- الصفحة الرئيسية: بطاقة الترحيب، حلقة الاكتمال، أقسام قابلة للطي ---- */
+.member-hero { display: grid; grid-template-columns: auto 1fr; gap: 14px 16px; align-items: center; padding: 20px; border-radius: var(--radius-xl); color: #fff; background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy) 55%, var(--navy-deep) 100%); box-shadow: var(--shadow-md); }
+.member-hero-avatar { width: 68px; height: 68px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.55); background: #fff; }
+.member-hero-meta h2 { margin: 0; font-size: 1.2rem; line-height: 1.3; color: #fff; overflow-wrap: anywhere; }
+.member-hero-meta p { margin: 4px 0 0; color: rgba(255, 255, 255, 0.8); font-size: var(--text-small); }
+.member-hero-foot { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.member-hero-foot .member-membership { margin: 0; }
+.member-hero-cta { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: var(--radius-full); background: #fff; color: var(--navy-deep); font-weight: 800; text-decoration: none; flex: 1 1 auto; justify-content: center; }
+@media (min-width: 560px) { .member-hero-foot { flex-wrap: nowrap; } .member-hero-cta { flex: none; } }
+.member-ring { --p: 0; width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 12px; background: conic-gradient(var(--gold) calc(var(--p) * 1%), var(--border) 0); position: relative; }
+.member-ring::before { content: ''; position: absolute; inset: 9px; border-radius: 50%; background: var(--surface); }
+.member-ring span { position: relative; font-weight: 800; font-size: 1.15rem; color: var(--heading); font-variant-numeric: tabular-nums; }
+.member-fold > summary { cursor: pointer; font-weight: 700; color: var(--heading); min-height: 44px; display: flex; align-items: center; list-style: none; }
+.member-fold > summary::-webkit-details-marker { display: none; }
+.member-fold > summary::after { content: '▾'; margin-inline-start: auto; color: var(--muted); transition: transform 0.2s; }
+.member-fold[open] > summary::after { transform: rotate(180deg); }
+@media (max-width: 560px) { .member-preview { margin-inline: auto; } .ms-main .mf-group .btn { width: 100%; justify-content: center; } }
+@media (prefers-reduced-motion: reduce) { .member-fold > summary::after { transition: none; } }
+
+/* حقول بخط ≥ 16px على الهاتف (يمنع تكبير iOS التلقائي) */
+@media (max-width: 899px) { .ms input, .ms select, .ms textarea { font-size: 16px; } }
+
+/* ألوان الحالات تتكيّف مع الوضع الداكن */
+html[data-theme='dark'] .member-badge-approved, html[data-theme='dark'] .member-membership-active { background: #12301f; border-color: #1f5a39; color: #7be0a6; }
+html[data-theme='dark'] .member-membership-lapsed { background: #3a2a10; border-color: #6b4a14; color: #f5c77a; }
+html[data-theme='dark'] .member-membership-none, html[data-theme='dark'] .member-badge-rejected { background: var(--danger-soft); border-color: #6b2a2c; color: #f6a29c; }
