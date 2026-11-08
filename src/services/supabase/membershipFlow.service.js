@@ -111,6 +111,12 @@ export async function recordAnnualMembership({ requestId = null, memberId = null
   return data;
 }
 
+/** يلغي انخراطًا مسجَّلًا: يُلغى الإيراد في الميزانية (مع السبب) ويُحذف السجل ليمكن إعادة تسجيله. */
+export async function cancelMemberMembership(membershipId, reason) {
+  const { error } = await supabase.rpc('cancel_member_membership', { p_membership_id: membershipId, p_reason: reason });
+  if (error) throw error;
+}
+
 export async function fetchRenewalCandidates() {
   const { data, error } = await supabase.rpc('list_members_for_renewal');
   if (error) throw error;
@@ -144,7 +150,7 @@ export async function fetchMemberPrivate(memberId) {
 export async function fetchMemberMemberships(memberId) {
   const { data, error } = await supabase
     .from('member_memberships')
-    .select('season, amount, paid_at')
+    .select('id, season, amount, paid_at')
     .eq('member_id', memberId)
     .order('paid_at', { ascending: false });
   if (error) throw error;

@@ -86,3 +86,15 @@ Prérequis : 0003 et 0016. Remplace la contrainte `projects_slug_key` par un ind
 
 ## 0037 — إعادة إصدار رابط التفعيل لعضو له حساب (استعادة الدخول)
 شروطه المسبقة: 0035 و0036. يستبدل أربع دوال من 0036 بنفس التواقيع (لا جداول ولا سياسات). بعده أعد نشر `member-activate` (النسخة القديمة لا تعرف `existing_user_id`). الرجوع: `rollback/0037_member_reactivation_down.sql` (يعيد تنفيذ 0036).
+
+## إشعار العضو بالبريد (طلبات تعديل البطاقة) — 0045
+`supabase/functions/notify-member-card-request` يرسل بريدًا ثلاثي اللغات للعضو بعد اعتماد طلبه أو رفضه (مع ملاحظة الرفض).
+الإرسال عبر Resend؛ **بلا إعداد لا يحدث شيء ولا تظهر أخطاء** (تعمل المراجعة كالمعتاد):
+
+```bash
+supabase secrets set RESEND_API_KEY=re_xxx MAIL_FROM="النادي <noreply@your-domain.org>"
+supabase secrets set SITE_URL=https://fsa-iae.netlify.app     # اختياري: رابط فضاء العضو في الرسالة
+supabase functions deploy notify-member-card-request --no-verify-jwt
+```
+- يلزم توثيق نطاق المرسل في Resend (SPF/DKIM) وإلا ستُرفض الرسائل أو تصل كبريد مزعج.
+- الأمان: الهوية والدور يُتحقق منهما داخل الدالة، والبريد يُقرأ من سجل العضو لا من العميل، ولا يُرسل إلا لطلب رُوجع خلال 30 دقيقة ولمرة واحدة (`member_card_requests.notified_at`).

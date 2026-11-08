@@ -9,7 +9,7 @@ import MemberAccessRequestsModal from './MemberAccessRequestsModal';
 import MemberCardRequestsModal from './MemberCardRequestsModal';
 import { useAuth } from '../../app/providers/AuthProvider';
 import { ROLES_MEMBER_SYSTEM } from '../../constants/roles';
-import { countPendingCardRequests, countPendingAccessRequests } from '../../services/supabase/memberSpace.service';
+import { countPendingCardRequests, countPendingAccessRequests, fetchMemberCardRequests } from '../../services/supabase/memberSpace.service';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { downloadCsv } from '../../utils/csvExport';
 import { pageWindow } from '../../utils/pagination';
@@ -18,10 +18,11 @@ import {
   fetchMembersPage, softDeleteMember, restoreMember, fetchAllMembersForExport, PAGE_SIZE,
 } from '../../services/supabase/adminMembers.service';
 
-import { tr, trStrong } from '../../i18n/adminDict';
+import { tr, trStrong, dateLocale } from '../../i18n/adminDict';
 import {
-  fetchMembershipSettings, fetchPaidMemberIds, recordAnnualMembership, fetchMemberPrivate, fetchMemberMemberships,
+  fetchMembershipSettings, fetchPaidMemberIds, recordAnnualMembership, fetchMemberPrivate, fetchMemberMemberships, cancelMemberMembership,
 } from '../../services/supabase/membershipFlow.service';
+const CARD_STATUS = { pending: 'قيد المراجعة', approved: 'معتمد', rejected: 'مرفوض', cancelled: 'ملغى' };
 const FIELD = (v) => (v == null || v === '' ? '—' : v);
 const CSV_HEADERS = ['full_name', 'university', 'promotion', 'track', 'profession', 'city', 'email', 'phone', 'status'];
 const CSV_HEADERS_WITH_MEMBERSHIP = [...CSV_HEADERS, 'membership'];
@@ -42,6 +43,14 @@ export default function Members() {
     countPendingAccessRequests().then(setPendingAccess).catch(() => {}); // قبل تشغيل 0039: يبقى الزر بلا عدّاد
   };
   useEffect(loadPendingCards, [canMemberSystem]); // eslint-disable-line react-hooks/exhaustive-deps
+  // العدّادات تُحدَّث كل دقيقة والتبويب ظاهر، وعند العودة إليه (لا تحتاج الصفحة إلى إعادة تحميل لترى طلبًا جديدًا)
+  useEffect(() => {
+    if (!canMemberSystem) return undefined;
+    const tick = () => { if (document.visibilityState === 'visible') loadPendingCards(); };
+    const id = setInterval(tick, 60000);
+    document.addEventListener('visibilitychange', tick);
+    return () => { clearInterval(id); document.removeEventListener('visibilitychange', tick); };
+  }, [canMemberSystem]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
@@ -62,6 +71,12 @@ export default function Members() {
   const [settings, setSettings] = useState({ fee: null, season: null });
   const [paid, setPaid] = useState(new Set());
   const [renewTarget, setRenewTarget] = useState(null);
+  const [selected, setSelected] = useState(() => new Map()); // تجديد جماعي: id → عضو (يبقى التحديد عبر الصفحات)
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [cancelTarget, setCancelTarget] = useState(null); // { membership, memberName }
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelBusy, setCancelBusy] = useState(false);
   const [detailTarget, setDetailTarget] = useState(null);
   const [detail, setDetail] = useState(undefined); // undefined = تحميل، null = لا شيء
 
@@ -84,8 +99,13 @@ export default function Members() {
     setDetailTarget(m);
     setDetail(undefined);
     try {
-      const [priv, history] = await Promise.all([fetchMemberPrivate(m.id), fetchMemberMemberships(m.id)]);
-      setDetail({ priv, history });
+      const [priv, history, cardRequests] = await Promise.all([
+        fetchMemberPrivate(m.id),
+        fetchMemberMemberships(m.id),
+        // قبل تشغيل 0036 أو لمن لا يملك الصلاحية: يبقى القسم فارغًا ولا تفشل التفاصيل
+        canMemberSystem ? fetchMemberCardRequests(m.id).catch(() => []) : Promise.resolve([]),
+      ]);
+      setDetail({ priv, history, cardRequests });
     } catch (err) {
       console.error('member details load failed', err);
       setDetail(null);
@@ -103,6 +123,54 @@ export default function Members() {
     } catch (err) {
       t?.remove();
       window.notify?.fromError(err, tr('تعذّر تسجيل الانخراط'));
+    }
+  };
+
+  const toggleSelected = (m) => setSelected((prev) => {
+    const next = new Map(prev);
+    if (next.has(m.id)) next.delete(m.id); else next.set(m.id, m);
+    return next;
+  });
+
+  const doBulkRenew = async () => {
+    const targets = [...selected.values()];
+    setBulkBusy(true);
+    const t = window.notify?.loading(tr('جارٍ تسجيل الانخراط…'));
+    let ok = 0;
+    const failed = [];
+    for (const m of targets) { // تسلسلي: كل عضو معاملة مستقلة، فيفشل المكرر وحده دون إيقاف الباقي
+      try {
+        await recordAnnualMembership({ memberId: m.id });
+        ok += 1;
+      } catch (err) {
+        console.error('bulk renew failed', err);
+        failed.push(m.full_name);
+      }
+    }
+    t?.remove();
+    if (ok) window.notify?.success(tr('تم تسجيل انخراط {{n}} عضوًا وإضافة الإيرادات إلى الميزانية', { n: ok }));
+    if (failed.length) window.notify?.error(tr('تعذّر تسجيل: {{names}}', { names: failed.slice(0, 5).join('، ') + (failed.length > 5 ? '…' : '') }));
+    setSelected(new Map());
+    setBulkOpen(false);
+    setBulkBusy(false);
+    loadMembership();
+  };
+
+  const doCancelMembership = async () => {
+    if (!cancelTarget) return;
+    setCancelBusy(true);
+    try {
+      await cancelMemberMembership(cancelTarget.membership.id, cancelReason.trim());
+      window.notify?.success(tr('تم إلغاء الانخراط وإلغاء الإيراد في الميزانية'));
+      const target = detailTarget;
+      setCancelTarget(null);
+      setCancelReason('');
+      loadMembership();
+      if (target) openDetails(target);
+    } catch (err) {
+      window.notify?.fromError(err, tr('تعذّر إلغاء الانخراط'));
+    } finally {
+      setCancelBusy(false);
     }
   };
 
@@ -192,6 +260,11 @@ export default function Members() {
                 {tr('طلبات المساعدة في الدخول')}{pendingAccess > 0 ? ` (${pendingAccess})` : ''}
               </button>
             )}
+            {settings.season && selected.size > 0 && (
+              <button className="admin-quick-action" onClick={() => setBulkOpen(true)}>
+                {tr('تجديد المحدد')} ({selected.size})
+              </button>
+            )}
             <button className="admin-quick-action" disabled={exporting} onClick={exportCsv}>{tr('تصدير CSV')}</button>
             <button className="admin-quick-action" onClick={() => setFormTarget(null)}>{tr('+ إضافة عضو')}</button>
           </>
@@ -232,11 +305,18 @@ export default function Members() {
           <div className="admin-table-wrap">
             <table className="admin-data-table admin-table-cards">
               <thead>
-                <tr><th>{tr('الاسم')}</th><th>{tr('الجامعة')}</th><th>{tr('الدفعة')}</th><th>{tr('المهنة')}</th><th>{tr('المدينة')}</th><th>{tr('الحالة')}</th><th>{tr('الانخراط')}</th><th>{tr('إجراءات')}</th></tr>
+                <tr>{settings.season && !showDeleted && <th style={{ width: 32 }} aria-label={tr('تحديد')} />}<th>{tr('الاسم')}</th><th>{tr('الجامعة')}</th><th>{tr('الدفعة')}</th><th>{tr('المهنة')}</th><th>{tr('المدينة')}</th><th>{tr('الحالة')}</th><th>{tr('الانخراط')}</th><th>{tr('إجراءات')}</th></tr>
               </thead>
               <tbody>
                 {rows.map((m) => (
                   <tr key={m.id}>
+                    {settings.season && !showDeleted && (
+                      <td data-label={tr('تحديد')}>
+                        {!paid.has(m.id) && m.status === 'active' ? (
+                          <input type="checkbox" checked={selected.has(m.id)} onChange={() => toggleSelected(m)} aria-label={`${tr('تحديد')}: ${m.full_name}`} />
+                        ) : null}
+                      </td>
+                    )}
                     <td data-label={tr('الاسم')}>{m.full_name}
                       {boardOf.has(m.id) && <> <span className="admin-badge admin-badge-approved" title={boardOf.get(m.id)}>{tr('عضو مكتب')}</span></>}
                     </td>
@@ -367,14 +447,61 @@ export default function Members() {
               {detail.history.length === 0 ? <p>—</p> : (
                 <ul className="admin-summary-list">
                   {detail.history.map((h) => (
-                    <li key={h.season}>{h.season} — {h.amount} MAD ({h.paid_at})</li>
+                    <li key={h.id || h.season}>
+                      {h.season} — {h.amount} MAD ({h.paid_at})
+                      {h.id && canMemberSystem && (
+                        <> <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => { setCancelReason(''); setCancelTarget({ membership: h, memberName: detailTarget.full_name }); }}>{tr('إلغاء الانخراط')}</button></>
+                      )}
+                    </li>
                   ))}
                 </ul>
+              )}
+              {detail.cardRequests?.length > 0 && (
+                <>
+                  <h4>{tr('طلبات تعديل البطاقة')}</h4>
+                  <ul className="admin-summary-list">
+                    {detail.cardRequests.map((r) => (
+                      <li key={r.id}>
+                        {new Date(r.created_at).toLocaleDateString(dateLocale())} — {tr(CARD_STATUS[r.status] || r.status)}
+                        {r.status === 'rejected' && r.review_note ? ` (${r.review_note})` : ''}
+                      </li>
+                    ))}
+                  </ul>
+                </>
               )}
             </>
           )}
           <div className="admin-modal-actions">
             <button className="admin-btn admin-btn-ghost" onClick={() => setDetailTarget(null)}>{tr('إغلاق')}</button>
+          </div>
+        </Modal>
+      )}
+
+      {bulkOpen && (
+        <Modal onClose={() => !bulkBusy && setBulkOpen(false)}>
+          <h3>{tr('تأكيد التجديد الجماعي')}</h3>
+          <p>{tr('سيتم تسجيل انخراط {{n}} عضوًا للموسم {{season}} بمبلغ {{fee}} درهم لكل منهم (المجموع {{total}} درهم) وإضافته إلى الميزانية.', {
+            n: selected.size, season: settings.season, fee: settings.fee || '—', total: settings.fee ? Math.round(Number(settings.fee) * selected.size * 100) / 100 : '—',
+          })}</p>
+          {!settings.fee && <div className="admin-state-box">{tr('اضبط مبلغ الانخراط والموسم من صفحة الإعدادات أولاً.')}</div>}
+          <div className="admin-modal-actions">
+            <button className="admin-btn admin-btn-primary" disabled={!settings.fee || bulkBusy} onClick={doBulkRenew}>{tr('تأكيد الدفع وتسجيل الانخراط')}</button>
+            <button className="admin-btn admin-btn-ghost" disabled={bulkBusy} onClick={() => setBulkOpen(false)}>{tr('إلغاء')}</button>
+          </div>
+        </Modal>
+      )}
+
+      {cancelTarget && (
+        <Modal onClose={() => !cancelBusy && setCancelTarget(null)}>
+          <h3>{tr('إلغاء الانخراط')}</h3>
+          <p>{trStrong('سيُلغى انخراط <strong>{{name}}</strong> لموسم {{season}} ويُلغى إيراده في الميزانية (يبقى ظاهرًا كمعاملة ملغاة مع السبب). يمكن تسجيل الانخراط من جديد بعد ذلك.', { name: cancelTarget.memberName, season: cancelTarget.membership.season })}</p>
+          <div className="admin-form-group">
+            <label htmlFor="cancel_membership_reason">{tr('سبب الإلغاء (إلزامي)')}</label>
+            <textarea id="cancel_membership_reason" className="admin-textarea" rows={2} maxLength={300} value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} />
+          </div>
+          <div className="admin-modal-actions">
+            <button className="admin-btn admin-btn-danger" disabled={cancelBusy || cancelReason.trim().length < 3} onClick={doCancelMembership}>{tr('تأكيد الإلغاء')}</button>
+            <button className="admin-btn admin-btn-ghost" disabled={cancelBusy} onClick={() => setCancelTarget(null)}>{tr('تراجع')}</button>
           </div>
         </Modal>
       )}

@@ -3,12 +3,20 @@ import Modal from '../../components/admin/Modal';
 import { deleteImageByUrl } from '../../services/supabase/storage.service';
 import {
   fetchPendingCardRequests, approveCardRequest, rejectCardRequest, getCardRequestPhotoUrl, publishCardRequestPhoto,
+  notifyCardRequestOutcome,
 } from '../../services/supabase/memberSpace.service';
 import { diffBoardProfile } from '../../utils/boardProfileDiff';
 import { tr, dateLocale } from '../../i18n/adminDict';
 
 const cell = { whiteSpace: 'pre-wrap', wordBreak: 'break-word', verticalAlign: 'top' };
 const isStaleRequestError = (err) => /تغيّر الطلب أثناء مراجعتك|لا يوجد طلب قيد المراجعة/.test(err?.message || '');
+/** يُبلغ المسؤول بنتيجة إشعار العضو بالبريد دون إزعاج: الصمت عند عدم ضبط الإرسال أو غياب البريد. */
+async function notifyMember(requestId) {
+  const res = await notifyCardRequestOutcome(requestId);
+  if (res.sent) window.notify?.info(tr('تم إشعار العضو بالبريد'));
+  else if (res.reason === 'send_failed' || res.reason === 'error') window.notify?.info(tr('تعذّر إرسال بريد الإشعار للعضو'));
+}
+
 const show = (v) => (v === '' || v == null ? '—' : v);
 
 /** فروق الطلب عن البطاقة المنشورة: حقول الملف المشترك + المهنة + الموافقة على الظهور. members.bio خاصة بالإدارة ولا تدخل المقارنة. */
@@ -36,6 +44,14 @@ function ReviewRow({ request, onDone }) {
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const rows = cardRequestRows(m, request.data);
+  const [skip, setSkip] = useState(() => new Set()); // مفاتيح الحقول غير المعتمدة (قبول جزئي)
+  const toggle = (key) => setSkip((prev) => {
+    const next = new Set(prev);
+    if (next.has(key)) next.delete(key); else next.add(key);
+    return next;
+  });
+  const allSkipped = rows.length > 0 && rows.every((r) => skip.has(r.key));
+  const nothingToApply = allSkipped && !(request.photo_path && usePhoto);
 
   useEffect(() => {
     let alive = true;
@@ -53,9 +69,10 @@ function ReviewRow({ request, onDone }) {
     let publicUrl = null;
     try {
       if (request.photo_path && usePhoto) publicUrl = await publishCardRequestPhoto(request.photo_path, m.id);
-      await approveCardRequest(request.id, publicUrl, request.updated_at);
+      await approveCardRequest(request.id, publicUrl, request.updated_at, [...skip]);
       t?.remove();
-      window.notify?.success(tr('تم اعتماد التعديل ونشره'));
+      window.notify?.success(skip.size ? tr('تم اعتماد الحقول المحددة ونشرها') : tr('تم اعتماد التعديل ونشره'));
+      await notifyMember(request.id);
       onDone();
     } catch (err) {
       t?.remove();
@@ -71,6 +88,7 @@ function ReviewRow({ request, onDone }) {
     try {
       await rejectCardRequest(request.id, note.trim(), request.updated_at);
       window.notify?.success(tr('تم رفض الطلب'));
+      await notifyMember(request.id);
       onDone();
     } catch (err) {
       window.notify?.fromError(err, tr('تعذر الرفض'));
@@ -100,10 +118,19 @@ function ReviewRow({ request, onDone }) {
       ) : rows.length > 0 && (
         <div className="admin-table-wrap">
           <table className="admin-data-table">
-            <thead><tr><th>{tr('الحقل')}</th><th>{tr('الحالي')}</th><th>{tr('المقترح')}</th></tr></thead>
+            <thead><tr><th>{tr('اعتماد')}</th><th>{tr('الحقل')}</th><th>{tr('الحالي')}</th><th>{tr('المقترح')}</th></tr></thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.key}>
+                <tr key={r.key} style={skip.has(r.key) ? { opacity: 0.55 } : undefined}>
+                  <td style={{ verticalAlign: 'top' }}>
+                    <input
+                      type="checkbox"
+                      checked={!skip.has(r.key)}
+                      onChange={() => toggle(r.key)}
+                      disabled={busy}
+                      aria-label={`${tr('اعتماد')}: ${tr(r.label)}${r.lang ? ` (${r.lang})` : ''}`}
+                    />
+                  </td>
                   <td>{tr(r.label)}{r.lang ? ` (${r.lang})` : ''}</td>
                   <td style={cell}>{show(r.before)}</td>
                   <td style={{ ...cell, fontWeight: 600 }}>{show(r.after)}</td>
@@ -119,7 +146,9 @@ function ReviewRow({ request, onDone }) {
         <textarea id={`mcr_note_${request.id}`} className="admin-textarea" rows={2} maxLength={500} value={note} onChange={(e) => setNote(e.target.value)} />
       </div>
       <div className="admin-modal-actions">
-        <button type="button" className="admin-btn admin-btn-primary" onClick={approve} disabled={busy}>{tr('اعتماد')}</button>
+        <button type="button" className="admin-btn admin-btn-primary" onClick={approve} disabled={busy || nothingToApply} title={nothingToApply ? tr('لم تحدد أي حقل للاعتماد. ارفض الطلب بدلًا من ذلك.') : undefined}>
+          {skip.size > 0 ? tr('اعتماد المحدد فقط') : tr('اعتماد')}
+        </button>
         <button type="button" className="admin-btn admin-btn-danger" onClick={reject} disabled={busy}>{tr('رفض')}</button>
       </div>
     </section>
@@ -130,6 +159,8 @@ function ReviewRow({ request, onDone }) {
 export default function MemberCardRequestsModal({ onClose, onChanged }) {
   const [rows, setRows] = useState(null);
   const [error, setError] = useState(false);
+  const [confirmBulk, setConfirmBulk] = useState(false);
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   const load = useCallback(() => {
     setError(false);
@@ -143,6 +174,33 @@ export default function MemberCardRequestsModal({ onClose, onChanged }) {
   }, []);
   useEffect(load, [load]);
 
+  // الطلبات النصية فقط (بلا صورة مقترحة): آمنة للاعتماد الجماعي لأن المسؤول رأى فروقها في القائمة
+  const textOnly = (rows || []).filter((r) => !r.photo_path);
+  const approveAllText = async () => {
+    setBulkBusy(true);
+    setConfirmBulk(false);
+    const t = window.notify?.loading(tr('جاري الاعتماد...'));
+    let ok = 0;
+    let failed = 0;
+    for (const r of textOnly) {
+      try {
+        // نمرّر updated_at كما رآه المسؤول: طلب عدّله العضو للتو يُرفض ولا يُعتمد بلا مراجعة
+        await approveCardRequest(r.id, null, r.updated_at);
+        ok += 1;
+        await notifyMember(r.id);
+      } catch (err) {
+        console.error('bulk approve failed', err);
+        failed += 1;
+      }
+    }
+    t?.remove();
+    if (ok) window.notify?.success(tr('تم اعتماد {{n}} طلبًا', { n: ok }));
+    if (failed) window.notify?.error(tr('تعذر اعتماد {{n}} طلبًا، راجعها يدويًا', { n: failed }));
+    setBulkBusy(false);
+    onChanged?.();
+    load();
+  };
+
   return (
     <Modal onClose={onClose} wide>
       <h3>{tr('طلبات تعديل بطاقات الأعضاء')}</h3>
@@ -150,6 +208,21 @@ export default function MemberCardRequestsModal({ onClose, onChanged }) {
       {rows === null && !error && <div className="admin-state-box">{tr('جاري التحميل...')}</div>}
       {error && <div className="admin-state-box">{tr('تعذر تحميل الطلبات.')}</div>}
       {rows && rows.length === 0 && <div className="admin-state-box">{tr('لا توجد طلبات قيد المراجعة.')}</div>}
+      {textOnly.length >= 2 && (
+        <div style={{ margin: '0 0 12px', display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          {!confirmBulk ? (
+            <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" disabled={bulkBusy} onClick={() => setConfirmBulk(true)}>
+              {tr('اعتماد كل الطلبات النصية')} ({textOnly.length})
+            </button>
+          ) : (
+            <>
+              <span style={{ fontSize: '.88rem' }}>{tr('سيُعتمد كل ما اقترحه هؤلاء الأعضاء وينشر في الموقع. متأكد؟')}</span>
+              <button type="button" className="admin-btn admin-btn-primary admin-btn-sm" onClick={approveAllText}>{tr('نعم، اعتمد الكل')}</button>
+              <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setConfirmBulk(false)}>{tr('إلغاء')}</button>
+            </>
+          )}
+        </div>
+      )}
       {rows && rows.map((r) => (
         <ReviewRow key={r.id} request={r} onDone={() => { onChanged?.(); load(); }} />
       ))}

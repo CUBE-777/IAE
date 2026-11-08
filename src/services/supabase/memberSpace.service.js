@@ -204,9 +204,13 @@ export async function publishCardRequestPhoto(path, memberId) {
 }
 
 // expectedUpdatedAt: قيمة updated_at كما رآها المسؤول (نصًا كما وصلت، دون تحويلها إلى Date) لمنع اعتماد طلب عدّله العضو بعد فتحه
-export async function approveCardRequest(requestId, photoUrl = null, expectedUpdatedAt = null) {
+// skipFields: مفاتيح الحقول التي لم يعتمدها المسؤول (قبول جزئي)؛ تحتفظ البطاقة بقيمها الحالية
+export async function approveCardRequest(requestId, photoUrl = null, expectedUpdatedAt = null, skipFields = []) {
   const { error } = await supabase.rpc('approve_member_card_request', {
-    p_request_id: requestId, p_photo_url: photoUrl, p_expected_updated_at: expectedUpdatedAt,
+    p_request_id: requestId,
+    p_photo_url: photoUrl,
+    p_expected_updated_at: expectedUpdatedAt,
+    p_skip_fields: Array.isArray(skipFields) && skipFields.length ? skipFields : null,
   });
   if (error) throw error;
 }
@@ -293,4 +297,30 @@ export async function getMyAttendanceCards() {
   const { data, error } = await supabase.rpc('get_my_attendance_cards');
   if (error) throw error;
   return Array.isArray(data) ? data : [];
+}
+
+/**
+ * يطلب من الدالة الطرفية إرسال بريد للعضو بنتيجة المراجعة (اعتماد/رفض). لا يرمي أبدًا: فشل البريد لا يُفشل المراجعة.
+ * يُرجع { sent: boolean, reason?: string } — reason: not_configured | no_email | send_failed | already_notified | error
+ */
+export async function notifyCardRequestOutcome(requestId) {
+  try {
+    const { data, error } = await supabase.functions.invoke('notify-member-card-request', { body: { request_id: requestId } });
+    if (error) return { sent: false, reason: 'error' };
+    return { sent: data?.sent === true, reason: data?.reason };
+  } catch {
+    return { sent: false, reason: 'error' };
+  }
+}
+
+/** سجل طلبات تعديل بطاقة عضو (للمسؤول): سياسة member_card_requests_manager_read (0036). */
+export async function fetchMemberCardRequests(memberId, limit = 5) {
+  const { data, error } = await supabase
+    .from('member_card_requests')
+    .select('id, status, created_at, reviewed_at, review_note')
+    .eq('member_id', memberId)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return data || [];
 }

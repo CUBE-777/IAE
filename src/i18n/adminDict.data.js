@@ -1255,6 +1255,114 @@ export const ADMIN_DICT = {
   "fr": "Restauration en cours...",
   "en": "Restoring..."
  },
+ "تم إشعار العضو بالبريد": {
+  "fr": "Le membre a été notifié par e-mail",
+  "en": "The member was notified by email"
+ },
+ "تعذّر إرسال بريد الإشعار للعضو": {
+  "fr": "Impossible d’envoyer l’e-mail de notification au membre",
+  "en": "Couldn’t send the notification email to the member"
+ },
+ "تم اعتماد الحقول المحددة ونشرها": {
+  "fr": "Les champs sélectionnés ont été validés et publiés",
+  "en": "The selected fields were approved and published"
+ },
+ "اعتماد المحدد فقط": {
+  "fr": "Valider la sélection uniquement",
+  "en": "Approve selected only"
+ },
+ "لم تحدد أي حقل للاعتماد. ارفض الطلب بدلًا من ذلك.": {
+  "fr": "Aucun champ sélectionné. Refusez plutôt la demande.",
+  "en": "No field selected. Reject the request instead."
+ },
+ "اعتماد كل الطلبات النصية": {
+  "fr": "Valider toutes les demandes textuelles",
+  "en": "Approve all text-only requests"
+ },
+ "سيُعتمد كل ما اقترحه هؤلاء الأعضاء وينشر في الموقع. متأكد؟": {
+  "fr": "Tout ce que ces membres ont proposé sera validé et publié sur le site. Confirmer ?",
+  "en": "Everything these members proposed will be approved and published on the site. Sure?"
+ },
+ "نعم، اعتمد الكل": {
+  "fr": "Oui, tout valider",
+  "en": "Yes, approve all"
+ },
+ "تم اعتماد {{n}} طلبًا": {
+  "fr": "{{n}} demande(s) validée(s)",
+  "en": "{{n}} request(s) approved"
+ },
+ "تعذر اعتماد {{n}} طلبًا، راجعها يدويًا": {
+  "fr": "{{n}} demande(s) non validée(s), vérifiez-les manuellement",
+  "en": "{{n}} request(s) couldn’t be approved, review them manually"
+ },
+ "تجديد المحدد": {
+  "fr": "Renouveler la sélection",
+  "en": "Renew selected"
+ },
+ "تحديد": {
+  "fr": "Sélectionner",
+  "en": "Select"
+ },
+ "تم تسجيل انخراط {{n}} عضوًا وإضافة الإيرادات إلى الميزانية": {
+  "fr": "Adhésion enregistrée pour {{n}} membre(s) et recettes ajoutées au budget",
+  "en": "Membership recorded for {{n}} member(s) and income added to the budget"
+ },
+ "تعذّر تسجيل: {{names}}": {
+  "fr": "Échec d’enregistrement : {{names}}",
+  "en": "Couldn’t record: {{names}}"
+ },
+ "تم إلغاء الانخراط وإلغاء الإيراد في الميزانية": {
+  "fr": "Adhésion annulée et recette annulée dans le budget",
+  "en": "Membership cancelled and the income voided in the budget"
+ },
+ "تعذّر إلغاء الانخراط": {
+  "fr": "Impossible d’annuler l’adhésion",
+  "en": "Couldn’t cancel the membership"
+ },
+ "إلغاء الانخراط": {
+  "fr": "Annuler l’adhésion",
+  "en": "Cancel membership"
+ },
+ "طلبات تعديل البطاقة": {
+  "fr": "Demandes de modification de la fiche",
+  "en": "Card update requests"
+ },
+ "قيد المراجعة": {
+  "fr": "En cours de révision",
+  "en": "Under review"
+ },
+ "معتمد": {
+  "fr": "Validée",
+  "en": "Approved"
+ },
+ "مرفوض": {
+  "fr": "Refusée",
+  "en": "Rejected"
+ },
+ "ملغى": {
+  "fr": "Annulée",
+  "en": "Cancelled"
+ },
+ "تأكيد التجديد الجماعي": {
+  "fr": "Confirmer le renouvellement groupé",
+  "en": "Confirm bulk renewal"
+ },
+ "سيتم تسجيل انخراط {{n}} عضوًا للموسم {{season}} بمبلغ {{fee}} درهم لكل منهم (المجموع {{total}} درهم) وإضافته إلى الميزانية.": {
+  "fr": "L’adhésion de {{n}} membre(s) sera enregistrée pour la saison {{season}} au montant de {{fee}} MAD chacun (total {{total}} MAD) et ajoutée au budget.",
+  "en": "Membership for {{n}} member(s) will be recorded for season {{season}} at {{fee}} MAD each (total {{total}} MAD) and added to the budget."
+ },
+ "سبب الإلغاء (إلزامي)": {
+  "fr": "Motif de l’annulation (obligatoire)",
+  "en": "Reason for cancellation (required)"
+ },
+ "تراجع": {
+  "fr": "Retour",
+  "en": "Back"
+ },
+ "سيُلغى انخراط <strong>{{name}}</strong> لموسم {{season}} ويُلغى إيراده في الميزانية (يبقى ظاهرًا كمعاملة ملغاة مع السبب). يمكن تسجيل الانخراط من جديد بعد ذلك.": {
+  "fr": "L’adhésion de <strong>{{name}}</strong> pour la saison {{season}} sera annulée et sa recette annulée dans le budget (elle reste visible comme transaction annulée avec le motif). L’adhésion pourra ensuite être enregistrée de nouveau.",
+  "en": "The membership of <strong>{{name}}</strong> for season {{season}} will be cancelled and its income voided in the budget (it stays visible as a voided transaction with the reason). The membership can then be recorded again."
+ },
  "كل الحالات": {
   "fr": "Tous les statuts",
   "en": "All statuses"
