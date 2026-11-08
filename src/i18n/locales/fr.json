@@ -1152,17 +1152,19 @@
       "pageTitle": "Carte de membre",
       "sectionLabel": "Code de vérification d'adhésion",
       "qrLabel": "Code QR de vérification de votre adhésion, renouvelé automatiquement",
-      "refresh": "Actualiser maintenant",
+      "refresh": "Réessayer",
       "fullscreen": "Plein écran",
+      "permanent": "Code permanent : il ne change que lorsque vous le renouvelez.", "regenerate": "Nouveau code", "regenerating": "Création…", "regenerateConfirmTitle": "Créer un nouveau code ?", "regenerateConfirmText": "Le code actuel cessera de fonctionner immédiatement, et toute copie imprimée ou capturée ne sera plus valable. Utilisez ceci si vous pensez que quelqu'un a copié votre code.", "regenerateYes": "Oui, créer un nouveau code", "regenerateNo": "Annuler",
       "fullscreenLabel": "Code d'adhésion en plein écran",
       "close": "Fermer",
       "expiresIn": "Ce code expire dans {{seconds}} s",
       "noCode": "Aucun code pour le moment",
-      "retryHint": "Appuyez sur « Actualiser maintenant » pour réessayer.",
+      "retryHint": "Appuyez sur « Réessayer » pour réessayer.",
       "howTo": "L'autre personne scanne le code avec l'appareil photo normal de son téléphone : une page de vérification s'ouvre avec votre nom et votre statut d'adhésion.",
-      "privacy": "Le code ne contient aucune donnée personnelle, se renouvelle toutes les 90 secondes environ et expire après 2 minutes : inutile de le photographier.",
+      "privacy": "Le code ne contient aucune donnée personnelle, est permanent et ne change que lorsque vous appuyez sur « Nouveau code ». Si vous pensez qu'on l'a copié, créez-en un nouveau.",
       "paidAt": "Date d'adhésion : {{date}}",
       "attendance": {
+        "open": "Ouvert", "pdfHeading": "Carte de présence", "pdfShow": "Présentez ce code à l'organisateur", "download": "Télécharger en PDF", "downloading": "Préparation…", "downloadError": "Impossible de créer le PDF. Réessayez.", "showCode": "Afficher le code", "hideCode": "Masquer le code",
         "title": "Cartes de présence aux activités",
         "hint": "Chaque activité publiée a un code personnel qui ne sert que pour elle. Montrez-le à l'organisateur : il le scanne depuis le site et votre présence est enregistrée.",
         "error": "Impossible de charger les cartes de présence.",
@@ -1171,14 +1173,14 @@
       },
       "status": {
         "loading": "Création du code…",
-        "ready": "Le code est prêt à être scanné."
+        "ready": "Le code est prêt à être scanné.", "renewed": "Nouveau code créé ; l'ancien ne fonctionne plus."
       },
       "problem": {
         "forbidden": "Impossible de générer le code : votre compte n'est pas actif pour le moment. Contactez l'administration.",
-        "rateLimited": "Vous avez généré trop de codes en peu de temps. Patientez un instant puis appuyez sur « Actualiser maintenant ».",
-        "rateLimitedKeep": "Impossible de renouveler le code pour le moment (trop de codes). Le code actuel reste valable jusqu'à son expiration.",
-        "network": "Impossible de joindre le serveur. Vérifiez votre connexion puis appuyez sur « Actualiser maintenant ».",
-        "networkKeep": "Impossible de renouveler le code pour le moment. Le code actuel reste valable jusqu'à son expiration et nous réessaierons automatiquement."
+        "rateLimited": "Vous avez généré trop de codes en peu de temps. Vous pouvez créer 5 nouveaux codes par heure ; patientez puis réessayez.",
+        "rateLimitedKeep": "Impossible de créer un nouveau code pour le moment (limite de 5 par heure). Votre code actuel reste valable.",
+        "network": "Impossible de joindre le serveur. Vérifiez votre connexion puis appuyez sur « Réessayer ».",
+        "networkKeep": "Impossible de créer un nouveau code pour le moment. Votre code actuel reste valable ; réessayez plus tard."
       },
       "badge": {
         "loading": "Chargement du statut d'adhésion…",

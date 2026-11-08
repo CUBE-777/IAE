@@ -1,117 +1,53 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { issueMemberCardToken } from '../services/supabase/memberSpace.service';
-import {
-  CARD_TOKEN_TTL_MS, CARD_REFRESH_MS, CARD_RETRY_MS, CARD_RATE_LIMIT_RETRY_MS,
-  classifyIssueError, secondsLeft, shouldRefreshOnReturn,
-} from '../utils/memberCardToken';
+import { issueMemberCardToken, regenerateMemberCardToken } from '../services/supabase/memberSpace.service';
+import { classifyIssueError } from '../utils/memberCardToken';
 
 /**
- * رمز بطاقة العضوية المتجدد (0040). يجلب عند التحميل ويجدّد كل 90 ثانية (صلاحيته 120)، ويتوقف حين تُخفى الصفحة
- * ويجدّد عند العودة إن حان وقته. فشل الشبكة أو rate_limited يُبقيان الرمز الأخير حتى ينتهي ثم تظهر `problem`.
+ * رمز بطاقة العضوية الثابت (0042). يُجلب مرة واحدة عند فتح الصفحة ولا يتجدد تلقائيًا ولا يُحسب له عدّ تنازلي:
+ * الرمز نفسه يظهر دائمًا حتى يضغط العضو «رمز جديد» (regenerate) فيتوقف القديم فورًا.
+ * فشل الشبكة يُبقي الرمز الأخير إن وُجد ويُظهر `problem`.
  *
  * الرمز يعيش في ذاكرة المكوّن فقط: لا localStorage ولا sessionStorage ولا رابط ولا console.
- * الانتهاء يُحسب محليًا من لحظة إرسال الطلب (+120ث): أدقّ تحفّظًا من الاعتماد على ساعة الجهاز مقابل ساعة الخادم.
  *
- * @returns {{ token: string|null, secondsLeft: number, loading: boolean,
- *            problem: null|'rate_limited'|'forbidden'|'error', refresh: () => void }}
+ * @returns {{ token: string|null, loading: boolean, regenerating: boolean,
+ *            problem: null|'rate_limited'|'forbidden'|'error', refresh: () => void, regenerate: () => Promise<boolean> }}
  */
 export function useMemberCardToken() {
-  const [current, setCurrent] = useState(null); // { value, expiresAt, refreshAt }
+  const [token, setToken] = useState(null);
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [now, setNow] = useState(() => Date.now());
-  const [visible, setVisible] = useState(() => typeof document === 'undefined' || !document.hidden);
-
-  const currentRef = useRef(null);
-  const timerRef = useRef(null);
-  const inflightRef = useRef(false);
+  const [regenerating, setRegenerating] = useState(false);
   const aliveRef = useRef(false);
-  const fetchRef = useRef(() => {});
+  const inflightRef = useRef(false);
 
-  const clearTimer = useCallback(() => {
-    if (timerRef.current !== null) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
+  const run = useCallback(async (call, setBusy) => {
+    if (inflightRef.current) return false; // لا طلبان متوازيان
+    inflightRef.current = true;
+    setBusy(true);
+    try {
+      const res = await call();
+      if (!aliveRef.current) return false;
+      if (!res || typeof res.token !== 'string' || !res.token) throw new Error('empty token');
+      setToken(res.token);
+      setProblem(null);
+      return true;
+    } catch (err) {
+      if (aliveRef.current) setProblem(classifyIssueError(err));
+      return false;
+    } finally {
+      inflightRef.current = false;
+      if (aliveRef.current) setBusy(false);
     }
   }, []);
 
-  const schedule = useCallback((ms) => {
-    clearTimer();
-    timerRef.current = setTimeout(() => fetchRef.current(), ms);
-  }, [clearTimer]);
+  const refresh = useCallback(() => { run(issueMemberCardToken, setLoading); }, [run]);
+  const regenerate = useCallback(() => run(regenerateMemberCardToken, setRegenerating), [run]);
 
-  const fetchToken = useCallback(async () => {
-    if (inflightRef.current) return;
-    inflightRef.current = true;
-    setLoading(true);
-    const startedAt = Date.now();
-    try {
-      const res = await issueMemberCardToken();
-      if (!aliveRef.current) return;
-      if (!res || typeof res.token !== 'string' || !res.token) throw new Error('empty token');
-      const next = { value: res.token, expiresAt: startedAt + CARD_TOKEN_TTL_MS, refreshAt: startedAt + CARD_REFRESH_MS };
-      currentRef.current = next;
-      setCurrent(next);
-      setProblem(null);
-      setNow(Date.now());
-      if (!document.hidden) schedule(CARD_REFRESH_MS);
-    } catch (err) {
-      if (!aliveRef.current) return;
-      const kind = classifyIssueError(err);
-      setProblem(kind);
-      setNow(Date.now());
-      if (kind !== 'forbidden' && !document.hidden) schedule(kind === 'rate_limited' ? CARD_RATE_LIMIT_RETRY_MS : CARD_RETRY_MS);
-    } finally {
-      inflightRef.current = false;
-      if (aliveRef.current) setLoading(false);
-    }
-  }, [schedule]);
-
-  useEffect(() => { fetchRef.current = fetchToken; }, [fetchToken]);
-
-  // التحميل الأول + تنظيف المؤقتات عند unmount
   useEffect(() => {
     aliveRef.current = true;
-    fetchToken();
-    return () => {
-      aliveRef.current = false;
-      clearTimer();
-    };
-  }, [fetchToken, clearTimer]);
+    refresh();
+    return () => { aliveRef.current = false; };
+  }, [refresh]);
 
-  // الإخفاء يوقف المؤقتات؛ الظهور يجدّد إن حان الوقت وإلا يعيد الجدولة بما تبقّى
-  useEffect(() => {
-    const onVisibility = () => {
-      const isVisible = !document.hidden;
-      setVisible(isVisible);
-      if (!isVisible) { clearTimer(); return; }
-      const t = currentRef.current;
-      setNow(Date.now());
-      if (shouldRefreshOnReturn(t, Date.now())) fetchRef.current();
-      else schedule(Math.max(0, t.refreshAt - Date.now()));
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-    return () => document.removeEventListener('visibilitychange', onVisibility);
-  }, [clearTimer, schedule]);
-
-  // نبضة الثانية للعدّ التنازلي: فقط والصفحة ظاهرة ويوجد رمز
-  useEffect(() => {
-    if (!visible || !current) return undefined;
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, [visible, current]);
-
-  const refresh = useCallback(() => {
-    clearTimer();
-    fetchToken();
-  }, [clearTimer, fetchToken]);
-
-  const left = current ? secondsLeft(current.expiresAt, now) : 0;
-  return {
-    token: current && left > 0 ? current.value : null,
-    secondsLeft: left,
-    loading,
-    problem,
-    refresh,
-  };
+  return { token, loading, regenerating, problem, refresh, regenerate };
 }

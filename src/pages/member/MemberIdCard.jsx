@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Maximize2, RefreshCw, X } from 'lucide-react';
+import { KeyRound, Maximize2, RefreshCw, X } from 'lucide-react';
 import MemberPage from '../../components/member/MemberPage';
 import MembershipBadge from '../../components/member/MembershipBadge';
 import { useMemberCardToken } from '../../hooks/useMemberCardToken';
@@ -16,7 +16,9 @@ import '../../styles/member-card.css';
 export default function MemberIdCard() {
   const { t, i18n } = useTranslation();
   const { member } = useOutletContext();
-  const { token, secondsLeft, loading, problem, refresh } = useMemberCardToken();
+  const { token, loading, regenerating, problem, refresh, regenerate } = useMemberCardToken();
+  const [confirmNew, setConfirmNew] = useState(false);
+  const [renewed, setRenewed] = useState(false);
   const { status, failed, reload } = useMyMembershipStatus();
   const [full, setFull] = useState(false);
   const openerRef = useRef(null);
@@ -86,9 +88,15 @@ export default function MemberIdCard() {
   else if (!token && loading) statusText = t('member.id.status.loading');
   else if (token && problem === 'rate_limited') statusText = t('member.id.problem.rateLimitedKeep');
   else if (token && problem) statusText = t('member.id.problem.networkKeep');
+  else if (token && renewed) statusText = t('member.id.status.renewed');
   else if (token) statusText = t('member.id.status.ready');
 
   const showRetry = !token && problem !== 'forbidden';
+  const doRegenerate = async () => {
+    setConfirmNew(false);
+    setRenewed(false);
+    setRenewed(await regenerate());
+  };
 
   const qrBlock = (large) => (
     <div className={large ? 'member-qr member-qr-large' : 'member-qr'}>
@@ -121,14 +129,18 @@ export default function MemberIdCard() {
 
         <section ref={cardRef} className="member-id-card" aria-label={t('member.id.sectionLabel')}>
           {qrBlock(false)}
-          {token && (
-            <p className="member-id-countdown">{t('member.id.expiresIn', { seconds: secondsLeft })}</p>
-          )}
+          {token && <p className="member-id-permanent">{t('member.id.permanent')}</p>}
           <p className="member-id-live mf-hint" role="status" aria-live="polite">{statusText}</p>
           <div className="member-actions member-id-actions">
-            <button type="button" className="btn btn-gold member-id-btn" onClick={refresh} disabled={loading}>
-              <RefreshCw size={18} aria-hidden="true" focusable="false" /> {t('member.id.refresh')}
-            </button>
+            {showRetry ? (
+              <button type="button" className="btn btn-gold member-id-btn" onClick={refresh} disabled={loading}>
+                <RefreshCw size={18} aria-hidden="true" focusable="false" /> {t('member.id.refresh')}
+              </button>
+            ) : (
+              <button type="button" className="btn btn-gold member-id-btn" onClick={() => setConfirmNew(true)} disabled={!token || regenerating}>
+                <KeyRound size={18} aria-hidden="true" focusable="false" /> {regenerating ? t('member.id.regenerating') : t('member.id.regenerate')}
+              </button>
+            )}
             <button
               type="button"
               className="btn btn-ghost member-id-btn"
@@ -142,11 +154,21 @@ export default function MemberIdCard() {
               <span className="mf-hint">{t('member.id.retryHint')}</span>
             )}
           </div>
+          {confirmNew && (
+            <div className="member-confirm" role="alertdialog" aria-labelledby="mid-new-title" aria-describedby="mid-new-text">
+              <strong id="mid-new-title">{t('member.id.regenerateConfirmTitle')}</strong>
+              <p id="mid-new-text" className="mf-hint">{t('member.id.regenerateConfirmText')}</p>
+              <div className="member-actions">
+                <button type="button" className="btn btn-gold" onClick={doRegenerate} autoFocus>{t('member.id.regenerateYes')}</button>
+                <button type="button" className="btn btn-ghost" onClick={() => setConfirmNew(false)}>{t('member.id.regenerateNo')}</button>
+              </div>
+            </div>
+          )}
           <p className="mf-hint">{t('member.id.howTo')}</p>
           <p className="mf-hint">{t('member.id.privacy')}</p>
         </section>
 
-        <MemberAttendanceCards />
+        <MemberAttendanceCards member={member} />
 
         {full && createPortal(
           <div
@@ -160,7 +182,6 @@ export default function MemberIdCard() {
               <X size={18} aria-hidden="true" focusable="false" /> {t('member.id.close')}
             </button>
             {qrBlock(true)}
-            {token && <p className="member-id-countdown">{t('member.id.expiresIn', { seconds: secondsLeft })}</p>}
             {!token && statusText && <p className="member-id-countdown">{statusText}</p>}
           </div>,
           document.body,

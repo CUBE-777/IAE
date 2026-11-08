@@ -23,3 +23,34 @@
 .att-roster li.is-in { background: #e5f4ec; color: #14573a; }
 .att-roster .att-name { flex: 1; min-width: 0; }
 @media (prefers-reduced-motion: reduce) { .att-result { transition: none; } }
+
+/* ---- بطاقة حضور على شكل «تذكرة» (صورة العضو + الرمز + تنزيل PDF) ---- */
+.member-attendance-list { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.member-attendance-card { position: relative; padding: 18px 16px 16px; border-radius: 20px; box-shadow: var(--shadow-sm); gap: 12px; overflow: hidden; }
+.member-attendance-card::before { content: ''; position: absolute; inset-inline: 0; top: 0; height: 6px; background: linear-gradient(90deg, var(--navy-mid), var(--gold)); }
+.member-attendance-card.is-attended::before { background: var(--success); }
+.att-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 800; }
+.att-badge-open { background: rgba(var(--gold-rgb), 0.14); color: var(--accent-ink); }
+.att-badge-done { background: #e5f4ec; color: #14573a; }
+.att-person { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 10px; border-radius: 14px; background: var(--cream); text-align: start; }
+.att-photo { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; flex: none; border: 2px solid rgba(var(--gold-rgb), 0.5); background: #fff; }
+.att-person-text { display: grid; min-width: 0; }
+.att-person-text strong { color: var(--heading); overflow-wrap: anywhere; line-height: 1.3; }
+.att-person-text span { color: var(--muted); font-size: 0.8rem; }
+.member-attendance-head strong { color: var(--heading); font-size: 1.05rem; overflow-wrap: anywhere; }
+.member-attendance-qr { width: min(100%, 280px); }
+.att-actions-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; width: 100%; }
+.att-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; flex: 1 1 auto; }
+.att-photo-lg { width: 96px; height: 96px; border-width: 3px; }
+.member-qr-overlay .att-full-name { margin: 0; font-weight: 800; font-size: 1.2rem; text-align: center; }
+.member-qr-overlay .att-full-title { margin: 0; text-align: center; color: #52627f; }
+html[data-theme='dark'] .att-badge-done { background: #12301f; color: #7be0a6; }
+html[data-theme='dark'] .att-person { background: var(--admin-surface-alt); }
+
+/* جوال: البطاقات شريط أفقي قابل للتمرير بالتثبيت المغناطيسي */
+@media (max-width: 640px) {
+  .member-attendance-list { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; padding: 4px 2px 12px; margin-inline: -2px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+  .member-attendance-card { flex: 0 0 min(86%, 340px); scroll-snap-align: center; }
+  .att-btn { flex: 1 1 100%; }
+}
+@media (prefers-reduced-motion: no-preference) { .member-attendance-list { scroll-behavior: smooth; } }

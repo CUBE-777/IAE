@@ -10,6 +10,7 @@ const sql37 = stripSql(read('supabase/migrations/0037_member_reactivation.sql'))
 const sql39 = stripSql(read('supabase/migrations/0039_member_access_requests.sql'));
 const sql40 = stripSql(read('supabase/migrations/0040_member_card_tokens.sql'));
 const sql41 = stripSql(read('supabase/migrations/0041_activity_attendance.sql'));
+const sql42 = stripSql(read('supabase/migrations/0042_member_card_permanent_token.sql'));
 const sql35 = read('supabase/migrations/0035_member_accounts.sql');
 const edge = read('supabase/functions/member-activate/index.ts');
 const service = read('src/services/supabase/memberSpace.service.js');
@@ -34,11 +35,11 @@ test('الأدوار: ROLES_MEMBER_SYSTEM يطابق can_manage_member_system ف
   for (const r of R.ROLES_MEMBER_SYSTEM) assert.ok(R.ALL_ROLES.includes(r));
 });
 
-test('الخدمة: كل RPC وبارامتراتها موجودة في migrations الأعضاء (0036/0039/0040/0041) بالأسماء نفسها', () => {
+test('الخدمة: كل RPC وبارامتراتها موجودة في migrations الأعضاء (0036/0039/0040/0041/0042) بالأسماء نفسها', () => {
   const calls = [...service.matchAll(/rpc\('([a-z_]+)'(?:, \{([^}]*)\})?/g)];
   assert.ok(calls.length >= 11);
   for (const [, name, args] of calls) {
-    const m = (sql36 + sql39 + sql40 + sql41).match(new RegExp(`function public\\.${name}\\(([^)]*)\\)`));
+    const m = (sql36 + sql39 + sql40 + sql41 + sql42).match(new RegExp(`function public\\.${name}\\(([^)]*)\\)`));
     assert.ok(m, `الدالة ${name} غير معرّفة في 0036/0039`);
     const declared = [...m[1].matchAll(/\b(p_[a-z_]+)\b/g)].map((x) => x[1]);
     const used = args ? [...args.matchAll(/\b(p_[a-z_]+)\b/g)].map((x) => x[1]) : [];
@@ -243,19 +244,14 @@ test('البطاقة: الرمز لا يُخزَّن في أي storage ولا ر
   assert.doesNotMatch(svc, /console\.|localStorage|sessionStorage/);
 });
 
-test('البطاقة: hook التجديد — 90ث، توقف عند الإخفاء، تنظيف المؤقتات، إبقاء الرمز الأخير، لا حدّ ثابت خاطئ', () => {
+test('البطاقة: hook الرمز الثابت — جلب مرة واحدة بلا مؤقتات ولا تجديد تلقائي، وإعادة إنشاء بطلب العضو فقط', () => {
   const hook = read('src/hooks/useMemberCardToken.js');
-  assert.match(hook, /CARD_REFRESH_MS/);
-  assert.match(hook, /addEventListener\('visibilitychange'/);
-  assert.match(hook, /removeEventListener\('visibilitychange'/);
-  assert.match(hook, /document\.hidden/);
-  assert.match(hook, /clearTimeout\(timerRef\.current\)/);
-  assert.match(hook, /return \(\) => clearInterval\(id\)/);
-  assert.match(hook, /aliveRef\.current = false/);
+  assert.match(hook, /issueMemberCardToken/);
+  assert.match(hook, /regenerateMemberCardToken/);
   assert.match(hook, /classifyIssueError\(err\)/);
-  assert.match(hook, /token: current && left > 0 \? current\.value : null/); // ينتهي الرمز المحلي فيختفي بعد 120ث فقط
-  assert.match(hook, /if \(inflightRef\.current\) return;/);                // لا طلبان متوازيان (يحمي حدّ الإصدار)
-  assert.match(read('src/utils/memberCardToken.js'), /CARD_REFRESH_MS = 90_000/);
+  assert.match(hook, /if \(inflightRef\.current\) return false;/);   // لا طلبان متوازيان
+  assert.match(hook, /aliveRef\.current = false/);
+  assert.doesNotMatch(hook.replace(/\/\*[\s\S]*?\*\//g, ''), /setTimeout|setInterval|visibilitychange|CARD_REFRESH_MS/); // لا تجديد تلقائي
 });
 
 test('البطاقة: MemberIdCard — SVG داخلي بلا canvas/خارجي، ألوان ثابتة، aria، reduced-motion، أهداف لمس 44px', () => {
@@ -355,7 +351,7 @@ test('الحضور: الماسح داخل الموقع — BarcodeDetector مح�
 });
 
 test('الحضور: بطاقة العضو — نص مبهم، لا رابط، تظهر في /member/id، وتفاتيح i18n موجودة بالثلاث لغات', () => {
-  assert.match(read('src/pages/member/MemberIdCard.jsx'), /<MemberAttendanceCards \/>/);
+  assert.match(read('src/pages/member/MemberIdCard.jsx'), /<MemberAttendanceCards member=\{member\} \/>/);
   const comp = read('src/components/member/MemberAttendanceCards.jsx');
   assert.match(comp, /attendanceCodeText\(c\.token\)/);
   assert.doesNotMatch(comp, /verifyUrl|window\.location/);

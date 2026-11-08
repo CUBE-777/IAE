@@ -56,3 +56,5 @@
 @media (max-width: 560px) {
   .verify-avatar { width: 68px; height: 68px; }
 }
+
+.member-id-permanent { margin: 0; font-weight: 700; color: var(--heading); }

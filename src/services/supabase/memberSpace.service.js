@@ -245,11 +245,20 @@ export async function resolveAccessRequest(requestId, status = 'handled') {
 /* ---------- بطاقة العضوية الرقمية (0040) ---------- */
 
 /**
- * رمز QR جديد للعضو النشط: { token, expires_at }. الرمز الخام يُعاد مرة واحدة ولا يُخزَّن في أي مكان (لا storage ولا رابط ولا سجل).
- * يرمي خطأ رسالته rate_limited عند تجاوز 30 رمزًا/ساعة، أو غير مصرّح إن لم يكن الحساب لعضو نشط.
+ * رمز QR الثابت للعضو النشط (0042): { token, expires_at: null, permanent: true }. نفس الرمز في كل مرة حتى يستدعي العضو regenerateMemberCardToken.
+ * لا يُخزَّن في أي مكان بالمتصفح (لا storage ولا رابط ولا سجل). يرمي غير مصرّح إن لم يكن الحساب لعضو نشط.
  */
 export async function issueMemberCardToken() {
   const { data, error } = await supabase.rpc('issue_member_card_token');
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * رمز جديد بطلب العضو (0042): يُوقف الرمز الثابت الحالي فورًا ويُصدر غيره. يرمي rate_limited بعد 5 مرات/ساعة.
+ */
+export async function regenerateMemberCardToken() {
+  const { data, error } = await supabase.rpc('regenerate_member_card_token');
   if (error) throw error;
   return data;
 }
