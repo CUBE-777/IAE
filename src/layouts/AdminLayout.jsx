@@ -3,11 +3,12 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Users, UserPlus, Shield, Calendar, Image as ImageIcon,
-  Megaphone, FileText, UserCog, History, Settings, Wallet, Cpu, Folder, LayoutGrid, Menu, ChevronRight, LogOut, X,
+  Megaphone, FileText, UserCog, History, Settings, Wallet, Cpu, Folder, LayoutGrid, Menu, ChevronRight, LogOut, X, BadgeCheck,
 } from 'lucide-react';
 import '../styles/admin.css';
 import { ADMIN_NAV } from '../constants/adminNav';
 import { useAuth } from '../app/providers/AuthProvider';
+import { useHasMemberSpace } from '../hooks/useHasMemberSpace';
 import LanguageSwitcher from '../components/layout/LanguageSwitcher';
 import ThemeToggle from '../components/layout/ThemeToggle';
 import InstallAppButton from '../components/admin/InstallAppButton';
@@ -33,6 +34,7 @@ const ICONS = {
 export default function AdminLayout({ children }) {
   const { t, i18n } = useTranslation();
   const { profile, logout } = useAuth();
+  const hasMemberSpace = useHasMemberSpace(profile?.id);
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -145,6 +147,12 @@ export default function AdminLayout({ children }) {
                 </NavLink>
               );
             })}
+            {hasMemberSpace && (
+              <NavLink to="/member" className="admin-sidebar-link" title={collapsed ? t('admin.layout.memberSpace') : undefined}>
+                <span className="icon"><BadgeCheck size={17} aria-hidden="true" /></span>
+                <span>{t('admin.layout.memberSpace')}</span>
+              </NavLink>
+            )}
           </nav>
 
           <div className="admin-sidebar-lang">

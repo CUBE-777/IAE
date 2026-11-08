@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { NavLink, useLocation, useOutletContext } from 'react-router-dom';
+import { Link, NavLink, useLocation, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Bell, Download, MoreHorizontal, Home, LogOut, Pencil, QrCode, ShieldCheck } from 'lucide-react';
+import { Bell, Download, MoreHorizontal, Home, LayoutDashboard, LogOut, Pencil, QrCode, ShieldCheck, Users } from 'lucide-react';
 import { useAuth } from '../../app/providers/AuthProvider';
 import { useNoindex } from '../../hooks/useNoindex';
 import { useNewAnnouncement } from '../../hooks/useNewAnnouncement';
@@ -16,9 +16,11 @@ import '../../styles/member-shell.css';
  */
 export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, children }) {
   const { t } = useTranslation();
-  const { logout } = useAuth();
+  const { logout, profile } = useAuth();
   const ctx = useOutletContext();
   const member = ctx?.member;
+  const hasBoardCard = ctx?.hasBoardCard === true;       // حساب مرتبط ببطاقة مكتب نشطة (0046)
+  const isAdmin = profile?.is_active === true;           // حساب مزدوج: رابط للوحة الإدارة بنفس الجلسة
   const location = useLocation();
   const hasNewAnnouncement = useNewAnnouncement();
   const [moreOpen, setMoreOpen] = useState(false);
@@ -45,7 +47,7 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
   }, [moreOpen]);
 
   const dot = hasNewAnnouncement && <span className="ms-dot" role="img" aria-label={t('member.nav.newAnnouncements')} />;
-  const moreActive = ['/member/card', '/member/security'].includes(location.pathname.replace(/\/$/, ''));
+  const moreActive = ['/member/card', '/member/board-card', '/member/security'].includes(location.pathname.replace(/\/$/, ''));
   const subtitle = member ? [member.university, member.promotion].filter((v) => v && String(v).trim()).join(' · ') : '';
 
   return (
@@ -70,9 +72,11 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
           <NavLink to="/member" end><Home size={20} aria-hidden="true" />{t('member.nav.home')}</NavLink>
           <NavLink to="/member/id"><QrCode size={20} aria-hidden="true" />{t('member.nav.id')}</NavLink>
           <NavLink to="/member/card"><Pencil size={20} aria-hidden="true" />{t('member.nav.card')}</NavLink>
+          {hasBoardCard && <NavLink to="/member/board-card"><Users size={20} aria-hidden="true" />{t('member.nav.boardCard')}</NavLink>}
           <NavLink to="/member/announcements"><Bell size={20} aria-hidden="true" />{t('member.nav.announcements')}{dot}</NavLink>
           <NavLink to="/member/security"><ShieldCheck size={20} aria-hidden="true" />{t('member.nav.security')}</NavLink>
         </nav>
+        {isAdmin && <Link className="ms-install" to="/admin/dashboard"><LayoutDashboard size={20} aria-hidden="true" />{t('member.nav.admin')}</Link>}
         {canInstall && <button type="button" className="ms-install" onClick={onInstall}><Download size={20} aria-hidden="true" />{t('member.nav.install')}</button>}
         {iosHint && !canPrompt && <p className="ms-hint">{t('member.nav.installIosHint')}</p>}
         <button type="button" className="ms-logout" onClick={() => logout()}><LogOut size={20} aria-hidden="true" />{t('member.nav.logout')}</button>
@@ -104,7 +108,9 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
           {moreOpen && (
             <div className="ms-sheet" role="menu">
               <NavLink to="/member/card" role="menuitem"><Pencil size={20} aria-hidden="true" />{t('member.nav.card')}</NavLink>
+              {hasBoardCard && <NavLink to="/member/board-card" role="menuitem"><Users size={20} aria-hidden="true" />{t('member.nav.boardCard')}</NavLink>}
               <NavLink to="/member/security" role="menuitem"><ShieldCheck size={20} aria-hidden="true" />{t('member.nav.security')}</NavLink>
+              {isAdmin && <Link to="/admin/dashboard" role="menuitem"><LayoutDashboard size={20} aria-hidden="true" />{t('member.nav.admin')}</Link>}
               {canInstall && <button type="button" role="menuitem" onClick={onInstall}><Download size={20} aria-hidden="true" />{t('member.nav.install')}</button>}
               {iosHint && !canPrompt && <p className="ms-hint">{t('member.nav.installIosHint')}</p>}
               <button type="button" role="menuitem" className="ms-sheet-out" onClick={() => logout()}><LogOut size={20} aria-hidden="true" />{t('member.nav.logout')}</button>

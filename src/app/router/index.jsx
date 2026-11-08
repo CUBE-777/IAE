@@ -25,6 +25,7 @@ const MemberHelp = lazy(() => import('../../pages/member/MemberHelp'));
 const MemberLayout = lazy(() => import('../../layouts/MemberLayout'));
 const MemberHome = lazy(() => import('../../pages/member/MemberHome'));
 const MemberCard = lazy(() => import('../../pages/member/MemberCard'));
+const MemberBoardCard = lazy(() => import('../../pages/member/MemberBoardCard'));
 const MemberIdCard = lazy(() => import('../../pages/member/MemberIdCard'));
 const MemberSecurity = lazy(() => import('../../pages/member/MemberSecurity'));
 const MemberAnnouncements = lazy(() => import('../../pages/member/MemberAnnouncements'));
@@ -109,6 +110,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <MemberHome /> },
           { path: 'card', element: <MemberCard /> },
+          { path: 'board-card', element: <MemberBoardCard /> },
           { path: 'id', element: <MemberIdCard /> },
           { path: 'announcements', element: <MemberAnnouncements /> },
           { path: 'security', element: <MemberSecurity /> },

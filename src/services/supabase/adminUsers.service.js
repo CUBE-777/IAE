@@ -25,7 +25,7 @@ export async function updateAdminProfile(existing, payload) {
 }
 
 /** ينشئ المسؤول بالكامل على الخادم عبر Edge Function (تستخدم service_role هناك فقط، وليس في المتصفح). */
-export async function createAdminProfile({ email, full_name, role, password }) {
+export async function createAdminProfile({ email, full_name, role, password, link_existing_member = false }) {
   // تأكد من وجود جلسة صالحة وأرسل access token صراحةً إلى Edge Function.
   // لا نرسل service_role من المتصفح؛ هذا رمز المستخدم الحالي فقط.
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -37,20 +37,27 @@ export async function createAdminProfile({ email, full_name, role, password }) {
   }
 
   const { data, error } = await supabase.functions.invoke('admin-create-user', {
-    body: { email, full_name, role, password },
+    // link_existing_member: تأكيد صريح لمنح صفة إدارية لمنخرط قائم (0046)؛ لا يُرسل إلا عند الحاجة
+    body: { email, full_name, role, password, ...(link_existing_member ? { link_existing_member: true } : {}) },
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   if (error) {
     // الاستجابة غير الناجحة تحمل سبب الرفض بالعربية في جسمها؛ نعرضه بدل الرسالة العامة
     let userMessage = '';
+    let code = '';
+    let memberName = '';
     try {
       const body = await error.context?.json?.();
       userMessage = body?.error || '';
+      code = body?.code || '';
+      memberName = body?.member_name || '';
     } catch {
       /* لا شيء */
     }
     const e = new Error(userMessage || error.message);
     e.userMessage = userMessage;
+    e.code = code;               // member_account_exists: البريد لمنخرط قائم ويحتاج تأكيدًا
+    e.memberName = memberName;
     throw e;
   }
   if (data?.error) {
@@ -58,7 +65,12 @@ export async function createAdminProfile({ email, full_name, role, password }) {
     e.userMessage = data.error;
     throw e;
   }
-  await logAction('ADMIN_CREATED_ADMIN', 'profiles', data?.id || null, `إنشاء مسؤول جديد: ${full_name} (${email}) — الدور: ${ROLE_LABELS[role] || role}`);
+  await logAction(
+    'ADMIN_CREATED_ADMIN', 'profiles', data?.id || null,
+    data?.linked_existing_member
+      ? `منح صفة إدارية لمنخرط قائم: ${full_name} (${email}) — الدور: ${ROLE_LABELS[role] || role}`
+      : `إنشاء مسؤول جديد: ${full_name} (${email}) — الدور: ${ROLE_LABELS[role] || role}`
+  );
   return data;
 }
 

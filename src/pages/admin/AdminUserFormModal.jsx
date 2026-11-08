@@ -3,7 +3,7 @@ import Modal from '../../components/admin/Modal';
 import { createAdminProfile, updateAdminProfile } from '../../services/supabase/adminUsers.service';
 import { useAuth } from '../../app/providers/AuthProvider';
 
-import { tr } from '../../i18n/adminDict';
+import { tr, trStrong } from '../../i18n/adminDict';
 export default function AdminUserFormModal({ profile, onClose, onSaved }) {
   const isEdit = !!profile;
   const { profile: me } = useAuth();
@@ -16,6 +16,8 @@ export default function AdminUserFormModal({ profile, onClose, onSaved }) {
     is_active: profile?.is_active !== false,
   });
   const [saving, setSaving] = useState(false);
+  // البريد لمنخرط قائم (0046): لا نمنحه صفة إدارية إلا بتأكيد صريح من المسؤول
+  const [confirmMember, setConfirmMember] = useState(null);
 
   // كلمة مرور عشوائية بلا أحرف ملتبسة (0/O و1/l/I) ليسهل نقلها للمسؤول الجديد
   const generatePassword = () => {
@@ -31,8 +33,8 @@ export default function AdminUserFormModal({ profile, onClose, onSaved }) {
     setValues((v) => ({ ...v, [name]: type === 'checkbox' ? checked : value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e, linkExisting = false) => {
+    e?.preventDefault();
     const full_name = values.full_name.trim();
     const email = values.email.trim();
     if (!full_name || !email) {
@@ -52,13 +54,24 @@ export default function AdminUserFormModal({ profile, onClose, onSaved }) {
         t?.remove();
         window.notify?.success(tr('تم الحفظ بنجاح'));
       } else {
-        await createAdminProfile({ email, full_name, role: values.role, password: values.password });
+        const res = await createAdminProfile({
+          email, full_name, role: values.role, password: values.password, link_existing_member: linkExisting,
+        });
         t?.remove();
-        window.notify?.success(tr('تم إنشاء المسؤول. سلّمه البريد وكلمة المرور ليدخل من صفحة تسجيل الدخول.'));
+        window.notify?.success(
+          res?.linked_existing_member
+            ? tr('مُنح المنخرط صفة إدارية، ويدخل بنفس بريده وكلمة مروره الحالية.')
+            : tr('تم إنشاء المسؤول. سلّمه البريد وكلمة المرور ليدخل من صفحة تسجيل الدخول.')
+        );
       }
       onSaved();
     } catch (err) {
       t?.remove();
+      if (err.code === 'member_account_exists') {
+        setConfirmMember({ name: err.memberName || values.full_name.trim() });
+        setSaving(false);
+        return;
+      }
       if (err.userMessage) window.notify?.error(err.userMessage);
       else window.notify?.fromError(err, isEdit ? tr('تعذر الحفظ') : tr('تعذر إنشاء المسؤول'));
       setSaving(false);
@@ -68,6 +81,21 @@ export default function AdminUserFormModal({ profile, onClose, onSaved }) {
   return (
     <Modal onClose={onClose}>
       <h3>{isEdit ? tr('تعديل صلاحيات') : tr('إنشاء مسؤول جديد')}</h3>
+      {confirmMember && (
+        <div className="admin-panel" role="alertdialog" aria-labelledby="f_confirm_title" style={{ borderColor: 'var(--warning, #b7791f)' }}>
+          <strong id="f_confirm_title">{tr('هذا البريد لمنخرط في فضاء المنخرطين')}</strong>
+          <p style={{ margin: '8px 0 12px' }}>
+            {trStrong('<strong>{{name}}</strong> لديه حساب منخرط بهذا البريد. يمكنك منحه صفة إدارية فيدخل بنفس البريد وكلمة مروره الحالية (كلمة المرور المكتوبة هنا لن تُستعمل).', { name: confirmMember.name })}
+          </p>
+          <div className="admin-modal-actions">
+            <button type="button" className="admin-btn admin-btn-primary" disabled={saving}
+              onClick={() => { setConfirmMember(null); handleSubmit(null, true); }}>
+              {tr('منح صفة إدارية')}
+            </button>
+            <button type="button" className="admin-btn admin-btn-ghost" onClick={() => setConfirmMember(null)}>{tr('رجوع')}</button>
+          </div>
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="admin-form-group">
           <label htmlFor="f_name">{tr('الاسم الكامل *')}</label>

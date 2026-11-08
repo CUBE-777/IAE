@@ -374,7 +374,8 @@
       "logoAlt": "Club logo",
       "sidebar": "Admin menu",
       "installApp": "Install admin panel as an app",
-      "installIosHint": "On iPhone: tap Share, then “Add to Home Screen”."
+      "installIosHint": "On iPhone: tap Share, then “Add to Home Screen”.",
+      "memberSpace": "Members' space"
     },
     "nav": {
       "dashboard": "Dashboard",
@@ -986,7 +987,9 @@
       "announcements": "Announcements",
       "newAnnouncements": "New announcements",
       "more": "More", "moreLabel": "More options", "tabsLabel": "Quick navigation", "memberSince": "Member", "install": "Install app", "installIosHint": "On iPhone: tap Share, then “Add to Home Screen”.",
-      "id": "Membership card"
+      "id": "Membership card",
+      "boardCard": "Board card",
+      "admin": "Admin panel"
     },
     "login": {
       "pageTitle": "Members' login",
@@ -1233,6 +1236,30 @@
         "done": "Your other devices were signed out.",
         "error": "Couldn't sign out the other sessions. Please try again later."
       }
+    },
+    "boardCard": {
+      "pageTitle": "Board card — Members' space",
+      "title": "Board card",
+      "description": "This is your card on the public board page. Suggest your changes; nothing is published until the administration approves it.",
+      "greeting": "{{name}} — {{position}}",
+      "intro": "Your name, role and order are set by the administration and can't be changed here. What you send is reviewed before it is published.",
+      "pendingNote": "Your previous request is under review. Sending new changes replaces it, or you can withdraw it.",
+      "returned": "The administration sent your request back for changes:",
+      "submit": "Send changes for review",
+      "submitting": "Sending…",
+      "uploading": "Uploading photo…",
+      "withdraw": "Withdraw request",
+      "withdrawing": "Withdrawing…",
+      "withdrawn": "Request withdrawn.",
+      "withdrawError": "Couldn't withdraw the request. Please try again.",
+      "successTitle": "Your request was received",
+      "successText": "The administration will review it and publish it once approved. You can withdraw or replace it until then.",
+      "backToProfile": "Back to my profile",
+      "submitError": "Couldn't send the request. Please try again.",
+      "uploadError": "Couldn't upload the photo. Try another image or try again.",
+      "privacy": "Nothing you send is published on the site until the content manager approves it.",
+      "noCardTitle": "No board card is linked to your account",
+      "noCardText": "If you are a board member, ask a super administrator to link your account to your card."
     },
     "card": {
       "pageTitle": "Edit my card — Members' space",

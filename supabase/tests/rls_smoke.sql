@@ -361,4 +361,200 @@ begin
   raise notice 'فحوص 0035 (حسابات الأعضاء): كل الفحوص نجحت ✔';
 end $$;
 
+-- ============================================================
+-- فحوص migration 0046 — حساب واحد بصفتين (إداري + منخرط) وبطاقة المكتب وإغلاق ثغرة الاستعادة
+-- ============================================================
+do $$
+declare
+  fx_ok   boolean := true;
+  u_dual  uuid := gen_random_uuid();   -- مسؤول (editor) سيُدمج مع فضاء المنخرطين
+  u_sa    uuid := gen_random_uuid();   -- super_admin: يملك الدمج
+  u_mm    uuid := gen_random_uuid();   -- members_manager: يدير الأعضاء لكنه لا يملك الدمج
+  b_dual  uuid;
+  m_dual  uuid;
+  res     jsonb;
+  denied  boolean;
+  msg     text;
+  st      text;
+begin
+  if to_regprocedure('public.link_admin_as_member(uuid, uuid, uuid)') is null then
+    raise notice 'تخطّي فحوص 0046: لم تُطبَّق (link_admin_as_member غير موجودة)';
+    return;
+  end if;
+
+  begin
+    insert into auth.users (id, email) values
+      (u_dual, '__smoke_dual46@example.invalid'),
+      (u_sa,   '__smoke_sa46@example.invalid'),
+      (u_mm,   '__smoke_mm46@example.invalid');
+    insert into public.profiles (id, full_name, email, role) values
+      (u_dual, '__smoke_dual46', '__smoke_dual46@example.invalid', 'editor'),
+      (u_sa,   '__smoke_sa46',   '__smoke_sa46@example.invalid',   'super_admin'),
+      (u_mm,   '__smoke_mm46',   '__smoke_mm46@example.invalid',   'members_manager');
+    insert into public.board_members (full_name, position) values ('__smoke_dual46', '__smoke_pos') returning id into b_dual;
+  exception when others then
+    fx_ok := false;
+    raise notice 'تخطّي فحوص 0046 التي تحتاج مستخدمين تجريبيين: تعذّر الإنشاء (%)', sqlerrm;
+  end;
+
+  if fx_ok then
+    -- ---------- (أ) members_manager لا يملك الدمج، وanon لا ينفّذ الدالة ----------
+    set local role authenticated;
+    perform set_config('request.jwt.claims',
+      json_build_object('sub', u_mm, 'role', 'authenticated', 'aal', 'aal1')::text, true);
+    denied := false;
+    begin
+      perform public.link_admin_as_member(u_dual, b_dual, null);
+    exception when others then denied := true;
+    end;
+    if not denied then raise exception 'FAIL: members_manager استطاع دمج حساب إداري بفضاء المنخرطين'; end if;
+    reset role;
+
+    set local role anon;
+    denied := false;
+    begin
+      perform public.link_admin_as_member(u_dual, b_dual, null);
+    exception when insufficient_privilege then denied := true;
+    end;
+    if not denied then raise exception 'FAIL: anon ينفّذ link_admin_as_member'; end if;
+    reset role;
+
+    -- ---------- (ب) super_admin يدمج: يُنشأ سجل العضو ويُربط بالبطاقة وبحساب المنخرط ----------
+    set local role authenticated;
+    perform set_config('request.jwt.claims',
+      json_build_object('sub', u_sa, 'role', 'authenticated', 'aal', 'aal1')::text, true);
+    res := public.link_admin_as_member(u_dual, b_dual, null);
+    reset role;
+    m_dual := (res ->> 'member_id')::uuid;
+    if m_dual is null then raise exception 'FAIL: الدمج لم يُرجع member_id'; end if;
+    if not exists (select 1 from public.member_accounts where user_id = u_dual and member_id = m_dual and admin_linked and is_active) then
+      raise exception 'FAIL: صف member_accounts المزدوج لم يُنشأ';
+    end if;
+    if not exists (select 1 from public.board_members where id = b_dual and member_id = m_dual) then
+      raise exception 'FAIL: بطاقة المكتب لم تُربط بسجل العضو';
+    end if;
+    if exists (select 1 from public.members where id = m_dual and show_in_directory) then
+      raise exception 'FAIL: السجل المُنشأ آليًا ظهر في دليل الأعضاء العام';
+    end if;
+
+    -- الربط المباشر لمستخدم إداري بلا العلم يبقى مرفوضًا (طبقة الدفاع الثانية)
+    denied := false;
+    begin
+      insert into public.member_accounts (user_id, member_id) values (u_mm, m_dual);
+    exception when others then
+      denied := true;
+      if sqlerrm <> 'member_account_forbidden_for_admin_user' then
+        raise exception 'FAIL: سبب رفض غير متوقع للربط المباشر: %', sqlerrm;
+      end if;
+    end;
+    if not denied then raise exception 'FAIL: سُمح بربط مباشر لمستخدم إداري دون admin_linked'; end if;
+
+    -- ---------- (ج) المستخدم المزدوج: هوية العضو وبطاقته، وطلب التعديل وسحبه ----------
+    set local role authenticated;
+    perform set_config('request.jwt.claims',
+      json_build_object('sub', u_dual, 'role', 'authenticated', 'aal', 'aal1')::text, true);
+    if public.current_member_id() is distinct from m_dual then
+      raise exception 'FAIL: الحساب المزدوج لا يحمل هوية العضو';
+    end if;
+    res := public.get_my_board_card();
+    if res is null or (res ->> 'board_member_id')::uuid is distinct from b_dual then
+      raise exception 'FAIL: get_my_board_card لا تعيد بطاقة المكتب الصحيحة';
+    end if;
+    perform public.submit_my_board_card('{"bio":"smoke"}'::jsonb);
+    reset role;
+    select status into st from public.board_profile_links where board_member_id = b_dual;
+    if st is distinct from 'submitted' then raise exception 'FAIL: طلب تعديل البطاقة لم يُسجَّل كـ submitted (%)', st; end if;
+
+    -- الاسم والصفة خارج القائمة البيضاء: لا يتغيّران بما يرسله العضو
+    set local role authenticated;
+    perform set_config('request.jwt.claims',
+      json_build_object('sub', u_dual, 'role', 'authenticated', 'aal', 'aal1')::text, true);
+    perform public.submit_my_board_card('{"bio":"smoke2","position":"hacked","full_name":"hacked"}'::jsonb);
+    reset role;
+    if exists (select 1 from public.board_profile_links where board_member_id = b_dual and (data ? 'position' or data ? 'full_name')) then
+      raise exception 'FAIL: الطلب يحمل حقولًا خارج القائمة البيضاء (الاسم/الصفة)';
+    end if;
+    if exists (select 1 from public.board_members bm where bm.id = b_dual and (bm.position <> '__smoke_pos' or bm.full_name <> '__smoke_dual46')) then
+      raise exception 'FAIL: العضو غيّر اسم/صفة بطاقته مباشرة';
+    end if;
+
+    set local role authenticated;
+    perform set_config('request.jwt.claims',
+      json_build_object('sub', u_dual, 'role', 'authenticated', 'aal', 'aal1')::text, true);
+    perform public.cancel_my_board_card_request();
+    reset role;
+    select status into st from public.board_profile_links where board_member_id = b_dual;
+    if st is distinct from 'sent' then raise exception 'FAIL: سحب الطلب لم يُعد الحالة إلى sent (%)', st; end if;
+
+    -- مسؤول غير مرتبط لا يملك بطاقة
+    set local role authenticated;
+    perform set_config('request.jwt.claims',
+      json_build_object('sub', u_mm, 'role', 'authenticated', 'aal', 'aal1')::text, true);
+    if public.get_my_board_card() is not null then raise exception 'FAIL: مسؤول غير مدمج يحصل على بطاقة مكتب'; end if;
+    reset role;
+
+    -- ---------- (د) ⚠️ ثغرة الاستعادة: لا إصدار ولا تجهيز ولا إنهاء لحساب له profiles ----------
+    set local role authenticated;
+    perform set_config('request.jwt.claims',
+      json_build_object('sub', u_mm, 'role', 'authenticated', 'aal', 'aal1')::text, true);
+    denied := false;
+    begin
+      perform public.issue_member_activation_link(m_dual);
+    exception when others then denied := true; msg := sqlerrm;
+    end;
+    reset role;
+    if not denied then raise exception 'FAIL: members_manager أصدر رابط استعادة لحساب إداري (ثغرة استيلاء على الحساب)'; end if;
+    if msg not like '%حساب إداري%' then raise exception 'FAIL: سبب رفض غير متوقع لإصدار رابط استعادة: %', msg; end if;
+
+    -- رابط صدر قبل الدمج (أو أُدرج يدويًا): يُرفض عند التجهيز والإنهاء
+    insert into public.member_activation_links (member_id, token_hash, expires_at)
+    values (m_dual, encode(sha256(convert_to('__smoke_token46', 'utf8')), 'hex'), now() + interval '1 day');
+    denied := false;
+    begin
+      perform public.prepare_member_activation('__smoke_token46');
+    exception when others then denied := true; msg := sqlerrm;
+    end;
+    if not denied or msg <> 'activation_link_invalid' then
+      raise exception 'FAIL: prepare_member_activation قبلت رابط استعادة لحساب إداري (%)', msg;
+    end if;
+    denied := false;
+    begin
+      perform public.finalize_member_activation('__smoke_token46', u_dual);
+    exception when others then denied := true; msg := sqlerrm;
+    end;
+    if not denied or msg <> 'activation_link_invalid' then
+      raise exception 'FAIL: finalize_member_activation قبلت رابط استعادة لحساب إداري (%)', msg;
+    end if;
+
+    -- ---------- (هـ) كلمة مرور مؤقتة: لا هوية عضو للحساب المزدوج حتى يغيّرها صاحبه ----------
+    update public.profiles set must_change_password = true where id = u_dual;
+    set local role authenticated;
+    perform set_config('request.jwt.claims',
+      json_build_object('sub', u_dual, 'role', 'authenticated', 'aal', 'aal1')::text, true);
+    if public.current_member_id() is not null then
+      raise exception 'FAIL: حساب مزدوج بكلمة مرور مؤقتة يحمل هوية عضو';
+    end if;
+    reset role;
+    update public.profiles set must_change_password = false where id = u_dual;
+
+    -- ---------- (و) فصل الصفة المزدوجة يعطّل جانب المنخرط فقط ----------
+    set local role authenticated;
+    perform set_config('request.jwt.claims',
+      json_build_object('sub', u_sa, 'role', 'authenticated', 'aal', 'aal1')::text, true);
+    perform public.unlink_admin_as_member(u_dual);
+    reset role;
+    set local role authenticated;
+    perform set_config('request.jwt.claims',
+      json_build_object('sub', u_dual, 'role', 'authenticated', 'aal', 'aal1')::text, true);
+    if public.current_member_id() is not null then raise exception 'FAIL: الحساب بقي بهوية عضو بعد الفصل'; end if;
+    reset role;
+    if not exists (select 1 from public.profiles where id = u_dual and is_active) then
+      raise exception 'FAIL: فصل جانب المنخرط مسّ الصفة الإدارية';
+    end if;
+  end if;
+
+  reset role;
+  raise notice 'فحوص 0046 (حساب واحد بصفتين + بطاقة المكتب + ثغرة الاستعادة): كل الفحوص نجحت ✔';
+end $$;
+
 rollback;

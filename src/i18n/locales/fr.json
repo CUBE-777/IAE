@@ -374,7 +374,8 @@
       "logoAlt": "Logo du club",
       "sidebar": "Menu d'administration",
       "installApp": "Installer l'espace admin comme application",
-      "installIosHint": "Sur iPhone : touchez Partager puis « Sur l'écran d'accueil »."
+      "installIosHint": "Sur iPhone : touchez Partager puis « Sur l'écran d'accueil ».",
+      "memberSpace": "Espace adhérents"
     },
     "nav": {
       "dashboard": "Tableau de bord",
@@ -986,7 +987,9 @@
       "announcements": "Annonces",
       "newAnnouncements": "Nouvelles annonces",
       "more": "Plus", "moreLabel": "Plus d'options", "tabsLabel": "Navigation rapide", "memberSince": "Adhérent", "install": "Installer l'application", "installIosHint": "Sur iPhone : touchez Partager puis « Sur l'écran d'accueil ».",
-      "id": "Carte de membre"
+      "id": "Carte de membre",
+      "boardCard": "Carte du bureau",
+      "admin": "Panneau d'administration"
     },
     "login": {
       "pageTitle": "Connexion adhérents",
@@ -1233,6 +1236,30 @@
         "done": "Les sessions des autres appareils ont été fermées.",
         "error": "Impossible de fermer les sessions. Réessayez plus tard."
       }
+    },
+    "boardCard": {
+      "pageTitle": "Carte du bureau — Espace adhérents",
+      "title": "Carte du bureau",
+      "description": "Voici votre carte sur la page publique du bureau. Proposez vos modifications ; rien n'est publié avant validation par l'administration.",
+      "greeting": "{{name}} — {{position}}",
+      "intro": "Le nom, la fonction et l'ordre sont définis par l'administration et ne peuvent pas être modifiés ici. Ce que vous envoyez est relu avant publication.",
+      "pendingNote": "Votre demande précédente est en cours de relecture. Envoyer de nouvelles modifications la remplace ; vous pouvez aussi la retirer.",
+      "returned": "L'administration a renvoyé votre demande pour correction :",
+      "submit": "Envoyer les modifications pour relecture",
+      "submitting": "Envoi en cours…",
+      "uploading": "Téléversement de la photo…",
+      "withdraw": "Retirer la demande",
+      "withdrawing": "Retrait en cours…",
+      "withdrawn": "Demande retirée.",
+      "withdrawError": "Impossible de retirer la demande. Réessayez.",
+      "successTitle": "Votre demande est bien reçue",
+      "successText": "L'administration la relira et la publiera après validation. Vous pouvez la retirer ou la remplacer d'ici là.",
+      "backToProfile": "Retour à mon profil",
+      "submitError": "Impossible d'envoyer la demande. Réessayez.",
+      "uploadError": "Impossible de téléverser la photo. Essayez une autre image ou réessayez.",
+      "privacy": "Rien de ce que vous envoyez n'est publié sur le site avant validation par le responsable du contenu.",
+      "noCardTitle": "Aucune carte du bureau n'est liée à votre compte",
+      "noCardText": "Si vous faites partie du bureau, demandez à un super administrateur de lier votre compte à votre carte."
     },
     "card": {
       "pageTitle": "Modifier ma carte — Espace adhérents",

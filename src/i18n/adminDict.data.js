@@ -2506,5 +2506,109 @@ export const ADMIN_DICT = {
  "هذا المتصفح لا يدعم المسح بالكاميرا (يعمل في Chrome على أندرويد). استعمل القائمة أدناه لتسجيل الحضور.": {
   "fr": "Ce navigateur ne prend pas en charge le scan par caméra (fonctionne dans Chrome sur Android). Utilisez la liste ci-dessous pour enregistrer la présence.",
   "en": "This browser doesn't support camera scanning (it works in Chrome on Android). Use the list below to record attendance."
+ },
+ "تم فصل فضاء المنخرطين": {
+  "fr": "Espace adhérents dissocié",
+  "en": "Members' space unlinked"
+ },
+ "تعذر الفصل": {
+  "fr": "Impossible de dissocier",
+  "en": "Couldn't unlink"
+ },
+ "يمكن ربط الحساب الإداري بفضاء المنخرطين ليدخل صاحبه إلى الفضاءين بنفس البريد وكلمة المرور، ويتعرّف على بطاقته في المكتب ليطلب تعديلها.": {
+  "fr": "Un compte administrateur peut être lié à l'espace adhérents : son titulaire accède aux deux espaces avec le même e-mail et le même mot de passe, et retrouve sa carte du bureau pour en demander la modification.",
+  "en": "An admin account can be linked to the members' space: its owner signs in to both spaces with the same email and password, and finds their board card to request changes."
+ },
+ "فضاء المنخرطين": {
+  "fr": "Espace adhérents",
+  "en": "Members' space"
+ },
+ "مرتبط": {
+  "fr": "Lié",
+  "en": "Linked"
+ },
+ "بطاقة المكتب: {{name}}": {
+  "fr": "Carte du bureau : {{name}}",
+  "en": "Board card: {{name}}"
+ },
+ "غير مرتبط": {
+  "fr": "Non lié",
+  "en": "Not linked"
+ },
+ "فصل فضاء المنخرطين": {
+  "fr": "Dissocier l'espace adhérents",
+  "en": "Unlink members' space"
+ },
+ "إعادة الربط": {
+  "fr": "Relier à nouveau",
+  "en": "Re-link"
+ },
+ "ربط بفضاء المنخرطين": {
+  "fr": "Lier à l'espace adhérents",
+  "en": "Link to members' space"
+ },
+ "سيفقد <strong>{{name}}</strong> الدخول إلى فضاء المنخرطين فقط، وتبقى صفته الإدارية كما هي. يمكن إعادة الربط لاحقًا.": {
+  "fr": "<strong>{{name}}</strong> perdra uniquement l'accès à l'espace adhérents ; son rôle d'administrateur reste inchangé. Le lien pourra être rétabli plus tard.",
+  "en": "<strong>{{name}}</strong> will lose access to the members' space only; the admin role stays unchanged. You can link it again later."
+ },
+ "فصل": {
+  "fr": "Dissocier",
+  "en": "Unlink"
+ },
+ "تم الربط": {
+  "fr": "Lien établi",
+  "en": "Linked"
+ },
+ "تعذر الربط": {
+  "fr": "Impossible de lier",
+  "en": "Couldn't link"
+ },
+ "ربط {{name}} بفضاء المنخرطين": {
+  "fr": "Lier {{name}} à l'espace adhérents",
+  "en": "Link {{name}} to the members' space"
+ },
+ "سيدخل صاحب الحساب إلى لوحة الإدارة وفضاء المنخرطين بنفس البريد وكلمة المرور. إن لم يكن له سجل عضو يُنشأ سجل جديد لا يظهر في دليل الأعضاء العام.": {
+  "fr": "Le titulaire du compte accédera au panneau d'administration et à l'espace adhérents avec le même e-mail et le même mot de passe. S'il n'a pas de fiche membre, une nouvelle fiche est créée, non visible dans l'annuaire public des membres.",
+  "en": "The account owner will access the admin panel and the members' space with the same email and password. If there is no member record yet, a new one is created and kept out of the public members directory."
+ },
+ "بطاقة المكتب": {
+  "fr": "Carte du bureau",
+  "en": "Board card"
+ },
+ "بدون بطاقة مكتب (فضاء المنخرطين فقط)": {
+  "fr": "Sans carte du bureau (espace adhérents uniquement)",
+  "en": "No board card (members' space only)"
+ },
+ "(مقترح)": {
+  "fr": "(suggérée)",
+  "en": "(suggested)"
+ },
+ "لا توجد بطاقات مكتب نشطة غير مرتبطة.": {
+  "fr": "Aucune carte du bureau active et non liée.",
+  "en": "No active, unlinked board cards."
+ },
+ "بريد الحساب يجب أن يطابق بريد سجل العضو، وإلا يُرفض الربط حتى لا يُربط شخص بسجل غيره.": {
+  "fr": "L'e-mail du compte doit correspondre à celui de la fiche membre, sinon le lien est refusé pour éviter de relier une personne à la fiche d'un autre.",
+  "en": "The account email must match the member record's email, otherwise linking is refused so nobody is linked to someone else's record."
+ },
+ "ربط": {
+  "fr": "Lier",
+  "en": "Link"
+ },
+ "مُنح المنخرط صفة إدارية، ويدخل بنفس بريده وكلمة مروره الحالية.": {
+  "fr": "Le rôle d'administrateur a été accordé à l'adhérent ; il se connecte avec son e-mail et son mot de passe actuels.",
+  "en": "The member was given an admin role and signs in with the same email and current password."
+ },
+ "هذا البريد لمنخرط في فضاء المنخرطين": {
+  "fr": "Cet e-mail appartient à un adhérent de l'espace adhérents",
+  "en": "This email belongs to a member in the members' space"
+ },
+ "<strong>{{name}}</strong> لديه حساب منخرط بهذا البريد. يمكنك منحه صفة إدارية فيدخل بنفس البريد وكلمة مروره الحالية (كلمة المرور المكتوبة هنا لن تُستعمل).": {
+  "fr": "<strong>{{name}}</strong> a un compte adhérent avec cet e-mail. Vous pouvez lui accorder un rôle d'administrateur : il se connectera avec le même e-mail et son mot de passe actuel (le mot de passe saisi ici ne sera pas utilisé).",
+  "en": "<strong>{{name}}</strong> has a member account with this email. You can give them an admin role: they will sign in with the same email and their current password (the password typed here will not be used)."
+ },
+ "منح صفة إدارية": {
+  "fr": "Accorder un rôle d'administrateur",
+  "en": "Give admin role"
  }
 };

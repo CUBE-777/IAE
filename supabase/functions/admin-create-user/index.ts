@@ -165,6 +165,52 @@ async function handle(req: Request): Promise<Response> {
       return json({ error: 'لا يستطيع منح دور المطوّر إلا مطوّر' }, 403);
     }
 
+    // حساب مزدوج (0046): إن كان البريد لمنخرط قائم بلا صفة إدارية، لا نُنشئ مستخدمًا جديدًا ولا نغيّر كلمة مروره؛
+    // نضيف له صفة إدارية فقط ويدخل بكلمة مروره الحالية. خطوتان لتفادي منح الصلاحية بخطأ إملائي في البريد:
+    // الاستدعاء الأول يُرجع 409 + member_account_exists ومعه اسم العضو، والثاني بـ link_existing_member: true ينفّذ.
+    const { data: existing, error: existingErr } = await adminClient.rpc('find_member_only_user', { p_email: email });
+    if (existingErr) {
+      console.error('admin-create-user: find_member_only_user failed:', existingErr);
+      return json({ error: 'تعذر التحقق من البريد، حاول لاحقًا' }, 500);
+    }
+    if (existing?.user_id) {
+      if (body.link_existing_member !== true) {
+        return json(
+          {
+            error: 'هذا البريد لمنخرط في فضاء المنخرطين. أكّد منحه صفة إدارية بنفس كلمة مروره الحالية.',
+            code: 'member_account_exists',
+            member_name: existing.member_name || null,
+          },
+          409,
+        );
+      }
+      const { error: linkProfileErr } = await adminClient.from('profiles').insert({
+        id: existing.user_id,
+        full_name,
+        email,
+        role,
+        is_active: true,
+        must_change_password: false, // يدخل بكلمة مروره هو؛ لا كلمة مؤقتة
+      });
+      if (linkProfileErr) {
+        // لا نحذف المستخدم أبدًا: هو منخرط قائم
+        console.error('admin-create-user: profile insert (existing member) failed:', linkProfileErr);
+        return json({ error: 'تعذر إنشاء ملف المسؤول' }, 400);
+      }
+      const { error: dualErr } = await adminClient.rpc('mark_member_account_dual', { p_user_id: existing.user_id });
+      if (dualErr) {
+        // تراجع عن الصفة الإدارية حتى لا يبقى حساب بصفتين غير معلَّمتين (يتعطّل جانب المنخرط)
+        console.error('admin-create-user: mark_member_account_dual failed:', dualErr);
+        await adminClient.from('profiles').delete().eq('id', existing.user_id);
+        return json({ error: 'تعذر ربط الصفة الإدارية بحساب المنخرط' }, 400);
+      }
+      return json({
+        id: existing.user_id,
+        linked_existing_member: true,
+        message: 'مُنح المنخرط صفة إدارية، ويدخل بنفس بريده وكلمة مروره الحالية.',
+      });
+    }
+
     const { data: created, error: createErr } = await adminClient.auth.admin.createUser({
       email,
       password,

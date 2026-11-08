@@ -167,3 +167,6 @@ html[data-theme='dark'] .member-membership-none, html[data-theme='dark'] .member
 
 /* وضوح التركيز بلوحة المفاتيح داخل الغلاف */
 .ms-wrap :focus-visible, .ma-wrap :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* رابط لوحة الإدارة للحساب المزدوج (0046): نفس شكل زر التثبيت لكنه رابط */
+a.ms-install { text-decoration: none; }
