@@ -361,9 +361,11 @@ export default function MemberCard() {
         </div>
 
         {dirty && <p className="mf-hint member-unsaved" role="status">{t('member.card.unsaved')}</p>}
-        <button type="submit" className="btn btn-gold mf-submit" disabled={submitting}>
-          {submitting ? (stage === 'uploading' ? t('member.card.uploading') : t('member.card.submitting')) : t('member.card.submit')}
-        </button>
+        <div className="ms-savebar">
+          <button type="submit" className="btn btn-gold mf-submit" disabled={submitting}>
+            {submitting ? (stage === 'uploading' ? t('member.card.uploading') : t('member.card.submitting')) : t('member.card.submit')}
+          </button>
+        </div>
         <p className="mf-privacy">{t('member.card.privacy')}</p>
       </form>
     </MemberPage>

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import InteriorLayout from '../../layouts/InteriorLayout';
-import PageHero from '../../components/layout/PageHero';
+import MemberAuthShell from '../../components/member/MemberAuthShell';
+import PasswordInput from '../../components/member/PasswordInput';
 import FormField from '../../components/common/FormField';
 import { useAuth } from '../../app/providers/AuthProvider';
 import { useNoindex } from '../../hooks/useNoindex';
@@ -57,30 +58,22 @@ export default function MemberLogin() {
 
   return (
     <InteriorLayout>
-      <PageHero crumbs={[{ label: t('member.crumb') }]} title={t('member.login.title')} description={t('member.login.description')} />
-      <section className="mf-section">
-        <div className="container">
-          <form className="membership-form mf-form member-login" onSubmit={handleSubmit} noValidate aria-busy={submitting}>
-            {formError && <div className="form-alert form-alert-error" role="alert">{formError}</div>}
-            <fieldset className="mf-group">
-              <FormField id="ml-email" label={t('member.login.email')} required error={errors.email}>
-                {(a) => <input {...a} type="email" dir="ltr" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} />}
-              </FormField>
-              <FormField id="ml-password" label={t('member.login.password')} required error={errors.password}>
-                {(a) => <input {...a} type={show ? 'text' : 'password'} dir="ltr" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />}
-              </FormField>
-              <label className="mf-hint" style={{ display: 'flex', gap: 8, alignItems: 'center', cursor: 'pointer' }}>
-                <input type="checkbox" checked={show} onChange={(e) => setShow(e.target.checked)} /> {t('member.login.show')}
-              </label>
-            </fieldset>
-            <button type="submit" className="btn btn-gold mf-submit" disabled={submitting}>
-              {submitting ? t('member.login.submitting') : t('member.login.submit')}
-            </button>
-            <p className="mf-privacy">{t('member.login.forgot')} <Link to="/member/help">{t('member.login.helpLink')}</Link></p>
-            <p className="mf-privacy">{t('member.login.noAccount')}</p>
-          </form>
-        </div>
-      </section>
+      <MemberAuthShell title={t('member.login.title')} description={t('member.login.description')}>
+        <form className="ma-form" onSubmit={handleSubmit} noValidate aria-busy={submitting}>
+          {formError && <div className="form-alert form-alert-error" role="alert">{formError}</div>}
+          <FormField id="ml-email" label={t('member.login.email')} required error={errors.email}>
+            {(a) => <input {...a} type="email" dir="ltr" inputMode="email" autoComplete="username" autoCapitalize="none" value={email} onChange={(e) => setEmail(e.target.value)} />}
+          </FormField>
+          <FormField id="ml-password" label={t('member.login.password')} required error={errors.password}>
+            {(a) => <PasswordInput {...a} show={show} onToggle={() => setShow((v) => !v)} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />}
+          </FormField>
+          <button type="submit" className="btn btn-gold ma-submit" disabled={submitting}>
+            {submitting ? t('member.login.submitting') : t('member.login.submit')}
+          </button>
+          <p className="ma-note"><Link to="/member/help">{t('member.login.forgot')} {t('member.login.helpLink')}</Link></p>
+          <p className="ma-note">{t('member.login.noAccount')}</p>
+        </form>
+      </MemberAuthShell>
     </InteriorLayout>
   );
 }

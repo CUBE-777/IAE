@@ -92,3 +92,53 @@ body:has(.ms-tabbar) .interior-footer { padding-bottom: calc(76px + env(safe-are
 html[data-theme='dark'] .member-badge-approved, html[data-theme='dark'] .member-membership-active { background: #12301f; border-color: #1f5a39; color: #7be0a6; }
 html[data-theme='dark'] .member-membership-lapsed { background: #3a2a10; border-color: #6b4a14; color: #f5c77a; }
 html[data-theme='dark'] .member-membership-none, html[data-theme='dark'] .member-badge-rejected { background: var(--danger-soft); border-color: #6b2a2c; color: #f6a29c; }
+
+/* ======== المرحلة 2: صفحات الدخول/التفعيل/المساعدة ======== */
+.ma-wrap { min-height: 100vh; display: grid; place-items: start center; padding: 108px var(--space-4) var(--space-12); background: linear-gradient(180deg, var(--cream) 0%, var(--surface) 100%); }
+.ma-card { width: 100%; max-width: 440px; padding: 28px 22px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); text-align: center; }
+.ma-logo { width: 64px; height: 64px; border-radius: 16px; object-fit: cover; margin: 0 auto 14px; display: block; box-shadow: var(--shadow-sm); }
+.ma-card h1 { margin: 0; font-size: clamp(1.3rem, 5vw, 1.6rem); color: var(--heading); line-height: var(--leading-tight); }
+.ma-desc { margin: 8px 0 0; color: var(--muted); font-size: var(--text-body); line-height: var(--leading-normal); }
+.ma-form { display: grid; gap: 16px; margin-top: 22px; text-align: start; }
+.ma-form .field { margin: 0; }
+.ma-form input:not([type='checkbox']) { width: 100%; min-height: 48px; font-size: 16px; }
+.ma-submit { width: 100%; min-height: 50px; justify-content: center; text-align: center; }
+.ma-note { margin: 0; color: var(--muted); font-size: var(--text-small); line-height: var(--leading-normal); text-align: center; }
+.ma-note a { color: var(--accent-ink); font-weight: 700; }
+.ma-greet { padding: 12px 14px; border-radius: var(--radius-md); background: rgba(var(--gold-rgb), 0.1); border: 1px solid rgba(var(--gold-rgb), 0.35); color: var(--heading); font-weight: 600; text-align: center; }
+.ma-done { display: grid; gap: 14px; margin-top: 20px; }
+.ma-done h2 { margin: 0; color: var(--heading); font-size: 1.2rem; }
+.ma-done p { margin: 0; color: var(--muted); line-height: var(--leading-relaxed); }
+.pw-wrap { position: relative; }
+.pw-wrap input { padding-inline-end: 52px; }
+.pw-toggle { position: absolute; inset-block: 0; inset-inline-end: 0; width: 48px; display: grid; place-items: center; border: 0; background: transparent; color: var(--muted); cursor: pointer; border-radius: var(--radius-md); }
+.pw-toggle[aria-pressed='true'] { color: var(--accent-ink); }
+.ma-strength { display: grid; gap: 6px; }
+.ma-strength-bar { display: block; height: 6px; border-radius: 99px; background: var(--border); overflow: hidden; }
+.ma-strength-bar i { display: block; height: 100%; width: 33%; border-radius: inherit; background: var(--danger); transition: width 0.25s ease, background 0.25s ease; }
+.ma-strength-medium .ma-strength-bar i { width: 66%; background: var(--gold); }
+.ma-strength-strong .ma-strength-bar i { width: 100%; background: var(--success); }
+.ma-strength .member-strength { font-size: var(--text-small); }
+
+/* ======== هياكل التحميل ======== */
+.sk { border-radius: var(--radius-lg); background: linear-gradient(90deg, var(--border-soft) 25%, var(--border) 50%, var(--border-soft) 75%); background-size: 200% 100%; animation: sk-shimmer 1.3s linear infinite; }
+.sk-title { height: 32px; width: 55%; margin-bottom: 18px; }
+.sk-hero { height: 150px; border-radius: var(--radius-xl); margin-bottom: 18px; }
+.sk-card { height: 120px; margin-bottom: 14px; }
+.sk-line { height: 46px; margin-bottom: 10px; border-radius: var(--radius-md); }
+.ma-skel { margin-top: 22px; }
+.ms-skel .ms-side { display: none; }
+@media (min-width: 900px) { .ms-skel .ms-side { display: block; } }
+@keyframes sk-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .sk, .ma-strength-bar i { animation: none; transition: none; } }
+
+/* ======== شريط حفظ ثابت (نموذج تعديل البطاقة) على الهاتف ======== */
+@media (max-width: 899px) {
+  .ms-savebar { position: sticky; bottom: calc(70px + env(safe-area-inset-bottom)); z-index: 5; margin-inline: calc(var(--space-4) * -1); padding: 10px var(--space-4); background: var(--surface); border-top: 1px solid var(--border); box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.06); }
+  .ms-savebar .mf-submit { width: 100%; min-height: 50px; }
+}
+
+/* ======== انتقال خفيف عند فتح الصفحة ======== */
+.ms-main > * { animation: ms-in 0.28s ease-out both; }
+@keyframes ms-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ms-main > * { animation: none; } }

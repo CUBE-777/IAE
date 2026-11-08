@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import InteriorLayout from './InteriorLayout';
-import PageHero from '../components/layout/PageHero';
+import MemberAuthShell from '../components/member/MemberAuthShell';
+import MemberSkeleton from '../components/member/MemberSkeleton';
 import { useAuth } from '../app/providers/AuthProvider';
 import { getMyMember } from '../services/supabase/memberSpace.service';
 import '../styles/membership-flow.css';
@@ -41,42 +42,25 @@ export default function MemberLayout() {
 
   let body;
   if (status === 'loading' || state.phase === 'loading') {
-    body = <section className="mf-section"><div className="container"><p className="mf-loading">{t('member.loading')}</p></div></section>;
+    body = <MemberSkeleton />;
   } else if (state.phase === 'error') {
     body = (
-      <section className="mf-section"><div className="container">
-        <div className="mf-state" role="alert">
-          <h2>{t('member.home.loadErrorTitle')}</h2>
-          <p>{t('member.home.loadErrorText')}</p>
-          <button type="button" className="btn btn-gold" onClick={() => { setState({ phase: 'loading', member: null }); load(); }}>{t('member.home.retry')}</button>
-        </div>
-      </div></section>
+      <MemberAuthShell title={t('member.home.loadErrorTitle')} description={t('member.home.loadErrorText')}>
+        <button type="button" className="btn btn-gold ma-submit" onClick={() => { setState({ phase: 'loading', member: null }); load(); }}>{t('member.home.retry')}</button>
+      </MemberAuthShell>
     );
   } else if (state.phase === 'notMember') {
     body = (
-      <section className="mf-section"><div className="container">
-        <div className="mf-state" role="alert">
-          <h2>{t('member.home.notMemberTitle')}</h2>
-          <p>{t('member.home.notMemberText')}</p>
-          <div className="member-actions">
-            {profile?.is_active && <Link className="btn btn-ghost" to="/admin/dashboard">{t('member.home.goAdmin')}</Link>}
-            <button type="button" className="btn btn-gold" onClick={() => logout()}>{t('member.nav.logout')}</button>
-          </div>
+      <MemberAuthShell title={t('member.home.notMemberTitle')} description={t('member.home.notMemberText')}>
+        <div className="ma-form">
+          {profile?.is_active && <Link className="btn btn-ghost ma-submit" to="/admin/dashboard">{t('member.home.goAdmin')}</Link>}
+          <button type="button" className="btn btn-gold ma-submit" onClick={() => logout()}>{t('member.nav.logout')}</button>
         </div>
-      </div></section>
+      </MemberAuthShell>
     );
   } else {
     body = <Outlet context={{ member: state.member, reload: load }} />;
   }
 
-  return (
-    <InteriorLayout>
-      {state.phase === 'ready' ? body : (
-        <>
-          <PageHero crumbs={[{ label: t('member.crumb') }]} title={t('member.home.title')} description={t('member.home.description')} />
-          {body}
-        </>
-      )}
-    </InteriorLayout>
-  );
+  return <InteriorLayout>{body}</InteriorLayout>;
 }

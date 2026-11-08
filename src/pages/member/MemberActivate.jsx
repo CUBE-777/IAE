@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import InteriorLayout from '../../layouts/InteriorLayout';
-import PageHero from '../../components/layout/PageHero';
+import MemberAuthShell from '../../components/member/MemberAuthShell';
+import PasswordInput from '../../components/member/PasswordInput';
 import FormField from '../../components/common/FormField';
 import { useAuth } from '../../app/providers/AuthProvider';
 import { getActivationLink, activateMember } from '../../services/supabase/memberSpace.service';
@@ -15,15 +16,11 @@ import '../../styles/member.css';
 
 function StateBox({ title, text, action }) {
   return (
-    <section className="mf-section">
-      <div className="container">
-        <div className="mf-state" role="status">
-          <h2>{title}</h2>
-          <p>{text}</p>
-          {action}
-        </div>
-      </div>
-    </section>
+    <div className="ma-done" role="status">
+      <h2>{title}</h2>
+      <p>{text}</p>
+      {action}
+    </div>
   );
 }
 
@@ -109,14 +106,14 @@ export default function MemberActivate() {
   if (loadError) {
     body = <StateBox title={t('member.activate.loadErrorTitle')} text={t('member.activate.loadErrorText')} />;
   } else if (!info) {
-    body = <section className="mf-section"><div className="container"><p className="mf-loading">{t('member.loading')}</p></div></section>;
+    body = <div className="ma-skel" role="status" aria-busy="true" aria-label={t('member.loading')}><div className="sk sk-line" /><div className="sk sk-line" /><div className="sk sk-line" /></div>;
   } else if (!info.valid) {
     const key = ['used', 'expired'].includes(info.reason) ? info.reason : 'invalid';
     body = (
       <StateBox
         title={t(`member.activate.state.${key}.title`)}
         text={t(`member.activate.state.${key}.text`)}
-        action={key === 'used' ? <Link className="btn btn-gold" to="/member/login">{t('member.activate.goLogin')}</Link> : null}
+        action={key === 'used' ? <Link className="btn btn-gold ma-submit" to="/member/login">{t('member.activate.goLogin')}</Link> : null}
       />
     );
   } else if (done) {
@@ -124,51 +121,40 @@ export default function MemberActivate() {
       <StateBox
         title={t(done.reset ? 'member.activate.successResetTitle' : 'member.activate.successNewTitle')}
         text={t(done.reset ? 'member.activate.successResetText' : 'member.activate.successNewText')}
-        action={<Link className="btn btn-gold" to="/member/login">{t('member.activate.goLogin')}</Link>}
+        action={<Link className="btn btn-gold ma-submit" to="/member/login">{t('member.activate.goLogin')}</Link>}
       />
     );
   } else {
     body = (
-      <section className="mf-section">
-        <div className="container">
-          <form className="membership-form mf-form member-login" onSubmit={handleSubmit} noValidate aria-busy={submitting}>
-            <div className="mf-fee" role="note">{t('member.activate.greeting', { name: info.full_name })}</div>
-            <p className="mf-privacy" role="note" dir="ltr">{t('member.activate.emailLabel', { email: info.email_hint })}</p>
-            {formError && <div className="form-alert form-alert-error" role="alert">{formError}</div>}
-            <fieldset className="mf-group">
-              <FormField id="ma-password" label={t('member.activate.password')} required error={errors.password}>
-                {(a) => <input {...a} type={show ? 'text' : 'password'} dir="ltr" autoComplete="new-password" maxLength={MAX_LEN} value={password} onChange={(e) => setPassword(e.target.value)} />}
-              </FormField>
-              <p className="mf-hint">{t('member.activate.hint')}</p>
-              {strength && (
-                <p className={`mf-hint member-strength member-strength-${strength}`} role="status">
-                  {t('member.activate.strengthLabel', { level: t(STRENGTH_KEYS[strength]) })}
-                </p>
-              )}
-              <FormField id="ma-confirm" label={t('member.activate.confirm')} required error={errors.confirm}>
-                {(a) => <input {...a} type={show ? 'text' : 'password'} dir="ltr" autoComplete="new-password" maxLength={MAX_LEN} value={confirm} onChange={(e) => setConfirm(e.target.value)} />}
-              </FormField>
-              <label className="mf-hint member-show-pw">
-                <input type="checkbox" checked={show} onChange={(e) => setShow(e.target.checked)} /> {t('member.activate.show')}
-              </label>
-            </fieldset>
-            <button type="submit" className="btn btn-gold mf-submit" disabled={submitting}>
-              {submitting ? t('member.activate.submitting') : t(reset ? 'member.activate.submitReset' : 'member.activate.submit')}
-            </button>
-          </form>
-        </div>
-      </section>
+      <form className="ma-form" onSubmit={handleSubmit} noValidate aria-busy={submitting}>
+        <div className="ma-greet" role="note">{t('member.activate.greeting', { name: info.full_name })}</div>
+        <p className="ma-note" role="note" dir="ltr">{t('member.activate.emailLabel', { email: info.email_hint })}</p>
+        {formError && <div className="form-alert form-alert-error" role="alert">{formError}</div>}
+        <FormField id="ma-password" label={t('member.activate.password')} required error={errors.password}>
+          {(a) => <PasswordInput {...a} show={show} onToggle={() => setShow((v) => !v)} autoComplete="new-password" maxLength={MAX_LEN} value={password} onChange={(e) => setPassword(e.target.value)} />}
+        </FormField>
+        <p className="ma-note">{t('member.activate.hint')}</p>
+        {strength && (
+          <div className={`ma-strength ma-strength-${strength}`} role="status">
+            <span className="ma-strength-bar" aria-hidden="true"><i /></span>
+            <span className="member-strength">{t('member.activate.strengthLabel', { level: t(STRENGTH_KEYS[strength]) })}</span>
+          </div>
+        )}
+        <FormField id="ma-confirm" label={t('member.activate.confirm')} required error={errors.confirm}>
+          {(a) => <PasswordInput {...a} show={show} onToggle={() => setShow((v) => !v)} autoComplete="new-password" maxLength={MAX_LEN} value={confirm} onChange={(e) => setConfirm(e.target.value)} />}
+        </FormField>
+        <button type="submit" className="btn btn-gold ma-submit" disabled={submitting}>
+          {submitting ? t('member.activate.submitting') : t(reset ? 'member.activate.submitReset' : 'member.activate.submit')}
+        </button>
+      </form>
     );
   }
 
   return (
     <InteriorLayout>
-      <PageHero
-        crumbs={[{ label: t('member.crumb') }, { label: t('member.activate.crumb') }]}
-        title={t('member.activate.title')}
-        description={t(reset ? 'member.activate.descriptionReset' : 'member.activate.descriptionNew')}
-      />
-      {body}
+      <MemberAuthShell title={t('member.activate.title')} description={t(reset ? 'member.activate.descriptionReset' : 'member.activate.descriptionNew')}>
+        {body}
+      </MemberAuthShell>
     </InteriorLayout>
   );
 }

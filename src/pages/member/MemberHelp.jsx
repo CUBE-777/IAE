@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import InteriorLayout from '../../layouts/InteriorLayout';
-import PageHero from '../../components/layout/PageHero';
+import MemberAuthShell from '../../components/member/MemberAuthShell';
 import FormField from '../../components/common/FormField';
 import { requestAccessHelp } from '../../services/supabase/memberSpace.service';
 import { useNoindex } from '../../hooks/useNoindex';
@@ -50,33 +50,28 @@ export default function MemberHelp() {
 
   return (
     <InteriorLayout>
-      <PageHero crumbs={[{ label: t('member.crumb') }]} title={t('member.help.title')} description={t('member.help.description')} />
-      <section className="mf-section">
-        <div className="container">
-          {done ? (
-            <div className="mf-state" role="status">
-              <h2>{t('member.help.doneTitle')}</h2>
-              <p>{t('member.help.doneText')}</p>
-              <Link className="btn btn-gold" to="/member/login">{t('member.help.backToLogin')}</Link>
-            </div>
-          ) : (
-            <form className="membership-form mf-form member-login" onSubmit={handleSubmit} noValidate aria-busy={submitting}>
-              {formError && <div className="form-alert form-alert-error" role="alert">{formError}</div>}
-              <p className="mf-privacy" role="note">{t('member.help.intro')}</p>
-              <fieldset className="mf-group">
-                <FormField id="mh-email" label={t('member.login.email')} required error={error || undefined}>
-                  {(a) => <input {...a} type="email" dir="ltr" autoComplete="email" maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} />}
-                </FormField>
-              </fieldset>
-              <button type="submit" className="btn btn-gold mf-submit" disabled={submitting}>
-                {submitting ? t('member.help.submitting') : t('member.help.submit')}
-              </button>
-              <p className="mf-privacy">{t('member.help.privacy')}</p>
-              <p className="mf-privacy"><Link to="/member/login">{t('member.help.backToLogin')}</Link></p>
-            </form>
-          )}
-        </div>
-      </section>
+      <MemberAuthShell title={t('member.help.title')} description={t('member.help.description')}>
+        {done ? (
+          <div className="ma-done" role="status">
+            <h2>{t('member.help.doneTitle')}</h2>
+            <p>{t('member.help.doneText')}</p>
+            <Link className="btn btn-gold ma-submit" to="/member/login">{t('member.help.backToLogin')}</Link>
+          </div>
+        ) : (
+          <form className="ma-form" onSubmit={handleSubmit} noValidate aria-busy={submitting}>
+            {formError && <div className="form-alert form-alert-error" role="alert">{formError}</div>}
+            <p className="ma-note" role="note">{t('member.help.intro')}</p>
+            <FormField id="mh-email" label={t('member.login.email')} required error={error || undefined}>
+              {(a) => <input {...a} type="email" dir="ltr" inputMode="email" autoComplete="email" autoCapitalize="none" maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} />}
+            </FormField>
+            <button type="submit" className="btn btn-gold ma-submit" disabled={submitting}>
+              {submitting ? t('member.help.submitting') : t('member.help.submit')}
+            </button>
+            <p className="ma-note">{t('member.help.privacy')}</p>
+            <p className="ma-note"><Link to="/member/login">{t('member.help.backToLogin')}</Link></p>
+          </form>
+        )}
+      </MemberAuthShell>
     </InteriorLayout>
   );
 }
