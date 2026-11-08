@@ -9,7 +9,7 @@ import MemberAccessRequestsModal from './MemberAccessRequestsModal';
 import MemberCardRequestsModal from './MemberCardRequestsModal';
 import { useAuth } from '../../app/providers/AuthProvider';
 import { ROLES_MEMBER_SYSTEM } from '../../constants/roles';
-import { countPendingCardRequests, countPendingAccessRequests, fetchMemberCardRequests } from '../../services/supabase/memberSpace.service';
+import { countPendingCardRequests, countPendingAccessRequests, fetchMemberCardRequests, fetchMemberActivationOverview } from '../../services/supabase/memberSpace.service';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { downloadCsv } from '../../utils/csvExport';
 import { pageWindow } from '../../utils/pagination';
@@ -22,6 +22,12 @@ import { tr, trStrong, dateLocale } from '../../i18n/adminDict';
 import {
   fetchMembershipSettings, fetchPaidMemberIds, recordAnnualMembership, fetchMemberPrivate, fetchMemberMemberships, cancelMemberMembership,
 } from '../../services/supabase/membershipFlow.service';
+// حالة رابط التفعيل: لون/شارة لكل حالة؛ من لا يظهر في الملخص لم يُرسَل له رابط
+const ACTIVATION_BADGE = {
+  sent: { cls: 'admin-badge-sent', label: 'أُرسل رابط التفعيل' },
+  expired: { cls: 'admin-badge-rejected', label: 'انتهى رابط التفعيل' },
+  activated: { cls: 'admin-badge-approved', label: 'حساب مفعّل' },
+};
 const CARD_STATUS = { pending: 'قيد المراجعة', approved: 'معتمد', rejected: 'مرفوض', cancelled: 'ملغى' };
 const FIELD = (v) => (v == null || v === '' ? '—' : v);
 const CSV_HEADERS = ['full_name', 'university', 'promotion', 'track', 'profession', 'city', 'email', 'phone', 'status'];
@@ -36,6 +42,13 @@ export default function Members() {
   const [pendingCards, setPendingCards] = useState(0);
   const [accessOpen, setAccessOpen] = useState(false);
   const [pendingAccess, setPendingAccess] = useState(0);
+  const [activation, setActivation] = useState(null); // Map(member_id → {state,...}) أو null قبل التحميل/قبل تشغيل 0047
+  const [activationFilter, setActivationFilter] = useState(''); // '' | 'none' | 'sent' | 'expired' | 'activated'
+  const loadActivation = () => {
+    if (!canMemberSystem) return;
+    fetchMemberActivationOverview().then(setActivation).catch(() => setActivation(null)); // قبل تشغيل 0047: لا شارات ولا فرز
+  };
+  useEffect(loadActivation, [canMemberSystem]); // eslint-disable-line react-hooks/exhaustive-deps
   const loadPendingCards = () => {
     if (!canMemberSystem) return;
     // فشل العدّ (مثلًا قبل تشغيل 0036) لا يكسر الصفحة: يبقى الزر بلا عدّاد
@@ -180,12 +193,18 @@ export default function Members() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, status, paidFilter, showDeleted]);
+  }, [search, status, paidFilter, showDeleted, activationFilter]);
 
   const load = () => {
     setRows(null);
     setError(false);
-    fetchMembersPage({ page, search, status, paid: showDeleted ? '' : paidFilter, season: settings.season, deleted: showDeleted })
+    const useAct = !showDeleted && activation && activationFilter;
+    const idsOf = (st) => [...activation.entries()].filter(([, v]) => v.state === st).map(([id]) => id);
+    fetchMembersPage({
+      page, search, status, paid: showDeleted ? '' : paidFilter, season: settings.season, deleted: showDeleted,
+      includeIds: useAct && activationFilter !== 'none' ? idsOf(activationFilter) : null,
+      excludeIds: useAct && activationFilter === 'none' ? [...activation.keys()] : null,
+    })
       .then(({ rows: r, total: t }) => {
         setRows(r);
         setTotal(t);
@@ -197,7 +216,7 @@ export default function Members() {
       });
   };
 
-  useEffect(load, [page, search, status, paidFilter, showDeleted, settings.season]);
+  useEffect(load, [page, search, status, paidFilter, showDeleted, settings.season, activationFilter, activation]);
 
   const doDelete = async (member) => {
     setDeleteTarget(null);
@@ -296,6 +315,15 @@ export default function Members() {
               <option value="paid">{tr('منخرط هذا الموسم')}</option>
             </select>
           )}
+          {canMemberSystem && activation && !showDeleted && (
+            <select className="admin-select" style={{ width: 'auto' }} value={activationFilter} onChange={(e) => setActivationFilter(e.target.value)} aria-label={tr('حالة التفعيل')}>
+              <option value="">{tr('كل حالات التفعيل')}</option>
+              <option value="sent">{tr('أُرسل لهم رابط التفعيل')}</option>
+              <option value="none">{tr('لم يُرسَل لهم رابط')}</option>
+              <option value="expired">{tr('انتهى رابطهم')}</option>
+              <option value="activated">{tr('حساب مفعّل')}</option>
+            </select>
+          )}
         </div>
 
         {rows === null && !error && <div className="admin-state-box">{tr('جاري التحميل...')}</div>}
@@ -309,7 +337,7 @@ export default function Members() {
               </thead>
               <tbody>
                 {rows.map((m) => (
-                  <tr key={m.id}>
+                  <tr key={m.id} className={!showDeleted && activation?.get(m.id) ? `admin-row-act-${activation.get(m.id).state}` : undefined}>
                     {settings.season && !showDeleted && (
                       <td data-label={tr('تحديد')}>
                         {!paid.has(m.id) && m.status === 'active' ? (
@@ -317,8 +345,14 @@ export default function Members() {
                         ) : null}
                       </td>
                     )}
-                    <td data-label={tr('الاسم')}>{m.full_name}
+                    <td className="admin-name-cell" data-label={tr('الاسم')}>{m.full_name}
                       {boardOf.has(m.id) && <> <span className="admin-badge admin-badge-approved" title={boardOf.get(m.id)}>{tr('عضو مكتب')}</span></>}
+                      {!showDeleted && activation?.get(m.id) && (() => {
+                        const a = activation.get(m.id);
+                        const b = ACTIVATION_BADGE[a.state];
+                        const when = new Date(a.sent_at).toLocaleDateString(dateLocale());
+                        return b ? <> <span className={`admin-badge ${b.cls}`} title={a.state === 'activated' ? undefined : tr('أُصدر الرابط بتاريخ {{date}}', { date: when })}>{tr(b.label)}</span></> : null;
+                      })()}
                     </td>
                     <td data-label={tr('الجامعة')}>{FIELD(m.university)}</td>
                     <td data-label={tr('الدفعة')}>{FIELD(m.promotion)}</td>
@@ -390,7 +424,7 @@ export default function Members() {
         />
       )}
 
-      {activationTarget && <MemberActivationModal member={activationTarget} onClose={() => setActivationTarget(null)} />}
+      {activationTarget && <MemberActivationModal member={activationTarget} onClose={() => setActivationTarget(null)} onIssued={loadActivation} />}
       {accessOpen && <MemberAccessRequestsModal onClose={() => setAccessOpen(false)} onChanged={loadPendingCards} />}
       {requestsOpen && (
         <MemberCardRequestsModal

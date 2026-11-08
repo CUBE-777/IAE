@@ -163,6 +163,16 @@ export async function issueMemberActivationLink(memberId) {
   return data;
 }
 
+/**
+ * ملخص حالة رابط التفعيل لكل عضو: Map(member_id → { state: 'sent'|'expired'|'activated', sent_at, expires_at }).
+ * من لا يظهر فيه لم يُرسَل له رابط ولا حساب له. يتطلب 0047؛ قبل تشغيله ترمي الدالة خطأً ويتجاهله المستدعي.
+ */
+export async function fetchMemberActivationOverview() {
+  const { data, error } = await supabase.rpc('member_activation_overview');
+  if (error) throw error;
+  return new Map((data || []).map((r) => [r.member_id, { state: r.state, sent_at: r.sent_at, expires_at: r.expires_at }]));
+}
+
 const REQUEST_SELECT =
   'id, member_id, status, data, photo_path, review_note, created_at, updated_at, ' +
   'members(id, full_name, photo_url, university, promotion, track, profession, public_bio, study_path, socials, extra, translations, show_in_directory)';

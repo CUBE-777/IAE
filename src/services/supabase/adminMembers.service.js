@@ -19,7 +19,7 @@ const hasProfileCols = (payload) => PROFILE_COLS.some((k) => k in payload);
 const hasOptionalCols = (payload) => hasProfileCols(payload) || DIRECTORY_COL in payload;
 
 // paid: 'unpaid' | 'paid' | '' مع season؛ نربط member_memberships (FK member_id) ونصفّي بالموسم داخل الربط
-export async function fetchMembersPage({ page, search, status, paid = '', season = null, deleted = false }) {
+export async function fetchMembersPage({ page, search, status, paid = '', season = null, deleted = false, includeIds = null, excludeIds = null }) {
   const byPaid = !!season && (paid === 'paid' || paid === 'unpaid');
   let query = byPaid
     ? supabase.from('members').select('*, mm:member_memberships(season)', { count: 'exact' }).eq('mm.season', season)
@@ -27,6 +27,9 @@ export async function fetchMembersPage({ page, search, status, paid = '', season
   query = deleted ? query.not('deleted_at', 'is', null) : query.is('deleted_at', null); // المحذوفون: يقرؤهم المسؤولون فقط (members_admin_read_all)
   if (byPaid) query = paid === 'paid' ? query.not('mm', 'is', null) : query.is('mm', null);
   if (status) query = query.eq('status', status);
+  // فرز حالة التفعيل: includeIds = من لهم الحالة، excludeIds = من لم يُرسَل لهم شيء (قوائم صغيرة بحجم النادي)
+  if (includeIds) query = query.in('id', includeIds.length ? includeIds : ['00000000-0000-0000-0000-000000000000']);
+  if (excludeIds && excludeIds.length) query = query.not('id', 'in', `(${excludeIds.join(',')})`);
   if (search) {
     const s = search.replace(/[%_]/g, '');
     query = query.or(`full_name.ilike.%${s}%,profession.ilike.%${s}%,city.ilike.%${s}%,promotion.ilike.%${s}%,university.ilike.%${s}%`);

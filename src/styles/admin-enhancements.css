@@ -495,3 +495,9 @@ html:not([data-theme='dark']) .admin-badge.admin-badge-sent {
 .admin-install-btn:hover { border-color: var(--primary, #0a66c8); color: var(--primary, #0a66c8); }
 .admin-install-hint { margin: 8px 0 0; font-size: 0.75rem; line-height: 1.6; color: var(--admin-text-muted); }
 .admin-login-box .admin-install { margin: 14px 0 0; }
+
+/* ===== حالة رابط التفعيل في قائمة الأعضاء: لون الاسم بحسب الحالة (إلى جانب الشارة) ===== */
+.admin-data-table tr.admin-row-act-sent td.admin-name-cell { color: #ffa65c; font-weight: 700; }
+.admin-data-table tr.admin-row-act-expired td.admin-name-cell { color: var(--danger-bright); }
+.admin-data-table tr.admin-row-act-activated td.admin-name-cell { color: var(--success-bright); }
+html:not([data-theme='dark']) .admin-data-table tr.admin-row-act-sent td.admin-name-cell { color: #c2410c; }

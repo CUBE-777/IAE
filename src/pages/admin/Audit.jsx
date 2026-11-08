@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import { pageWindow } from '../../utils/pagination';
 import { fetchAuditLogs, AUDIT_ENTITY_OPTIONS, AUDIT_PAGE_SIZE } from '../../services/supabase/auditLog.service';
 
 import { tr, dateLocale } from '../../i18n/adminDict';
@@ -75,17 +76,20 @@ export default function Audit() {
         )}
 
         {totalPages > 1 && (
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 16 }}>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginTop: 16 }}>
+            {pageWindow(page, totalPages).map((p, i) => (p === '…' ? (
+              <span key={`gap-${i}`} aria-hidden="true" style={{ alignSelf: 'center', padding: '0 4px' }}>…</span>
+            ) : (
               <button
                 key={p}
                 className="admin-btn admin-btn-ghost admin-btn-sm"
+                aria-current={p === page ? 'page' : undefined}
                 style={p === page ? { background: 'var(--admin-accent)', color: 'var(--admin-bg)', borderColor: 'var(--admin-accent)' } : undefined}
                 onClick={() => setPage(p)}
               >
                 {p}
               </button>
-            ))}
+            )))}
           </div>
         )}
       </div>

@@ -3,6 +3,42 @@
  * Généré à partir des écrans existants ; arabe = identité, donc non listé ici.
  */
 export const ADMIN_DICT = {
+ "أُرسل رابط التفعيل": {
+  "fr": "Lien d'activation envoyé",
+  "en": "Activation link sent"
+ },
+ "انتهى رابط التفعيل": {
+  "fr": "Lien d'activation expiré",
+  "en": "Activation link expired"
+ },
+ "حساب مفعّل": {
+  "fr": "Compte activé",
+  "en": "Account activated"
+ },
+ "حالة التفعيل": {
+  "fr": "État d'activation",
+  "en": "Activation status"
+ },
+ "كل حالات التفعيل": {
+  "fr": "Tous les états d'activation",
+  "en": "All activation statuses"
+ },
+ "أُرسل لهم رابط التفعيل": {
+  "fr": "Lien d'activation envoyé",
+  "en": "Activation link sent"
+ },
+ "لم يُرسَل لهم رابط": {
+  "fr": "Aucun lien envoyé",
+  "en": "No link sent"
+ },
+ "انتهى رابطهم": {
+  "fr": "Lien expiré",
+  "en": "Link expired"
+ },
+ "أُصدر الرابط بتاريخ {{date}}": {
+  "fr": "Lien émis le {{date}}",
+  "en": "Link issued on {{date}}"
+ },
  "في قائمة الأعضاء": {
   "fr": "Dans la liste des membres",
   "en": "In the members list"
