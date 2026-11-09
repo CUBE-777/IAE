@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { localizePerson, translateLevel } from '../src/utils/personTranslations.js';
+import { localizePerson, translateLevel, translatePosition } from '../src/utils/personTranslations.js';
 import { LEVELS } from '../src/constants/membershipLevels.js';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -35,9 +35,9 @@ test('localizePerson: البحث يجد الشخص بالاسمين (altName)', 
 test('localizePerson: رجوع للعربية عند غياب الترجمة، وبلا ترجمات لا ينكسر شيء', () => {
   assert.equal(localizePerson(member, 'en').track, 'ذكاء اصطناعي');
   assert.equal(localizePerson(member, 'fr').track, 'Intelligence artificielle');
-  const bare = { name: 'سلمى', role: 'عضو', extra: null };
+  const bare = { name: 'سلمى', role: 'مسؤول التقنية', extra: null };
   assert.equal(localizePerson(bare, 'fr').name, 'سلمى');
-  assert.equal(localizePerson(bare, 'fr').role, 'عضو');
+  assert.equal(localizePerson(bare, 'fr').role, 'مسؤول التقنية');
   assert.equal(localizePerson(null, 'fr'), null);
 });
 
@@ -46,7 +46,10 @@ test('localizePerson: منصب المكتب بلغة الزائر (roleTr)', () 
   assert.equal(localizePerson(board, 'ar').role, 'الرئيس');
   assert.equal(localizePerson(board, 'fr').role, 'Président');
   assert.equal(localizePerson(board, 'en').role, 'President');
-  assert.equal(localizePerson({ ...board, roleTr: { fr: '' } }, 'fr').role, 'الرئيس');
+  // بلا ترجمة يدوية: القاموس الاحتياطي للصفات الشائعة، وصفة مجهولة تبقى كما هي
+  assert.equal(localizePerson({ ...board, roleTr: { fr: '' } }, 'fr').role, 'Président');
+  assert.equal(localizePerson({ ...board, roleTr: null }, 'en').role, 'President');
+  assert.equal(localizePerson({ ...board, role: 'مسؤول التقنية', roleTr: null }, 'fr').role, 'مسؤول التقنية');
 });
 
 test('المستوى الدراسي: قيمة موحّدة تُعرض بلغة الزائر مهما كانت لغة إدخالها', () => {
@@ -110,4 +113,12 @@ test('صفحة النموذج: تفتح بلغة الرسالة (?lang) وقيم
   assert.match(src, /searchParams\.get\('lang'\)/);
   assert.match(src, /applyDocumentDirection/);
   assert.match(src, /value=\{LEVELS\.ar\[i\] \|\| label\}/);
+});
+
+test('translatePosition: صفات المكتب الشائعة (مذكر/مؤنث/نائب) وتوحيد الكتابة', () => {
+  assert.equal(translatePosition('الكاتب العام', 'fr'), 'Secrétaire général');
+  assert.equal(translatePosition('أمينة المال', 'fr'), 'Trésorière');
+  assert.equal(translatePosition('نائب أمين المال', 'en'), 'Deputy Treasurer');
+  assert.equal(translatePosition('المُستشار', 'en'), 'Advisor');
+  assert.equal(translatePosition('الرئيس', 'ar'), 'الرئيس');
 });

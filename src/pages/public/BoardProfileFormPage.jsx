@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { translatePosition } from '../../utils/personTranslations';
 import InteriorLayout from '../../layouts/InteriorLayout';
 import PageHero from '../../components/layout/PageHero';
 import FormField from '../../components/common/FormField';
@@ -198,7 +199,7 @@ export default function BoardProfileFormPage() {
         <div className="container">
           <form ref={formRef} className="membership-form mf-form" onSubmit={handleSubmit} noValidate aria-busy={submitting}>
             <div className="mf-fee" role="note">
-              {t('boardProfile.greeting', { name: info.member?.full_name || '', position: info.member?.position || '' })}
+              {t('boardProfile.greeting', { name: info.member?.full_name || '', position: translatePosition(info.member?.position || '', i18n.language) })}
             </div>
             <p className="mf-privacy" role="note">{t('boardProfile.intro')}</p>
             {info.status === 'submitted' && <p className="mf-privacy" role="note">{t('boardProfile.draftNote')}</p>}

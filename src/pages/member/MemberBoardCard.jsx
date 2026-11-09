@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { translatePosition } from '../../utils/personTranslations';
 import MemberPage from '../../components/member/MemberPage';
 import MemberSkeleton from '../../components/member/MemberSkeleton';
 import FormField from '../../components/common/FormField';
@@ -27,7 +28,7 @@ const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 const s = (v) => (typeof v === 'string' ? v : '');
 
 export default function MemberBoardCard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { member } = useOutletContext();
   const uploadedRef = useRef(null);
   const [card, setCard] = useState(undefined);        // undefined = جارٍ التحميل، null = لا بطاقة
@@ -205,7 +206,7 @@ export default function MemberBoardCard() {
   return shell(
     <form className="membership-form mf-form" onSubmit={handleSubmit} noValidate aria-busy={submitting}>
       <div className="mf-fee" role="note">
-        {t('member.boardCard.greeting', { name: card.full_name, position: card.position })}
+        {t('member.boardCard.greeting', { name: card.full_name, position: translatePosition(card.position, i18n.language) })}
       </div>
       <p className="mf-privacy" role="note">{t('member.boardCard.intro')}</p>
       {pending && (

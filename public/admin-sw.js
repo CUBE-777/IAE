@@ -2,9 +2,9 @@
  * - لا يخزّن أي طلب إلى Supabase أو أي نطاق آخر، ولا أي بيانات للمستخدم (الجلسات والبيانات تبقى مباشرة من الشبكة).
  * - يخزّن فقط ملفات /assets/ (أسماؤها بـ hash فهي غير قابلة للتغيّر) وأيقونات التطبيق وصفحة «لا اتصال».
  * - التنقّل (الصفحات): الشبكة أولًا، وعند انقطاع الاتصال تُعرض صفحة /admin-offline.html. */
-const VERSION = 'iae-admin-v1';
+const VERSION = 'iae-admin-v2';
 const OFFLINE_URL = '/admin-offline.html';
-const PRECACHE = [OFFLINE_URL, '/icon-192.png', '/logo.jpg'];
+const PRECACHE = [OFFLINE_URL, '/admin-offline.js', '/icon-192.png', '/logo.jpg'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(VERSION).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));

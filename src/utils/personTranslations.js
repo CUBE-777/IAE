@@ -24,6 +24,61 @@ export function translateLevel(value, lang) {
   return value;
 }
 
+
+/**
+ * ترجمة احتياطية للصفات الشائعة في المكتب: تُستعمل فقط حين لا يُدخل المسؤول ترجمة يدوية للصفة
+ * (translations.fr.position / en.position). الترجمة اليدوية لها الأولوية دائمًا، وأي صفة غير معروفة تبقى كما هي.
+ * كل سطر: [الصيغ العربية (مذكر/مؤنث)، الفرنسية (مذكر، مؤنث)، الإنجليزية].
+ */
+const POSITION_TABLE = [
+  [['الرئيس', 'رئيس النادي', 'رئيس المكتب'], ['Président', 'Présidente'], 'President'],
+  [['الرئيسة', 'رئيسة النادي', 'رئيسة المكتب'], ['Présidente', 'Présidente'], 'President'],
+  [['نائب الرئيس'], ['Vice-président', 'Vice-présidente'], 'Vice President'],
+  [['نائبة الرئيس'], ['Vice-présidente', 'Vice-présidente'], 'Vice President'],
+  [['الكاتب العام'], ['Secrétaire général', 'Secrétaire générale'], 'General Secretary'],
+  [['الكاتبة العامة'], ['Secrétaire générale', 'Secrétaire générale'], 'General Secretary'],
+  [['نائب الكاتب العام'], ['Secrétaire général adjoint', 'Secrétaire générale adjointe'], 'Deputy General Secretary'],
+  [['نائبة الكاتب العام', 'نائبة الكاتبة العامة'], ['Secrétaire générale adjointe', 'Secrétaire générale adjointe'], 'Deputy General Secretary'],
+  [['أمين المال'], ['Trésorier', 'Trésorière'], 'Treasurer'],
+  [['أمينة المال'], ['Trésorière', 'Trésorière'], 'Treasurer'],
+  [['نائب أمين المال'], ['Trésorier adjoint', 'Trésorière adjointe'], 'Deputy Treasurer'],
+  [['نائبة أمين المال', 'نائبة أمينة المال'], ['Trésorière adjointe', 'Trésorière adjointe'], 'Deputy Treasurer'],
+  [['المستشار'], ['Conseiller', 'Conseillère'], 'Advisor'],
+  [['المستشارة'], ['Conseillère', 'Conseillère'], 'Advisor'],
+  [['المقرر'], ['Rapporteur', 'Rapporteure'], 'Rapporteur'],
+  [['المقررة'], ['Rapporteure', 'Rapporteure'], 'Rapporteur'],
+  [['عضو', 'عضو المكتب', 'عضو مكتب'], ['Membre du bureau', 'Membre du bureau'], 'Board Member'],
+  [['عضوة', 'عضوة المكتب', 'عضوة مكتب'], ['Membre du bureau', 'Membre du bureau'], 'Board Member'],
+];
+
+// توحيد الكتابة: حذف التشكيل والتطويل، توحيد الألف والياء والتاء المربوطة، وإسقاط «ال» التعريف
+const normalizePosition = (v) =>
+  String(v || '')
+    .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ى/g, 'ي')
+    .replace(/ة/g, 'ه')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w.replace(/^ال/, ''))
+    .join(' ');
+
+const POSITION_MAP = new Map();
+for (const [arForms, fr, en] of POSITION_TABLE) {
+  for (const a of arForms) {
+    const k = normalizePosition(a);
+    if (!POSITION_MAP.has(k)) POSITION_MAP.set(k, { fr: fr[0], en });
+  }
+}
+
+/** يُرجع ترجمة الصفة للغة المطلوبة إن كانت معروفة، وإلا الصفة الأصلية كما هي. */
+export function translatePosition(role, lang) {
+  const original = typeof role === 'string' ? role.trim() : role;
+  if (!original || (lang !== 'fr' && lang !== 'en')) return original;
+  const hit = POSITION_MAP.get(normalizePosition(original));
+  return hit ? hit[lang] : original;
+}
+
 const isObj = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
 const clean = (v) => (typeof v === 'string' ? v.trim() : '');
 
@@ -39,7 +94,7 @@ export function localizePerson(person, lang) {
   // الاسم الآخر يُستعمل في البحث فقط (فيجد الزائر الشخص بالعربية واللاتينية معًا)
   const altName = isAr ? nameLatin : nameLatin ? person.name : '';
 
-  const role = isAr ? person.role : clean(person.roleTr && person.roleTr[lang]) || person.role;
+  const role = isAr ? person.role : clean(person.roleTr && person.roleTr[lang]) || translatePosition(person.role, lang);
 
   let extra = person.extra;
   if (isObj(person.extra) && Array.isArray(person.extra.items)) {

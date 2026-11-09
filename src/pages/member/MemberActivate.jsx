@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { translateServerMessage } from '../../i18n/adminDict.server';
 import InteriorLayout from '../../layouts/InteriorLayout';
 import MemberAuthShell from '../../components/member/MemberAuthShell';
 import PasswordInput from '../../components/member/PasswordInput';
@@ -94,7 +95,9 @@ export default function MemberActivate() {
     } catch (err) {
       console.error('member activation failed', err);
       // رسائل الخادم بالعربية؛ نعرضها كما هي في اللغة العربية فقط وإلا الرسالة العامة المترجمة
-      setFormError(err?.userMessage && i18n.language === 'ar' ? err.userMessage : t('member.activate.error'));
+      // رسالة الخادم بالعربية: تُعرض مترجمةً إن وُجدت لها ترجمة معروفة، وإلا الرسالة العامة المترجمة
+      const serverMsg = err?.userMessage ? translateServerMessage(err.userMessage, i18n.language) : '';
+      setFormError(serverMsg && (i18n.language === 'ar' || serverMsg !== err.userMessage) ? serverMsg : t('member.activate.error'));
     } finally {
       setSubmitting(false);
     }

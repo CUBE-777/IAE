@@ -1,3 +1,4 @@
+import { NOT_AUTHORIZED_RE } from './serverErrors.js';
 /**
  * src/utils/memberCardToken.js
  * منطق خالص (بلا React ولا شبكة) لرمز بطاقة العضوية المتجدد ولشارة الانخراط، ليُختبر مباشرة.
@@ -13,7 +14,7 @@ export const CARD_RATE_LIMIT_RETRY_MS = 60_000; // بعد rate_limited
 export function classifyIssueError(err) {
   const text = `${err?.message || ''} ${err?.details || ''} ${err?.hint || ''}`;
   if (/rate_limited/i.test(text)) return 'rate_limited';
-  if (/غير مصرّح|not authorized|permission denied|jwt/i.test(text) || err?.status === 401 || err?.status === 403) return 'forbidden';
+  if (NOT_AUTHORIZED_RE.test(text) || err?.status === 401 || err?.status === 403) return 'forbidden';
   return 'error';
 }
 

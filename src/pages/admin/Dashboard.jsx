@@ -10,6 +10,7 @@ import { useAuth } from '../../app/providers/AuthProvider';
 import { isReadOnlyRole } from '../../constants/roles';
 import { fetchDashboardStats, fetchRecentMembershipRequests, fetchRecentAuditLogs } from '../../services/supabase/dashboard.service';
 import { localeFor } from '../../utils/i18nContent';
+import { translateAuditDescription } from '../../utils/auditDescription';
 
 export default function Dashboard() {
   const { t, i18n } = useTranslation();
@@ -164,7 +165,7 @@ export default function Dashboard() {
                 {audit.map((a) => (
                   <tr key={a.id}>
                     <td data-label={t('admin.dashboard.colAction')}>{a.action}</td>
-                    <td data-label={t('admin.dashboard.colDescription')}>{a.description || '—'}</td>
+                    <td data-label={t('admin.dashboard.colDescription')}>{translateAuditDescription(a.description, String(i18n.language).slice(0, 2)) || '—'}</td>
                     <td data-label={t('admin.dashboard.colDate')}>{new Date(a.created_at).toLocaleString(locale)}</td>
                   </tr>
                 ))}

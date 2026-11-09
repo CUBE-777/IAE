@@ -8,13 +8,13 @@
  */
 
 import i18n from '../i18n';
+import { tr } from '../i18n/adminDict';
 
 function ensureContainer() {
   let el = document.getElementById('toast-container');
   if (!el) {
     el = document.createElement('div');
     el.id = 'toast-container';
-    el.setAttribute('dir', 'rtl');
     el.style.cssText = `
       position: fixed; top: 20px; left: 20px; z-index: 9999;
       display: flex; flex-direction: column; gap: 10px;
@@ -22,6 +22,8 @@ function ensureContainer() {
     `;
     document.body.appendChild(el);
   }
+  // الاتجاه يتبع لغة الواجهة الحالية (RTL للعربية، LTR للفرنسية والإنجليزية) ويُحدَّث عند كل إشعار
+  el.setAttribute('dir', document.documentElement.dir === 'ltr' ? 'ltr' : 'rtl');
   return el;
 }
 
@@ -81,7 +83,7 @@ window.notify.fromError = function (err, fallback) {
   const raw = (err && (err.message || err.error_description || String(err))) || '';
   let msg = fallback || i18n.t('admin.errors.unexpected');
   // رسائل raise exception المكتوبة عربيًا في دوال SQL مقصودة للمستخدم؛ أخطاء Postgres الداخلية إنجليزية فتبقى للـ console فقط
-  if (/[\u0600-\u06FF]/.test(raw)) msg = raw;
+  if (/[\u0600-\u06FF]/.test(raw)) msg = tr(raw);
   else if (/permission|policy|RLS/i.test(raw)) msg = i18n.t('admin.errors.permission');
   else if (/duplicate|unique/i.test(raw)) msg = i18n.t('admin.errors.duplicate');
   else if (/network|fetch/i.test(raw)) msg = i18n.t('admin.errors.network');

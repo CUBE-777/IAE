@@ -105,8 +105,8 @@ export default function Gallery() {
                   <div className="media-sub">{g.activity_id ? activityTitle(g.activity_id) : tr('غير مرتبطة بنشاط')}</div>
                 </div>
                 {!readOnly && <div className="media-actions">
-                  <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" aria-label={tr('تعديل الصورة: {{v1}}', { v1: g.title || 'بدون عنوان' })} onClick={() => setEditTarget(g)}>{tr('تعديل')}</button>
-                  <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" aria-label={tr('حذف الصورة: {{v1}}', { v1: g.title || 'بدون عنوان' })} onClick={() => setDeleteTarget(g)}>{tr('حذف')}</button>
+                  <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" aria-label={tr('تعديل الصورة: {{v1}}', { v1: g.title || tr('بدون عنوان') })} onClick={() => setEditTarget(g)}>{tr('تعديل')}</button>
+                  <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" aria-label={tr('حذف الصورة: {{v1}}', { v1: g.title || tr('بدون عنوان') })} onClick={() => setDeleteTarget(g)}>{tr('حذف')}</button>
                 </div>}
               </div>
             ))}

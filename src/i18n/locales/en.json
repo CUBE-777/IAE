@@ -5,7 +5,7 @@
     "activities": "Our Activities",
     "members": "Members",
     "gallery": "Gallery",
-    "join": "Join Us",
+    "join": "Join us",
     "contact": "Contact",
     "announcements": "Announcements",
     "menu": "Main menu",
@@ -21,10 +21,10 @@
     "badge": "University club — AI, embedded systems and technology",
     "titlePrefix": "Learning, innovating and building ",
     "titleEmphasis": "artificial intelligence",
-    "titleSuffix": " at the heart of embedded systems",
+    "titleSuffix": " that works at the heart of embedded systems",
     "description": "A university club bringing together students passionate about computing, artificial intelligence and embedded systems to learn, share and deliver technical projects.",
-    "ctaJoin": "Join Us",
-    "ctaActivities": "Discover Our Activities"
+    "ctaJoin": "Join us",
+    "ctaActivities": "Discover our activities"
   },
   "about": {
     "eyebrow": "About Us",
@@ -90,9 +90,9 @@
   "members": {
     "eyebrow": "Our Members",
     "title": "Meet the Club's Members",
-    "description": "Browse the current executive board, or view the list of members.",
+    "description": "Browse the current board, or view the list of members.",
     "boardEyebrow": "Leadership",
-    "boardTitle": "Current Executive Board",
+    "boardTitle": "Current Board",
     "boardDesc": "Meet the members responsible for leading the club and carrying out its decisions.",
     "boardCta": "View the Board ←",
     "membersEyebrow": "Members",
@@ -244,13 +244,13 @@
     "membersCountLabel": "member(s)",
     "membersBadge": "Member",
     "membersEmpty": "Members will be added from the admin dashboard soon.",
-    "membersSwitch": "View the current executive board",
+    "membersSwitch": "View the current board",
     "membersSearch": "Search by name, university, or cohort",
-    "boardTitle": "Current Executive Board",
+    "boardTitle": "Current Board",
     "boardDescription": "The members responsible for leading the club and carrying out its decisions, as updated from the dashboard.",
-    "boardCrumb": "Executive Board",
+    "boardCrumb": "Board",
     "boardCountLabel": "board member(s)",
-    "boardBadge": "Executive Board",
+    "boardBadge": "Board",
     "boardEmpty": "Board members will be added from the admin dashboard soon.",
     "boardSwitch": "View the members list",
     "boardSearch": "Search among board members"
@@ -374,7 +374,7 @@
       "logoAlt": "Club logo",
       "sidebar": "Admin menu",
       "installApp": "Install admin panel as an app",
-      "installIosHint": "On iPhone: tap Share, then “Add to Home Screen”.",
+      "installIosHint": "On iPhone: tap Share, then \"Add to Home Screen\".",
       "memberSpace": "Members' space"
     },
     "nav": {
@@ -991,7 +991,7 @@
       "security": "Security",
       "announcements": "Announcements",
       "newAnnouncements": "New announcements",
-      "more": "More", "moreLabel": "More options", "tabsLabel": "Quick navigation", "memberSince": "Member", "install": "Install app", "installIosHint": "On iPhone: tap Share, then “Add to Home Screen”.",
+      "more": "More", "moreLabel": "More options", "tabsLabel": "Quick navigation", "memberSince": "Member", "install": "Install app", "installIosHint": "On iPhone: tap Share, then \"Add to Home Screen\".",
       "id": "Membership card",
       "boardCard": "Board card",
       "admin": "Admin panel"

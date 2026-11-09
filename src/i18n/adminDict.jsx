@@ -7,7 +7,10 @@
  */
 import { Fragment } from 'react';
 import i18n from './index';
-import { ADMIN_DICT } from './adminDict.data';
+import { ADMIN_DICT as BASE_DICT } from './adminDict.data';
+import { SERVER_DICT } from './adminDict.server';
+
+const ADMIN_DICT = { ...SERVER_DICT, ...BASE_DICT };
 
 const LOCALES = { ar: 'ar-MA', fr: 'fr-FR', en: 'en-GB' };
 

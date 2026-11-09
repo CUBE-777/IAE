@@ -7,9 +7,9 @@ import {
 } from '../../services/supabase/memberSpace.service';
 import { diffBoardProfile } from '../../utils/boardProfileDiff';
 import { tr, dateLocale } from '../../i18n/adminDict';
+import { isStaleRequestError } from '../../utils/serverErrors';
 
 const cell = { whiteSpace: 'pre-wrap', wordBreak: 'break-word', verticalAlign: 'top' };
-const isStaleRequestError = (err) => /تغيّر الطلب أثناء مراجعتك|لا يوجد طلب قيد المراجعة/.test(err?.message || '');
 /** يُبلغ المسؤول بنتيجة إشعار العضو بالبريد دون إزعاج: الصمت عند عدم ضبط الإرسال أو غياب البريد. */
 async function notifyMember(requestId) {
   const res = await notifyCardRequestOutcome(requestId);

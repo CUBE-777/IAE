@@ -2,7 +2,7 @@
   "id": "/admin/",
   "name": "لوحة إدارة نادي الذكاء الاصطناعي المدمج — IAE Admin",
   "short_name": "IAE Admin",
-  "description": "لوحة إدارة نادي الذكاء الاصطناعي المدمج (IAE).",
+  "description": "لوحة إدارة نادي IAE · Espace d'administration du club IAE · IAE club admin panel",
   "start_url": "/admin/login",
   "scope": "/admin/",
   "display": "standalone",

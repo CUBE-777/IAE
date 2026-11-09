@@ -4,7 +4,8 @@ import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import { pageWindow } from '../../utils/pagination';
 import { fetchAuditLogs, AUDIT_ENTITY_OPTIONS, AUDIT_PAGE_SIZE } from '../../services/supabase/auditLog.service';
 
-import { tr, dateLocale } from '../../i18n/adminDict';
+import { tr, dateLocale, currentLang } from '../../i18n/adminDict';
+import { translateAuditDescription } from '../../utils/auditDescription';
 export default function Audit() {
   const [page, setPage] = useState(1);
   const [entity, setEntity] = useState('');
@@ -66,7 +67,7 @@ export default function Audit() {
                   <tr key={a.id}>
                     <td data-label={tr('المسؤول')}>{a.profiles?.full_name || '—'}</td>
                     <td data-label={tr('العملية')}><code style={{ fontSize: '.8rem' }}>{a.action}</code></td>
-                    <td data-label={tr('الوصف')}>{a.description || '—'}</td>
+                    <td data-label={tr('الوصف')}>{translateAuditDescription(a.description, currentLang()) || '—'}</td>
                     <td data-label={tr('التاريخ')} style={{ fontSize: '.82rem' }}>{new Date(a.created_at).toLocaleString(dateLocale())}</td>
                   </tr>
                 ))}
