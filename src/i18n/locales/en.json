@@ -11,7 +11,7 @@
     "menu": "Main menu",
     "projects": "Projects",
     "more": "More",
-    "memberSpace": "Member area"
+    "memberSpace": "Members' space"
   },
   "brand": {
     "name": "Embedded Artificial Intelligence",
@@ -239,7 +239,7 @@
     "noResults": "No results match your search.",
     "resultsCount": "{{count}} of {{total}} results",
     "membersTitle": "Members",
-    "membersDescription": "Students involved in the club, with an overview of each one’s journey.",
+    "membersDescription": "Students involved in the club, with an overview of each one's journey.",
     "membersCrumb": "Members List",
     "membersCountLabel": "member(s)",
     "membersBadge": "Member",
@@ -370,7 +370,7 @@
       "closeMenu": "Close menu",
       "collapse": "Collapse menu",
       "expand": "Expand menu",
-      "logout": "Log out",
+      "logout": "Sign out",
       "logoAlt": "Club logo",
       "sidebar": "Admin menu",
       "installApp": "Install admin panel as an app",
@@ -611,6 +611,11 @@
       "searchLabel": "Search requests",
       "searchNoResults": "No requests match your search.",
       "searchCount": "{{count}} of {{total}}",
+      "sortLabel": "Sort by form status",
+      "sortDefault": "Newest first",
+      "sortNewFirst": "New, then sent, then received",
+      "sortSentFirst": "Sent first",
+      "sortReceivedFirst": "Received first",
       "filterLabel": "Filter by form status",
       "filterAll": "All statuses",
       "colForm": "Form status",
@@ -707,7 +712,7 @@
       "tooShort": "Password must be between 8 and 72 characters.",
       "mismatch": "The two passwords do not match.",
       "failed": "Could not change the password. Try a different one or retry.",
-      "logout": "Log out"
+      "logout": "Sign out"
     }
   },
   "membershipForm": {
@@ -740,7 +745,7 @@
       "personal": "Personal information",
       "study": "Study information",
       "tech": "Technical information",
-      "documents": "Identity document",
+      "documents": "Student card",
       "visibility": "Visibility on the website"
     },
     "fields": {
@@ -787,7 +792,7 @@
     "nameHint": "Enter at least one name (in Arabic or in Latin letters). The Latin name is shown on the French and English pages of the site.",
     "consentDirectory": "I agree that my name and my study and professional information appear on the club's public members page.",
     "consentPhoto": "I agree that my photo is published on that page (otherwise the club logo is shown instead).",
-    "consentNote": "This choice is entirely optional and does not affect whether your application is accepted. Your photo and ID stay visible to the administration only, and you can ask at any time to have your details hidden by contacting the club.",
+    "consentNote": "This choice is entirely optional and does not affect whether your application is accepted. Your photo and student card stay visible to the administration only, and you can ask at any time to have your details hidden by contacting the club.",
     "rulesLabel": "I accept the club's internal rules and confirm the information above is accurate.",
     "rulesRequired": "Accepting the internal rules is required",
     "feeNote": "Annual membership fee: {{fee}} MAD — season {{season}}. It is paid to the club after the form is reviewed.",
@@ -873,19 +878,19 @@
     "sections": [
       {
         "title": "Who we are",
-        "body": "This site is run by the “Intelligence Artificielle Embarquée” (IAE) club. The club board is responsible for processing the personal data described on this page."
+        "body": "This site is run by the “Embedded Artificial Intelligence” (IAE) club. The club board is responsible for processing the personal data described on this page."
       },
       {
         "title": "Data we collect",
-        "body": "When you request membership: name, phone, email, class year, track and an optional message. When you complete the membership form through your personal link: the additional information requested, your photo, your Apogee / Massar number and photos of both sides of your student card. Through the contact form: name, email and message. The site uses no advertising trackers; the font is loaded from Google Fonts."
+        "body": "When you request membership: name, phone, email, cohort, track and an optional message. When you complete the membership form through your personal link: the additional information requested, your photo, your Apogee / Massar number and photos of both sides of your student card. Through the contact form: name, email and message. The site uses no advertising trackers; the font is loaded from Google Fonts."
       },
       {
         "title": "Why we use it",
-        "body": "To review and answer membership requests, manage membership and the annual fee, organise club activities and reply to your messages. We do not sell your data or share it with third parties for marketing."
+        "body": "To review and answer membership requests, manage membership and the annual fee, organize club activities and reply to your messages. We do not sell your data or share it with third parties for marketing."
       },
       {
         "title": "Who can see it",
-        "body": "Only authorised club officers, according to their role. Attached documents (photo, student card) are stored in a private, unpublished space and every access is logged. The public site shows only members’ name, photo, class year, track, university and profession."
+        "body": "Only authorized club officers, according to their role. Attached documents (photo, student card) are stored in a private, unpublished space and every access is logged. The public site shows only members' name, photo, cohort, track, university and profession."
       },
       {
         "title": "Retention",
@@ -939,7 +944,7 @@
       "photo": "Profile photo",
       "nameLatin": "Name in Latin letters",
       "university": "University / institution",
-      "promotion": "Graduation year (class)",
+      "promotion": "Graduation year (cohort)",
       "track": "Field of study",
       "bio": "Short bio (board card)",
       "publicBio": "Bio (shown in your profile window)",
@@ -982,7 +987,7 @@
       "label": "Members' space menu",
       "home": "My profile",
       "card": "Edit my card",
-      "logout": "Log out",
+      "logout": "Sign out",
       "security": "Security",
       "announcements": "Announcements",
       "newAnnouncements": "New announcements",
@@ -992,21 +997,21 @@
       "admin": "Admin panel"
     },
     "login": {
-      "pageTitle": "Members' login",
+      "pageTitle": "Members' sign-in",
       "title": "Members' space",
-      "description": "Log in with the email registered with the club and the password you chose when activating your account.",
+      "description": "Sign in with the email registered with the club and the password you chose when activating your account.",
       "email": "Email",
       "password": "Password",
       "show": "Show password",
       "hide": "Hide password",
-      "submit": "Log in",
-      "submitting": "Logging in…",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
       "emailRequired": "Enter your email",
       "emailInvalid": "Invalid email",
       "passwordRequired": "Enter your password",
       "invalid": "Incorrect email or password",
       "network": "Can't connect. Check your internet connection and try again.",
-      "generic": "Couldn't log in. Try again later.",
+      "generic": "Couldn't sign in. Try again later.",
       "forgot": "Forgot your password? Ask the administration for a new recovery link.",
       "noAccount": "No account yet? The activation invitation is sent by the club administration.",
       "helpLink": "Ask for sign-in help"
@@ -1015,10 +1020,10 @@
       "pageTitle": "Activate member account",
       "crumb": "Account activation",
       "title": "Activate your account",
-      "descriptionNew": "Choose a password for your account. You will then log in with the email registered with the club.",
+      "descriptionNew": "Choose a password for your account. You will then sign in with the email registered with the club.",
       "descriptionReset": "Choose a new password to regain access to your account.",
       "greeting": "Hello {{name}}",
-      "emailLabel": "Login email: {{email}}",
+      "emailLabel": "Sign-in email: {{email}}",
       "password": "Password",
       "confirm": "Confirm password",
       "hint": "At least 8 characters.",
@@ -1034,10 +1039,10 @@
       "submitReset": "Change password",
       "submitting": "Saving…",
       "successNewTitle": "Your account is activated",
-      "successNewText": "You can now log in with your email and the password you chose.",
+      "successNewText": "You can now sign in with your email and the password you chose.",
       "successResetTitle": "Password changed",
-      "successResetText": "Log in with your new password.",
-      "goLogin": "Go to the login page",
+      "successResetText": "Sign in with your new password.",
+      "goLogin": "Go to the sign-in page",
       "loadErrorTitle": "Couldn't load the page",
       "loadErrorText": "Check your internet connection, then reopen the link.",
       "error": "The operation failed. Try again or ask the administration for a new link.",
@@ -1048,7 +1053,7 @@
         },
         "used": {
           "title": "Link already used",
-          "text": "This link has already been used. If your account is active, log in; otherwise ask for a new link."
+          "text": "This link has already been used. If your account is active, sign in; otherwise ask for a new link."
         },
         "expired": {
           "title": "Link expired",
@@ -1064,8 +1069,8 @@
       "loadErrorText": "Check your internet connection and try again.",
       "retry": "Try again",
       "notMemberTitle": "This is not a member account",
-      "notMemberText": "The account you used isn't linked to an active member. Log out and use your member account.",
-      "goAdmin": "Go to the admin area",
+      "notMemberText": "The account you used isn't linked to an active member. Sign out and use your member account.",
+      "goAdmin": "Go to the admin panel",
       "tabs": { "label": "My profile sections", "overview": "My card", "private": "My private details" },
       "completeness": {
         "title": "Card completeness",
@@ -1088,7 +1093,7 @@
       "editCard": "Suggest a change to my card",
       "fields": {
         "university": "University",
-        "promotion": "Graduation year (class)",
+        "promotion": "Graduation year (cohort)",
         "track": "Field of study",
         "profession": "Profession",
         "email": "Email"
@@ -1151,10 +1156,10 @@
     },
     "id": {
       "title": "Membership card",
-      "description": "A rotating QR code that proves you belong to the IAE club and shows your membership status for the current season.",
+      "description": "A QR code that proves you belong to the IAE club and shows your membership status for the current season.",
       "pageTitle": "Membership card",
       "sectionLabel": "Membership verification code",
-      "qrLabel": "QR code to verify your membership, refreshed automatically",
+      "qrLabel": "QR code to verify your membership",
       "refresh": "Try again",
       "fullscreen": "Full screen",
       "permanent": "Permanent code: it only changes when you renew it.", "regenerate": "New code", "regenerating": "Creating…", "regenerateConfirmTitle": "Create a new code?", "regenerateConfirmText": "Your current code will stop working immediately, and any printed or captured copy will no longer be valid. Use this if you think someone copied your code.", "regenerateYes": "Yes, create a new code", "regenerateNo": "Cancel",
@@ -1312,7 +1317,7 @@
       },
       "invalid": {
         "title": "Invalid or expired code",
-        "text": "This code can't be accepted. Ask the member to refresh the code on their card, then scan again."
+        "text": "This code can't be accepted. Ask the member to open their card and show their current code, then scan again."
       },
       "problem": {
         "title": "Can't verify right now",

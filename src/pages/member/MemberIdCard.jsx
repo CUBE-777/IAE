@@ -10,6 +10,7 @@ import { useMyMembershipStatus } from '../../hooks/useMyMembershipStatus';
 import QrImage from '../../components/member/QrImage';
 import MemberAttendanceCards from '../../components/member/MemberAttendanceCards';
 import { verifyUrl } from '../../utils/memberCardToken';
+import { localeFor } from '../../utils/i18nContent';
 import { scrollBehavior } from '../../utils/motion';
 import '../../styles/member-card.css';
 
@@ -124,7 +125,7 @@ export default function MemberIdCard() {
 
         <MembershipBadge status={status} failed={failed} onRetry={reload} />
         {status?.active && status.paid_at && (
-          <p className="mf-hint">{t('member.id.paidAt', { date: new Date(status.paid_at).toLocaleDateString(i18n.language === 'ar' ? 'ar-MA' : i18n.language) })}</p>
+          <p className="mf-hint">{t('member.id.paidAt', { date: new Date(status.paid_at).toLocaleDateString(localeFor(i18n.language)) })}</p>
         )}
 
         <section ref={cardRef} className="member-id-card" aria-label={t('member.id.sectionLabel')}>

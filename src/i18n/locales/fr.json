@@ -11,7 +11,7 @@
     "menu": "Menu principal",
     "projects": "Projets",
     "more": "Plus",
-    "memberSpace": "Espace membres"
+    "memberSpace": "Espace adhérents"
   },
   "brand": {
     "name": "Intelligence Artificielle Embarquée",
@@ -166,7 +166,7 @@
     "form": {
       "name": "Nom complet",
       "namePlaceholder": "Entrez votre nom",
-      "promo": "Année d'étude / Promotion (facultatif)",
+      "promo": "Année d'étude / Promotion (facultative)",
       "promoPlaceholder": "Exemple : 2015",
       "email": "Adresse e-mail",
       "emailPlaceholder": "exemple@email.com",
@@ -205,7 +205,7 @@
     "dateTimeLabel": "Date et heure",
     "locationLabel": "Lieu de déroulement",
     "beneficiariesLabel": "Bénéficiaires",
-    "beneficiariesFallback": "Étudiants du club et de l'université",
+    "beneficiariesFallback": "Étudiants de l'université",
     "joinCta": "Participer ou adhérer",
     "shareCta": "Partager l'activité 🔗",
     "linkCopied": "Le lien de la page a été copié avec succès !",
@@ -364,7 +364,7 @@
   },
   "admin": {
     "layout": {
-      "panel": "Espace d'administration",
+      "panel": "Panneau d'administration",
       "short": "IA Embarquée",
       "openMenu": "Ouvrir le menu",
       "closeMenu": "Fermer le menu",
@@ -516,8 +516,8 @@
       "fieldType": "Type",
       "fieldLink": "Lien externe (facultatif)",
       "fieldPublishDate": "Date de publication",
-      "fieldExpiryDate": "Date d'expiration (facultatif)",
-      "fieldImage": "Image (facultatif)",
+      "fieldExpiryDate": "Date d'expiration (facultative)",
+      "fieldImage": "Image (facultative)",
       "fieldPublished": "Publiée",
       "fieldPinned": "Épingler en haut",
       "chooseImage": "Choisir une image",
@@ -569,12 +569,12 @@
       "title": "Demandes d'adhésion",
       "subtitle": "Examiner les demandes d'adhésion au club, les approuver ou les refuser",
       "tabPending": "En attente",
-      "tabApproved": "Acceptées",
+      "tabApproved": "Approuvées",
       "tabRejected": "Refusées",
       "loading": "Chargement...",
       "loadError": "Impossible de charger les demandes.",
       "emptyPending": "Aucune demande en attente pour le moment.",
-      "emptyApproved": "Aucune demande acceptée pour le moment.",
+      "emptyApproved": "Aucune demande approuvée pour le moment.",
       "emptyRejected": "Aucune demande refusée pour le moment.",
       "colName": "Nom",
       "colEmail": "E-mail",
@@ -584,24 +584,24 @@
       "colDate": "Date",
       "colActions": "Actions",
       "view": "Voir",
-      "approve": "Accepter",
+      "approve": "Approuver",
       "reject": "Refuser",
       "detailsTitle": "Détails de la demande",
       "fieldTrack": "Filière",
       "fieldProfession": "Profession",
       "fieldMessage": "Message",
       "fieldRejectionReason": "Motif du refus",
-      "approveTitle": "Confirmer l'acceptation",
-      "approveBody": "La demande de <strong>{{name}}</strong> sera acceptée et transformée automatiquement en membre actif du club. Voulez-vous continuer ?",
-      "approveConfirm": "Confirmer l'acceptation",
+      "approveTitle": "Confirmer l'approbation",
+      "approveBody": "La demande de <strong>{{name}}</strong> sera approuvée et transformée automatiquement en membre actif du club. Voulez-vous continuer ?",
+      "approveConfirm": "Confirmer l'approbation",
       "rejectTitle": "Refuser la demande",
       "rejectBody": "Refus de la demande de <strong>{{name}}</strong>.",
       "rejectReasonLabel": "Motif du refus (facultatif)",
       "rejectReasonPlaceholder": "Indiquez le motif, le cas échéant...",
       "rejectConfirm": "Confirmer le refus",
-      "approving": "Acceptation de la demande...",
-      "approved": "Demande acceptée et transformée en membre avec succès",
-      "approveFailed": "Impossible d'accepter la demande",
+      "approving": "Approbation de la demande...",
+      "approved": "Demande approuvée et transformée en membre avec succès",
+      "approveFailed": "Impossible d'approuver la demande",
       "rejecting": "Refus de la demande...",
       "rejected": "Demande refusée",
       "rejectFailed": "Impossible de refuser la demande",
@@ -611,6 +611,11 @@
       "searchLabel": "Rechercher dans les demandes",
       "searchNoResults": "Aucune demande ne correspond à la recherche.",
       "searchCount": "{{count}} sur {{total}}",
+      "sortLabel": "Trier par état du formulaire",
+      "sortDefault": "Les plus récentes d'abord",
+      "sortNewFirst": "Nouvelles, puis envoyées, puis reçues",
+      "sortSentFirst": "Envoyées d'abord",
+      "sortReceivedFirst": "Reçues d'abord",
       "filterLabel": "Filtrer par état du formulaire",
       "filterAll": "Tous les états",
       "colForm": "État du formulaire",
@@ -740,7 +745,7 @@
       "personal": "Informations personnelles",
       "study": "Informations d'études",
       "tech": "Informations techniques",
-      "documents": "Pièce d’identité",
+      "documents": "Carte d'étudiant",
       "visibility": "Visibilité sur le site"
     },
     "fields": {
@@ -755,11 +760,11 @@
       "track": "Filière",
       "level": "Niveau d'études",
       "promotion": "Année de diplôme",
-      "profession": "Profession (facultatif)",
+      "profession": "Profession (facultative)",
       "skills": "Compétences",
       "interests": "Centres d'intérêt",
       "bio": "Présentation",
-      "photo": "Photo personnelle (facultatif)",
+      "photo": "Photo personnelle (facultative)",
       "apogee": "Numéro Apogée / Massar",
       "motivation": "Pourquoi souhaitez-vous nous rejoindre ?",
       "studentCardFront": "Carte d'étudiant (recto)",
@@ -794,12 +799,12 @@
     "submit": "Envoyer le formulaire",
     "submitting": "Envoi en cours…",
     "submitError": "Impossible d'envoyer le formulaire. Le lien a peut-être expiré ou déjà été utilisé.",
-    "privacy": "Vos informations privées (date de naissance et documents joints) ne sont jamais affichées publiquement et ne sont accessibles qu’aux responsables du club.",
+    "privacy": "Vos informations privées (date de naissance et documents joints) ne sont jamais affichées publiquement et ne sont accessibles qu'aux responsables du club.",
     "successTitle": "Formulaire envoyé",
     "successText": "Merci ! Le club examinera vos informations et vous contactera pour finaliser votre adhésion annuelle.",
     "picker": {
       "choose": "Choisir une image",
-      "change": "Changer l’image",
+      "change": "Changer l'image",
       "remove": "Retirer",
       "empty": "Appuyez pour choisir une image"
     },
@@ -822,7 +827,7 @@
       "motivationRequired": "Dites-nous pourquoi vous souhaitez nous rejoindre."
     },
     "uploading": "Envoi des fichiers…",
-    "uploadError": "Impossible d’envoyer les images. Vérifiez votre connexion et réessayez."
+    "uploadError": "Impossible d'envoyer les images. Vérifiez votre connexion et réessayez."
   },
   "projects": {
     "eyebrow": "Nos projets",
@@ -933,7 +938,7 @@
       "about": "À propos de vous",
       "social": "Réseaux sociaux",
       "extra": "Informations supplémentaires",
-      "translations": "Traductions (facultatif)"
+      "translations": "Traductions (facultatives)"
     },
     "fields": {
       "photo": "Photo personnelle",
@@ -1065,7 +1070,7 @@
       "retry": "Réessayer",
       "notMemberTitle": "Ce compte n'est pas un compte adhérent",
       "notMemberText": "Le compte utilisé n'est lié à aucun membre actif. Déconnectez-vous et utilisez votre compte adhérent.",
-      "goAdmin": "Aller à l'espace d'administration",
+      "goAdmin": "Aller au panneau d'administration",
       "tabs": { "label": "Sections de mon profil", "overview": "Ma carte", "private": "Mes données privées" },
       "completeness": {
         "title": "Complétude de votre carte",
@@ -1075,13 +1080,13 @@
         "items": {
           "photo": "Une photo",
           "publicBio": "Une présentation",
-          "studyPath": "Votre parcours d’études",
+          "studyPath": "Votre parcours d'études",
           "profession": "Votre profession",
           "socials": "Au moins un lien de profil",
           "translations": "Une traduction française ou anglaise"
         }
       },
-      "preview": { "title": "Voici comment votre carte apparaît aux visiteurs", "hidden": "Votre carte n’est pas visible actuellement ; ceci est un aperçu de son rendu une fois affichée." },
+      "preview": { "title": "Voici comment votre carte apparaît aux visiteurs", "hidden": "Votre carte n'est pas visible actuellement ; ceci est un aperçu de son rendu une fois affichée." },
       "hello": "Bonjour {{name}}",
       "cardTitle": "Votre carte sur le site",
       "cardText": "Voici les informations publiées sur la page des membres. Toute modification est validée par l'administration avant publication.",
@@ -1097,9 +1102,9 @@
       "notInDirectory": "Votre carte n'est pas visible sur la page des membres.",
       "request": {
         "title": "Dernière demande de modification",
-        "pending": "En cours de validation",
-        "approved": "Validée et publiée",
-        "rejected": "Non validée — vous pouvez la modifier et la renvoyer",
+        "pending": "En cours d'examen",
+        "approved": "Approuvée et publiée",
+        "rejected": "Non approuvée — vous pouvez la modifier et la renvoyer",
         "cancelled": "Annulée par vous",
         "note": "Note de l'administration :",
         "sentAt": "Envoyée le {{date}}",
@@ -1151,10 +1156,10 @@
     },
     "id": {
       "title": "Carte de membre",
-      "description": "Un code QR renouvelé automatiquement qui prouve votre appartenance au club IAE et votre statut d'adhésion pour la saison en cours.",
+      "description": "Un code QR qui prouve votre appartenance au club IAE et votre statut d'adhésion pour la saison en cours.",
       "pageTitle": "Carte de membre",
       "sectionLabel": "Code de vérification d'adhésion",
-      "qrLabel": "Code QR de vérification de votre adhésion, renouvelé automatiquement",
+      "qrLabel": "Code QR de vérification de votre adhésion",
       "refresh": "Réessayer",
       "fullscreen": "Plein écran",
       "permanent": "Code permanent : il ne change que lorsque vous le renouvelez.", "regenerate": "Nouveau code", "regenerating": "Création…", "regenerateConfirmTitle": "Créer un nouveau code ?", "regenerateConfirmText": "Le code actuel cessera de fonctionner immédiatement, et toute copie imprimée ou capturée ne sera plus valable. Utilisez ceci si vous pensez que quelqu'un a copié votre code.", "regenerateYes": "Oui, créer un nouveau code", "regenerateNo": "Annuler",
@@ -1275,7 +1280,7 @@
       "successTitle": "Votre demande est envoyée",
       "successText": "L'administration va l'examiner. Son état apparaît dans « Mon profil ».",
       "previewTitle": "Aperçu de votre carte",
-      "previewText": "L’aperçu se met à jour en direct pendant la saisie. Rien n’est publié avant validation par l’administration.",
+      "previewText": "L'aperçu se met à jour en direct pendant la saisie. Rien n'est publié avant validation par l'administration.",
       "unsaved": "Vous avez des modifications non envoyées.",
       "leaveTitle": "Modifications non envoyées",
       "leaveText": "Si vous quittez la page maintenant, les modifications non envoyées seront perdues.",
@@ -1312,7 +1317,7 @@
       },
       "invalid": {
         "title": "Code invalide ou expiré",
-        "text": "Ce code ne peut pas être accepté. Demandez au membre d'actualiser le code depuis sa carte puis scannez de nouveau."
+        "text": "Ce code ne peut pas être accepté. Demandez au membre d'ouvrir sa carte et de présenter son code actuel, puis scannez de nouveau."
       },
       "problem": {
         "title": "Vérification impossible pour le moment",

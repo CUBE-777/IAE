@@ -6,6 +6,7 @@ import QrImage from './QrImage';
 import { getMyAttendanceCards } from '../../services/supabase/memberSpace.service';
 import { attendanceCodeText } from '../../utils/attendanceCode';
 import { buildAttendancePdf, pdfFileName, saveBlob } from '../../utils/attendanceCardPdf';
+import { localeFor } from '../../utils/i18nContent';
 import '../../styles/member-card.css';
 import '../../styles/attendance.css';
 
@@ -52,7 +53,7 @@ export default function MemberAttendanceCards({ member }) {
   }, [full]);
 
   if (cards === null || (cards.length === 0 && !failed)) return null;
-  const locale = i18n.language === 'ar' ? 'ar-MA' : i18n.language;
+  const locale = localeFor(i18n.language);
   const dateText = (c) => (c.date ? new Date(`${c.date}T12:00:00`).toLocaleDateString(locale) : '');
   const meta = [member?.university, member?.promotion].filter((v) => v && String(v).trim()).join(' · ');
 

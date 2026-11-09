@@ -64,7 +64,7 @@ export const ADMIN_DICT = {
   "en": "Update failed (make sure SQL file 0033 has been run)"
  },
  "ربط بسجل عضو (اختياري)": {
-  "fr": "Lier à une fiche membre (facultatif)",
+  "fr": "Lier à une fiche membre (facultative)",
   "en": "Link to a member record (optional)"
  },
  "— بدون ربط —": {
@@ -128,7 +128,7 @@ export const ADMIN_DICT = {
   "en": "View national ID card"
  },
  "تعذر فتح الملف": {
-  "fr": "Impossible d’ouvrir le fichier",
+  "fr": "Impossible d'ouvrir le fichier",
   "en": "Could not open the file"
  },
  "رابط غير صالح: {{label}}": {
@@ -537,19 +537,19 @@ export const ADMIN_DICT = {
  },
  "مثال: الرئيس، الكاتب العام...": {
   "fr": "Exemple : Président, Secrétaire général…",
-  "en": "Example: President, General Secretary…"
+  "en": "Example: President, Secretary general…"
  },
  "الجامعة/الإطار": {
   "fr": "Université / établissement",
   "en": "University / institution"
  },
  "سنة التخرج (الدفعة)": {
-  "fr": "Année de promotion",
-  "en": "Cohort year"
+  "fr": "Année de diplôme (promotion)",
+  "en": "Graduation year (cohort)"
  },
  "التخصص (الشعبة)": {
-  "fr": "Spécialité (filière)",
-  "en": "Specialty (field)"
+  "fr": "Filière",
+  "en": "Field of study"
  },
  "نبذة مختصرة (تظهر على بطاقة المكتب)": {
   "fr": "Courte présentation (affichée sur la carte du bureau)",
@@ -761,7 +761,7 @@ export const ADMIN_DICT = {
  },
  "تم إنشاء المسؤول. سلّمه البريد وكلمة المرور ليدخل من صفحة تسجيل الدخول.": {
   "fr": "Administrateur créé. Remettez-lui l'e-mail et le mot de passe pour qu'il se connecte depuis la page de connexion.",
-  "en": "Administrator created. Give them the email and password so they can sign in from the login page."
+  "en": "Administrator created. Give them the email and password so they can sign in from the sign-in page."
  },
  "تعذر إنشاء المسؤول": {
   "fr": "Impossible de créer l'administrateur",
@@ -857,7 +857,7 @@ export const ADMIN_DICT = {
  },
  "إنشاء مسؤول جديد يتم بالكامل من هنا: أدخل الاسم والبريد وكلمة مرور (أو اضغط «توليد»)، ثم سلّم البريد وكلمة المرور للمسؤول الجديد ليدخل من صفحة تسجيل الدخول. لا حاجة لأي خطوات في Supabase.": {
   "fr": "La création d'un administrateur se fait entièrement ici : saisissez le nom, l'e-mail et un mot de passe (ou cliquez sur « Générer »), puis remettez l'e-mail et le mot de passe au nouvel administrateur pour qu'il se connecte depuis la page de connexion. Aucune étape dans Supabase n'est nécessaire.",
-  "en": "Creating an administrator is done entirely here: enter the name, email and a password (or click “Generate”), then give the email and password to the new administrator so they can sign in from the login page. No step in Supabase is required."
+  "en": "Creating an administrator is done entirely here: enter the name, email and a password (or click “Generate”), then give the email and password to the new administrator so they can sign in from the sign-in page. No step in Supabase is required."
  },
  "البريد": {
   "fr": "E-mail",
@@ -1141,7 +1141,7 @@ export const ADMIN_DICT = {
  },
  "الشعبة": {
   "fr": "Filière",
-  "en": "Field"
+  "en": "Field of study"
  },
  "المهنة": {
   "fr": "Profession",
@@ -1296,8 +1296,8 @@ export const ADMIN_DICT = {
   "en": "The member was notified by email"
  },
  "تعذّر إرسال بريد الإشعار للعضو": {
-  "fr": "Impossible d’envoyer l’e-mail de notification au membre",
-  "en": "Couldn’t send the notification email to the member"
+  "fr": "Impossible d'envoyer l'e-mail de notification au membre",
+  "en": "Couldn't send the notification email to the member"
  },
  "تم اعتماد الحقول المحددة ونشرها": {
   "fr": "Les champs sélectionnés ont été validés et publiés",
@@ -1329,7 +1329,7 @@ export const ADMIN_DICT = {
  },
  "تعذر اعتماد {{n}} طلبًا، راجعها يدويًا": {
   "fr": "{{n}} demande(s) non validée(s), vérifiez-les manuellement",
-  "en": "{{n}} request(s) couldn’t be approved, review them manually"
+  "en": "{{n}} request(s) couldn't be approved, review them manually"
  },
  "تجديد المحدد": {
   "fr": "Renouveler la sélection",
@@ -1344,19 +1344,19 @@ export const ADMIN_DICT = {
   "en": "Membership recorded for {{n}} member(s) and income added to the budget"
  },
  "تعذّر تسجيل: {{names}}": {
-  "fr": "Échec d’enregistrement : {{names}}",
-  "en": "Couldn’t record: {{names}}"
+  "fr": "Échec d'enregistrement : {{names}}",
+  "en": "Couldn't record: {{names}}"
  },
  "تم إلغاء الانخراط وإلغاء الإيراد في الميزانية": {
   "fr": "Adhésion annulée et recette annulée dans le budget",
   "en": "Membership cancelled and the income voided in the budget"
  },
  "تعذّر إلغاء الانخراط": {
-  "fr": "Impossible d’annuler l’adhésion",
-  "en": "Couldn’t cancel the membership"
+  "fr": "Impossible d'annuler l'adhésion",
+  "en": "Couldn't cancel the membership"
  },
  "إلغاء الانخراط": {
-  "fr": "Annuler l’adhésion",
+  "fr": "Annuler l'adhésion",
   "en": "Cancel membership"
  },
  "طلبات تعديل البطاقة": {
@@ -1384,11 +1384,11 @@ export const ADMIN_DICT = {
   "en": "Confirm bulk renewal"
  },
  "سيتم تسجيل انخراط {{n}} عضوًا للموسم {{season}} بمبلغ {{fee}} درهم لكل منهم (المجموع {{total}} درهم) وإضافته إلى الميزانية.": {
-  "fr": "L’adhésion de {{n}} membre(s) sera enregistrée pour la saison {{season}} au montant de {{fee}} MAD chacun (total {{total}} MAD) et ajoutée au budget.",
+  "fr": "L'adhésion de {{n}} membre(s) sera enregistrée pour la saison {{season}} au montant de {{fee}} MAD chacun (total {{total}} MAD) et ajoutée au budget.",
   "en": "Membership for {{n}} member(s) will be recorded for season {{season}} at {{fee}} MAD each (total {{total}} MAD) and added to the budget."
  },
  "سبب الإلغاء (إلزامي)": {
-  "fr": "Motif de l’annulation (obligatoire)",
+  "fr": "Motif de l'annulation (obligatoire)",
   "en": "Reason for cancellation (required)"
  },
  "تراجع": {
@@ -1396,7 +1396,7 @@ export const ADMIN_DICT = {
   "en": "Back"
  },
  "سيُلغى انخراط <strong>{{name}}</strong> لموسم {{season}} ويُلغى إيراده في الميزانية (يبقى ظاهرًا كمعاملة ملغاة مع السبب). يمكن تسجيل الانخراط من جديد بعد ذلك.": {
-  "fr": "L’adhésion de <strong>{{name}}</strong> pour la saison {{season}} sera annulée et sa recette annulée dans le budget (elle reste visible comme transaction annulée avec le motif). L’adhésion pourra ensuite être enregistrée de nouveau.",
+  "fr": "L'adhésion de <strong>{{name}}</strong> pour la saison {{season}} sera annulée et sa recette annulée dans le budget (elle reste visible comme transaction annulée avec le motif). L'adhésion pourra ensuite être enregistrée de nouveau.",
   "en": "The membership of <strong>{{name}}</strong> for season {{season}} will be cancelled and its income voided in the budget (it stays visible as a voided transaction with the reason). The membership can then be recorded again."
  },
  "كل الحالات": {
@@ -1660,7 +1660,7 @@ export const ADMIN_DICT = {
   "en": "Do you want to delete the activity <strong>{{name}}</strong>?"
  },
  "هل تريد حذف العضو <strong>{{name}}</strong>؟ يمكنك استرجاعه لاحقًا بخيار «عرض المحذوفين».": {
-  "fr": "Voulez-vous supprimer le membre <strong>{{name}}</strong> ? Vous pourrez le restaurer plus tard via l’option « Afficher les supprimés ».",
+  "fr": "Voulez-vous supprimer le membre <strong>{{name}}</strong> ? Vous pourrez le restaurer plus tard via l'option « Afficher les supprimés ».",
   "en": "Do you want to delete the member <strong>{{name}}</strong>? You can restore them later with the “Show deleted” option."
  },
  "يجب أن يبدأ الرابط بـ https:// ويكون صالحًا.": {
@@ -2004,7 +2004,7 @@ export const ADMIN_DICT = {
   "en": "Proposed"
  },
  "ملاحظة للعضو (اختياري، تظهر له عند الإعادة)": {
-  "fr": "Remarque pour le membre (facultatif, affichée au renvoi)",
+  "fr": "Remarque pour le membre (facultative, affichée au renvoi)",
   "en": "Note for the member (optional, shown when sent back)"
  },
  "اعتماد": {
@@ -2313,7 +2313,7 @@ export const ADMIN_DICT = {
  },
  "رابط خاص بـ <strong>{{name}}</strong> ليفعّل حسابه في فضاء المنخرطين ويختار كلمة مروره بنفسه. يدخل ببريده المسجّل لدينا: {{email}}": {
   "fr": "Lien personnel pour <strong>{{name}}</strong> afin d'activer son compte de l'espace adhérents et de choisir son mot de passe. Il se connecte avec l'e-mail enregistré chez nous : {{email}}",
-  "en": "Personal link for <strong>{{name}}</strong> to activate their members' space account and choose their own password. They log in with the email we have on record: {{email}}"
+  "en": "Personal link for <strong>{{name}}</strong> to activate their members' space account and choose their own password. They sign in with the email we have on record: {{email}}"
  },
  "رفض": {
   "fr": "Refuser",
@@ -2364,7 +2364,7 @@ export const ADMIN_DICT = {
   "en": "This member already has an account: the link is for access recovery (password change)."
  },
  "ملاحظة للعضو (اختياري، تظهر له عند الرفض)": {
-  "fr": "Note pour le membre (facultatif, visible en cas de refus)",
+  "fr": "Note pour le membre (facultative, visible en cas de refus)",
   "en": "Note for the member (optional, shown on rejection)"
  },
  "طلبات المساعدة في الدخول": {
@@ -2646,5 +2646,17 @@ export const ADMIN_DICT = {
  "منح صفة إدارية": {
   "fr": "Accorder un rôle d'administrateur",
   "en": "Give admin role"
+ },
+ "عرض بطاقة الطالب (الوجه)": {
+  "fr": "Voir la carte d'étudiant (recto)",
+  "en": "View student card (front)"
+ },
+ "عرض بطاقة الطالب (الظهر)": {
+  "fr": "Voir la carte d'étudiant (verso)",
+  "en": "View student card (back)"
+ },
+ "انتهت جلسة الدخول أو لا توجد جلسة صالحة. سجّل الدخول مجددًا ثم أعد المحاولة.": {
+  "fr": "Votre session a expiré ou n'est plus valide. Reconnectez-vous puis réessayez.",
+  "en": "Your session has expired or is no longer valid. Sign in again and retry."
  }
 };

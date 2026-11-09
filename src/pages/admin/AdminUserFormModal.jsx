@@ -72,7 +72,7 @@ export default function AdminUserFormModal({ profile, onClose, onSaved }) {
         setSaving(false);
         return;
       }
-      if (err.userMessage) window.notify?.error(err.userMessage);
+      if (err.userMessage) window.notify?.error(tr(err.userMessage));
       else window.notify?.fromError(err, isEdit ? tr('تعذر الحفظ') : tr('تعذر إنشاء المسؤول'));
       setSaving(false);
     }

@@ -11,6 +11,7 @@ import { memberCompleteness } from '../../utils/memberCompleteness';
 import { updateMyPrivate, cancelCardRequest, listMyCardRequests } from '../../services/supabase/memberSpace.service';
 import { HISTORY_LIMIT, olderRequests } from '../../utils/memberRequests';
 import { validatePhone } from '../../utils/validators';
+import { localeFor } from '../../utils/i18nContent';
 import { scrollBehavior } from '../../utils/motion';
 
 const COMPLETENESS_KEYS = {
@@ -159,7 +160,7 @@ export default function MemberHome() {
     setTab(next);
     document.getElementById(`mh-tab-${next}`)?.focus();
   };
-  const sentAt = req ? new Date(req.created_at).toLocaleDateString(i18n.language === 'ar' ? 'ar-MA' : i18n.language) : '';
+  const sentAt = req ? new Date(req.created_at).toLocaleDateString(localeFor(i18n.language)) : '';
 
   return (
     <MemberPage titleKey="member.home.title" descriptionKey="member.home.description" pageTitleKey="member.home.pageTitle">
@@ -276,7 +277,7 @@ export default function MemberHome() {
                 <p className="mf-hint">{t('member.history.text')}</p>
                 <ul className="member-history">
                   {olderRequests(history, req?.id).map((r) => {
-                    const fmt = (d) => new Date(d).toLocaleDateString(i18n.language === 'ar' ? 'ar-MA' : i18n.language);
+                    const fmt = (d) => new Date(d).toLocaleDateString(localeFor(i18n.language));
                     return (
                       <li key={r.id}>
                         <p>
