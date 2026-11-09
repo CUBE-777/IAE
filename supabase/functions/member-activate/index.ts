@@ -74,6 +74,7 @@ async function dbRateLimited(client: RpcClient, key: string): Promise<boolean | 
 }
 
 const INVALID_LINK = 'رابط التفعيل غير صالح أو منتهي أو مستعمل. اطلب رابطًا جديدًا من الإدارة.';
+const EMAIL_REQUIRED = 'أدخل بريدك الإلكتروني الشخصي أولًا ثم أكمل التفعيل';
 
 async function handle(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') return new Response('ok');
@@ -136,6 +137,14 @@ async function handle(req: Request): Promise<Response> {
       return json({ ok: true, email: prep.email, reset: true });
     }
 
+    // (0048) التفعيل الجديد لا يكتمل قبل أن يؤكّد صاحب الرابط بريده في member-activate-email. البريد نفسه يبقى من القاعدة (prep.email).
+    const { data: emailOk, error: emailErr } = await adminClient.rpc('member_activation_email_confirmed', { p_token: token });
+    if (emailErr) {
+      console.error('member-activate: email-confirmed rpc failed:', emailErr);
+      return json({ error: 'خطأ داخلي في الخادم' }, 500);
+    }
+    if (emailOk !== true) return json({ error: EMAIL_REQUIRED, code: 'email_required' }, 400);
+
     const { data: created, error: createErr } = await adminClient.auth.admin.createUser({
       email: prep.email,
       password,
@@ -148,7 +157,7 @@ async function handle(req: Request): Promise<Response> {
         return json({ error: 'كلمة المرور غير مقبولة (اختر كلمة أقوى)' }, 400);
       }
       if (createErr?.status === 422 || msg.includes('already') || msg.includes('registered')) {
-        return json({ error: 'هذا البريد مسجّل مسبقًا. تواصل مع الإدارة.' }, 409);
+        return json({ error: 'هذا البريد مسجّل مسبقًا. تواصل مع الإدارة.', code: 'email_taken' }, 409);
       }
       if (msg.includes('password')) return json({ error: 'كلمة المرور غير مقبولة (اختر كلمة أقوى)' }, 400);
       return json({ error: 'تعذر إنشاء الحساب' }, 400);

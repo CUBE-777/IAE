@@ -17,30 +17,44 @@ export async function getActivationLink(token) {
   return data || { valid: false, reason: 'invalid' };
 }
 
-/** يفعّل الحساب (أو يعيد ضبط كلمة المرور لحساب قائم). يرمي Error مع userMessage من الخادم إن وُجد. */
-export async function activateMember(token, password) {
-  const { data, error } = await supabase.functions.invoke('member-activate', { body: { token, password } });
+/** يستدعي دالة تفعيل عامة؛ يرمي Error مع userMessage وcode وstatus من الخادم إن وُجدت. */
+async function invokeActivation(fn, body) {
+  const { data, error } = await supabase.functions.invoke(fn, { body });
   if (error) {
     let userMessage = '';
+    let code = '';
     let status = 0;
     try {
       status = error.context?.status || 0;
-      const body = await error.context?.json?.();
-      userMessage = body?.error || '';
+      const res = await error.context?.json?.();
+      userMessage = res?.error || '';
+      code = res?.code || '';
     } catch {
       /* لا شيء */
     }
     const e = new Error(userMessage || error.message);
     e.userMessage = userMessage;
+    e.code = code;
     e.status = status;
     throw e;
   }
   if (data?.error) {
     const e = new Error(data.error);
     e.userMessage = data.error;
+    e.code = data.code || '';
     throw e;
   }
-  return data; // { ok, email, reset? }
+  return data;
+}
+
+/** يفعّل الحساب (أو يعيد ضبط كلمة المرور لحساب قائم). يرمي Error مع userMessage من الخادم إن وُجد. */
+export async function activateMember(token, password) {
+  return invokeActivation('member-activate', { token, password }); // { ok, email, reset? }
+}
+
+/** (0048) يؤكّد/يصحّح بريد المنخرط قبل التفعيل الجديد. لا يستهلك الرمز. e.code: invalid_format | email_taken | attempts_exceeded */
+export async function setActivationEmail(token, email) {
+  return invokeActivation('member-activate-email', { token, email }); // { ok, email }
 }
 
 /* ---------- العضو ---------- */

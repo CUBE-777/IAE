@@ -1,3 +1,16 @@
+# تصحيح بريد المنخرط أثناء التفعيل بلا SMTP (migration 0048)
+## ماذا
+- صفحة `/member/activate/:token` (للتفعيل الجديد فقط) تطلب أولًا **البريد الشخصي الصحيح** (مرتين) ثم تكمل خطوة كلمة المرور. رابط واتساب ومدة الـ7 أيام والاستعمال مرة واحدة كما هي.
+- Edge Function جديدة `member-activate-email` تتحقق من الرمز (دون استهلاكه) ومن الصيغة ومن أن البريد غير مستعمل في `auth.users` أو `profiles` أو لدى عضو آخر غير محذوف، ثم تحدّث `members.email`. سقف 10 محاولات لكل رابط + حدّ 8/10 دقائق لكل عنوان (دلو مستقل).
+- `member-activate` ترفض التفعيل الجديد قبل تأكيد البريد، وتنشئ الحساب بـ `members.email` من القاعدة (لا بريد من العميل). مسار استعادة الدخول لا يتغيّر ولا يسمح بتغيير البريد.
+- لا رسائل بريد ولا خدمة مدفوعة. `auth.users` يُنشأ أصلًا عند التفعيل بالبريد المؤكَّد؛ `profiles` لا تُمسّ (للإداريين فقط).
+## الملفات
+`supabase/migrations/0048_member_activation_email.sql` (+ rollback) · `supabase/functions/member-activate-email/` · `supabase/functions/member-activate/index.ts` (فحص التأكيد + code في 409) · `supabase/config.toml` · `src/pages/member/MemberActivate.jsx` · `src/services/supabase/memberSpace.service.js` · الترجمات الثلاث · `src/i18n/adminDict.server.js` · `tests/member-activation-email.test.js`
+## النشر (بهذا الترتيب)
+1. نفّذ 0048 (جرّبه أولًا بـ rollback) 2. `supabase functions deploy member-activate-email --no-verify-jwt` 3. أعد نشر `member-activate` 4. انشر الواجهة.
+
+---
+
 # حساب واحد بصفتين: لوحة الإدارة + فضاء المنخرطين، وربط الحساب ببطاقة المكتب (migration 0046) — مرحلتان
 ## ماذا
 - أعضاء المكتب (وهم المستخدمون الإداريون) يدخلون إلى **لوحة الإدارة وفضاء المنخرطين بنفس البريد وكلمة المرور**: مستخدم Auth واحد يحمل صفتين مستقلتين (`profiles` + `member_accounts` بعلم `admin_linked`). لا مستخدم جديد ولا نسخ كلمات مرور. تعطيل إحدى الصفتين لا يمسّ الأخرى.

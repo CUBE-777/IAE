@@ -87,6 +87,10 @@ Prérequis : 0003 et 0016. Remplace la contrainte `projects_slug_key` par un ind
 ## 0037 — إعادة إصدار رابط التفعيل لعضو له حساب (استعادة الدخول)
 شروطه المسبقة: 0035 و0036. يستبدل أربع دوال من 0036 بنفس التواقيع (لا جداول ولا سياسات). بعده أعد نشر `member-activate` (النسخة القديمة لا تعرف `existing_user_id`). الرجوع: `rollback/0037_member_reactivation_down.sql` (يعيد تنفيذ 0036).
 
+## 0048 — تصحيح بريد المنخرط أثناء التفعيل (بلا SMTP)
+شروطه المسبقة: 0036 و0037 و0046. إضافة فقط: 3 أعمدة على `member_activation_links` ودالتان لـ `service_role` (`set_member_activation_email`, `member_activation_email_confirmed`). الترتيب: نفّذ الملف ← `supabase functions deploy member-activate-email --no-verify-jwt` ← أعد نشر `member-activate` ← انشر الواجهة. الرجوع: `rollback/0048_member_activation_email_down.sql`.
+روابط التفعيل الصادرة قبل النشر وغير المستعملة تبقى صالحة وتمرّ بخطوة البريد عند فتحها.
+
 ## إشعار العضو بالبريد (طلبات تعديل البطاقة) — 0045
 `supabase/functions/notify-member-card-request` يرسل بريدًا ثلاثي اللغات للعضو بعد اعتماد طلبه أو رفضه (مع ملاحظة الرفض).
 الإرسال عبر Resend؛ **بلا إعداد لا يحدث شيء ولا تظهر أخطاء** (تعمل المراجعة كالمعتاد):

@@ -6,3 +6,6 @@ verify_jwt = false
 
 [functions.notify-member-card-request]
 verify_jwt = false
+
+[functions.member-activate-email]
+verify_jwt = false

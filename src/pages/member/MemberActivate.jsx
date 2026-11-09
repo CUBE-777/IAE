@@ -7,8 +7,9 @@ import MemberAuthShell from '../../components/member/MemberAuthShell';
 import PasswordInput from '../../components/member/PasswordInput';
 import FormField from '../../components/common/FormField';
 import { useAuth } from '../../app/providers/AuthProvider';
-import { getActivationLink, activateMember } from '../../services/supabase/memberSpace.service';
+import { getActivationLink, activateMember, setActivationEmail } from '../../services/supabase/memberSpace.service';
 import { useNoindex } from '../../hooks/useNoindex';
+import { validateEmail } from '../../utils/validators';
 import { MIN_LEN, MAX_LEN, STRENGTH_KEYS, passwordStrength } from '../../utils/passwordStrength';
 import { scrollBehavior } from '../../utils/motion';
 import { SUPPORTED_LANGUAGES, applyDocumentDirection } from '../../i18n';
@@ -41,6 +42,10 @@ export default function MemberActivate() {
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(null); // { reset }
+  // (0048) التفعيل الجديد: خطوة البريد أولًا ثم كلمة المرور. الاستعادة (info.existing) لا تمرّ بها ولا يتغيّر بريدها.
+  const [email, setEmail] = useState('');
+  const [emailConfirm, setEmailConfirm] = useState('');
+  const [confirmedEmail, setConfirmedEmail] = useState(''); // لا يُملأ إلا بعد نجاح الخادم
   useNoindex();
 
   // لغة الرسالة التي وصلت للعضو (?lang=fr|en|ar)
@@ -68,6 +73,34 @@ export default function MemberActivate() {
     return () => { alive = false; };
   }, [token]);
 
+  const serverMessage = (err) => {
+    const msg = err?.userMessage ? translateServerMessage(err.userMessage, i18n.language) : '';
+    return msg && (i18n.language === 'ar' || msg !== err.userMessage) ? msg : t('member.activate.error');
+  };
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    setFormError('');
+    const errs = {};
+    const em = email.trim();
+    const emErr = validateEmail(em);
+    if (emErr) errs.email = emErr === 'forms.required' ? emErr : 'member.activate.emailInvalid';
+    else if (emailConfirm.trim().toLowerCase() !== em.toLowerCase()) errs.emailConfirm = 'member.activate.emailMismatch';
+    setErrors(errs);
+    if (Object.keys(errs).length) return;
+
+    setSubmitting(true);
+    try {
+      const res = await setActivationEmail(token, em);
+      setConfirmedEmail(res?.email || em.toLowerCase());
+    } catch (err) {
+      console.error('member activation email failed', err);
+      setFormError(serverMessage(err));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError('');
@@ -94,6 +127,12 @@ export default function MemberActivate() {
       window.scrollTo({ top: 0, behavior: scrollBehavior() });
     } catch (err) {
       console.error('member activation failed', err);
+      // البريد غير مؤكَّد في الخادم أو صار محجوزًا لحساب آخر: العودة لخطوة البريد
+      if (err?.code === 'email_required' || err?.code === 'email_taken') {
+        setConfirmedEmail('');
+        setFormError(serverMessage(err));
+        return;
+      }
       // رسائل الخادم بالعربية؛ نعرضها كما هي في اللغة العربية فقط وإلا الرسالة العامة المترجمة
       // رسالة الخادم بالعربية: تُعرض مترجمةً إن وُجدت لها ترجمة معروفة، وإلا الرسالة العامة المترجمة
       const serverMsg = err?.userMessage ? translateServerMessage(err.userMessage, i18n.language) : '';
@@ -104,6 +143,7 @@ export default function MemberActivate() {
   };
 
   const reset = !!info?.existing;
+  const needsEmail = !reset && !confirmedEmail;
   const strength = passwordStrength(password);
   let body;
   if (loadError) {
@@ -127,11 +167,35 @@ export default function MemberActivate() {
         action={<Link className="btn btn-gold ma-submit" to="/member/login">{t('member.activate.goLogin')}</Link>}
       />
     );
+  } else if (needsEmail) {
+    body = (
+      <form className="ma-form" onSubmit={handleEmailSubmit} noValidate aria-busy={submitting}>
+        <div className="ma-greet" role="note">{t('member.activate.greeting', { name: info.full_name })}</div>
+        <p className="ma-note" role="note">{t('member.activate.emailStepIntro')}</p>
+        <p className="ma-note" role="note" dir="ltr">{t('member.activate.currentEmail', { email: info.email_hint })}</p>
+        {formError && <div className="form-alert form-alert-error" role="alert">{formError}</div>}
+        <FormField id="ma-email" label={t('member.activate.emailField')} required error={errors.email}>
+          {(a) => <input {...a} type="email" dir="ltr" inputMode="email" autoComplete="email" autoCapitalize="none" maxLength={150} value={email} onChange={(e) => setEmail(e.target.value)} />}
+        </FormField>
+        <FormField id="ma-email-confirm" label={t('member.activate.emailConfirmField')} required error={errors.emailConfirm}>
+          {(a) => <input {...a} type="email" dir="ltr" inputMode="email" autoComplete="off" autoCapitalize="none" maxLength={150} value={emailConfirm} onChange={(e) => setEmailConfirm(e.target.value)} onPaste={(e) => e.preventDefault()} />}
+        </FormField>
+        <p className="ma-note">{t('member.activate.emailHint')}</p>
+        <button type="submit" className="btn btn-gold ma-submit" disabled={submitting}>
+          {submitting ? t('member.activate.submitting') : t('member.activate.emailSubmit')}
+        </button>
+      </form>
+    );
   } else {
     body = (
       <form className="ma-form" onSubmit={handleSubmit} noValidate aria-busy={submitting}>
         <div className="ma-greet" role="note">{t('member.activate.greeting', { name: info.full_name })}</div>
-        <p className="ma-note" role="note" dir="ltr">{t('member.activate.emailLabel', { email: info.email_hint })}</p>
+        <p className="ma-note" role="note" dir="ltr">{t('member.activate.emailLabel', { email: reset ? info.email_hint : confirmedEmail })}</p>
+        {!reset && (
+          <button type="button" className="btn btn-ghost ma-submit" onClick={() => { setConfirmedEmail(''); setFormError(''); }}>
+            {t('member.activate.emailEdit')}
+          </button>
+        )}
         {formError && <div className="form-alert form-alert-error" role="alert">{formError}</div>}
         <FormField id="ma-password" label={t('member.activate.password')} required error={errors.password}>
           {(a) => <PasswordInput {...a} show={show} onToggle={() => setShow((v) => !v)} autoComplete="new-password" maxLength={MAX_LEN} value={password} onChange={(e) => setPassword(e.target.value)} />}

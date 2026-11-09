@@ -108,6 +108,10 @@ export const SERVER_DICT = {
  "تعذر إكمال العملية": { fr: "Impossible de terminer l'opération.", en: "Could not complete the operation." },
  "تعذر إنشاء الحساب": { fr: "Impossible de créer le compte.", en: "Could not create the account." },
  "تعذر تغيير كلمة المرور": { fr: "Impossible de changer le mot de passe.", en: "Could not change the password." },
+ "صيغة البريد الإلكتروني غير صالحة": { fr: "Format d'adresse e-mail invalide.", en: "Invalid email address format." },
+ "هذا البريد الإلكتروني مستخدم مع حساب آخر. اكتب بريدًا آخر.": { fr: "Cette adresse e-mail est déjà utilisée par un autre compte. Saisissez-en une autre.", en: "This email address is already used by another account. Enter a different one." },
+ "أدخل بريدك الإلكتروني الشخصي أولًا ثم أكمل التفعيل": { fr: "Saisissez d'abord votre adresse e-mail personnelle, puis terminez l'activation.", en: "Enter your personal email address first, then complete the activation." },
+ "تجاوزت عدد المحاولات المسموح بها لهذا الرابط. اطلب رابطًا جديدًا من الإدارة.": { fr: "Vous avez dépassé le nombre d'essais autorisés pour ce lien. Demandez un nouveau lien à l'administration.", en: "You have exceeded the allowed attempts for this link. Ask the administration for a new link." },
  "هذا البريد مسجّل مسبقًا. تواصل مع الإدارة.": { fr: "Cet e-mail est déjà enregistré. Contactez l'administration.", en: "This email is already registered. Contact the administration." },
  "رابط التفعيل غير صالح أو منتهي أو مستعمل. اطلب رابطًا جديدًا من الإدارة.": { fr: "Le lien d'activation est invalide, expiré ou déjà utilisé. Demandez un nouveau lien à l'administration.", en: "The activation link is invalid, expired or already used. Ask the administration for a new link." },
 };
