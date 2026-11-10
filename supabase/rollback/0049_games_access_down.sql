@@ -9,6 +9,7 @@
 -- ============================================================
 begin;
 
+-- الترتيب عكسي للإنشاء: get_games_access تستدعي can_access_games.
 drop function if exists public.get_games_access();
 drop function if exists public.can_access_games();
 

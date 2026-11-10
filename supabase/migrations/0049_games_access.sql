@@ -4,8 +4,9 @@
 -- السياسة المعتمدة:
 --   1) عضو: members.status = 'active' + صف في member_memberships للموسم الحالي (site_settings.current_season).
 --      وجود الصف وحده يكفي (هو تعريف «منخرط هذا الموسم» في كل النظام: 0014/0040)؛ لا فحص إضافي لمعاملة الميزانية.
---   2) كل الأدوار الإدارية القائمة: is_admin() = أي صف نشط في profiles أيًّا كان دوره. لا قائمة أدوار مكتوبة هنا:
---      فيشمل الأدوار العشرة الحالية وأي قيمة تُضاف لاحقًا إلى admin_role دون تعديل هذا الملف.
+--   2) كل الأدوار الإدارية القائمة والمستقبلية: is_admin() = أي صف نشط في profiles أيًّا كان دوره. لا قائمة أدوار مكتوبة هنا.
+--      استثناء: إداري profiles.must_change_password = true (كلمة مرور مؤقتة) مرفوض حتى يغيّر كلمة مروره
+--      (يسقط العلم تلقائيًا من الخادم عند تغيّر hash كلمة المرور فعلًا، 0027). لا تسلّل عبر مسار العضو.
 --   3) أي حساب موثّق آخر (بلا حساب عضو، أو عضو غير نشط/غير منخرط هذا الموسم، أو لا موسم حالي): مرفوض. الرفض هو الأصل (fail closed).
 --
 -- المصادقة الثنائية (MFA): تبقى مفروضة كما هي. mfa_satisfied() (0024) = «لا عامل موثّق، أو الجلسة aal2».
@@ -17,12 +18,14 @@
 --      في السياسات اكتب (select public.can_access_games()) ليُحسب مرة واحدة للاستعلام لا لكل صف.
 --   2) get_games_access()  — jsonb للواجهة فقط (رسالة الرفض المناسبة): {allowed, reason[, season]}.
 --      allowed يأتي دائمًا من can_access_games() نفسها فلا يختلف الاثنان. الواجهة لا تُعدّ حدًّا أمنيًا؛ الحدّ هو RLS/RPC.
---      reason: admin | member | unauthenticated | mfa_required | no_member_account | no_season | member_inactive | membership_not_paid
+--      reason: admin | member | unauthenticated | mfa_required | password_change_required
+--              | no_member_account | no_season | member_inactive | membership_not_paid
 --
 -- ما لا يمسّه: profiles، member_accounts، members، member_memberships، site_settings وسياساتها،
 --   is_admin / current_admin_role / mfa_satisfied / current_member_id / can_* القائمة، admin_role، أي Edge Function أو واجهة.
 --
--- يتطلب: 0014 (member_memberships, site_settings) و0024 (is_admin, mfa_satisfied) و0046 (current_member_id بنسخة الحساب المزدوج).
+-- يتطلب: 0014 (member_memberships, site_settings) و0024 (is_admin, mfa_satisfied) و0027 (profiles.must_change_password)
+--        و0046 (current_member_id بنسخة الحساب المزدوج).
 -- آمن لإعادة التشغيل (create or replace). الرجوع: supabase/rollback/0049_games_access_down.sql
 -- ⚠️ تجربة جافة أولًا: استبدل `commit;` الأخيرة بـ `rollback;` ثم شغّل الملف، وإن نجح أعدها `commit;`.
 -- ⚠️ بعد التطبيق شغّل supabase/tests/games_access_smoke.sql (يُلغى بالكامل بـ rollback ولا يترك أثرًا).
@@ -34,6 +37,10 @@ do $$
 begin
   if to_regprocedure('public.is_admin()') is null or to_regprocedure('public.mfa_satisfied()') is null then
     raise exception 'شغّل 0024_mfa_enforcement.sql أولاً';
+  end if;
+  if not exists (select 1 from information_schema.columns
+                  where table_schema = 'public' and table_name = 'profiles' and column_name = 'must_change_password') then
+    raise exception 'شغّل 0027_must_change_password_server_side.sql أولاً';
   end if;
   if to_regprocedure('public.current_member_id()') is null
      or not exists (select 1 from pg_proc p
@@ -67,8 +74,14 @@ begin
   -- MFA أولًا وعلى كل المسارات: لا يتجاوزها مسار العضو ولا الدور الإداري
   if not public.mfa_satisfied() then return false; end if;
 
-  -- أي دور إداري نشط (بلا قائمة أدوار): يطابق is_admin() التي تعتمد عليها كل سياسات الإدارة
-  if public.is_admin() then return true; end if;
+  -- أي دور إداري نشط (بلا قائمة أدوار): يطابق is_admin() التي تعتمد عليها كل سياسات الإدارة.
+  -- القرار هنا نهائي (لا سقوط إلى مسار العضو): الإداري بكلمة مرور مؤقتة مرفوض حتى يغيّرها، حتى لو كان له حساب عضو منخرط.
+  if public.is_admin() then
+    return not exists (
+      select 1 from public.profiles p
+       where p.id = auth.uid() and p.must_change_password is true
+    );
+  end if;
 
   -- عضو: حساب عضو نشط (current_member_id تستبعد العضو المحذوف والحساب المعطّل وفصل الحسابين)
   v_id := public.current_member_id();
@@ -103,7 +116,7 @@ as $$
 declare
   v_id     uuid;
   v_season text;
-  v_status member_status;
+  v_status text;
 begin
   if auth.uid() is null then
     return jsonb_build_object('allowed', false, 'reason', 'unauthenticated');
@@ -123,6 +136,11 @@ begin
     return jsonb_build_object('allowed', false, 'reason', 'mfa_required');
   end if;
 
+  -- إداري نشط تجاوز MFA ومع ذلك رُفض في can_access_games ⇒ السبب الوحيد الممكن: كلمة مرور مؤقتة
+  if public.is_admin() then
+    return jsonb_build_object('allowed', false, 'reason', 'password_change_required');
+  end if;
+
   v_id := public.current_member_id();
   if v_id is null then
     return jsonb_build_object('allowed', false, 'reason', 'no_member_account');
@@ -132,11 +150,11 @@ begin
     return jsonb_build_object('allowed', false, 'reason', 'no_season');
   end if;
 
-  select m.status into v_status from public.members m where m.id = v_id and m.deleted_at is null;
+  select m.status::text into v_status from public.members m where m.id = v_id and m.deleted_at is null;
   if not found then
     return jsonb_build_object('allowed', false, 'reason', 'no_member_account');
   end if;
-  if v_status <> 'active' then
+  if v_status is distinct from 'active' then
     return jsonb_build_object('allowed', false, 'reason', 'member_inactive');
   end if;
 
