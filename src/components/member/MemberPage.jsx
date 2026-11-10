@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Bell, Download, MoreHorizontal, Home, LayoutDashboard, LogOut, Pencil, QrCode, ShieldCheck, Users } from 'lucide-react';
+import { Bell, Download, MoreHorizontal, Home, LayoutDashboard, Gamepad2, LogOut, Pencil, QrCode, ShieldCheck, Users } from 'lucide-react';
 import { useAuth } from '../../app/providers/AuthProvider';
+import { useCanSeeGamesLink } from '../../features/games/hooks/useGamesAccess';
+import { GAMES_BASE_PATH } from '../../features/games/constants/games';
 import { useNoindex } from '../../hooks/useNoindex';
 import { useNewAnnouncement } from '../../hooks/useNewAnnouncement';
 import { useInstallState } from '../../hooks/useAdminPwa';
@@ -16,7 +18,8 @@ import '../../styles/member-shell.css';
  */
 export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, children }) {
   const { t } = useTranslation();
-  const { logout, profile } = useAuth();
+  const { logout, profile, session } = useAuth();
+  const showGames = useCanSeeGamesLink(session?.user?.id, profile?.must_change_password !== true); // يظهر الرابط للمؤهَّلين فقط (RPC)
   const ctx = useOutletContext();
   const member = ctx?.member;
   const hasBoardCard = ctx?.hasBoardCard === true;       // حساب مرتبط ببطاقة مكتب نشطة (0046)
@@ -75,6 +78,7 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
           {hasBoardCard && <NavLink to="/member/board-card"><Users size={20} aria-hidden="true" />{t('member.nav.boardCard')}</NavLink>}
           <NavLink to="/member/announcements"><Bell size={20} aria-hidden="true" />{t('member.nav.announcements')}{dot}</NavLink>
           <NavLink to="/member/security"><ShieldCheck size={20} aria-hidden="true" />{t('member.nav.security')}</NavLink>
+          {showGames && <NavLink to={GAMES_BASE_PATH}><Gamepad2 size={20} aria-hidden="true" />{t('member.nav.games')}</NavLink>}
         </nav>
         {isAdmin && <Link className="ms-install" to="/admin/dashboard"><LayoutDashboard size={20} aria-hidden="true" />{t('member.nav.admin')}</Link>}
         {canInstall && <button type="button" className="ms-install" onClick={onInstall}><Download size={20} aria-hidden="true" />{t('member.nav.install')}</button>}
@@ -110,6 +114,7 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
               <NavLink to="/member/card" role="menuitem"><Pencil size={20} aria-hidden="true" />{t('member.nav.card')}</NavLink>
               {hasBoardCard && <NavLink to="/member/board-card" role="menuitem"><Users size={20} aria-hidden="true" />{t('member.nav.boardCard')}</NavLink>}
               <NavLink to="/member/security" role="menuitem"><ShieldCheck size={20} aria-hidden="true" />{t('member.nav.security')}</NavLink>
+              {showGames && <NavLink to={GAMES_BASE_PATH} role="menuitem"><Gamepad2 size={20} aria-hidden="true" />{t('member.nav.games')}</NavLink>}
               {isAdmin && <Link to="/admin/dashboard" role="menuitem"><LayoutDashboard size={20} aria-hidden="true" />{t('member.nav.admin')}</Link>}
               {canInstall && <button type="button" role="menuitem" onClick={onInstall}><Download size={20} aria-hidden="true" />{t('member.nav.install')}</button>}
               {iosHint && !canPrompt && <p className="ms-hint">{t('member.nav.installIosHint')}</p>}

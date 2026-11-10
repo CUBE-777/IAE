@@ -375,7 +375,8 @@
       "sidebar": "Menu d'administration",
       "installApp": "Installer l'espace admin comme application",
       "installIosHint": "Sur iPhone : touchez Partager puis « Sur l'écran d'accueil ».",
-      "memberSpace": "Espace adhérents"
+      "memberSpace": "Espace adhérents",
+      "games": "IAE Games"
     },
     "nav": {
       "dashboard": "Tableau de bord",
@@ -994,7 +995,8 @@
       "more": "Plus", "moreLabel": "Plus d'options", "tabsLabel": "Navigation rapide", "memberSince": "Adhérent", "install": "Installer l'application", "installIosHint": "Sur iPhone : touchez Partager puis « Sur l'écran d'accueil ».",
       "id": "Carte de membre",
       "boardCard": "Carte du bureau",
-      "admin": "Panneau d'administration"
+      "admin": "Panneau d'administration",
+      "games": "IAE Games"
     },
     "login": {
       "pageTitle": "Connexion adhérents",
@@ -1332,6 +1334,40 @@
         "title": "Vérification impossible pour le moment",
         "text": "Problème de connexion ou trop de tentatives depuis cet appareil. Patientez un instant puis réessayez. Cela ne signifie pas que le code est invalide."
       }
+    }
+  },
+  "games": {
+    "brand": "IAE Games",
+    "pageTitle": "Jeux",
+    "home": {
+      "tagline": "La plateforme de jeux du club — bientôt disponible."
+    },
+    "shell": {
+      "label": "Navigation des jeux",
+      "backMember": "Espace adhérents",
+      "backAdmin": "Panneau d'administration"
+    },
+    "access": {
+      "errorTitle": "Impossible de vérifier l'accès",
+      "errorText": "Problème de connexion. Réessayez.",
+      "retry": "Réessayer"
+    },
+    "denied": {
+      "title": "Accès indisponible",
+      "reasons": {
+        "unauthenticated": "Connectez-vous pour continuer.",
+        "mfa_required": "Votre compte utilise l'authentification à deux facteurs. Saisissez le code de vérification puis revenez aux jeux.",
+        "password_change_required": "Vous devez changer votre mot de passe temporaire avant d'accéder aux jeux.",
+        "no_member_account": "Les jeux sont réservés aux adhérents actifs de la saison en cours et aux comptes administratifs autorisés. Votre compte n'est pas lié à une adhésion.",
+        "no_season": "Aucune saison en cours n'est définie : les jeux sont indisponibles pour le moment.",
+        "member_inactive": "Votre adhésion n'est pas active : les jeux sont indisponibles.",
+        "membership_not_paid": "Les jeux sont réservés aux adhérents de la saison en cours. Renouvelez votre adhésion pour y accéder.",
+        "unknown": "Vous n'avez pas l'autorisation d'accéder aux jeux."
+      },
+      "actionVerify": "Terminer la vérification",
+      "actionPassword": "Changer le mot de passe",
+      "actionHome": "Retour à l'accueil",
+      "logout": "Se déconnecter"
     }
   }
 }

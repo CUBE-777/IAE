@@ -1,0 +1,14 @@
+/* وحدة IAE Games: خصائص منطقية فقط (RTL/LTR) وألوان من tokens فتتبع الوضعين الفاتح/الداكن تلقائيًا. */
+.games-wrap { background: var(--cream); min-height: 100vh; padding: 92px var(--space-4) var(--space-12); }
+.games-shell { max-width: 1100px; margin: 0 auto; }
+.games-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
+.games-brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; color: var(--heading); }
+.games-brand svg { color: var(--gold); }
+.games-back { color: var(--gold-text); font-weight: 700; text-decoration: none; }
+.games-back:hover { text-decoration: underline; }
+.games-bar a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+.games-main { min-width: 0; margin-block-start: var(--space-5); }
+.games-hero { display: grid; justify-items: center; gap: 10px; text-align: center; padding: clamp(40px, 9vw, 96px) var(--space-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg, 16px); background-image: radial-gradient(circle at 50% 0, rgba(var(--gold-rgb), 0.14), transparent 60%); }
+.games-hero-icon { display: grid; place-items: center; width: 76px; height: 76px; border-radius: 50%; color: var(--gold); background: rgba(var(--gold-rgb), 0.12); border: 2px solid rgba(var(--gold-rgb), 0.4); }
+.games-hero h1 { margin: 0; font-size: clamp(1.8rem, 6vw, 3rem); line-height: var(--leading-tight); color: var(--heading); }
+.games-hero p { margin: 0; max-width: 46ch; color: var(--muted); font-size: var(--text-body-lg); line-height: var(--leading-normal); }

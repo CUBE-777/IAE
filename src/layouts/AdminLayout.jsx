@@ -3,11 +3,13 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Users, UserPlus, Shield, Calendar, Image as ImageIcon,
-  Megaphone, FileText, UserCog, History, Settings, Wallet, Cpu, Folder, LayoutGrid, Menu, ChevronRight, LogOut, X, BadgeCheck,
+  Megaphone, FileText, UserCog, History, Settings, Wallet, Cpu, Folder, LayoutGrid, Menu, ChevronRight, LogOut, X, BadgeCheck, Gamepad2,
 } from 'lucide-react';
 import '../styles/admin.css';
 import { ADMIN_NAV } from '../constants/adminNav';
 import { useAuth } from '../app/providers/AuthProvider';
+import { useCanSeeGamesLink } from '../features/games/hooks/useGamesAccess';
+import { GAMES_BASE_PATH } from '../features/games/constants/games';
 import { useHasMemberSpace } from '../hooks/useHasMemberSpace';
 import LanguageSwitcher from '../components/layout/LanguageSwitcher';
 import ThemeToggle from '../components/layout/ThemeToggle';
@@ -35,6 +37,7 @@ export default function AdminLayout({ children }) {
   const { t, i18n } = useTranslation();
   const { profile, logout } = useAuth();
   const hasMemberSpace = useHasMemberSpace(profile?.id);
+  const showGames = useCanSeeGamesLink(profile?.id, profile?.must_change_password !== true); // مدخل الإداريين المؤهَّلين (حتى دون عضوية)
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -151,6 +154,12 @@ export default function AdminLayout({ children }) {
               <NavLink to="/member" className="admin-sidebar-link" title={collapsed ? t('admin.layout.memberSpace') : undefined}>
                 <span className="icon"><BadgeCheck size={17} aria-hidden="true" /></span>
                 <span>{t('admin.layout.memberSpace')}</span>
+              </NavLink>
+            )}
+            {showGames && (
+              <NavLink to={GAMES_BASE_PATH} className="admin-sidebar-link" title={collapsed ? t('admin.layout.games') : undefined}>
+                <span className="icon"><Gamepad2 size={17} aria-hidden="true" /></span>
+                <span>{t('admin.layout.games')}</span>
               </NavLink>
             )}
           </nav>

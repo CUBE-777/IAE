@@ -4,6 +4,7 @@ import Home from '../../pages/public/Home';
 import ProtectedRoute from '../../components/admin/ProtectedRoute';
 import RouteError from '../../components/common/RouteError';
 import { ROLES_MEMBERS, ROLES_REQUESTS, ROLES_CONTENT_VIEW, ROLES_PROJECTS, ROLES_INTERNAL_FILES_VIEW, ROLES_BUDGET, ROLES_SUPER } from '../../constants/roles';
+import { GAMES_BASE_PATH } from '../../features/games/constants/games';
 import PageLoader from '../../components/common/PageLoader';
 import { useAdminPwa } from '../../hooks/useAdminPwa';
 
@@ -29,6 +30,9 @@ const MemberBoardCard = lazy(() => import('../../pages/member/MemberBoardCard'))
 const MemberIdCard = lazy(() => import('../../pages/member/MemberIdCard'));
 const MemberSecurity = lazy(() => import('../../pages/member/MemberSecurity'));
 const MemberAnnouncements = lazy(() => import('../../pages/member/MemberAnnouncements'));
+// وحدة IAE Games (المرحلة 1): مستقلة في src/features/games وتُحمَّل عند الطلب؛ الحارس داخل GamesLayout
+const GamesLayout = lazy(() => import('../../features/games/layout/GamesLayout'));
+const GamesHome = lazy(() => import('../../features/games/pages/GamesHome'));
 const VerifyCard = lazy(() => import('../../pages/public/VerifyCard'));
 const NotFound = lazy(() => import('../../pages/public/NotFound'));
 const Login = lazy(() => import('../../pages/admin/Login'));
@@ -115,6 +119,13 @@ export const router = createBrowserRouter([
           { path: 'announcements', element: <MemberAnnouncements /> },
           { path: 'security', element: <MemberSecurity /> },
         ],
+      },
+
+      // IAE Games: كل ما تحت /games خلف GamesGuard (get_games_access) داخل GamesLayout. غير مفهرس
+      {
+        path: GAMES_BASE_PATH,
+        element: <GamesLayout />,
+        children: [{ index: true, element: <GamesHome /> }],
       },
 
       // /admin (بلا لاحقة) كان يعرض 404؛ المدخل الوحيد للوحة هو /admin/login (وهو يحوّل المسجَّل إلى اللوحة)

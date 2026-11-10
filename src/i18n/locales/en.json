@@ -375,7 +375,8 @@
       "sidebar": "Admin menu",
       "installApp": "Install admin panel as an app",
       "installIosHint": "On iPhone: tap Share, then \"Add to Home Screen\".",
-      "memberSpace": "Members' space"
+      "memberSpace": "Members' space",
+      "games": "IAE Games"
     },
     "nav": {
       "dashboard": "Dashboard",
@@ -994,7 +995,8 @@
       "more": "More", "moreLabel": "More options", "tabsLabel": "Quick navigation", "memberSince": "Member", "install": "Install app", "installIosHint": "On iPhone: tap Share, then \"Add to Home Screen\".",
       "id": "Membership card",
       "boardCard": "Board card",
-      "admin": "Admin panel"
+      "admin": "Admin panel",
+      "games": "IAE Games"
     },
     "login": {
       "pageTitle": "Members' sign-in",
@@ -1332,6 +1334,40 @@
         "title": "Can't verify right now",
         "text": "There was a connection problem, or too many attempts from this device. Wait a moment and try again. This doesn't mean the code is invalid."
       }
+    }
+  },
+  "games": {
+    "brand": "IAE Games",
+    "pageTitle": "Games",
+    "home": {
+      "tagline": "The club's games platform — coming soon."
+    },
+    "shell": {
+      "label": "Games navigation",
+      "backMember": "Members' space",
+      "backAdmin": "Admin panel"
+    },
+    "access": {
+      "errorTitle": "Couldn't verify access",
+      "errorText": "There was a connection problem. Please try again.",
+      "retry": "Try again"
+    },
+    "denied": {
+      "title": "Access unavailable",
+      "reasons": {
+        "unauthenticated": "Sign in to continue.",
+        "mfa_required": "Your account uses two-factor authentication. Enter your verification code, then come back to Games.",
+        "password_change_required": "You must change your temporary password before using Games.",
+        "no_member_account": "Games are for active members of the current season and authorized admin accounts. Your account isn't linked to a membership.",
+        "no_season": "No current season is set, so Games are unavailable right now.",
+        "member_inactive": "Your membership is not active, so Games are unavailable.",
+        "membership_not_paid": "Games are for members of the current season only. Renew your membership to get in.",
+        "unknown": "You don't have permission to access Games."
+      },
+      "actionVerify": "Complete verification",
+      "actionPassword": "Change password",
+      "actionHome": "Back to home",
+      "logout": "Sign out"
     }
   }
 }
