@@ -114,3 +114,11 @@ test('الواجهة: خطوة البريد للتفعيل الجديد فقط،
   assert.match(service, /invokeActivation\('member-activate-email', \{ token, email \}\)/);
   assert.doesNotMatch(page + service, /\.from\('members'\)\s*\.(update|insert|delete|upsert)/);
 });
+
+test('قائمة الأعضاء: خطأ 416 (صفحة خارج النطاق) يعيد الصفحة الأولى بصمت بدل رسالة فشل', () => {
+  const members = read('src/pages/admin/Members.jsx');
+  const i = members.indexOf("err?.code === 'PGRST103'");
+  assert.ok(i > 0);
+  assert.match(members.slice(i - 40, i + 260), /page > 1[\s\S]*setPage\(1\);\s*return;/);
+  assert.ok(i < members.indexOf("console.error('تعذر تحميل الأعضاء:'"));
+});

@@ -210,6 +210,11 @@ export default function Members() {
         setTotal(t);
       })
       .catch((err) => {
+        // 416: رقم الصفحة تجاوز عدد النتائج (تغيّر الفلتر/البحث أو حُذف آخر عضو في الصفحة الأخيرة): نعود للصفحة الأولى بصمت
+        if (page > 1 && (err?.code === 'PGRST103' || /range not satisfiable/i.test(err?.message || ''))) {
+          setPage(1);
+          return;
+        }
         console.error('تعذر تحميل الأعضاء:', err);
         window.notify?.fromError(err, tr('تعذر تحميل الأعضاء'));
         setError(true);
