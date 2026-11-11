@@ -245,7 +245,8 @@ begin
 end;
 $$;
 
--- game_points: يُسمح فقط بتصفير result_id (مفتاح أجنبي on delete set null)؛ أي عمود آخر ممنوع.
+-- game_points: يُسمح فقط بتصفير result_id (مفتاح أجنبي on delete set null)؛ أي عمود آخر ممنوع،
+-- ولا يجوز تغيير result_id إلى نتيجة أخرى.
 create or replace function public.game_points_immutable()
 returns trigger
 language plpgsql
@@ -254,7 +255,8 @@ as $$
 begin
   if (new.id, new.user_id, new.delta, new.reason, new.challenge_id, new.achievement_id, new.note, new.created_by, new.created_at)
      is distinct from
-     (old.id, old.user_id, old.delta, old.reason, old.challenge_id, old.achievement_id, old.note, old.created_by, old.created_at) then
+     (old.id, old.user_id, old.delta, old.reason, old.challenge_id, old.achievement_id, old.note, old.created_by, old.created_at)
+     or (new.result_id is distinct from old.result_id and new.result_id is not null) then
     raise exception 'game_points_immutable';
   end if;
   return new;
@@ -309,7 +311,14 @@ create policy game_categories_manage on public.game_categories for all to authen
 
 drop policy if exists games_select on public.games;
 create policy games_select on public.games for select to authenticated
-  using ((select public.can_access_games()) and (status = 'published' or (select public.can_manage_games())));
+  using (
+    (select public.can_access_games())
+    and (
+      (select public.can_manage_games())
+      or (status = 'published'
+          and exists (select 1 from public.game_categories gc where gc.id = games.category_id and gc.is_active))
+    )
+  );
 drop policy if exists games_manage on public.games;
 create policy games_manage on public.games for all to authenticated
   using ((select public.can_manage_games())) with check ((select public.can_manage_games()));
@@ -322,7 +331,11 @@ create policy game_challenges_select on public.game_challenges for select to aut
       (select public.can_manage_games())
       or (status = 'published'
           and (starts_at is null or starts_at <= now())
-          and exists (select 1 from public.games g where g.id = game_challenges.game_id and g.status = 'published'))
+          and (ends_at is null or ends_at > now())
+          and exists (select 1
+                        from public.games g
+                        join public.game_categories gc on gc.id = g.category_id
+                       where g.id = game_challenges.game_id and g.status = 'published' and gc.is_active))
     )
   );
 drop policy if exists game_challenges_manage on public.game_challenges;
@@ -719,8 +732,9 @@ begin
   values (auth.uid(), 'game_points_adjusted', 'game_points', v_id, 'تسوية نقاط ألعاب',
           jsonb_build_object('target_user', p_user_id, 'delta', p_delta));
 
-  v_total := public.game_user_total(p_user_id);
+  -- الإنجازات أولًا (مكافآتها نقاط)، ثم المجموع النهائي
   perform public.game_grant_achievements(p_user_id);
+  v_total := public.game_user_total(p_user_id);
   return jsonb_build_object('id', v_id, 'total_points', v_total);
 end;
 $$;
