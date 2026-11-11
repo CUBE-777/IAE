@@ -11,10 +11,12 @@
     "test": "node --test",
     "check": "npm run lint && npm run test && npm run build"
   },
-  "dependencies": {
+   "dependencies": {
     "@supabase/supabase-js": "2.49.4",
     "dompurify": "3.4.0",
+    "html2canvas": "^1.4.1",
     "i18next": "^23.11.5",
+    "jspdf": "^3.0.3",
     "lucide-react": "^0.383.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
