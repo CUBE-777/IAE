@@ -151,12 +151,16 @@
        خلفه، لأن كلا العنصرين كانا يتنافسان على نفس أعلى الصفحة. الآن يُثبَّت
        العنصران معًا كوحدة واحدة، ويُقاس ارتفاعهما الفعلي في JS
        (--fixed-stack-height) لدفع محتوى Hero بنفس المقدار بالضبط. */
-    .fixed-top-stack {
-      position: fixed;
+    .top-stack-anchor {
+      position: sticky;
       top: 0;
-      right: 0;
-      left: 0;
+      height: 0;
       z-index: 100;
+    }
+
+    /* عرضه = عرض منطقة المحتوى (مثل Hero) ويمتد بصرياً تحت المرساة ذات الارتفاع 0 */
+    .fixed-top-stack {
+      width: 100%;
     }
 
     .hero {

@@ -47,9 +47,15 @@ export default function PublicLayout({ children, brandName, copyright, announcem
 
   return (
     <>
-      <div className="fixed-top-stack" ref={stackRef}>
-        <AnnouncementBar announcement={announcement} />
-        <Header brandName={brandName} />
+      {/* top-stack-anchor: sticky بارتفاع 0 (لا يشغل مساحة) يبقى ملتصقاً بأعلى الشاشة، وفيه .fixed-top-stack
+          العادي (يُقاس). لم نستعمل position:fixed لأنه يُحسب بالنسبة لـ viewport بينما بقية الصفحة بالنسبة لمنطقة
+          المحتوى؛ فعند وجود شريط تمرير كلاسيكي (Windows/RTL) ينزاح الجزء العلوي عن Hero ويظهر شريط جانبي ويُقصّ
+          زر اللغة. sticky يشارك Hero نفس الصندوق فلا ينزاح أبداً. */}
+      <div className="top-stack-anchor">
+        <div className="fixed-top-stack" ref={stackRef}>
+          <AnnouncementBar announcement={announcement} />
+          <Header brandName={brandName} />
+        </div>
       </div>
       <main>{children}</main>
       <Footer brandName={brandName} copyright={copyright} />
