@@ -17,6 +17,8 @@ import './styles/enhancements.css';
 import './styles/admin-enhancements.css';
 import './styles/theme.css';
 import './styles/nav-responsive.css';
+// آخر ملف: حاجز أمان ضد التمدّد الأفقي على الهاتف (انظر الترويسة داخله)
+import './styles/mobile-fix.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

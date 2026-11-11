@@ -1,0 +1,68 @@
+/* ===== mobile-fix.css — ثبات الواجهة على الهاتف =====
+   العَرَض: على الهاتف يظهر شريط داكن على يسار الصفحة (RTL) ويصبح الهيدر/شريط الإعلان غير محاذٍ للـ hero،
+   وزر اللغة مقصوص. السبب: عنصر واحد (أو أكثر) في أي قسم من الصفحة أعرض من الشاشة فيتّسع الـ scroll الأفقي
+   للمستند؛ على الحاسوب/التابلت لا يظهر لأن الشاشة أعرض من ذلك العنصر.
+   يُستورد آخر ملف أنماط (بعد nav-responsive.css) ويتقدّم عند تساوي الخصوصية. */
+
+/* 1) حاجز أمان: لا شيء داخل المحتوى يوسّع الصفحة أفقيًا.
+      clip (لا hidden) كي لا يتحوّل main إلى scroll container فيكسر sticky/التمرير. الهيدر خارج main فلا يتأثر. */
+@supports (overflow: clip) {
+  main,
+  footer {
+    overflow-x: clip;
+  }
+}
+
+/* 2) السبب الجذري الأشيع: أعمدة 1fr = minmax(auto, 1fr) فيتمدّد العمود إلى أقصى حدّ أدنى للمحتوى
+      (نص nowrap، رابط/بريد طويل، حقل إدخال...). minmax(0, 1fr) يسمح للعمود بالانكماش. */
+@media (max-width: 860px) {
+  .about-grid,
+  .contact-grid,
+  .join-grid,
+  .activity-grid,
+  .pillars,
+  .form-row,
+  .people-links {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .members-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .gallery-grid,
+  .person-modal-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* أبناء الشبكات/الفلكس يجب أن يقبلوا الانكماش، وأي كلمة طويلة تلتفّ بدل أن تدفع العرض. */
+.about-grid > *,
+.contact-grid > *,
+.join-grid > *,
+.activity-grid > *,
+.pillars > *,
+.form-row > *,
+.members-grid > *,
+.gallery-grid > *,
+.people-links > * {
+  min-width: 0;
+}
+
+/* الحقول والوسائط لا تتجاوز عرض حاويتها */
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+iframe,
+video,
+canvas,
+svg:not(.hero-arc) {
+  max-width: 100%;
+}
