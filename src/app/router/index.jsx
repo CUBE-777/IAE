@@ -13,6 +13,7 @@ import { useAdminPwa } from '../../hooks/useAdminPwa';
 const Members = lazy(() => import('../../pages/public/Members'));
 const Board = lazy(() => import('../../pages/public/Board'));
 const Activity = lazy(() => import('../../pages/public/Activity'));
+const Invitation = lazy(() => import('../../pages/public/Invitation'));
 const PublicAnnouncements = lazy(() => import('../../pages/public/Announcements'));
 const AnnouncementDetail = lazy(() => import('../../pages/public/AnnouncementDetail'));
 const Projects = lazy(() => import('../../pages/public/Projects'));
@@ -152,6 +153,11 @@ export const router = createBrowserRouter([
       // 404 احترافية بدل شاشة بيضاء فارغة أو خطأ React Router.
       { path: '*', element: <NotFound /> },
     ],
+  },
+  {
+    path: '/invite/:token',
+    element: <Suspense fallback={<PageLoader />}><Invitation /></Suspense>,
+    errorElement: <RouteError />,
   },
 ]);
 

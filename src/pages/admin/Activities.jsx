@@ -6,6 +6,7 @@ import { useAuth } from '../../app/providers/AuthProvider';
 import { isReadOnlyRole } from '../../constants/roles';
 import ActivityFormModal from './ActivityFormModal';
 import ActivityAttendanceModal from './ActivityAttendanceModal';
+import ActivityInvitationsModal from './ActivityInvitationsModal';
 import { getAttendanceCardsOverview } from '../../services/supabase/adminAttendance.service';
 import {
   fetchActivitiesAdmin, setActivityStatus, softDeleteActivity, STATUS_LABEL,
@@ -21,6 +22,7 @@ export default function Activities() {
   const [formTarget, setFormTarget] = useState(undefined);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [attendanceTarget, setAttendanceTarget] = useState(null);
+  const [invitesTarget, setInvitesTarget] = useState(null);
   const [attendance, setAttendance] = useState({}); // activity_id → { open, attended } (قبل 0041 يبقى فارغًا ولا يكسر الصفحة)
 
   useEffect(() => {
@@ -113,6 +115,7 @@ export default function Activities() {
                       <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setAttendanceTarget(a)}>
                         {attendance[a.id] ? tr('الحضور ({{n}})', { n: attendance[a.id].attended }) : tr('بطاقة الحضور')}
                       </button>
+                      <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setInvitesTarget(a)}>{tr('الدعوات')}</button>
                       <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDeleteTarget(a)}>{tr('حذف')}</button>
                       </>)}
                     </td>
@@ -141,6 +144,10 @@ export default function Activities() {
           onClose={() => setAttendanceTarget(null)}
           onChanged={loadAttendance}
         />
+      )}
+
+      {invitesTarget && (
+        <ActivityInvitationsModal activity={invitesTarget} onClose={() => setInvitesTarget(null)} />
       )}
 
       {deleteTarget && (
