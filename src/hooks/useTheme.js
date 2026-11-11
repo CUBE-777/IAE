@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 /**
  * Thème clair / sombre.
- * - Préférence mémorisée dans localStorage (clé « iae:theme »), sinon préférence système.
+ * - Thème sombre par défaut. Choix de l'utilisateur mémorisé dans localStorage (clé « iae:theme »)
+ *   et prioritaire ; la préférence du système n'est jamais utilisée.
  * - L'attribut data-theme est posé sur <html> avant le premier rendu par un petit script
  *   dans index.html (évite le flash), et resynchronisé ici pour les changements ultérieurs.
  * - Plusieurs boutons peuvent coexister (en-tête, admin) : ils restent synchronisés via
@@ -16,14 +17,13 @@ export function getStoredTheme() {
     const saved = localStorage.getItem(THEME_KEY);
     if (saved === 'light' || saved === 'dark') return saved;
   } catch {
-    // localStorage indisponible (navigation privée) : on retombe sur la préférence système
+    // localStorage indisponible (navigation privée) : on retombe sur le thème sombre par défaut
   }
   return null;
 }
 
-function systemTheme() {
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
+// Thème par défaut : sombre. La préférence du système n'est volontairement jamais consultée.
+const DEFAULT_THEME = 'dark';
 
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
@@ -32,7 +32,8 @@ function applyTheme(theme) {
 }
 
 export function useTheme() {
-  const [theme, setTheme] = useState(() => document.documentElement.getAttribute('data-theme') || getStoredTheme() || systemTheme());
+  // Ordre : choix enregistré par l'utilisateur > attribut posé avant le rendu > sombre.
+  const [theme, setTheme] = useState(() => getStoredTheme() || document.documentElement.getAttribute('data-theme') || DEFAULT_THEME);
 
   useEffect(() => {
     applyTheme(theme);

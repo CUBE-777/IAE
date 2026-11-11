@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-theme="dark">
 
 <head>
   <meta charset="UTF-8" />
@@ -29,7 +29,7 @@
   <meta name="google-site-verification" content="xddvA7Qy3Bh9GZDz7TPUKZMqEfWCJPcoppU4cbESPM8" />
 
   <link rel="icon" href="/logo.jpg" type="image/jpeg" />
-  <meta name="theme-color" content="#0a66c8" />
+  <meta name="theme-color" content="#061631" />
   <link id="app-manifest" rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -37,6 +37,8 @@
   <meta name="apple-mobile-web-app-title" content="IAE" />
 
   <!-- Thème clair/sombre appliqué avant le premier rendu (évite le flash). Clé : iae:theme.
+       Sombre par défaut (data-theme="dark" sur <html> + theme-color sombre) ; le script ci-dessous
+       n'y substitue que le choix « light » explicitement enregistré par l'utilisateur.
        Script externe (public/theme-init.js) : la CSP n'autorise plus les scripts inline. -->
   <script src="/theme-init.js"></script>
 

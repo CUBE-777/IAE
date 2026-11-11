@@ -176,6 +176,12 @@
    Le bloc marque prend l'espace restant et peut rétrécir (min-width: 0) ; les outils (thème + langue)
    et le bouton du menu gardent leur taille et restent entièrement visibles. */
 @media (max-width: 560px) {
+  /* Partie haute compacte sur téléphone : l'annonce + l'en-tête occupaient trop de hauteur */
+  header { padding: 10px 0; }
+  header.scrolled { padding: 8px 0; }
+  .announcement-bar { padding: 8px 40px; font-size: 0.82rem; line-height: 1.5; }
+  .announcement-bar-close { inset-inline-end: 4px; }
+
   header .container { gap: 8px; padding-inline: 14px; }
   header .brand { flex: 1 1 0; min-width: 0; gap: 8px; }
   header .brand-text {

@@ -870,22 +870,40 @@ html[dir='ltr'] .ann-arrow {
 
 
 /* ===== منع تغطية الهيدر الثابت للمحتوى =====
-   - قيمة احتياطية أكبر إن لم يضبط JS المتغير --fixed-stack-height.
+   مصدر واحد للحقيقة: ارتفاع الجزء العلوي الفعلي (--fixed-stack-height، يضبطه PublicLayout
+   بالقياس) + فجوة صغيرة (--hero-gap) تتدرّج مع عرض الشاشة. كانت تُعرَّف سابقاً في ثلاثة أماكن
+   بقيم احتياطية وفجوات مختلفة (100+10 / 130+30 / 110+20) فتتعارض وتُكبّر المسافة العلوية.
    - scroll-margin-top: عند الضغط على روابط القائمة (#about ...) لا يختفي
      عنوان القسم خلف الهيدر الثابت. */
 .hero {
-  padding-top: calc(var(--fixed-stack-height, 130px) + 30px);
+  --hero-gap: 30px;
+  padding-top: calc(var(--fixed-stack-height, 96px) + var(--hero-gap));
 }
 
 section[id],
 [id].hero {
-  scroll-margin-top: calc(var(--fixed-stack-height, 130px) + 8px);
+  scroll-margin-top: calc(var(--fixed-stack-height, 96px) + 8px);
 }
 
 @media (max-width: 860px) {
-  .hero {
-    padding-top: calc(var(--fixed-stack-height, 110px) + 20px);
-  }
+  .hero { --hero-gap: 20px; }
+}
+
+@media (max-width: 480px) {
+  .hero { --hero-gap: 16px; }
+}
+
+/* حاوية Hero عنصر flex داخل صف: بدون width:100% وmin-width:0 تتقلّص لعرض محتواها
+   (min-width:auto) فقد تتجاوز عرض الشاشة وتُقصّ بـ overflow:hidden عند كلمات طويلة. */
+.hero .container {
+  width: 100%;
+  min-width: 0;
+}
+
+/* التفاف نص الإعلان: كلمة/رابط طويل لا يتجاوز العرض ولا يصل لزر الإغلاق. */
+.announcement-bar > span {
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
 

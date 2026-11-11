@@ -166,7 +166,7 @@
       align-items: center;
       background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy) 45%, var(--navy-deep) 100%);
       overflow: hidden;
-      padding-top: var(--fixed-stack-height, 100px);
+      /* padding-top يُحدَّد في enhancements.css (مصدر واحد: --fixed-stack-height + --hero-gap) */
     }
 
     .hero-arc {
@@ -897,10 +897,6 @@
 
       section {
         padding: var(--section-pad-y-mobile) 0;
-      }
-
-      .hero {
-        padding-top: calc(var(--fixed-stack-height, 100px) + 10px);
       }
     }
 

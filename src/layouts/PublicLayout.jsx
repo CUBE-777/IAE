@@ -12,17 +12,37 @@ export default function PublicLayout({ children, brandName, copyright, announcem
   // إعلانات فوقه، الاثنان معًا يوضعان داخل حاوية واحدة مثبّتة (fixed)، ويُقاس
   // ارتفاعهما الفعلي ديناميكيًا لدفع محتوى الصفحة (hero) بنفس المقدار بالضبط
   // — بدل قيمة ثابتة قد لا تكفي عند ظهور شريط الإعلانات فتُخفيه خلف الهيدر.
+  //
+  // - يُقاس بـ getBoundingClientRect (كسري) مع ceil بدل offsetHeight المقرَّب، فلا يبقى فرق نصف بكسل.
+  // - الهيدر يصغّر padding عند التمرير (>40px)؛ لو تبعه الـ hero لقفز محتواه أثناء التمرير.
+  //   لذلك لا نعتمد القياس "المضغوط" إلا إن لم تكن هناك قيمة بعد؛ وعند العودة للأعلى يكبر الهيدر
+  //   فيُطلق ResizeObserver قياساً جديداً صحيحاً (يشمل تغيّر التفاف الإعلان بعد تدوير الجهاز).
+  // - تتبّع أي تغيّر في الحجم (تحميل الخط، التفاف نص الإعلان، إغلاقه، تدوير الشاشة) يتم عبر
+  //   ResizeObserver؛ وresize/orientationchange احتياط للمتصفحات القديمة.
+  // - تُزال القيمة عند مغادرة التخطيط حتى لا تبقى قيمة قديمة لصفحات أخرى.
   useLayoutEffect(() => {
     const el = stackRef.current;
-    if (!el) return;
+    if (!el) return undefined;
+    const root = document.documentElement;
     const setHeight = () => {
-      document.documentElement.style.setProperty('--fixed-stack-height', `${el.offsetHeight}px`);
+      const compact = el.querySelector('#site-header.scrolled') !== null;
+      if (compact && root.style.getPropertyValue('--fixed-stack-height')) return;
+      root.style.setProperty('--fixed-stack-height', `${Math.ceil(el.getBoundingClientRect().height)}px`);
     };
     setHeight();
-    if (typeof ResizeObserver === 'undefined') return undefined;
-    const ro = new ResizeObserver(setHeight);
-    ro.observe(el);
-    return () => ro.disconnect();
+    let ro;
+    if (typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(setHeight);
+      ro.observe(el);
+    }
+    window.addEventListener('resize', setHeight);
+    window.addEventListener('orientationchange', setHeight);
+    return () => {
+      if (ro) ro.disconnect();
+      window.removeEventListener('resize', setHeight);
+      window.removeEventListener('orientationchange', setHeight);
+      root.style.removeProperty('--fixed-stack-height');
+    };
   }, [announcement]);
 
   return (
