@@ -51,6 +51,8 @@ const Content = lazy(() => import('../../pages/admin/Content'));
 const AdminUsers = lazy(() => import('../../pages/admin/AdminUsers'));
 const Audit = lazy(() => import('../../pages/admin/Audit'));
 const Settings = lazy(() => import('../../pages/admin/Settings'));
+// لوحة إدارة الألعاب (المرحلة 3): super_admin/developer فقط في الواجهة، والحدّ الفعلي RLS/RPC عبر can_manage_games() (0052)
+const GamesAdmin = lazy(() => import('../../features/games/admin/pages/GamesAdmin'));
 const Budget = lazy(() => import('../../pages/admin/Budget'));
 const Security = lazy(() => import('../../pages/admin/Security'));
 const Privacy = lazy(() => import('../../pages/public/Privacy'));
@@ -148,6 +150,7 @@ export const router = createBrowserRouter([
       { path: '/admin/audit', element: protectedAdmin(ROLES_SUPER, <Audit />) },
       { path: '/admin/security', element: protectedAdmin([], <Security />) },
       { path: '/admin/settings', element: protectedAdmin(ROLES_SUPER, <Settings />) },
+      { path: '/admin/games', element: protectedAdmin(ROLES_SUPER, <GamesAdmin />) },
 
       // Phase 28 — Fallback 404: أي مسار غير معرّف أعلاه (عام أو إداري) يعرض صفحة
       // 404 احترافية بدل شاشة بيضاء فارغة أو خطأ React Router.

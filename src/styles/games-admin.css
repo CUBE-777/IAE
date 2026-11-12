@@ -1,0 +1,29 @@
+/* لوحة إدارة الألعاب (/admin/games): خصائص منطقية فقط (RTL/LTR) وألوان من متغيّرات لوحة الإدارة فتتبع الوضعين تلقائيًا. */
+.ga-toolbar { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; margin-block-end: var(--space-3); }
+.ga-toolbar .admin-quick-action { margin-inline-start: auto; }
+.ga-grow { flex: 1 1 240px; margin: 0; }
+.ga-filter { max-inline-size: 280px; }
+.ga-search { flex: 1 1 220px; max-inline-size: 360px; }
+.ga-move { display: inline-flex; gap: 4px; }
+.ga-fieldset { border: 1px solid var(--admin-border); border-radius: var(--radius-md); padding: 10px 12px 12px; margin: 0 0 14px; min-inline-size: 0; }
+.ga-fieldset legend { font-size: 0.85rem; font-weight: 700; padding-inline: 6px; }
+.ga-lang-row { display: grid; grid-template-columns: 90px minmax(0, 1fr); align-items: start; gap: 8px; margin-block-start: 6px; }
+.ga-lang-row label { font-size: 0.8rem; color: var(--admin-text-muted); padding-block-start: 10px; }
+.ga-code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.82rem; line-height: 1.5; white-space: pre; overflow: auto; }
+.ga-solution { border: 1px dashed var(--admin-border); border-radius: var(--radius-md); padding: 10px 12px; margin-block-end: 14px; background: var(--admin-surface-alt); }
+.ga-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-3); margin: 0 0 var(--space-4); }
+.ga-stats > div { background: var(--admin-surface-alt); border: 1px solid var(--admin-border); border-radius: var(--radius-md); padding: 10px 12px; }
+.ga-stats dt { font-size: 0.75rem; color: var(--admin-text-muted); }
+.ga-stats dd { margin: 2px 0 0; font-weight: 800; overflow-wrap: anywhere; }
+.ga-adjust { border: 1px solid var(--admin-border); border-radius: var(--radius-md); padding: 12px; margin-block-end: var(--space-4); }
+.ga-adjust h4, .ga-player h4 { margin: var(--space-4) 0 var(--space-2); }
+.ga-adjust h4 { margin-block-start: 0; }
+.ga-list { margin: 0; padding-inline-start: 20px; }
+.ga-pos { color: var(--admin-success, #1a7f37); font-weight: 700; }
+.ga-neg { color: var(--danger-bright, #c62828); font-weight: 700; }
+.ga-pager { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; align-items: center; padding-block-start: var(--space-3); }
+@media (max-width: 640px) {
+  .ga-lang-row { grid-template-columns: 1fr; gap: 2px; }
+  .ga-lang-row label { padding-block-start: 0; }
+  .ga-toolbar .admin-quick-action { margin-inline-start: 0; }
+}

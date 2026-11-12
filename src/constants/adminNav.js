@@ -28,4 +28,5 @@ export const ADMIN_NAV = [
   { key: 'admins', labelKey: 'admins', label: 'المستخدمون الإداريون', href: '/admin/admins', icon: 'user-cog', roles: ROLES_SUPER },
   { key: 'audit', labelKey: 'audit', label: 'سجل العمليات', href: '/admin/audit', icon: 'history', roles: ROLES_SUPER },
   { key: 'settings', labelKey: 'settings', label: 'الإعدادات العامة', href: '/admin/settings', icon: 'settings', roles: ROLES_SUPER },
+  { key: 'gamesAdmin', labelKey: 'gamesAdmin', label: 'إدارة الألعاب', href: '/admin/games', icon: 'gamepad', roles: ROLES_SUPER },
 ];

@@ -31,6 +31,7 @@ const ICONS = {
   cpu: Cpu,
   folder: Folder,
   'layout-grid': LayoutGrid,
+  gamepad: Gamepad2,
 };
 
 export default function AdminLayout({ children }) {
