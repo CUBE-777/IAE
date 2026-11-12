@@ -1,5 +1,5 @@
 import { supabase } from '../../../services/supabase/client';
-import { COLUMNS, clampLimit, unwrap } from './gamesCore.shared';
+import { COLUMNS, clampLimit, currentUserId, unwrap } from './gamesCore.shared';
 
 /**
  * المحاولات والنتائج. الواجهة لا ترسل نقاطًا ولا نتيجة ولا مدة: الخادم يحسبها كلها (submit_game_attempt).
@@ -20,14 +20,16 @@ export async function submitAttempt(attemptId, answer) {
 
 /** محاولاتي (الأحدث أولًا)، اختياريًا لتحدٍّ واحد. */
 export async function getMyAttempts({ challengeId, limit } = {}) {
-  let q = supabase.from('game_attempts').select(COLUMNS.attempt).order('started_at', { ascending: false }).limit(clampLimit(limit));
+  const uid = await currentUserId();
+  let q = supabase.from('game_attempts').select(COLUMNS.attempt).eq('user_id', uid).order('started_at', { ascending: false }).limit(clampLimit(limit));
   if (challengeId) q = q.eq('challenge_id', challengeId);
   return unwrap(await q) || [];
 }
 
 /** نتائجي (الأحدث أولًا)، اختياريًا لتحدٍّ واحد. */
 export async function getMyResults({ challengeId, limit } = {}) {
-  let q = supabase.from('game_results').select(COLUMNS.result).order('created_at', { ascending: false }).limit(clampLimit(limit));
+  const uid = await currentUserId();
+  let q = supabase.from('game_results').select(COLUMNS.result).eq('user_id', uid).order('created_at', { ascending: false }).limit(clampLimit(limit));
   if (challengeId) q = q.eq('challenge_id', challengeId);
   return unwrap(await q) || [];
 }

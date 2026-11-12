@@ -8,6 +8,10 @@ export const GAMES_BASE_PATH = '/games';
 /** مسارات الوحدة. المراحل اللاحقة تضيف هنا مفاتيح جديدة فقط. */
 export const GAMES_PATHS = {
   home: GAMES_BASE_PATH,
+  profile: `${GAMES_BASE_PATH}/profile`,
+  leaderboard: `${GAMES_BASE_PATH}/leaderboard`,
+  game: (slug) => `${GAMES_BASE_PATH}/g/${encodeURIComponent(slug)}`,
+  challenge: (id) => `${GAMES_BASE_PATH}/c/${encodeURIComponent(id)}`,
 };
 
 /** أسباب get_games_access() (0049) كما تعيدها الدالة. أي قيمة أخرى تُعامل كـ unknown (رفض). */

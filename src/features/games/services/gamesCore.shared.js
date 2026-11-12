@@ -1,3 +1,4 @@
+import { supabase } from '../../../services/supabase/client';
 import { GAMES_ERROR_CODES, GAMES_LANG_FALLBACK, GAMES_UNKNOWN_ERROR } from '../constants/gamesCore';
 
 /** خطأ موحّد: code من GAMES_ERROR_CODES (أو 'unknown') ليُترجم في الواجهة؛ لا نعرض نص الخادم الخام. */
@@ -48,3 +49,14 @@ export const clampLimit = (n, def = 50, max = 200) => {
   const v = Number.isInteger(n) ? n : def;
   return Math.min(Math.max(v, 1), max);
 };
+
+/**
+ * معرّف المستخدم الحالي لقراءات «صفوفي». ضروري لأن سياسات المدير (0050) تسمح لـ super_admin/developer بقراءة صفوف الجميع،
+ * فلو اكتفينا بـ RLS لرأى المدير اللاعب سجلّات غيره في «ملفي». الحدّ الأمني يبقى RLS؛ هذا يضمن صحة العرض.
+ */
+export async function currentUserId() {
+  const { data, error } = await supabase.auth.getSession();
+  const id = data?.session?.user?.id;
+  if (error || !id) throw new GamesError('games_access_denied', error);
+  return id;
+}

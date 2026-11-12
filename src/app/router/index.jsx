@@ -34,6 +34,10 @@ const MemberAnnouncements = lazy(() => import('../../pages/member/MemberAnnounce
 // وحدة IAE Games (المرحلة 1): مستقلة في src/features/games وتُحمَّل عند الطلب؛ الحارس داخل GamesLayout
 const GamesLayout = lazy(() => import('../../features/games/layout/GamesLayout'));
 const GamesHome = lazy(() => import('../../features/games/pages/GamesHome'));
+const GameDetails = lazy(() => import('../../features/games/pages/GameDetails'));
+const ChallengePlay = lazy(() => import('../../features/games/pages/ChallengePlay'));
+const PlayerProfile = lazy(() => import('../../features/games/pages/PlayerProfile'));
+const GamesLeaderboard = lazy(() => import('../../features/games/pages/Leaderboard'));
 const VerifyCard = lazy(() => import('../../pages/public/VerifyCard'));
 const NotFound = lazy(() => import('../../pages/public/NotFound'));
 const Login = lazy(() => import('../../pages/admin/Login'));
@@ -128,7 +132,13 @@ export const router = createBrowserRouter([
       {
         path: GAMES_BASE_PATH,
         element: <GamesLayout />,
-        children: [{ index: true, element: <GamesHome /> }],
+        children: [
+          { index: true, element: <GamesHome /> },
+          { path: 'g/:slug', element: <GameDetails /> },
+          { path: 'c/:challengeId', element: <ChallengePlay /> },
+          { path: 'profile', element: <PlayerProfile /> },
+          { path: 'leaderboard', element: <GamesLeaderboard /> },
+        ],
       },
 
       // /admin (بلا لاحقة) كان يعرض 404؛ المدخل الوحيد للوحة هو /admin/login (وهو يحوّل المسجَّل إلى اللوحة)
