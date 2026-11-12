@@ -1409,6 +1409,8 @@
       "yourAnswer": "Your answer",
       "timeUp": "Time's up",
       "timeUpText": "The attempt timed out without a submission and no result was recorded.",
+      "checkingAttempts": "Checking your remaining attempts with the server…",
+      "timeStillOpen": "The server still counts this attempt as in progress. You can resume it.",
       "correct": "Correct answer!",
       "incorrect": "Wrong answer",
       "correctShort": "Correct",
@@ -1686,7 +1688,7 @@
           "other": "Other account"
         },
         "adjustTitle": "Points adjustment",
-        "adjustHint": "Grant or deduct points with a mandatory reason. It's recorded in the points ledger and the audit log and can't be edited afterwards.",
+        "adjustHint": "Grant or deduct points with a mandatory reason. The reason is visible to the player in their points history. It's recorded in the points ledger and the audit log and can't be edited afterwards.",
         "delta": "Change (+/−)",
         "deltaHint": "Non-zero integer (up to {{max}}). Negative = deduction.",
         "reason": "Reason",

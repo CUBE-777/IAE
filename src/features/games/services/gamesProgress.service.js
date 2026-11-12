@@ -19,9 +19,9 @@ export async function getGameLevels() {
   return unwrap(await supabase.from('game_levels').select(COLUMNS.level).order('min_points')) || [];
 }
 
-/** تعريفات الإنجازات النشطة. */
+/** تعريفات الإنجازات النشطة. الشرط صريح لأن المدير يرى المعطّلة أيضًا في RLS ولا يجب أن تظهر له في ملفه كلاعب. */
 export async function getGameAchievements() {
-  return unwrap(await supabase.from('game_achievements').select(COLUMNS.achievement).order('sort_order').order('code')) || [];
+  return unwrap(await supabase.from('game_achievements').select(COLUMNS.achievement).eq('is_active', true).order('sort_order').order('code')) || [];
 }
 
 /** إنجازاتي المفتوحة: [{ unlocked_at, achievement: {...} }]. */

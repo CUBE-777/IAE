@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '../../../../components/admin/Modal';
 import StateBox from '../../../../components/admin/StateBox';
@@ -21,15 +21,18 @@ function AdjustPointsForm({ userId, onDone }) {
   const [note, setNote] = useState('');
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+  const inFlight = useRef(false); // التسوية غير متكرّرة بطبيعتها (كل إرسال صفّ جديد في الدفتر): قفل متزامن لا ينتظر إعادة الرسم
 
   const submit = async (e) => {
     e.preventDefault();
+    if (inFlight.current) return;
     const n = Number(delta);
     const er = {};
     if (!Number.isInteger(n) || n === 0 || Math.abs(n) > POINTS_MAX_DELTA) er.delta = t('games.admin.errors.invalid_delta');
     if (!note.trim()) er.note = t('games.admin.errors.note_required');
     setErrors(er);
     if (Object.keys(er).length) return;
+    inFlight.current = true;
     setSaving(true);
     try {
       await adjustPoints(userId, n, note.trim()); // الدالة الوحيدة المسموحة لتعديل النقاط
@@ -40,6 +43,7 @@ function AdjustPointsForm({ userId, onDone }) {
     } catch (err) {
       notifyError(t, err);
     } finally {
+      inFlight.current = false;
       setSaving(false);
     }
   };

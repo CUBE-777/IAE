@@ -49,8 +49,8 @@ export default function Leaderboard() {
 
       {podium.length > 0 && (
         <ol className="gp-podium" aria-label={t('games.play.topPlayers')}>
-          {podium.map((r) => (
-            <li key={`${r.rank}-${name(r)}-${r.total_points}`} className={`gp-card gp-pod gp-pod-${r.rank}${r.is_me ? ' me' : ''}`}>
+          {podium.map((r, i) => (
+            <li key={`${r.rank}-${i}`} className={`gp-card gp-pod gp-pod-${r.rank}${r.is_me ? ' me' : ''}`}>
               <span className="gp-rank" aria-label={t('games.play.rank')}>{n(r.rank)}</span>
               <strong>{name(r)}{r.is_me ? ` (${t('games.play.you')})` : ''}</strong>
               <span>{n(r.total_points)} {t('games.play.pointsUnit')}</span>

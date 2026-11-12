@@ -18,6 +18,29 @@ export async function submitAttempt(attemptId, answer) {
   return unwrap(await supabase.rpc('submit_game_attempt', { p_attempt_id: attemptId, p_answer: answer }));
 }
 
+/**
+ * «الآن» عند الخادم بالميلي ثانية (get_game_server_time، 0054). للعدّاد المعروض فقط؛ الحَكَم الفعلي هو الخادم عند البدء والتسليم.
+ */
+export async function getGameServerTime() {
+  const ms = new Date(unwrap(await supabase.rpc('get_game_server_time'))).getTime();
+  if (!Number.isFinite(ms)) throw new Error('invalid_server_time');
+  return ms;
+}
+
+/**
+ * (ساعة الجهاز − ساعة الخادم) بالميلي ثانية، مقيسةً بمنتصف زمن الذهاب والإياب لتخفيف أثر التأخير.
+ * ترجع null إن تعذّر القياس (شبكة، أو 0054 لم تُطبَّق بعد)؛ فيعتمد المستدعي تقديرًا احتياطيًا ولا يتعطّل اللعب.
+ */
+export async function measureClockOffset() {
+  const sent = Date.now();
+  try {
+    const server = await getGameServerTime();
+    return Math.round((sent + Date.now()) / 2 - server);
+  } catch {
+    return null;
+  }
+}
+
 /** محاولاتي (الأحدث أولًا)، اختياريًا لتحدٍّ واحد. */
 export async function getMyAttempts({ challengeId, limit } = {}) {
   const uid = await currentUserId();

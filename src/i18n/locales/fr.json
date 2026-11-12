@@ -1409,6 +1409,8 @@
       "yourAnswer": "Votre réponse",
       "timeUp": "Temps écoulé",
       "timeUpText": "Le délai de la tentative est écoulé sans envoi ; aucun résultat n'a été enregistré.",
+      "checkingAttempts": "Vérification de vos tentatives restantes auprès du serveur…",
+      "timeStillOpen": "Le serveur considère encore cette tentative comme en cours. Vous pouvez la reprendre.",
       "correct": "Bonne réponse !",
       "incorrect": "Mauvaise réponse",
       "correctShort": "Correcte",
@@ -1686,7 +1688,7 @@
           "other": "Autre compte"
         },
         "adjustTitle": "Ajustement de points",
-        "adjustHint": "Attribuer ou retirer des points avec un motif obligatoire. L'opération est inscrite dans le registre des points et le journal d'audit et ne peut plus être modifiée.",
+        "adjustHint": "Attribuer ou retirer des points avec un motif obligatoire. Le motif est visible par le joueur dans son historique de points. L'opération est inscrite dans le registre des points et le journal d'audit et ne peut plus être modifiée.",
         "delta": "Variation (+/−)",
         "deltaHint": "Entier non nul (jusqu'à {{max}}). Négatif = retrait.",
         "reason": "Motif",

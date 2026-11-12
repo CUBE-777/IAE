@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Timer, XCircle } from 'lucide-react';
-import { getChallengeById, getChallenges, getGameCategories, getGames, getMyChallengeStatus, startAttempt, submitAttempt } from '../services';
+import { getChallengeById, getChallenges, getGameCategories, getGames, getMyChallengeStatus, measureClockOffset, startAttempt, submitAttempt } from '../services';
 import { pickLocalized } from '../services/gamesCore.shared';
 import { GAMES_PATHS } from '../constants/games';
 import { KIND_RENDERERS, getPrompt, resolveAnswerType, toAnswer } from '../player/challengeTypes';
@@ -18,6 +18,10 @@ const FATAL_SUBMIT = ['attempt_already_finished', 'attempt_not_found', 'challeng
 /**
  * واجهة التحدي. الخادم وحده يتحقق من الإجابة ويحسب النتيجة والنقاط والمدة (start_game_attempt/submit_game_attempt).
  * هنا: عرض المحتوى العلني، جمع الإجابة، إرسالها مرة واحدة، وعرض ما يردّه الخادم. العدّاد للعرض فقط. لا حلول ولا نقاط محلية.
+ *
+ * المحاولات المتبقية تأتي من الخادم دائمًا (get_my_challenge_status) وتُعاد قراءتها بعد كل نهاية محاولة (تسليم/انتهاء وقت)؛
+ * ولا يُعرض «حاول مجددًا» إلا بعد وصول قراءة حديثة تثبت وجود محاولات. انتهاء الوقت في الواجهة يقفل الإدخال فقط:
+ * لا إرسال تلقائي ولا نتيجة محلية، والخادم هو من يغلق المحاولة ويحسب ما يلزم.
  */
 export default function ChallengePlay() {
   const { challengeId } = useParams();
@@ -32,6 +36,12 @@ export default function ChallengePlay() {
   const lock = useRef(false);
   const startingRef = useRef(false);
   const resultRef = useRef(null);
+  const runRef = useRef(0); // يتغيّر مع كل تنقّل بين التحديات فتُهمَل ردود الطلبات المتأخرة للتحدي السابق
+
+  // حالة تحدياتي من الخادم. 'loading' أثناء أي قراءة (تُخفي «حاول مجددًا» حتى لا تُبنى على أرقام قديمة)، و'error' عند الفشل.
+  const [statusRows, setStatusRows] = useState(null);
+  const [statusPhase, setStatusPhase] = useState('loading'); // loading | ready | error
+  const statusSeq = useRef(0);
 
   const data = useAsyncData(async () => {
     const [challenge, games, categories] = await Promise.all([getChallengeById(challengeId), getGames(), getGameCategories()]);
@@ -41,10 +51,29 @@ export default function ChallengePlay() {
     const siblings = await getChallenges(game.id);
     return { challenge, game, siblings };
   }, [challengeId]);
-  const statusQ = useAsyncData(getMyChallengeStatus, [challengeId]);
+
+  const refreshStatus = useCallback(async () => {
+    const seq = ++statusSeq.current;
+    setStatusPhase('loading');
+    try {
+      const rows = await getMyChallengeStatus();
+      if (seq !== statusSeq.current) return;
+      setStatusRows(rows);
+      setStatusPhase('ready');
+    } catch (err) {
+      console.error('games status failed', err);
+      if (seq === statusSeq.current) setStatusPhase('error');
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshStatus();
+  }, [challengeId, refreshStatus]);
+  useEffect(() => () => { statusSeq.current += 1; }, []);
 
   // تغيّر التحدي (تنقل) يعيد الحالة كاملة
   useEffect(() => {
+    runRef.current += 1;
     setPhase('intro');
     setAttempt(null);
     setRaw(undefined);
@@ -56,7 +85,8 @@ export default function ChallengePlay() {
 
   const challenge = data.data?.challenge || null;
   const game = data.data?.game || null;
-  const status = useMemo(() => statusMap(statusQ.data)[challengeId] || null, [statusQ.data, challengeId]);
+  const st = useMemo(() => statusMap(statusRows), [statusRows]);
+  const status = st[challengeId] || null;
   const type = challenge ? resolveAnswerType(challenge.content, game?.kind) : null;
   const left = useCountdown(attempt?.expiresAt || null, attempt?.offsetMs || 0, phase === 'playing');
 
@@ -64,17 +94,20 @@ export default function ChallengePlay() {
     document.title = `${challenge ? pickLocalized(challenge.title, lang) : t('games.pageTitle')} — ${t('brand.name')}`;
   }, [challenge, lang, t]);
 
-  // انتهى الوقت محليًا (للعرض): نقفل الإدخال؛ الخادم يقرّر فعليًا ويغلق المحاولة عند أول طلب لاحق
+  // انتهى الوقت محليًا (للعرض): نقفل الإدخال ولا نرسل شيئًا. الخادم يحتسب المحاولة مستهلَكة ويغلقها عند أول طلب لاحق،
+  // لذلك نعيد قراءة حالة المحاولات منه فورًا بدل الاعتماد على أرقام ما قبل البدء.
   useEffect(() => {
-    if (phase === 'playing' && attempt?.expiresAt && left === 0) setPhase('timeout');
-  }, [phase, attempt, left]);
+    if (phase === 'playing' && attempt?.expiresAt && left === 0) {
+      setPhase('timeout');
+      refreshStatus();
+    }
+  }, [phase, attempt, left, refreshStatus]);
 
   useEffect(() => {
-    if (phase === 'result') resultRef.current?.focus();
+    if (phase === 'result' || phase === 'timeout') resultRef.current?.focus();
   }, [phase]);
 
   const siblings = useMemo(() => sortChallenges((data.data?.siblings || []).filter((c) => isOpenNow(c)), 'order'), [data.data]);
-  const st = useMemo(() => statusMap(statusQ.data), [statusQ.data]);
   const next = useMemo(() => {
     const idx = siblings.findIndex((c) => c.id === challengeId);
     const after = siblings.slice(idx + 1).concat(siblings.slice(0, Math.max(idx, 0)));
@@ -84,52 +117,61 @@ export default function ChallengePlay() {
   const start = async () => {
     if (startingRef.current) return;
     startingRef.current = true;
+    const run = runRef.current;
     setErrCode(null);
     setPhase('starting');
     try {
-      const a = await startAttempt(challengeId);
-      setAttempt({
-        id: a.attempt_id,
-        expiresAt: a.expires_at || null,
-        offsetMs: a.resumed ? 0 : Date.now() - new Date(a.started_at).getTime(), // تقدير انحراف الساعة عند البدء الجديد
-      });
+      // نقيس ساعة الخادم بالتوازي مع البدء، وبالطريقة نفسها للبدء الجديد والاستئناف. فشل القياس لا يمنع اللعب.
+      const [a, serverOffset] = await Promise.all([startAttempt(challengeId), measureClockOffset()]);
+      if (run !== runRef.current) return;
+      let offsetMs = serverOffset;
+      if (offsetMs === null) {
+        // احتياط (لم تُطبَّق 0054 أو تعذّر القياس): البدء الجديد يُقدَّر من started_at (= الآن عند الخادم)، والاستئناف بلا مرجع
+        offsetMs = a.resumed ? 0 : Date.now() - new Date(a.started_at).getTime();
+      }
+      setAttempt({ id: a.attempt_id, expiresAt: a.expires_at || null, offsetMs: Number.isFinite(offsetMs) ? offsetMs : 0 });
       setRaw(undefined);
       setResult(null);
       lock.current = false;
       setPhase('playing');
     } catch (err) {
+      if (run !== runRef.current) return;
       setErrCode(err?.code || 'unknown');
       setPhase('intro');
-      statusQ.reload();
+      refreshStatus();
     } finally {
-      startingRef.current = false;
+      if (run === runRef.current) startingRef.current = false;
     }
   };
 
   const submit = async () => {
     if (lock.current || phase !== 'playing' || !attempt) return; // إرسال واحد لكل محاولة
+    if (attempt.expiresAt && left === 0) return; // انتهى الوقت: لا نرسل شيئًا (ولا إرسال تلقائي أبدًا)
     const a = toAnswer(type, raw);
     if (!a.ok) {
       setErrCode('answer_required');
       return;
     }
     lock.current = true;
+    const run = runRef.current;
     setErrCode(null);
     setPhase('submitting');
     try {
       const res = await submitAttempt(attempt.id, a.value);
+      if (run !== runRef.current) return;
       if (res?.status === 'expired') setPhase('timeout');
       else {
         setResult(res);
         setPhase('result');
       }
-      statusQ.reload();
+      refreshStatus(); // في الدفعة نفسها مع تغيّر الطور: لا لحظة تُعرض فيها أرقام قديمة
     } catch (err) {
+      if (run !== runRef.current) return;
       const code = err?.code || 'unknown';
       setErrCode(code);
       if (FATAL_SUBMIT.includes(code)) {
         setPhase('intro');
-        statusQ.reload();
+        refreshStatus();
       } else {
         lock.current = false; // فشل عابر: المحاولة ما تزال جارية على الخادم فيجوز إعادة الإرسال
         setPhase('playing');
@@ -153,9 +195,12 @@ export default function ChallengePlay() {
 
   const title = pickLocalized(challenge.title, lang);
   const gameTitle = pickLocalized(game.title, lang);
+  // كل ما يخص المحاولات المتبقية يأتي من قراءة الخادم؛ بلا قراءة جاهزة لا نفترض شيئًا
+  const statusReady = statusPhase === 'ready';
   const remaining = attemptsLeft(challenge, status);
-  const hasOpen = !!status?.open_attempt_id;
-  const canStart = type !== null && (hasOpen || remaining === null || remaining > 0);
+  const hasOpen = statusReady && !!status?.open_attempt_id;
+  const hasQuota = statusReady && (remaining === null || remaining > 0);
+  const canStart = type !== null && statusPhase !== 'loading' && (statusPhase === 'error' || hasOpen || hasQuota); // عند فشل القراءة يقرّر الخادم
   const prompt = getPrompt(challenge.content, lang);
   const hint = challenge.content?.hint ? (typeof challenge.content.hint === 'string' ? challenge.content.hint : pickLocalized(challenge.content.hint, lang)) : '';
   const Custom = KIND_RENDERERS[game.kind];
@@ -163,14 +208,21 @@ export default function ChallengePlay() {
   const busy = phase === 'submitting';
   const urgent = left !== null && left <= 10;
 
-  const renderActions = (retry) => (
-    <div className="gp-actions">
-      {retry && <button type="button" className="btn btn-gold" onClick={start}>{t('games.play.tryAgain')}</button>}
-      {next && <Link className="btn btn-gold" to={GAMES_PATHS.challenge(next.id)}>{t('games.play.nextChallenge')}</Link>}
-      <Link className="btn btn-ghost" to={GAMES_PATHS.game(game.slug)}>{t('games.play.backGame')}</Link>
-    </div>
+  const renderActions = (offerPlay) => (
+    <>
+      {offerPlay && statusPhase === 'loading' && <p className="gp-sub" role="status">{t('games.play.checkingAttempts')}</p>}
+      {offerPlay && statusPhase === 'error' && <p className="gp-sub">{t('games.play.statusUnavailable')}</p>}
+      {offerPlay && statusReady && !hasOpen && !hasQuota && <p className="gp-sub">{t('games.play.noAttemptsLeft')}</p>}
+      <div className="gp-actions">
+        {offerPlay && statusReady && (hasOpen || hasQuota) && (
+          <button type="button" className="btn btn-gold" onClick={start}>{hasOpen ? t('games.play.resume') : t('games.play.tryAgain')}</button>
+        )}
+        {offerPlay && statusPhase === 'error' && <button type="button" className="btn btn-ghost" onClick={refreshStatus}>{t('games.play.retry')}</button>}
+        {next && <Link className="btn btn-gold" to={GAMES_PATHS.challenge(next.id)}>{t('games.play.nextChallenge')}</Link>}
+        <Link className="btn btn-ghost" to={GAMES_PATHS.game(game.slug)}>{t('games.play.backGame')}</Link>
+      </div>
+    </>
   );
-  const canRetry = remaining === null || remaining > 0;
 
   return (
     <div className="gp-page gp-narrow">
@@ -194,12 +246,12 @@ export default function ChallengePlay() {
             {challenge.description && <p className="gp-desc-full">{pickLocalized(challenge.description, lang)}</p>}
             <ul className="gp-rules">
               {challenge.time_limit_seconds ? <li>{t('games.play.ruleTimer', { time: formatClock(challenge.time_limit_seconds) })}</li> : null}
-              {remaining !== null && <li>{t('games.play.attemptsLeft', { count: remaining })}</li>}
+              {statusReady && remaining !== null && <li>{t('games.play.attemptsLeft', { count: remaining })}</li>}
               <li>{t('games.play.ruleOnce')}</li>
             </ul>
             {type === null && <p className="gp-alert" role="alert">{t('games.play.unsupported')}</p>}
-            {type !== null && !canStart && <p className="gp-alert" role="alert">{t('games.play.noAttemptsLeft')}</p>}
-            {statusQ.state === 'error' && <p className="gp-sub">{t('games.play.statusUnavailable')}</p>}
+            {type !== null && statusReady && !hasOpen && !hasQuota && <p className="gp-alert" role="alert">{t('games.play.noAttemptsLeft')}</p>}
+            {statusPhase === 'error' && <p className="gp-sub">{t('games.play.statusUnavailable')}</p>}
             <div className="gp-actions">
               <button type="button" className="btn btn-gold" disabled={!canStart || phase === 'starting'} onClick={start}>
                 {phase === 'starting' ? t('games.play.starting') : hasOpen ? t('games.play.resume') : t('games.play.start')}
@@ -230,8 +282,8 @@ export default function ChallengePlay() {
         {phase === 'timeout' && (
           <div className="gp-result gp-result-bad" role="status">
             <h2 ref={resultRef} tabIndex={-1}><Timer size={20} aria-hidden="true" /> {t('games.play.timeUp')}</h2>
-            <p>{t('games.play.timeUpText')}</p>
-            {renderActions(canRetry)}
+            <p>{statusReady && hasOpen ? t('games.play.timeStillOpen') : t('games.play.timeUpText')}</p>
+            {renderActions(true)}
           </div>
         )}
 
@@ -254,7 +306,7 @@ export default function ChallengePlay() {
                 <ul>{result.achievements.map((a) => <li key={a.id}>{pickLocalized(a.title, lang)}{a.points_bonus > 0 ? ` (+${a.points_bonus})` : ''}</li>)}</ul>
               </div>
             )}
-            {renderActions(!result.is_correct && canRetry)}
+            {renderActions(!result.is_correct)}
           </div>
         )}
       </article>
