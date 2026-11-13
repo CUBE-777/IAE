@@ -1,4 +1,5 @@
 import { pickLocalized } from '../services/gamesCore.shared';
+import { isBuilderContent, toBuilderAnswer } from './interactive/builderContent';
 
 /**
  * أنواع الإجابة العامة المدعومة في واجهة التحدي. المرحلة 4 بلا ألعاب فعلية: هذا مجرّد عقد على content (الجزء العلني فقط):
@@ -6,6 +7,9 @@ import { pickLocalized } from '../services/gamesCore.shared';
  *               placeholder?, hint? }
  * الإجابة المرسلة هي قيمة JSON تُطابَق على الخادم مع الحلّ المحفوظ (exact)؛ لا تحقق ولا نتيجة هنا.
  * نوع غير معروف = «غير مدعوم» فلا تُستهلك محاولة. ألعاب المراحل اللاحقة تضيف نوعها هنا (أو في KIND_RENDERERS) دون مساس بالصفحات.
+ *
+ * 6.5: محتوى محرر التحديات (content.answer_type = 'builder' مع challenge_type من الأنواع السبعة) له واجهته الخاصة (player/interactive)
+ * ويُعاد منها النوع 'builder'؛ وعقد الإجابة لكل نوع في interactive/builderContent.js. challenge_type غير معروف = غير مدعوم.
  */
 export const SUPPORTED_ANSWER_TYPES = ['choice', 'text', 'number', 'json'];
 
@@ -15,6 +19,7 @@ export const KIND_RENDERERS = {};
 export function resolveAnswerType(content, kind) {
   if (kind && KIND_RENDERERS[kind]) return 'custom';
   const c = content && typeof content === 'object' ? content : {};
+  if (c.answer_type === 'builder') return isBuilderContent(c) ? 'builder' : null;
   const declared = typeof c.answer_type === 'string' ? c.answer_type : null;
   if (declared) return SUPPORTED_ANSWER_TYPES.includes(declared) ? declared : null;
   return Array.isArray(c.options) && c.options.length ? 'choice' : 'text';
@@ -37,8 +42,9 @@ export function getOptions(content, lang) {
   });
 }
 
-/** raw (حالة الواجهة) → { ok, value } قيمة JSON للإرسال. */
-export function toAnswer(type, raw) {
+/** raw (حالة الواجهة) → { ok, value } قيمة JSON للإرسال. content مطلوب لنوع 'builder' (يُنقّى به raw ويُتحقَّق من اكتماله). */
+export function toAnswer(type, raw, content) {
+  if (type === 'builder') return toBuilderAnswer(content, raw);
   if (type === 'custom') return raw === undefined || raw === null ? { ok: false } : { ok: true, value: raw };
   if (type === 'choice') return raw === undefined || raw === null ? { ok: false } : { ok: true, value: raw };
   if (type === 'text') {

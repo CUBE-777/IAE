@@ -1481,6 +1481,43 @@
       "you": "vous",
       "anonymous": "Joueur",
       "pagination": "Pages",
+      "backStage": "Retour à l'étape",
+      "confirmTitle": "Envoyer votre réponse définitive ?",
+      "confirmText": "Une seule réponse est autorisée par tentative et elle ne pourra plus être modifiée.",
+      "confirmYes": "Oui, envoyer",
+      "confirmBack": "Revoir ma réponse",
+      "restored": "Votre tentative en cours a été restaurée. Reprenez là où vous vous étiez arrêté.",
+      "interactive": {
+        "codeRegion": "Extrait de code",
+        "lineN": "Ligne {{n}}",
+        "chooseOne": "Choisissez une réponse",
+        "choose": "Choisir…",
+        "blankN": "Blanc {{n}}",
+        "slotN": "Trou {{n}}",
+        "hints": "Indices",
+        "reorder": {
+          "hint": "Faites glisser les éléments, ou utilisez les flèches, pour les mettre dans le bon ordre.",
+          "moveUp": "Monter « {{name}} »",
+          "moveDown": "Descendre « {{name}} »",
+          "position": "« {{name}} » est maintenant en position {{pos}} sur {{total}}"
+        },
+        "findError": {
+          "hint": "Sélectionnez la ligne qui contient l'erreur.",
+          "lines": "Lignes de code",
+          "selected": "Ligne sélectionnée : {{n}}",
+          "fixTitle": "Choisissez la bonne correction"
+        },
+        "match": {
+          "hint": "Touchez un élément d'un côté, puis son correspondant de l'autre côté. Touchez ✕ sur un élément relié pour supprimer le lien.",
+          "left": "Éléments",
+          "right": "Correspondances",
+          "progress": "{{done}} sur {{total}} reliés",
+          "unlink": "Supprimer le lien de « {{name}} »",
+          "pairedWith": "Relié à l'élément {{n}}",
+          "linked": "« {{a}} » relié à « {{b}} »",
+          "unlinked": "Lien supprimé pour « {{a}} »"
+        }
+      },
       "errors": {
         "unknown": "Une erreur inattendue s'est produite. Réessayez.",
         "answer_required": "Saisissez une réponse valide avant d'envoyer.",
@@ -1498,7 +1535,11 @@
         "user_not_found": "Utilisateur introuvable.",
         "stage_not_available": "Cette étape n'est pas disponible pour le moment.",
         "stage_locked": "Cette étape est verrouillée. Consultez sa condition de déverrouillage sur la page de l'étape.",
-        "path_not_available": "Ce parcours n'est pas disponible pour le moment."
+        "path_not_available": "Ce parcours n'est pas disponible pour le moment.",
+        "attempt_version_unavailable": "La version du défi sur laquelle votre tentative a commencé n'est plus disponible. Veuillez contacter l'administration.",
+        "answer_incomplete": "Complétez d'abord votre réponse (répondez à chaque partie), puis envoyez.",
+        "offline": "Vous semblez être hors ligne. Vérifiez votre connexion et renvoyez ; votre réponse est conservée sur cette page.",
+        "unsupported": "Ce type de défi n'est pas encore pris en charge."
       },
       "paths": {
         "title": "Parcours d'apprentissage",

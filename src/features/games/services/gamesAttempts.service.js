@@ -1,5 +1,5 @@
 import { supabase } from '../../../services/supabase/client';
-import { COLUMNS, clampLimit, currentUserId, unwrap } from './gamesCore.shared';
+import { COLUMNS, GamesError, clampLimit, currentUserId, unwrap } from './gamesCore.shared';
 
 /**
  * المحاولات والنتائج. الواجهة لا ترسل نقاطًا ولا نتيجة ولا مدة: الخادم يحسبها كلها (submit_game_attempt).
@@ -16,6 +16,35 @@ export async function startAttempt(challengeId) {
  */
 export async function submitAttempt(attemptId, answer) {
   return unwrap(await supabase.rpc('submit_game_attempt', { p_attempt_id: attemptId, p_answer: answer }));
+}
+
+/**
+ * 6.5: يتأكد من شكل حمولة اللعب القادمة من الخادم قبل استعمالها. شكل غير متوقع = خطأ صريح لا تخمين.
+ * الحمولة: { attempt, challenge, game, version } — محتوى «علني» فقط لإصدار المحاولة المثبَّت (0059)، بلا حلّ ولا شرح ولا معرّف إصدار.
+ */
+function toPlayPayload(p) {
+  const ok = p && typeof p === 'object' && p.attempt?.id && p.challenge?.id && p.game?.id
+    && p.challenge.content && typeof p.challenge.content === 'object' && !Array.isArray(p.challenge.content);
+  if (!ok) throw new GamesError('unknown');
+  return p;
+}
+
+/**
+ * محتوى محاولة محدّدة من «إصدارها المثبَّت» (game_attempts.challenge_version_id) لا من الإصدار الجاري (get_my_attempt_challenge، 0059).
+ * محاولتي أنا فقط وجارية وغير منتهية؛ وإلا يرمي attempt_not_found / attempt_already_finished. إصدار غير صالح: attempt_version_unavailable
+ * (لا استبدال تلقائي بالإصدار الجاري). المعرّف يأتي دائمًا من start_game_attempt أو get_my_open_attempt_challenge؛ الخادم يتحقق من الملكية.
+ */
+export async function getAttemptChallenge(attemptId) {
+  return toPlayPayload(unwrap(await supabase.rpc('get_my_attempt_challenge', { p_attempt_id: attemptId })));
+}
+
+/**
+ * محاولتي الجارية على هذا التحدي (إن وُجدت) مع محتواها من إصدارها المثبَّت، أو null. تعمل حتى لو سُحب نشر التحدي/اللعبة
+ * أو نُشر إصدار أحدث بعد بدء المحاولة (0059). لا تكشف شيئًا لمن لا يملك محاولة جارية.
+ */
+export async function getOpenAttemptChallenge(challengeId) {
+  const p = unwrap(await supabase.rpc('get_my_open_attempt_challenge', { p_challenge_id: challengeId }));
+  return p ? toPlayPayload(p) : null;
 }
 
 /**

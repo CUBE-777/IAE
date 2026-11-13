@@ -37,7 +37,7 @@ export function pickLocalized(value, lang) {
 export const COLUMNS = {
   category: 'id, slug, name, description, icon, sort_order',
   game: 'id, category_id, slug, kind, title, description, sort_order, config',
-  challenge: 'id, game_id, slug, title, description, difficulty, points_reward, time_limit_seconds, max_attempts, content, starts_at, ends_at, sort_order',
+  challenge: 'id, game_id, stage_id, slug, title, description, difficulty, points_reward, time_limit_seconds, max_attempts, content, starts_at, ends_at, sort_order',
   level: 'level, min_points, title, icon',
   achievement: 'id, code, title, description, icon, points_bonus, sort_order',
   attempt: 'id, challenge_id, status, started_at, expires_at, finished_at',

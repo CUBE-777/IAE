@@ -1,0 +1,104 @@
+/*
+ * التحديات التفاعلية (IAE Games 6.5). خصائص منطقية فقط (RTL/LTR) وألوان الواجهة من tokens (تتبع الداكن/الفاتح).
+ * صندوق الكود بلوحة ألوان ثابتة داكنة (شبيهة بمحررات الكود) في الوضعين، ويبقى LTR دائمًا. لا تغيير لأسماء أصناف gp-* القائمة.
+ */
+.gp-wide { max-inline-size: 920px; }
+.gp-play .gp-form, .gp-bc { min-inline-size: 0; }
+.gp-bc { display: grid; gap: var(--space-4); }
+.gp-pre { white-space: pre-wrap; }
+.gp-instr { margin: 0; }
+.gp-fix-title { padding: 0; margin-block-end: 6px; color: var(--heading); font-weight: 700; }
+
+/* ---- صندوق الكود ---- */
+.gp-cb { margin: 0; min-inline-size: 0; max-inline-size: 100%; border: 1px solid #333842; border-radius: var(--radius-sm); background: #1e1e1e; color: #d4d4d4; overflow: hidden; direction: ltr; text-align: left; unicode-bidi: isolate; }
+.gp-cb-lang { padding: 4px 12px; background: #252526; color: #9da1a8; font: 700 0.72rem/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: uppercase; letter-spacing: 0.06em; border-block-end: 1px solid #333842; }
+.gp-cb-scroll { overflow-x: auto; overscroll-behavior-x: contain; padding-block: 8px; }
+.gp-cb-scroll:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+.gp-cb-body { min-inline-size: max-content; font: 0.875rem/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 4; }
+.gp-cb-row { display: flex; align-items: baseline; inline-size: 100%; min-block-size: 1.65em; margin: 0; padding: 0; border: 0; background: #1e1e1e; color: inherit; font: inherit; text-align: left; }
+.gp-cb-ln { position: sticky; inset-inline-start: 0; z-index: 1; flex: none; inline-size: 3.4em; padding-inline: 0.8em; text-align: end; color: #858585; background: inherit; user-select: none; font-variant-numeric: tabular-nums; }
+.gp-cb-code { white-space: pre; padding-inline-end: 1.2em; }
+.gp-cb-slot { display: inline-block; vertical-align: baseline; margin-inline: 2px; }
+
+/* أسطر قابلة للاختيار (Find Error) */
+.gp-cb-pick { cursor: pointer; border-inline-start: 3px solid transparent; }
+.gp-cb-pick:hover:not(:disabled):not(.off) { background: #2a2d2e; }
+.gp-cb-pick.on { background: rgba(var(--gold-rgb), 0.22); border-inline-start-color: var(--gold); }
+.gp-cb-pick.on .gp-cb-ln { color: #fff; }
+.gp-cb-pick.off { cursor: default; opacity: 0.6; }
+.gp-cb-pick:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+
+/* ألوان التلوين (تباين ≥ 4.5:1 على #1e1e1e) */
+.gp-tok-comment { color: #7fb069; font-style: italic; }
+.gp-tok-string { color: #ce9178; }
+.gp-tok-regex { color: #d7ba7d; }
+.gp-tok-number { color: #b5cea8; }
+.gp-tok-literal { color: #7cb7ff; }
+.gp-tok-keyword { color: #c586c0; }
+.gp-tok-builtin, .gp-tok-class { color: #4ec9b0; }
+.gp-tok-function { color: #dcdcaa; }
+.gp-tok-tag { color: #7cb7ff; }
+.gp-tok-attr, .gp-tok-variable { color: #9cdcfe; }
+.gp-tok-operator, .gp-tok-punct { color: #d4d4d4; }
+.gp-tok-deleted { color: #f48771; }
+.gp-tok-inserted { color: #7fb069; }
+
+/* ---- فراغات / فتحات ---- */
+.gp-template { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 2.4; color: var(--text-body); font-size: var(--text-body-lg); }
+.gp-blank { display: inline-block; vertical-align: middle; max-inline-size: 100%; min-block-size: 40px; margin-inline: 4px; padding: 4px 10px; border: 1px dashed var(--gold); border-radius: var(--radius-sm); background: var(--cream); color: var(--text-body); font: inherit; font-size: 0.95rem; line-height: 1.4; }
+.gp-blank.filled { border-style: solid; background: rgba(var(--gold-rgb), 0.12); }
+.gp-blank:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.gp-blank-missing { opacity: 0.5; }
+.gp-cb .gp-blank { min-block-size: 30px; padding: 0 8px; background: #2d2d30; color: #e6e6e6; border-color: #7cb7ff; font-family: inherit; font-size: inherit; direction: ltr; }
+.gp-cb .gp-blank.filled { background: #264f78; }
+.gp-choice-code { white-space: pre-wrap; overflow-wrap: anywhere; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+/* ---- Drag Reorder ---- */
+.gp-reorder { display: grid; gap: var(--space-3); }
+.gp-ro-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.gp-ro-item { display: flex; align-items: center; gap: 10px; min-block-size: 52px; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--cream); cursor: grab; }
+.gp-ro-item.dragging { opacity: 0.45; }
+.gp-ro-item.over { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(var(--gold-rgb), 0.35); }
+.gp-ro-grip { flex: none; display: inline-flex; color: var(--muted); }
+.gp-ro-n { flex: none; display: grid; place-items: center; inline-size: 26px; block-size: 26px; border-radius: 50%; background: rgba(var(--gold-rgb), 0.16); color: var(--gold-text); font-weight: 800; font-size: var(--text-small); }
+.gp-ro-text { flex: 1; min-inline-size: 0; overflow-wrap: anywhere; color: var(--text-body); }
+.gp-ro-btns { flex: none; display: inline-flex; gap: 6px; }
+.gp-ro-btn { display: grid; place-items: center; inline-size: 44px; block-size: 44px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text-body); cursor: pointer; }
+.gp-ro-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold-text); }
+.gp-ro-btn:disabled { opacity: 0.4; cursor: default; }
+.gp-ro-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+@media (hover: none) { .gp-ro-item { cursor: default; } .gp-ro-grip { display: none; } }
+
+/* ---- Match Pairs ---- */
+.gp-match { display: grid; gap: var(--space-3); }
+.gp-match-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: var(--space-4); }
+.gp-match-col { min-inline-size: 0; }
+.gp-match-h { margin: 0 0 8px; font-size: var(--text-small); color: var(--muted); }
+.gp-match-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.gp-match-row { display: flex; gap: 6px; align-items: stretch; }
+.gp-match-item { flex: 1; min-inline-size: 0; min-block-size: 48px; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--cream); color: var(--text-body); font: inherit; text-align: start; cursor: pointer; }
+.gp-match-item:hover:not(:disabled) { border-color: var(--gold); }
+.gp-match-item.linked { border-color: rgba(var(--gold-rgb), 0.6); background: rgba(var(--gold-rgb), 0.08); }
+.gp-match-item.on { border-color: var(--gold); background: rgba(var(--gold-rgb), 0.2); box-shadow: 0 0 0 2px rgba(var(--gold-rgb), 0.35); }
+.gp-match-item:focus-visible, .gp-match-x:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.gp-match-item:disabled { opacity: 0.6; cursor: default; }
+.gp-match-n, .gp-match-badge { flex: none; display: grid; place-items: center; inline-size: 26px; block-size: 26px; border-radius: 50%; background: rgba(var(--gold-rgb), 0.16); color: var(--gold-text); font-weight: 800; font-size: var(--text-small); }
+.gp-match-badge { margin-inline-start: auto; }
+.gp-match-body { flex: 1; min-inline-size: 0; display: grid; gap: 2px; overflow-wrap: anywhere; }
+.gp-match-to { color: var(--muted); font-size: var(--text-small); }
+.gp-match-x { flex: none; display: grid; place-items: center; inline-size: 44px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--muted); cursor: pointer; }
+.gp-match-x:hover:not(:disabled) { color: var(--danger); border-color: var(--danger); }
+
+/* ---- تلميحات وتأكيد التسليم ---- */
+.gp-hints { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; color: var(--muted); }
+.gp-hints summary { cursor: pointer; font-weight: 700; color: var(--gold-text); min-block-size: 32px; display: flex; align-items: center; }
+.gp-hints ul { margin: 6px 0 0; padding-inline-start: 20px; display: grid; gap: 4px; }
+.gp-confirm { display: grid; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid var(--gold); border-radius: var(--radius-sm); background: rgba(var(--gold-rgb), 0.1); }
+.gp-confirm p { margin: 0; color: var(--text-body); }
+
+@media (max-width: 480px) {
+  .gp-cb-body { font-size: 0.8rem; }
+  .gp-cb-ln { inline-size: 2.8em; padding-inline: 0.5em; }
+  .gp-ro-item { padding-inline: 8px; gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .gp-ro-item, .gp-match-item { transition: none; } }

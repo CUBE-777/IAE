@@ -2,7 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Timer, XCircle } from 'lucide-react';
-import { getChallengeById, getChallenges, getGameCategories, getGames, getMyChallengeStatus, measureClockOffset, startAttempt, submitAttempt } from '../services';
+import {
+  getAttemptChallenge, getChallengeById, getChallenges, getGameCategories, getGames, getMyChallengeStatus, getOpenAttemptChallenge,
+  measureClockOffset, startAttempt, submitAttempt,
+} from '../services';
 import { pickLocalized } from '../services/gamesCore.shared';
 import { GAMES_PATHS } from '../constants/games';
 import { KIND_RENDERERS, getPrompt, resolveAnswerType, toAnswer } from '../player/challengeTypes';
@@ -10,10 +13,14 @@ import { useAsyncData } from '../player/hooks/useAsyncData';
 import { useCountdown } from '../player/hooks/useCountdown';
 import ChallengeAnswer from '../player/components/ChallengeAnswer';
 import { ChallengeMeta, SectionState } from '../player/components/PlayerUi';
+import BuilderChallenge from '../player/interactive/BuilderChallenge';
+import { isBuilderContent, sanitizeRaw } from '../player/interactive/builderContent';
+import { clearDraft, loadDraft, saveDraft } from '../player/interactive/draftStore';
 import { attemptsLeft, formatClock, isOpenNow, sortChallenges, statusMap } from '../player/utils';
+import '../../../styles/games-interactive.css';
 
 /** أخطاء تُنهي المحاولة الحالية في الواجهة (لا فائدة من إعادة الإرسال). غيرها يسمح بإعادة المحاولة (مثل انقطاع الشبكة). */
-const FATAL_SUBMIT = ['attempt_already_finished', 'attempt_not_found', 'challenge_not_available', 'verification_unavailable', 'games_access_denied'];
+const FATAL_SUBMIT = ['attempt_already_finished', 'attempt_not_found', 'challenge_not_available', 'verification_unavailable', 'games_access_denied', 'attempt_version_unavailable'];
 
 /**
  * واجهة التحدي. الخادم وحده يتحقق من الإجابة ويحسب النتيجة والنقاط والمدة (start_game_attempt/submit_game_attempt).
@@ -22,6 +29,14 @@ const FATAL_SUBMIT = ['attempt_already_finished', 'attempt_not_found', 'challeng
  * المحاولات المتبقية تأتي من الخادم دائمًا (get_my_challenge_status) وتُعاد قراءتها بعد كل نهاية محاولة (تسليم/انتهاء وقت)؛
  * ولا يُعرض «حاول مجددًا» إلا بعد وصول قراءة حديثة تثبت وجود محاولات. انتهاء الوقت في الواجهة يقفل الإدخال فقط:
  * لا إرسال تلقائي ولا نتيجة محلية، والخادم هو من يغلق المحاولة ويحسب ما يلزم.
+ *
+ * 6.5 — الإصدار المثبَّت: أثناء المحاولة يُعرض المحتوى دائمًا من إصدار المحاولة (game_attempts.challenge_version_id) لا من الإصدار الجاري:
+ *   - فتح التحدي: get_my_open_attempt_challenge؛ إن وُجدت محاولة جارية لي تُستعاد تلقائيًا (بوقتها المتبقي) ولو سُحب نشر التحدي/اللعبة
+ *     أو نُشر إصدار أحدث. لا تُنشأ محاولة ثانية.
+ *   - بدء/استئناف بالزرّ: بعد start_game_attempt يُقرأ المحتوى من get_my_attempt_challenge بمعرّف المحاولة نفسها (لا من كتالوج التحدي)،
+ *     فلا يختلف المعروض عن المصحَّح حتى لو نُشر إصدار جديد بين فتح الصفحة والبدء.
+ *   - بلا محاولة جارية: الكتالوج المنشور كما كان (التحدي غير المنشور لا يُرى ولا تُنشأ له محاولة؛ الخادم يفرض ذلك).
+ * تحديات المحرر (answer_type = 'builder') لها واجهة تفاعلية (player/interactive) وتأكيد قبل التسليم النهائي؛ والأنواع العامة القديمة كما هي.
  */
 export default function ChallengePlay() {
   const { challengeId } = useParams();
@@ -34,12 +49,17 @@ export default function ChallengePlay() {
 
   const [phase, setPhase] = useState('intro'); // intro | starting | playing | submitting | result | timeout
   const [attempt, setAttempt] = useState(null); // { id, expiresAt, offsetMs }
+  const [play, setPlay] = useState(null); // { challenge, game, version } من إصدار المحاولة المثبَّت (6.5)؛ null خارج المحاولة
   const [raw, setRaw] = useState(undefined);
   const [result, setResult] = useState(null);
   const [errCode, setErrCode] = useState(null);
+  const [confirming, setConfirming] = useState(false);
+  const [restored, setRestored] = useState(false);
   const lock = useRef(false);
   const startingRef = useRef(false);
   const resultRef = useRef(null);
+  const confirmRef = useRef(null);
+  const autoRef = useRef(null); // آخر تحدٍّ استُؤنفت محاولته تلقائيًا (مرة واحدة لكل فتح)
   const runRef = useRef(0); // يتغيّر مع كل تنقّل بين التحديات فتُهمَل ردود الطلبات المتأخرة للتحدي السابق
 
   // حالة تحدياتي من الخادم. 'loading' أثناء أي قراءة (تُخفي «حاول مجددًا» حتى لا تُبنى على أرقام قديمة)، و'error' عند الفشل.
@@ -48,7 +68,19 @@ export default function ChallengePlay() {
   const statusSeq = useRef(0);
 
   const data = useAsyncData(async () => {
-    const [challenge, games, categories] = await Promise.all([getChallengeById(challengeId), getGames(), getGameCategories()]);
+    // محاولتي الجارية (إن وُجدت) بإصدارها المثبَّت، بالتوازي مع الكتالوج المنشور. فشلها «إصدار غير صالح» يُعرض بوضوح ولا يُستبدل بالجاري.
+    const [open, challenge, games, categories] = await Promise.all([
+      getOpenAttemptChallenge(challengeId).then((p) => ({ p }), (err) => ({ err })),
+      getChallengeById(challengeId), getGames(), getGameCategories(),
+    ]);
+    if (open.err) {
+      if (open.err.code === 'attempt_version_unavailable') return { challenge: null, blocked: open.err.code };
+      throw open.err;
+    }
+    if (open.p) {
+      const [offset, siblings] = await Promise.all([measureClockOffset(), getChallenges(open.p.game.id).catch(() => [])]);
+      return { challenge: open.p.challenge, game: open.p.game, siblings, resume: open.p, offset };
+    }
     const game = challenge ? games.find((g) => g.id === challenge.game_id) : null;
     const category = game ? categories.find((c) => c.id === game.category_id) : null;
     if (!challenge || !game || !category) return { challenge: null };
@@ -80,15 +112,19 @@ export default function ChallengePlay() {
     runRef.current += 1;
     setPhase('intro');
     setAttempt(null);
+    setPlay(null);
     setRaw(undefined);
     setResult(null);
     setErrCode(null);
+    setConfirming(false);
+    setRestored(false);
     lock.current = false;
     startingRef.current = false;
   }, [challengeId]);
 
-  const challenge = data.data?.challenge || null;
-  const game = data.data?.game || null;
+  // أثناء المحاولة: بيانات الإصدار المثبَّت (play). خارجها: الكتالوج المنشور (أو محاولتي الجارية عند أول فتح).
+  const challenge = play?.challenge || data.data?.challenge || null;
+  const game = play?.game || data.data?.game || null;
   const st = useMemo(() => statusMap(statusRows), [statusRows]);
   const status = st[challengeId] || null;
   const type = challenge ? resolveAnswerType(challenge.content, game?.kind) : null;
@@ -98,10 +134,38 @@ export default function ChallengePlay() {
     document.title = `${challenge ? pickLocalized(challenge.title, lang) : t('games.pageTitle')} — ${t('brand.name')}`;
   }, [challenge, lang, t]);
 
+  /** يدخل وضع اللعب من حمولة محاولة (إصدارها المثبَّت). كل ما يُعرض بعدها يأتي منها. */
+  const begin = useCallback((p, offsetMs) => {
+    const content = p.challenge.content;
+    setPlay({ challenge: p.challenge, game: p.game, version: p.version || null });
+    setAttempt({ id: p.attempt.id, expiresAt: p.attempt.expires_at || null, offsetMs: Number.isFinite(offsetMs) ? offsetMs : 0 });
+    // مسودّة الإجابة (اختيارات اللاعب فقط) من نفس الجلسة، مُنقّاة بمحتوى هذا الإصدار
+    setRaw(isBuilderContent(content) ? sanitizeRaw(content, loadDraft(p.attempt.id)) : undefined);
+    setResult(null);
+    setConfirming(false);
+    lock.current = false;
+    setPhase('playing');
+  }, []);
+
+  // استئناف تلقائي لمحاولتي الجارية عند فتح التحدي (لا تُستهلك محاولة جديدة؛ الوقت المتبقي يأتي من expires_at على الخادم)
+  useEffect(() => {
+    const d = data.data;
+    if (data.state !== 'ready' || !d?.resume || d.resume.challenge?.id !== challengeId || autoRef.current === challengeId || phase !== 'intro') return;
+    autoRef.current = challengeId;
+    if (resolveAnswerType(d.resume.challenge.content, d.resume.game?.kind) === null) {
+      setErrCode('unsupported');
+      return;
+    }
+    setRestored(true);
+    begin(d.resume, d.offset);
+  }, [data.state, data.data, challengeId, phase, begin]);
+
   // انتهى الوقت محليًا (للعرض): نقفل الإدخال ولا نرسل شيئًا. الخادم يحتسب المحاولة مستهلَكة ويغلقها عند أول طلب لاحق،
   // لذلك نعيد قراءة حالة المحاولات منه فورًا بدل الاعتماد على أرقام ما قبل البدء.
   useEffect(() => {
     if (phase === 'playing' && attempt?.expiresAt && left === 0) {
+      clearDraft(attempt.id);
+      setConfirming(false);
       setPhase('timeout');
       refreshStatus();
     }
@@ -110,6 +174,15 @@ export default function ChallengePlay() {
   useEffect(() => {
     if (phase === 'result' || phase === 'timeout') resultRef.current?.focus();
   }, [phase]);
+
+  useEffect(() => {
+    if (confirming) confirmRef.current?.focus();
+  }, [confirming]);
+
+  // حفظ مسودّة الاختيارات (تحدّيات المحرر فقط) كي لا تضيع بإعادة تحميل الصفحة أثناء المحاولة
+  useEffect(() => {
+    if (phase === 'playing' && attempt && type === 'builder') saveDraft(attempt.id, raw);
+  }, [phase, attempt, type, raw]);
 
   const siblings = useMemo(() => sortChallenges((data.data?.siblings || []).filter((c) => isOpenNow(c)), 'order'), [data.data]);
   const next = useMemo(() => {
@@ -123,6 +196,7 @@ export default function ChallengePlay() {
     startingRef.current = true;
     const run = runRef.current;
     setErrCode(null);
+    setRestored(false);
     setPhase('starting');
     try {
       // نقيس ساعة الخادم بالتوازي مع البدء، وبالطريقة نفسها للبدء الجديد والاستئناف. فشل القياس لا يمنع اللعب.
@@ -133,11 +207,17 @@ export default function ChallengePlay() {
         // احتياط (لم تُطبَّق 0054 أو تعذّر القياس): البدء الجديد يُقدَّر من started_at (= الآن عند الخادم)، والاستئناف بلا مرجع
         offsetMs = a.resumed ? 0 : Date.now() - new Date(a.started_at).getTime();
       }
-      setAttempt({ id: a.attempt_id, expiresAt: a.expires_at || null, offsetMs: Number.isFinite(offsetMs) ? offsetMs : 0 });
-      setRaw(undefined);
-      setResult(null);
-      lock.current = false;
-      setPhase('playing');
+      // 6.5: المحتوى يُقرأ من إصدار هذه المحاولة بمعرّفها (للبدء الجديد والاستئناف معًا)، لا من كتالوج التحدي الذي قد يكون نُشر له إصدار أحدث
+      const p = await getAttemptChallenge(a.attempt_id);
+      if (run !== runRef.current) return;
+      if (resolveAnswerType(p.challenge.content, p.game.kind) === null) {
+        setErrCode('unsupported');
+        setPhase('intro');
+        refreshStatus();
+        return;
+      }
+      setRestored(!!a.resumed);
+      begin(p, offsetMs);
     } catch (err) {
       if (run !== runRef.current) return;
       setErrCode(err?.code || 'unknown');
@@ -149,20 +229,23 @@ export default function ChallengePlay() {
   };
 
   const submit = async () => {
-    if (lock.current || phase !== 'playing' || !attempt) return; // إرسال واحد لكل محاولة
+    if (lock.current || phase !== 'playing' || !attempt || !challenge) return; // إرسال واحد لكل محاولة
     if (attempt.expiresAt && left === 0) return; // انتهى الوقت: لا نرسل شيئًا (ولا إرسال تلقائي أبدًا)
-    const a = toAnswer(type, raw);
+    const a = toAnswer(type, raw, challenge.content);
     if (!a.ok) {
-      setErrCode('answer_required');
+      setConfirming(false);
+      setErrCode(type === 'builder' ? 'answer_incomplete' : 'answer_required');
       return;
     }
     lock.current = true;
     const run = runRef.current;
     setErrCode(null);
+    setConfirming(false);
     setPhase('submitting');
     try {
       const res = await submitAttempt(attempt.id, a.value);
       if (run !== runRef.current) return;
+      clearDraft(attempt.id);
       if (res?.status === 'expired') setPhase('timeout');
       else {
         setResult(res);
@@ -171,26 +254,46 @@ export default function ChallengePlay() {
       refreshStatus(); // في الدفعة نفسها مع تغيّر الطور: لا لحظة تُعرض فيها أرقام قديمة
     } catch (err) {
       if (run !== runRef.current) return;
-      const code = err?.code || 'unknown';
+      let code = err?.code || 'unknown';
+      if (code === 'unknown' && typeof navigator !== 'undefined' && navigator.onLine === false) code = 'offline';
       setErrCode(code);
       if (FATAL_SUBMIT.includes(code)) {
+        clearDraft(attempt.id);
+        setPlay(null);
         setPhase('intro');
         refreshStatus();
       } else {
-        lock.current = false; // فشل عابر: المحاولة ما تزال جارية على الخادم فيجوز إعادة الإرسال
+        lock.current = false; // فشل عابر (مثل انقطاع الشبكة): المحاولة ما تزال جارية على الخادم فيجوز إعادة الإرسال، والإجابة محفوظة في الصفحة
         setPhase('playing');
       }
     }
   };
 
+  // تحدّيات المحرر: الضغط على «إرسال» يطلب تأكيدًا (إجابة واحدة لا رجعة فيها)، وغيرها يُرسل مباشرة كما كان
+  const requestSubmit = () => {
+    if (type !== 'builder') {
+      submit();
+      return;
+    }
+    if (lock.current || phase !== 'playing' || !challenge) return;
+    if (!toAnswer(type, raw, challenge.content).ok) {
+      setErrCode('answer_incomplete');
+      return;
+    }
+    setErrCode(null);
+    setConfirming(true);
+  };
+
   if (data.state !== 'ready') {
     return <div className="gp-page"><SectionState state={data.state} error={data.error} onRetry={data.reload} /></div>;
   }
-  if (!challenge || !isOpenNow(challenge)) {
+  // محاولة جارية (play أو resume) تُعرض ولو خرج التحدي من نافذته الزمنية بعد بدئها؛ الخادم هو من يقرّر المهلة والتسليم
+  if (!challenge || (!play && !data.data?.resume && !isOpenNow(challenge))) {
+    const blocked = data.data?.blocked;
     return (
       <div className="gp-page">
         <div className="gp-state gp-state-error" role="alert">
-          <span>{t('games.play.challengeUnavailable')}</span>
+          <span>{blocked ? t(`games.play.errors.${blocked}`, { defaultValue: t('games.play.challengeUnavailable') }) : t('games.play.challengeUnavailable')}</span>
           <Link className="btn btn-ghost" to={game ? GAMES_PATHS.game(game.slug) : GAMES_PATHS.home}>{t('games.play.backGame')}</Link>
         </div>
       </div>
@@ -211,6 +314,16 @@ export default function ChallengePlay() {
   const errText = errCode ? t(`games.play.errors.${errCode}`, { defaultValue: t('games.play.errors.unknown') }) : '';
   const busy = phase === 'submitting';
   const urgent = left !== null && left <= 10;
+  const isBuilder = type === 'builder';
+  // العودة إلى المرحلة: من حالة التنقل إن وُجدت، وإلا من stage_id في التحدي (تبقى بعد إعادة تحميل الصفحة)
+  const stageLink = fromStage || (typeof challenge.stage_id === 'string' && challenge.stage_id ? { id: challenge.stage_id, title: '' } : null);
+
+  const backLinks = (
+    <>
+      {stageLink && <Link className="btn btn-ghost" to={GAMES_PATHS.stage(stageLink.id)}>{t('games.play.backStage')}</Link>}
+      <Link className="btn btn-ghost" to={GAMES_PATHS.game(game.slug)}>{t('games.play.backGame')}</Link>
+    </>
+  );
 
   const renderActions = (offerPlay) => (
     <>
@@ -223,13 +336,13 @@ export default function ChallengePlay() {
         )}
         {offerPlay && statusPhase === 'error' && <button type="button" className="btn btn-ghost" onClick={refreshStatus}>{t('games.play.retry')}</button>}
         {next && <Link className="btn btn-gold" to={GAMES_PATHS.challenge(next.id)}>{t('games.play.nextChallenge')}</Link>}
-        <Link className="btn btn-ghost" to={GAMES_PATHS.game(game.slug)}>{t('games.play.backGame')}</Link>
+        {backLinks}
       </div>
     </>
   );
 
   return (
-    <div className="gp-page gp-narrow">
+    <div className={`gp-page gp-narrow${isBuilder ? ' gp-wide' : ''}`}>
       <nav className="gp-crumbs" aria-label={t('games.play.breadcrumb')}>
         <Link to={GAMES_PATHS.home}>{t('games.play.games')}</Link><span aria-hidden="true">/</span>
         <Link to={GAMES_PATHS.game(game.slug)}>{gameTitle}</Link><span aria-hidden="true">/</span>
@@ -261,26 +374,50 @@ export default function ChallengePlay() {
               <button type="button" className="btn btn-gold" disabled={!canStart || phase === 'starting'} onClick={start}>
                 {phase === 'starting' ? t('games.play.starting') : hasOpen ? t('games.play.resume') : t('games.play.start')}
               </button>
-              <Link className="btn btn-ghost" to={GAMES_PATHS.game(game.slug)}>{t('games.play.backGame')}</Link>
+              {backLinks}
             </div>
           </div>
         )}
 
         {(phase === 'playing' || phase === 'submitting') && (
-          <form className="gp-form" onSubmit={(e) => { e.preventDefault(); submit(); }} noValidate>
+          <form className="gp-form" onSubmit={(e) => { e.preventDefault(); requestSubmit(); }} noValidate>
+            {restored && phase === 'playing' && <p className="gp-sub" role="status">{t('games.play.restored')}</p>}
             {left !== null && (
               <p className={`gp-timer${urgent ? ' urgent' : ''}`} role="timer" aria-live="off">
                 <Timer size={16} aria-hidden="true" /> {t('games.play.timeLeft')}: <b>{formatClock(left)}</b>
               </p>
             )}
-            {prompt && prompt.split('\n').map((line, i) => <p key={i} className="gp-prompt">{line}</p>)}
-            {hint && <p className="gp-sub">{t('games.play.hint')}: {hint}</p>}
-            {Custom
-              ? <Custom challenge={challenge} content={challenge.content} value={raw} onChange={setRaw} disabled={busy} lang={lang} />
-              : <ChallengeAnswer type={type} content={challenge.content} value={raw} onChange={setRaw} disabled={busy} lang={lang} onEnter={submit} />}
-            <div className="gp-actions">
-              <button type="submit" className="btn btn-gold" disabled={busy}>{busy ? t('games.play.submitting') : t('games.play.submit')}</button>
-            </div>
+            {isBuilder ? (
+              <BuilderChallenge
+                content={challenge.content}
+                value={raw}
+                onChange={setRaw}
+                disabled={busy || confirming}
+                lang={lang}
+                defaultLang={play?.version?.default_language || undefined}
+              />
+            ) : (
+              <>
+                {prompt && prompt.split('\n').map((line, i) => <p key={i} className="gp-prompt">{line}</p>)}
+                {hint && <p className="gp-sub">{t('games.play.hint')}: {hint}</p>}
+                {Custom
+                  ? <Custom challenge={challenge} content={challenge.content} value={raw} onChange={setRaw} disabled={busy} lang={lang} />
+                  : <ChallengeAnswer type={type} content={challenge.content} value={raw} onChange={setRaw} disabled={busy} lang={lang} onEnter={submit} />}
+              </>
+            )}
+            {confirming ? (
+              <div className="gp-confirm" role="group" aria-label={t('games.play.confirmTitle')}>
+                <p><strong>{t('games.play.confirmTitle')}</strong> {t('games.play.confirmText')}</p>
+                <div className="gp-actions">
+                  <button type="button" ref={confirmRef} className="btn btn-gold" disabled={busy} onClick={submit}>{t('games.play.confirmYes')}</button>
+                  <button type="button" className="btn btn-ghost" disabled={busy} onClick={() => setConfirming(false)}>{t('games.play.confirmBack')}</button>
+                </div>
+              </div>
+            ) : (
+              <div className="gp-actions">
+                <button type="submit" className="btn btn-gold" disabled={busy}>{busy ? t('games.play.submitting') : t('games.play.submit')}</button>
+              </div>
+            )}
           </form>
         )}
 

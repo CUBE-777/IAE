@@ -30,7 +30,11 @@ export async function getChallenges(gameId, { difficulty } = {}) {
   return unwrap(await q) || [];
 }
 
-/** تحدٍّ واحد بالمعرّف أو null. */
+/**
+ * تحدٍّ واحد بالمعرّف أو null — المنشور فقط (سياسة النشر)، وبمحتواه «الجاري». عمدًا لا يُستعمل لاستعادة محاولة قائمة:
+ * التحدي غير المنشور لا يُرى بهذه الدالة أبدًا. استئناف محاولة جارية (حتى بعد سحب النشر أو نشر إصدار أحدث) يمرّ عبر
+ * getOpenAttemptChallenge/getAttemptChallenge (gamesAttempts.service) المعتمدتين على الإصدار المثبَّت في المحاولة.
+ */
 export async function getChallengeById(challengeId) {
   return unwrap(await supabase.from('game_challenges').select(COLUMNS.challenge).eq('id', challengeId).eq('status', 'published').maybeSingle());
 }

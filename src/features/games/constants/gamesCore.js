@@ -28,5 +28,7 @@ export const GAMES_ERROR_CODES = [
   'stage_not_available',
   'stage_locked',
   'path_not_available',
+  // 6.5: الإصدار المثبَّت لمحاولة جارية غير صالح للعرض/التسليم (لا يُستبدل بالإصدار الجاري)
+  'attempt_version_unavailable',
 ];
 export const GAMES_UNKNOWN_ERROR = 'unknown';

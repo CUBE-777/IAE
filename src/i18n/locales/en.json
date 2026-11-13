@@ -1481,6 +1481,43 @@
       "you": "you",
       "anonymous": "Player",
       "pagination": "Pages",
+      "backStage": "Back to the stage",
+      "confirmTitle": "Submit your final answer?",
+      "confirmText": "Only one answer is allowed per attempt and it can't be changed afterwards.",
+      "confirmYes": "Yes, submit",
+      "confirmBack": "Review my answer",
+      "restored": "Your attempt in progress was restored. Continue where you left off.",
+      "interactive": {
+        "codeRegion": "Code listing",
+        "lineN": "Line {{n}}",
+        "chooseOne": "Choose one answer",
+        "choose": "Choose…",
+        "blankN": "Blank {{n}}",
+        "slotN": "Gap {{n}}",
+        "hints": "Hints",
+        "reorder": {
+          "hint": "Drag the items, or use the arrow buttons, to put them in the right order.",
+          "moveUp": "Move “{{name}}” up",
+          "moveDown": "Move “{{name}}” down",
+          "position": "“{{name}}” is now at position {{pos}} of {{total}}"
+        },
+        "findError": {
+          "hint": "Select the line that contains the error.",
+          "lines": "Code lines",
+          "selected": "Selected line: {{n}}",
+          "fixTitle": "Choose the right fix"
+        },
+        "match": {
+          "hint": "Tap an item on one side, then its match on the other side. Tap a linked item's ✕ to unlink it.",
+          "left": "Items",
+          "right": "Matches",
+          "progress": "{{done}} of {{total}} matched",
+          "unlink": "Remove the link for “{{name}}”",
+          "pairedWith": "Matched with item {{n}}",
+          "linked": "“{{a}}” matched with “{{b}}”",
+          "unlinked": "Link removed for “{{a}}”"
+        }
+      },
       "errors": {
         "unknown": "An unexpected error occurred. Please try again.",
         "answer_required": "Enter a valid answer before submitting.",
@@ -1498,7 +1535,11 @@
         "user_not_found": "User not found.",
         "stage_not_available": "This stage is not available right now.",
         "stage_locked": "This stage is locked. Check how to unlock it on the stage page.",
-        "path_not_available": "This path is not available right now."
+        "path_not_available": "This path is not available right now.",
+        "attempt_version_unavailable": "The version of this challenge your attempt started on is no longer available. Please contact the administration.",
+        "answer_incomplete": "Complete your answer first (answer every part), then submit.",
+        "offline": "You seem to be offline. Check your connection and submit again; your answer is kept on this page.",
+        "unsupported": "This challenge type isn't supported yet."
       },
       "paths": {
         "title": "Learning paths",
