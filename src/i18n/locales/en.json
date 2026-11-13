@@ -1531,7 +1531,7 @@
     "admin": {
       "pageTitle": "Games administration",
       "title": "Games administration",
-      "subtitle": "Games, categories, challenges, achievements, levels and players — super admin and developer only.",
+      "subtitle": "Games, learning paths, categories, challenges, achievements, levels and players — for super admins and developers only.",
       "denied": "You don't have permission to manage games.",
       "loadError": "Couldn't load the data.",
       "actions": "Actions",
@@ -1556,6 +1556,7 @@
       "archivedOk": "Players have history on this item, so it was archived instead of deleted and historical data stays intact",
       "tabs": {
         "games": "Games",
+        "paths": "Learning paths",
         "categories": "Categories",
         "challenges": "Challenges",
         "achievements": "Achievements",
@@ -1724,6 +1725,129 @@
           "admin_adjustment": "Admin adjustment"
         }
       },
+      "paths": {
+        "intro": "Track → Category → Stage → Challenge. Stage unlocking and completion are computed on the server from players’ saved results and points; this screen only sets up the structure. Players see a stage only if its track, category and the stage itself are published.",
+        "selectGame": "Game",
+        "noGames": "No games yet. Create a game first in the “Games” tab.",
+        "newTrack": "Add track",
+        "editTrack": "Edit track",
+        "newCategory": "Add category",
+        "editCategory": "Edit category",
+        "newStage": "Add stage",
+        "editStage": "Edit stage",
+        "addCategory": "Add category",
+        "addStage": "Add stage",
+        "emptyTracks": "This game has no tracks yet.",
+        "emptyCategories": "This track has no categories.",
+        "emptyStages": "This category has no stages.",
+        "kinds": {
+          "track": "Track",
+          "category": "Category",
+          "stage": "Stage"
+        },
+        "visible": "Visible to players",
+        "hidden": "Hidden from players",
+        "unlockModes": {
+          "sequential": "Sequential unlock",
+          "free": "Free unlock",
+          "manual": "Manual unlock"
+        },
+        "unlockHints": {
+          "sequential": "The first stage is open; each next stage opens once the previous one in the same category is completed (published stages only).",
+          "free": "All published stages in the category are open.",
+          "manual": "A stage opens for a player only after an admin grants the unlock."
+        },
+        "completionModes": {
+          "all_required": "All required",
+          "min_success_rate": "Min. success rate",
+          "min_points": "Min. points",
+          "manual": "Manual approval"
+        },
+        "completionHints": {
+          "all_required": "Completed by solving every required challenge in the stage (at least one required challenge is needed).",
+          "min_success_rate": "Rate = solved challenges ÷ all published challenges in the stage × 100. The best result per challenge counts.",
+          "min_points": "Total points earned by solving the stage’s challenges (admin adjustments and achievement bonuses excluded).",
+          "manual": "Completed only by an admin approval for each player."
+        },
+        "fields": {
+          "unlockMode": "Stage unlock policy",
+          "completionMode": "Stage completion rule",
+          "threshold": "Threshold",
+          "thresholdPercentHint": "A percentage from 1 to 100.",
+          "thresholdPointsHint": "A number of points from 1 to 1000000."
+        },
+        "modeChangeWarn": "Changing this setting immediately changes what counts as unlocked or completed for players (progress is derived from saved results; nothing is deleted).",
+        "stageChallenges": "{{count}} challenge(s) ({{required}} required)",
+        "manageChallenges": "Challenges",
+        "manageGrants": "Manual grants",
+        "statusActions": {
+          "publish": "Publish",
+          "unpublish": "Unpublish",
+          "archive": "Archive",
+          "restore": "Restore as draft"
+        },
+        "archivedOk": "Archived",
+        "restoredOk": "Restored as draft",
+        "close": "Close",
+        "confirm": {
+          "archiveTitle": "Confirm archive",
+          "archiveBtn": "Archive",
+          "unpublishTitle": "Confirm unpublish",
+          "unpublishBtn": "Unpublish",
+          "archive": {
+            "track": "The track, its categories and its stages will disappear for players.",
+            "category": "The category and its stages will disappear for players.",
+            "stage": "The stage will disappear for players and its challenges can no longer be started through it."
+          },
+          "unpublish": {
+            "track": "The track returns to draft and it, its categories and its stages disappear for players.",
+            "category": "The category returns to draft and it and its stages disappear for players.",
+            "stage": "The stage returns to draft and disappears for players."
+          },
+          "impact": "Includes: {{categories}} categories, {{stages}} stages, {{challenges}} assigned challenges.",
+          "history": "No attempts, results, points or grants are deleted, and you can restore it later."
+        },
+        "challengesModal": {
+          "title": "Stage challenges: {{name}}",
+          "hint": "Assign existing challenges only (their content is not edited). Non-required challenges are not needed for “All required”.",
+          "none": "No challenges are assigned to this stage yet.",
+          "required": "Required",
+          "remove": "Unassign",
+          "addLabel": "Assign a challenge without a stage",
+          "choose": "Choose a challenge…",
+          "add": "Assign",
+          "noneAvailable": "This game has no unassigned challenges."
+        },
+        "grantsModal": {
+          "title": "Manual grants: {{name}}",
+          "notApplicable": "No manual grants here: the stage’s category is not “manual unlock” and its completion mode is not “manual approval”.",
+          "listTitle": "Granted players",
+          "empty": "No grants for this stage yet.",
+          "kinds": {
+            "unlock": "Unlock",
+            "complete": "Completion approval"
+          },
+          "revoke": "Revoke",
+          "revokeConfirm": "Confirm revoke",
+          "addTitle": "Grant a player",
+          "searchLabel": "Search for a player",
+          "searchPlaceholder": "Name or email (at least 2 characters)",
+          "search": "Search",
+          "noteLabel": "Note (optional)",
+          "noResults": "No results.",
+          "grantUnlock": "Grant unlock",
+          "approveComplete": "Approve completion",
+          "check": "Check status",
+          "granted": "Granted",
+          "alreadyGranted": "Already granted",
+          "revoked": "Grant revoked",
+          "unlocked": "Unlocked",
+          "complete": "Completed",
+          "required": "Required solved",
+          "solved": "Challenges solved",
+          "points": "Points"
+        }
+      },
       "errors": {
         "unknown": "An unexpected error occurred. Please try again.",
         "games_access_denied": "You don't have permission for this operation.",
@@ -1765,7 +1889,19 @@
         "codeInvalid": "Invalid code: starts with a lowercase Latin letter (2–64 characters from a-z, 0-9 and _).",
         "thresholdInvalid": "Positive integer.",
         "levelInvalid": "Positive integer level number.",
-        "minPointsInvalid": "Integer, 0 or more."
+        "minPointsInvalid": "Integer, 0 or more.",
+        "stage_has_grants": "This setting cannot be changed while manual grants depend on it. Revoke the grants first.",
+        "stage_not_found": "Stage not found.",
+        "stage_not_manual": "Completion approval is only available for stages with the “manual” completion mode.",
+        "stage_unlock_not_manual": "Unlock grants are only available for categories with the “manual” unlock mode.",
+        "stage_chain_invalid": "The game, track, category and stage do not match.",
+        "stage_not_available": "The stage is not available (track, category or stage is not published).",
+        "stage_locked": "This stage is locked for this player.",
+        "stage_archived": "The stage is archived: restore it first.",
+        "stage_game_mismatch": "The stage belongs to another game.",
+        "grant_not_found": "Grant not found (it may already have been revoked).",
+        "thresholdPercent": "A whole number between 1 and 100.",
+        "thresholdPoints": "A whole number between 1 and 1000000."
       }
     }
   }

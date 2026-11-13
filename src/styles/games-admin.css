@@ -27,3 +27,39 @@
   .ga-lang-row label { padding-block-start: 0; }
   .ga-toolbar .admin-quick-action { margin-inline-start: 0; }
 }
+
+/* مسارات التعلم (6.2): شجرة المسار ← الفئة ← المرحلة. خصائص منطقية + متغيّرات الإدارة فتتبع RTL/LTR والوضعين. */
+.ga-paths-intro { margin: 0 0 var(--space-3); }
+.ga-tree { display: flex; flex-direction: column; gap: var(--space-3); }
+.ga-node { border: 1px solid var(--admin-border); border-radius: var(--radius-md); padding: 10px 12px; background: var(--admin-surface); min-inline-size: 0; }
+.ga-node .ga-node { margin-block-start: 8px; background: var(--admin-surface-alt); }
+.ga-node .ga-node .ga-node { background: var(--admin-surface); }
+.ga-node-category { margin-inline-start: 14px; }
+.ga-node-stage { margin-inline-start: 14px; }
+.ga-node.is-archived { opacity: 0.65; }
+.ga-node-head { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; }
+.ga-node-title { display: flex; align-items: center; gap: 6px 8px; flex-wrap: wrap; min-inline-size: 0; flex: 1 1 260px; }
+.ga-node-name { overflow-wrap: anywhere; }
+.ga-node-kind { font-size: 0.72rem; font-weight: 700; color: var(--admin-text-muted); text-transform: uppercase; letter-spacing: 0.02em; }
+.ga-node-meta { font-size: 0.78rem; color: var(--admin-text-muted); }
+.ga-node-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.ga-node-empty, .ga-empty { margin: 8px 0 0; font-size: 0.85rem; color: var(--admin-text-muted); }
+.ga-sub { margin: var(--space-4) 0 var(--space-2); font-size: 0.95rem; }
+.ga-assign-list { list-style: none; margin: 0 0 var(--space-3); padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.ga-assign-row { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; border: 1px solid var(--admin-border); border-radius: var(--radius-md); padding: 8px 10px; }
+.ga-assign-row .ga-assign-row { border: 0; padding: 0; inline-size: 100%; }
+.ga-assign-col { flex-direction: column; align-items: stretch; }
+.ga-assign-name { display: flex; align-items: center; gap: 4px 8px; flex-wrap: wrap; min-inline-size: 0; flex: 1 1 220px; overflow-wrap: anywhere; }
+.ga-assign-add { margin-block-start: var(--space-3); }
+.ga-assign-controls, .ga-grant-search, .ga-inline-confirm { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ga-stage-status { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin: 8px 0 0; }
+.ga-stage-status > div { background: var(--admin-surface-alt); border: 1px solid var(--admin-border); border-radius: var(--radius-md); padding: 6px 10px; }
+.ga-stage-status dt { font-size: 0.72rem; color: var(--admin-text-muted); }
+.ga-stage-status dd { margin: 2px 0 0; font-weight: 800; }
+.ga-sr-only { position: absolute; inline-size: 1px; block-size: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (max-width: 640px) {
+  .ga-node-category, .ga-node-stage { margin-inline-start: 6px; }
+  .ga-node-actions { inline-size: 100%; }
+  .ga-filter { max-inline-size: 100%; inline-size: 100%; }
+  .ga-assign-controls .admin-select { inline-size: 100%; }
+}

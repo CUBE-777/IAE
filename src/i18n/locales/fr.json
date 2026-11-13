@@ -1531,7 +1531,7 @@
     "admin": {
       "pageTitle": "Administration des jeux",
       "title": "Administration des jeux",
-      "subtitle": "Jeux, catégories, défis, succès, niveaux et joueurs — réservé au super administrateur et au développeur.",
+      "subtitle": "Jeux, parcours d’apprentissage, catégories, défis, succès, niveaux et joueurs — réservé aux super-admins et développeurs.",
       "denied": "Vous n'avez pas le droit d'administrer les jeux.",
       "loadError": "Impossible de charger les données.",
       "actions": "Actions",
@@ -1556,6 +1556,7 @@
       "archivedOk": "Des joueurs ont un historique : l'élément a été archivé au lieu d'être supprimé, les données historiques restent intactes",
       "tabs": {
         "games": "Jeux",
+        "paths": "Parcours",
         "categories": "Catégories",
         "challenges": "Défis",
         "achievements": "Succès",
@@ -1724,6 +1725,129 @@
           "admin_adjustment": "Ajustement admin"
         }
       },
+      "paths": {
+        "intro": "Parcours → Catégorie → Étape → Défi. Le déblocage et la complétion des étapes sont calculés côté serveur à partir des résultats et points enregistrés ; cet écran ne configure que la structure. Un joueur ne voit une étape que si son parcours, sa catégorie et l’étape sont publiés.",
+        "selectGame": "Jeu",
+        "noGames": "Aucun jeu pour l’instant. Créez d’abord un jeu dans l’onglet « Jeux ».",
+        "newTrack": "Ajouter un parcours",
+        "editTrack": "Modifier le parcours",
+        "newCategory": "Ajouter une catégorie",
+        "editCategory": "Modifier la catégorie",
+        "newStage": "Ajouter une étape",
+        "editStage": "Modifier l’étape",
+        "addCategory": "Ajouter une catégorie",
+        "addStage": "Ajouter une étape",
+        "emptyTracks": "Ce jeu n’a pas encore de parcours.",
+        "emptyCategories": "Ce parcours n’a pas de catégorie.",
+        "emptyStages": "Cette catégorie n’a pas d’étape.",
+        "kinds": {
+          "track": "Parcours",
+          "category": "Catégorie",
+          "stage": "Étape"
+        },
+        "visible": "Visible des joueurs",
+        "hidden": "Masqué aux joueurs",
+        "unlockModes": {
+          "sequential": "Déblocage séquentiel",
+          "free": "Déblocage libre",
+          "manual": "Déblocage manuel"
+        },
+        "unlockHints": {
+          "sequential": "La première étape est ouverte ; chaque suivante s’ouvre une fois la précédente de la même catégorie terminée (étapes publiées uniquement).",
+          "free": "Toutes les étapes publiées de la catégorie sont ouvertes.",
+          "manual": "Une étape ne s’ouvre pour un joueur qu’après un déblocage accordé par un admin."
+        },
+        "completionModes": {
+          "all_required": "Tous les obligatoires",
+          "min_success_rate": "Taux de réussite min.",
+          "min_points": "Points min.",
+          "manual": "Validation manuelle"
+        },
+        "completionHints": {
+          "all_required": "Terminée en résolvant tous les défis obligatoires de l’étape (au moins un défi obligatoire est requis).",
+          "min_success_rate": "Taux = défis résolus ÷ tous les défis publiés de l’étape × 100. Le meilleur résultat par défi compte.",
+          "min_points": "Total des points gagnés en résolvant les défis de l’étape (hors ajustements admin et bonus de succès).",
+          "manual": "Terminée uniquement par validation d’un admin pour chaque joueur."
+        },
+        "fields": {
+          "unlockMode": "Politique de déblocage des étapes",
+          "completionMode": "Règle de complétion de l’étape",
+          "threshold": "Seuil",
+          "thresholdPercentHint": "Un pourcentage de 1 à 100.",
+          "thresholdPointsHint": "Un nombre de points de 1 à 1000000."
+        },
+        "modeChangeWarn": "Modifier ce réglage change immédiatement ce qui est considéré comme débloqué ou terminé pour les joueurs (la progression est dérivée des résultats enregistrés ; rien n’est supprimé).",
+        "stageChallenges": "{{count}} défi(s) ({{required}} obligatoire(s))",
+        "manageChallenges": "Défis",
+        "manageGrants": "Autorisations manuelles",
+        "statusActions": {
+          "publish": "Publier",
+          "unpublish": "Dépublier",
+          "archive": "Archiver",
+          "restore": "Restaurer en brouillon"
+        },
+        "archivedOk": "Archivé",
+        "restoredOk": "Restauré en brouillon",
+        "close": "Fermer",
+        "confirm": {
+          "archiveTitle": "Confirmer l’archivage",
+          "archiveBtn": "Archiver",
+          "unpublishTitle": "Confirmer la dépublication",
+          "unpublishBtn": "Dépublier",
+          "archive": {
+            "track": "Le parcours, ses catégories et ses étapes disparaîtront pour les joueurs.",
+            "category": "La catégorie et ses étapes disparaîtront pour les joueurs.",
+            "stage": "L’étape disparaîtra pour les joueurs et ses défis ne pourront plus être lancés via elle."
+          },
+          "unpublish": {
+            "track": "Le parcours repasse en brouillon ; lui, ses catégories et ses étapes disparaissent pour les joueurs.",
+            "category": "La catégorie repasse en brouillon ; elle et ses étapes disparaissent pour les joueurs.",
+            "stage": "L’étape repasse en brouillon et disparaît pour les joueurs."
+          },
+          "impact": "Concerne : {{categories}} catégorie(s), {{stages}} étape(s), {{challenges}} défi(s) rattaché(s).",
+          "history": "Aucune tentative, aucun résultat, point ou autorisation n’est supprimé ; vous pourrez restaurer plus tard."
+        },
+        "challengesModal": {
+          "title": "Défis de l’étape : {{name}}",
+          "hint": "Rattache uniquement des défis existants (leur contenu n’est pas modifié). Un défi non obligatoire n’est pas requis pour « Tous les obligatoires ».",
+          "none": "Aucun défi n’est encore rattaché à cette étape.",
+          "required": "Obligatoire",
+          "remove": "Détacher",
+          "addLabel": "Rattacher un défi sans étape",
+          "choose": "Choisir un défi…",
+          "add": "Rattacher",
+          "noneAvailable": "Ce jeu n’a aucun défi non rattaché."
+        },
+        "grantsModal": {
+          "title": "Autorisations manuelles : {{name}}",
+          "notApplicable": "Pas d’autorisation manuelle ici : la catégorie de l’étape n’est pas en « déblocage manuel » et sa complétion n’est pas en « validation manuelle ».",
+          "listTitle": "Joueurs autorisés",
+          "empty": "Aucune autorisation pour cette étape.",
+          "kinds": {
+            "unlock": "Déblocage",
+            "complete": "Validation de complétion"
+          },
+          "revoke": "Révoquer",
+          "revokeConfirm": "Confirmer la révocation",
+          "addTitle": "Autoriser un joueur",
+          "searchLabel": "Rechercher un joueur",
+          "searchPlaceholder": "Nom ou e-mail (2 caractères min.)",
+          "search": "Rechercher",
+          "noteLabel": "Note (facultative)",
+          "noResults": "Aucun résultat.",
+          "grantUnlock": "Accorder le déblocage",
+          "approveComplete": "Valider la complétion",
+          "check": "Vérifier l’état",
+          "granted": "Accordé",
+          "alreadyGranted": "Déjà accordé",
+          "revoked": "Autorisation révoquée",
+          "unlocked": "Débloquée",
+          "complete": "Terminée",
+          "required": "Obligatoires résolus",
+          "solved": "Défis résolus",
+          "points": "Points"
+        }
+      },
       "errors": {
         "unknown": "Une erreur inattendue s'est produite. Réessayez.",
         "games_access_denied": "Vous n'avez pas le droit d'effectuer cette opération.",
@@ -1765,7 +1889,19 @@
         "codeInvalid": "Code invalide : commence par une minuscule latine (2–64 caractères parmi a-z, 0-9 et _).",
         "thresholdInvalid": "Entier positif.",
         "levelInvalid": "Numéro de niveau entier positif.",
-        "minPointsInvalid": "Entier supérieur ou égal à 0."
+        "minPointsInvalid": "Entier supérieur ou égal à 0.",
+        "stage_has_grants": "Ce réglage ne peut pas être modifié tant que des autorisations manuelles en dépendent. Révoquez-les d’abord.",
+        "stage_not_found": "Étape introuvable.",
+        "stage_not_manual": "La validation de complétion n’est disponible que pour les étapes en mode de complétion « manuel ».",
+        "stage_unlock_not_manual": "Le déblocage manuel n’est disponible que pour les catégories en mode de déblocage « manuel ».",
+        "stage_chain_invalid": "Le jeu, le parcours, la catégorie et l’étape sont incohérents.",
+        "stage_not_available": "L’étape n’est pas disponible (parcours, catégorie ou étape non publié).",
+        "stage_locked": "Cette étape est verrouillée pour ce joueur.",
+        "stage_archived": "L’étape est archivée : restaurez-la d’abord.",
+        "stage_game_mismatch": "L’étape appartient à un autre jeu.",
+        "grant_not_found": "Autorisation introuvable (peut-être déjà révoquée).",
+        "thresholdPercent": "Un entier entre 1 et 100.",
+        "thresholdPoints": "Un entier entre 1 et 1000000."
       }
     }
   }

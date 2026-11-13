@@ -1,3 +1,18 @@
+# IAE Games — المرحلة 6.2: إدارة مسارات التعلم + فتح المراحل وإكمالها على الخادم (migration 0056)
+## ماذا
+- تبويب «مسارات التعلم» في `/admin/games`: شجرة المسار ← الفئة ← المرحلة (إنشاء/تعديل/نشر/إخفاء/أرشفة/استعادة/ترتيب)، إسناد تحديات قائمة إلى مرحلة وتحديد الإلزامي منها، ومنح يدوي (فتح/اعتماد إكمال) وإلغاؤه وفحص حالة لاعب.
+- الفتح (`free` · `sequential` · `manual`) والإكمال (`all_required` · `min_success_rate` · `min_points` · `manual`) يُحسبان على الخادم من `game_results`/`game_points`/`game_stage_grants` (لا جدول تقدّم). التعريفات الدقيقة في ترويسة 0056.
+- يُنفَّذ الفتح في مشغّل `game_attempts_bind` (طريق `start_game_attempt` الوحيد) وتُعاد المطابقة في `submit_game_attempt`؛ الخطأ `stage_lock_not_enforced` من 0055 زال. التحدي بلا مرحلة يعمل كما كان.
+## الأمان
+- كل RPC الإدارية `SECURITY DEFINER` + `can_manage_games()` (super_admin/developer)، EXECUTE لـ authenticated فقط، والمساعدات الداخلية بلا EXECUTE لأحد، وفحص ذاتي للصلاحيات داخل الـ migration.
+- سُحب DELETE المباشر عن المسارات/الفئات/المراحل (الإزالة = أرشفة). التدقيق في `audit_logs` عبر مشغّلات 0055.
+## الملفات
+`supabase/migrations/0056_games_learning_paths_admin.sql` (+ rollback) · `src/features/games/admin/{pages/PathsTab.jsx, components/PathForms.jsx, components/StageChallengesModal.jsx, components/StageGrantsModal.jsx, services/gamesPaths.service.js}` · تعديل `constants/gamesAdmin.js` و`pages/GamesAdmin.jsx` و`styles/games-admin.css` · الترجمات الثلاث · `tests/games-learning-paths-admin-sql.test.js`
+## النشر
+نفّذ 0056 (جرّبه أولًا بـ rollback) ثم انشر الواجهة. يتطلب 0055.
+
+---
+
 # IAE Games — المرحلة 4: واجهة اللاعبين (migration 0053)
 ## ماذا
 - `/games` الرئيسية (تصنيفات، ألعاب، تحديات متاحة، ملخصي)، `/games/g/:slug` تفاصيل اللعبة، `/games/c/:id` واجهة التحدي، `/games/profile` ملفي، `/games/leaderboard` الصدارة. تنقل علوي في GamesLayout.

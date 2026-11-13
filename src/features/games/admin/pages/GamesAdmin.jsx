@@ -11,6 +11,7 @@ import '../../../../styles/games-admin.css';
 
 const TAB_COMPONENTS = {
   games: lazy(() => import('./GamesTab')),
+  paths: lazy(() => import('./PathsTab')),
   categories: lazy(() => import('./CategoriesTab')),
   challenges: lazy(() => import('./ChallengesTab')),
   achievements: lazy(() => import('./AchievementsTab')),
