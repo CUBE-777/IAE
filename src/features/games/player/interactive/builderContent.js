@@ -1,4 +1,4 @@
-import { GAMES_LANG_FALLBACK } from '../../constants/gamesCore';
+import { pickLocalized } from '../../services/gamesLang';
 
 /**
  * عقد محتوى التحديات التفاعلية (6.5) من جهة اللاعب. يطابق ما ينتجه Builder (admin/builder/builderModel.js → buildContent)
@@ -27,15 +27,8 @@ export function isBuilderContent(content) {
 
 export const builderType = (content) => (isBuilderContent(content) ? content.challenge_type : null);
 
-/** نص متعدد اللغات {ar,fr,en}: اللغة المطلوبة ← الافتراضية للإصدار ← ترتيب الاحتياط. سلسلة فارغة إن لم يوجد. */
-export function pickText(obj, lang, defaultLang) {
-  if (!isObj(obj)) return '';
-  for (const l of [lang, defaultLang, ...GAMES_LANG_FALLBACK]) {
-    const v = l ? obj[l] : null;
-    if (typeof v === 'string' && v.trim()) return v;
-  }
-  return '';
-}
+/** نص متعدد اللغات {ar,fr,en}: اللغة المطلوبة ← الافتراضية للإصدار ← ترتيب الاحتياط. المنطق الموحّد في services/gamesLang.js (نفسه لعنوان التحدي ووصفه). */
+export const pickText = pickLocalized;
 
 /** [{id, text}] — عناصر بنص متعدد اللغات. تُهمَل العناصر بلا معرّف نصي. */
 export function optionsOf(arr) {

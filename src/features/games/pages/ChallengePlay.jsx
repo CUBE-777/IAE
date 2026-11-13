@@ -3,7 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Timer, XCircle } from 'lucide-react';
 import {
-  getAttemptChallenge, getChallengeById, getChallenges, getGameCategories, getGames, getMyChallengeStatus, getOpenAttemptChallenge,
+  getAttemptChallenge, getChallengeById, getChallengeLanguage, getChallenges, getGameCategories, getGames, getMyChallengeStatus, getOpenAttemptChallenge,
   measureClockOffset, startAttempt, submitAttempt,
 } from '../services';
 import { pickLocalized } from '../services/gamesCore.shared';
@@ -69,9 +69,10 @@ export default function ChallengePlay() {
 
   const data = useAsyncData(async () => {
     // محاولتي الجارية (إن وُجدت) بإصدارها المثبَّت، بالتوازي مع الكتالوج المنشور. فشلها «إصدار غير صالح» يُعرض بوضوح ولا يُستبدل بالجاري.
-    const [open, challenge, games, categories] = await Promise.all([
+    const [open, challenge, games, categories, catalogVersion] = await Promise.all([
       getOpenAttemptChallenge(challengeId).then((p) => ({ p }), (err) => ({ err })),
       getChallengeById(challengeId), getGames(), getGameCategories(),
+      getChallengeLanguage(challengeId).catch(() => null), // لغة الإصدار الجاري للعرض فقط؛ فشلها لا يمنع الصفحة (احتياط ar ← en ← fr)
     ]);
     if (open.err) {
       if (open.err.code === 'attempt_version_unavailable') return { challenge: null, blocked: open.err.code };
@@ -79,13 +80,13 @@ export default function ChallengePlay() {
     }
     if (open.p) {
       const [offset, siblings] = await Promise.all([measureClockOffset(), getChallenges(open.p.game.id).catch(() => [])]);
-      return { challenge: open.p.challenge, game: open.p.game, siblings, resume: open.p, offset };
+      return { challenge: open.p.challenge, game: open.p.game, version: open.p.version || null, siblings, resume: open.p, offset };
     }
     const game = challenge ? games.find((g) => g.id === challenge.game_id) : null;
     const category = game ? categories.find((c) => c.id === game.category_id) : null;
     if (!challenge || !game || !category) return { challenge: null };
     const siblings = await getChallenges(game.id);
-    return { challenge, game, siblings };
+    return { challenge, game, version: catalogVersion, siblings };
   }, [challengeId]);
 
   const refreshStatus = useCallback(async () => {
@@ -125,14 +126,16 @@ export default function ChallengePlay() {
   // أثناء المحاولة: بيانات الإصدار المثبَّت (play). خارجها: الكتالوج المنشور (أو محاولتي الجارية عند أول فتح).
   const challenge = play?.challenge || data.data?.challenge || null;
   const game = play?.game || data.data?.game || null;
+  // لغة الإصدار الافتراضية: من إصدار المحاولة المثبَّت أثناء اللعب، وإلا من حمولة الاستئناف/الإصدار الجاري المنشور. تحكم العنوان والوصف والمحتوى معًا.
+  const defaultLang = (play?.version || data.data?.version)?.default_language || undefined;
   const st = useMemo(() => statusMap(statusRows), [statusRows]);
   const status = st[challengeId] || null;
   const type = challenge ? resolveAnswerType(challenge.content, game?.kind) : null;
   const left = useCountdown(attempt?.expiresAt || null, attempt?.offsetMs || 0, phase === 'playing');
 
   useEffect(() => {
-    document.title = `${challenge ? pickLocalized(challenge.title, lang) : t('games.pageTitle')} — ${t('brand.name')}`;
-  }, [challenge, lang, t]);
+    document.title = `${challenge ? pickLocalized(challenge.title, lang, defaultLang) : t('games.pageTitle')} — ${t('brand.name')}`;
+  }, [challenge, lang, defaultLang, t]);
 
   /** يدخل وضع اللعب من حمولة محاولة (إصدارها المثبَّت). كل ما يُعرض بعدها يأتي منها. */
   const begin = useCallback((p, offsetMs) => {
@@ -300,7 +303,7 @@ export default function ChallengePlay() {
     );
   }
 
-  const title = pickLocalized(challenge.title, lang);
+  const title = pickLocalized(challenge.title, lang, defaultLang);
   const gameTitle = pickLocalized(game.title, lang);
   // كل ما يخص المحاولات المتبقية يأتي من قراءة الخادم؛ بلا قراءة جاهزة لا نفترض شيئًا
   const statusReady = statusPhase === 'ready';
@@ -308,8 +311,8 @@ export default function ChallengePlay() {
   const hasOpen = statusReady && !!status?.open_attempt_id;
   const hasQuota = statusReady && (remaining === null || remaining > 0);
   const canStart = type !== null && statusPhase !== 'loading' && (statusPhase === 'error' || hasOpen || hasQuota); // عند فشل القراءة يقرّر الخادم
-  const prompt = getPrompt(challenge.content, lang);
-  const hint = challenge.content?.hint ? (typeof challenge.content.hint === 'string' ? challenge.content.hint : pickLocalized(challenge.content.hint, lang)) : '';
+  const prompt = getPrompt(challenge.content, lang, defaultLang);
+  const hint = challenge.content?.hint ? (typeof challenge.content.hint === 'string' ? challenge.content.hint : pickLocalized(challenge.content.hint, lang, defaultLang)) : '';
   const Custom = KIND_RENDERERS[game.kind];
   const errText = errCode ? t(`games.play.errors.${errCode}`, { defaultValue: t('games.play.errors.unknown') }) : '';
   const busy = phase === 'submitting';
@@ -361,7 +364,7 @@ export default function ChallengePlay() {
 
         {(phase === 'intro' || phase === 'starting') && (
           <div className="gp-intro">
-            {challenge.description && <p className="gp-desc-full">{pickLocalized(challenge.description, lang)}</p>}
+            {challenge.description && <p className="gp-desc-full">{pickLocalized(challenge.description, lang, defaultLang)}</p>}
             <ul className="gp-rules">
               {challenge.time_limit_seconds ? <li>{t('games.play.ruleTimer', { time: formatClock(challenge.time_limit_seconds) })}</li> : null}
               {statusReady && remaining !== null && <li>{t('games.play.attemptsLeft', { count: remaining })}</li>}
@@ -394,15 +397,15 @@ export default function ChallengePlay() {
                 onChange={setRaw}
                 disabled={busy || confirming}
                 lang={lang}
-                defaultLang={play?.version?.default_language || undefined}
+                defaultLang={defaultLang}
               />
             ) : (
               <>
                 {prompt && prompt.split('\n').map((line, i) => <p key={i} className="gp-prompt">{line}</p>)}
                 {hint && <p className="gp-sub">{t('games.play.hint')}: {hint}</p>}
                 {Custom
-                  ? <Custom challenge={challenge} content={challenge.content} value={raw} onChange={setRaw} disabled={busy} lang={lang} />
-                  : <ChallengeAnswer type={type} content={challenge.content} value={raw} onChange={setRaw} disabled={busy} lang={lang} onEnter={submit} />}
+                  ? <Custom challenge={challenge} content={challenge.content} value={raw} onChange={setRaw} disabled={busy} lang={lang} defaultLang={defaultLang} />
+                  : <ChallengeAnswer type={type} content={challenge.content} value={raw} onChange={setRaw} disabled={busy} lang={lang} defaultLang={defaultLang} onEnter={submit} />}
               </>
             )}
             {confirming ? (

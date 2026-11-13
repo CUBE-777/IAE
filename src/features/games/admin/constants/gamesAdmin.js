@@ -53,6 +53,7 @@ export const GAMES_ADMIN_ERROR_CODES = [
   'invalid_version_transition',
   'version_pointer_locked',
   'challenge_versioned',
+  'challenge_has_attempts',
   'legacy_title_unsupported',
   'builder_unavailable',
   // رموز محلية (الواجهة)

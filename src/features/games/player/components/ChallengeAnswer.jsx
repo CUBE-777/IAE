@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { getOptions } from '../challengeTypes';
 
 /** حقل الإجابة بحسب النوع العام. لا يعرض إلا ما في content العلني. */
-export default function ChallengeAnswer({ type, content, value, onChange, disabled, lang, onEnter }) {
+export default function ChallengeAnswer({ type, content, value, onChange, disabled, lang, defaultLang, onEnter }) {
   const { t } = useTranslation();
   const id = useId();
   const placeholder = typeof content?.placeholder === 'string' ? content.placeholder.slice(0, 120) : undefined;
 
   if (type === 'choice') {
-    const options = getOptions(content, lang);
+    const options = getOptions(content, lang, defaultLang);
     return (
       <fieldset className="gp-choices" disabled={disabled}>
         <legend className="gp-sr">{t('games.play.yourAnswer')}</legend>

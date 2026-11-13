@@ -25,17 +25,17 @@ export function resolveAnswerType(content, kind) {
   return Array.isArray(c.options) && c.options.length ? 'choice' : 'text';
 }
 
-export function getPrompt(content, lang) {
+export function getPrompt(content, lang, defaultLang) {
   const p = content?.prompt;
   if (typeof p === 'string') return p;
-  return pickLocalized(p, lang);
+  return pickLocalized(p, lang, defaultLang);
 }
 
-export function getOptions(content, lang) {
+export function getOptions(content, lang, defaultLang) {
   const list = Array.isArray(content?.options) ? content.options.slice(0, 50) : [];
   return list.map((o, i) => {
     if (o && typeof o === 'object' && !Array.isArray(o) && 'value' in o) {
-      const label = typeof o.label === 'string' ? o.label : pickLocalized(o.label, lang);
+      const label = typeof o.label === 'string' ? o.label : pickLocalized(o.label, lang, defaultLang);
       return { key: i, value: o.value, label: label || String(o.value) };
     }
     return { key: i, value: o, label: typeof o === 'string' ? o : JSON.stringify(o) };

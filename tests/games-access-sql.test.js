@@ -76,7 +76,8 @@ test('0049: can_access_games — الترتيب: هوية ← MFA ← إداري
   }
   assert.match(can, /if auth\.uid\(\) is null then return false; end if;/);
   assert.match(can, /if not public\.mfa_satisfied\(\) then return false; end if;/);
-  assert.match(can, /if public\.is_admin\(\) then return true; end if;/);
+  // الإداري: القرار نهائي هنا (لا سقوط لمسار العضو)، ويُرفض فقط من عليه تغيير كلمة مرور مؤقتة (profiles.must_change_password، 0027)
+  assert.match(can, /if public\.is_admin\(\) then\s+return not exists \(\s+select 1 from public\.profiles p\s+where p\.id = auth\.uid\(\) and p\.must_change_password is true\s+\);\s+end if;/);
   assert.match(can, /if v_id is null then return false; end if;/);
   assert.match(can, /nullif\(btrim\(value\), ''\) into v_season/);
   assert.match(can, /if v_season is null then return false; end if;/);
@@ -93,7 +94,11 @@ test('0049: شرط العضو = status active + غير محذوف + صف member_
 
 test('0049: لا أدوار مكتوبة — الإداري = is_admin() فقط (يشمل كل الأدوار الحالية والمستقبلية)', () => {
   for (const role of R.ALL_ROLES) assert.doesNotMatch(sql, new RegExp(`'${role}'`), `الدور ${role} مكتوب حرفيًا`);
-  assert.doesNotMatch(sql, /current_admin_role|admin_role|\bprofiles\b/);
+  assert.doesNotMatch(sql, /current_admin_role|admin_role/);
+  // profiles مستعمل لشيء واحد فقط: علم كلمة المرور المؤقتة؛ لا قراءة دور ولا قائمة أدوار منه
+  const profileRefs = [...stripSql(sql).matchAll(/\bprofiles\b/g)].length;
+  assert.ok(profileRefs >= 1);
+  assert.doesNotMatch(can, /\bp\.role\b|\brole\b/);
   assert.doesNotMatch(sql, /\brole\s+in\s*\(/i);
 });
 

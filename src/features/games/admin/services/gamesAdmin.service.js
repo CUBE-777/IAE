@@ -10,7 +10,7 @@ import { unwrapAdmin } from './gamesAdmin.shared';
 const COL = {
   category: 'id, slug, name, description, icon, sort_order, is_active, created_at, updated_at',
   game: 'id, category_id, slug, kind, title, description, status, sort_order, config, created_at, updated_at',
-  challenge: 'id, game_id, slug, title, description, difficulty, points_reward, time_limit_seconds, max_attempts, content, status, starts_at, ends_at, sort_order, created_at, updated_at',
+  challenge: 'id, game_id, slug, title, description, difficulty, points_reward, time_limit_seconds, max_attempts, content, status, starts_at, ends_at, sort_order, current_version_id, created_at, updated_at',
   achievement: 'id, code, title, description, icon, points_bonus, criteria, is_active, sort_order, created_at, updated_at',
   level: 'level, min_points, title, icon',
   attempt: 'id, challenge_id, status, started_at, expires_at, finished_at',

@@ -25,6 +25,8 @@ const isInt = (n, min, max) => Number.isInteger(n) && n >= min && n <= max;
 
 function ChallengeForm({ item, games, defaultGameId, nextOrder, onClose, onSaved }) {
   const { t, i18n } = useTranslation();
+  // 6.6: تحدٍّ له إصدارات = العنوان/الوصف/الصعوبة/النقاط/المهلة/المحاولات/المحتوى/الحلّ تُعدَّل بالمحرر فقط (مسودّة ← نشر). الخادم يرفض غير ذلك (challenge_versioned)؛ هنا نمنعه قبل الإرسال.
+  const locked = !!item?.current_version_id;
   const [v, setV] = useState({
     game_id: item?.game_id || defaultGameId || games[0]?.id || '',
     slug: item?.slug || '',
@@ -41,14 +43,14 @@ function ChallengeForm({ item, games, defaultGameId, nextOrder, onClose, onSaved
     verify_mode: VERIFY_MODES[0],
     solution: '',
   });
-  const [solState, setSolState] = useState(item ? 'loading' : 'ready'); // loading | ready | error | missing
+  const [solState, setSolState] = useState(item && !item.current_version_id ? 'loading' : 'ready'); // loading | ready | error | missing
   const [solDirty, setSolDirty] = useState(!item);
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const set = (patch) => setV((p) => ({ ...p, ...patch }));
 
   useEffect(() => {
-    if (!item) return undefined;
+    if (!item || locked) return undefined;
     let alive = true;
     getChallengeSolution(item.id)
       .then((row) => {
@@ -65,7 +67,7 @@ function ChallengeForm({ item, games, defaultGameId, nextOrder, onClose, onSaved
     return () => {
       alive = false;
     };
-  }, [item]);
+  }, [item, locked]);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -86,16 +88,18 @@ function ChallengeForm({ item, games, defaultGameId, nextOrder, onClose, onSaved
     if (starts && ends && ends <= starts) er.ends_at = t('games.admin.errors.datesInvalid');
 
     let content = {};
-    try {
-      content = JSON.parse(v.content || '{}');
-      if (!content || typeof content !== 'object' || Array.isArray(content)) throw new Error('obj');
-      if (hasForbiddenKey(content)) er.content = t('games.admin.errors.content_has_answer');
-    } catch {
-      er.content = er.content || t('games.admin.errors.invalid_json');
+    if (!locked) {
+      try {
+        content = JSON.parse(v.content || '{}');
+        if (!content || typeof content !== 'object' || Array.isArray(content)) throw new Error('obj');
+        if (hasForbiddenKey(content)) er.content = t('games.admin.errors.content_has_answer');
+      } catch {
+        er.content = er.content || t('games.admin.errors.invalid_json');
+      }
     }
     let solution;
     let sendSolution = false;
-    if (solDirty) {
+    if (solDirty && !locked) {
       if (!v.solution.trim()) {
         if (v.status === 'published') er.solution = t('games.admin.errors.solutionRequired');
       } else {
@@ -117,6 +121,9 @@ function ChallengeForm({ item, games, defaultGameId, nextOrder, onClose, onSaved
     };
     if (!item) data.sort_order = nextOrder;
     if (sendSolution) data.solution = solution;
+    if (locked) {
+      for (const k of ['title', 'description', 'difficulty', 'points_reward', 'time_limit_seconds', 'max_attempts', 'content', 'verify_mode', 'solution']) delete data[k];
+    }
     setSaving(true);
     try {
       await saveChallenge(item?.id, data);
@@ -132,6 +139,7 @@ function ChallengeForm({ item, games, defaultGameId, nextOrder, onClose, onSaved
     <Modal onClose={onClose} wide>
       <h3>{item ? t('games.admin.challenges.edit') : t('games.admin.challenges.new')}</h3>
       <form onSubmit={submit} noValidate>
+        {locked && <p className="admin-hint" role="note">{t('games.admin.errors.challenge_versioned')}</p>}
         <div className="admin-form-grid-2">
           <Field id="c_game" label={t('games.admin.fields.game')} error={errors.game_id}>
             <select id="c_game" className="admin-select" value={v.game_id} onChange={(e) => set({ game_id: e.target.value })}>
@@ -142,23 +150,23 @@ function ChallengeForm({ item, games, defaultGameId, nextOrder, onClose, onSaved
             <input id="c_slug" className="admin-input" dir="ltr" maxLength={64} value={v.slug} onChange={(e) => set({ slug: e.target.value })} />
           </Field>
         </div>
-        <LocalizedFields label={t('games.admin.fields.title')} required value={v.title} onChange={(title) => set({ title })} error={errors.title} />
-        <LocalizedFields label={t('games.admin.fields.description')} multiline maxLength={2000} value={v.description} onChange={(description) => set({ description })} />
+        <LocalizedFields label={t('games.admin.fields.title')} required value={v.title} onChange={(title) => set({ title })} error={errors.title} disabled={locked} />
+        <LocalizedFields label={t('games.admin.fields.description')} multiline maxLength={2000} value={v.description} onChange={(description) => set({ description })} disabled={locked} />
 
         <div className="admin-form-grid-2">
           <Field id="c_diff" label={t('games.admin.fields.difficulty')}>
-            <select id="c_diff" className="admin-select" value={v.difficulty} onChange={(e) => set({ difficulty: e.target.value })}>
+            <select id="c_diff" className="admin-select" disabled={locked} value={v.difficulty} onChange={(e) => set({ difficulty: e.target.value })}>
               {DIFFICULTIES.map((d) => <option key={d} value={d}>{d} — {t(`games.admin.difficulty.${d}`)}</option>)}
             </select>
           </Field>
           <Field id="c_points" label={t('games.admin.fields.points')} error={errors.points_reward}>
-            <input id="c_points" type="number" min="0" max="10000" className="admin-input" dir="ltr" value={v.points_reward} onChange={(e) => set({ points_reward: e.target.value })} />
+            <input id="c_points" disabled={locked} type="number" min="0" max="10000" className="admin-input" dir="ltr" value={v.points_reward} onChange={(e) => set({ points_reward: e.target.value })} />
           </Field>
           <Field id="c_time" label={t('games.admin.fields.timeLimit')} hint={t('games.admin.fields.timeLimitHint')} error={errors.time_limit_seconds}>
-            <input id="c_time" type="number" min="5" max="86400" className="admin-input" dir="ltr" value={v.time_limit_seconds} onChange={(e) => set({ time_limit_seconds: e.target.value })} />
+            <input id="c_time" disabled={locked} type="number" min="5" max="86400" className="admin-input" dir="ltr" value={v.time_limit_seconds} onChange={(e) => set({ time_limit_seconds: e.target.value })} />
           </Field>
           <Field id="c_att" label={t('games.admin.fields.maxAttempts')} hint={t('games.admin.fields.maxAttemptsHint')} error={errors.max_attempts}>
-            <input id="c_att" type="number" min="1" max="1000" className="admin-input" dir="ltr" value={v.max_attempts} onChange={(e) => set({ max_attempts: e.target.value })} />
+            <input id="c_att" disabled={locked} type="number" min="1" max="1000" className="admin-input" dir="ltr" value={v.max_attempts} onChange={(e) => set({ max_attempts: e.target.value })} />
           </Field>
           <Field id="c_start" label={t('games.admin.fields.startsAt')}>
             <input id="c_start" type="datetime-local" className="admin-input" dir="ltr" value={v.starts_at} onChange={(e) => set({ starts_at: e.target.value })} />
@@ -172,14 +180,14 @@ function ChallengeForm({ item, games, defaultGameId, nextOrder, onClose, onSaved
             </select>
           </Field>
           <Field id="c_verify" label={t('games.admin.fields.verifyMode')} hint={t('games.admin.fields.verifyModeHint')}>
-            <select id="c_verify" className="admin-select" value={v.verify_mode} onChange={(e) => set({ verify_mode: e.target.value })}>
+            <select id="c_verify" className="admin-select" disabled={locked} value={v.verify_mode} onChange={(e) => set({ verify_mode: e.target.value })}>
               {VERIFY_MODES.map((m) => <option key={m} value={m}>{t(`games.admin.verifyModes.${m}`)}</option>)}
             </select>
           </Field>
         </div>
 
         <Field id="c_content" label={t('games.admin.fields.content')} hint={t('games.admin.fields.contentHint')} error={errors.content}>
-          <textarea id="c_content" className="admin-textarea ga-code" dir="ltr" rows={6} spellCheck={false} value={v.content} onChange={(e) => set({ content: e.target.value })} />
+          <textarea id="c_content" disabled={locked} className="admin-textarea ga-code" dir="ltr" rows={6} spellCheck={false} value={v.content} onChange={(e) => set({ content: e.target.value })} />
         </Field>
 
         <div className="ga-solution">
@@ -188,7 +196,7 @@ function ChallengeForm({ item, games, defaultGameId, nextOrder, onClose, onSaved
             {solState === 'loading' && <p className="admin-hint" role="status">{t('admin.common.loading')}</p>}
             {solState === 'error' && <p className="admin-inline-error" role="alert">{t('games.admin.fields.solutionLoadError')}</p>}
             {solState !== 'loading' && (
-              <textarea id="c_solution" className="admin-textarea ga-code" dir="ltr" rows={4} spellCheck={false}
+              <textarea id="c_solution" disabled={locked} className="admin-textarea ga-code" dir="ltr" rows={4} spellCheck={false}
                 placeholder={item && solState === 'error' ? t('games.admin.fields.solutionKeep') : undefined}
                 value={v.solution} onChange={(e) => { set({ solution: e.target.value }); setSolDirty(true); }} />
             )}

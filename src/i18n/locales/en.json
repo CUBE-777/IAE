@@ -2047,6 +2047,7 @@
         "invalid_version_transition": "Version status transition not allowed.",
         "version_pointer_locked": "The current version changes only by publishing.",
         "challenge_versioned": "This challenge has versions: edit it in the builder (draft, then publish).",
+        "challenge_has_attempts": "This challenge already has attempts: edit it in the builder (draft, then publish) so each player keeps the content of their attempt.",
         "legacy_title_unsupported": "The legacy challenge title isn’t valid for versioning; fix the title first.",
         "builder_unavailable": "The challenge builder isn’t available yet: apply migration 0057 to the database."
       },

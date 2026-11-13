@@ -1,3 +1,16 @@
+# IAE Games — المرحلة 6.6: المراجعة النهائية والتكامل (migration 0060)
+## ماذا
+- **اللغة**: عنوان التحدي ووصفه وسؤاله وخياراته وتلميحه تتبع الآن منطقًا واحدًا: لغة اللاعب ← `version.default_language` ← الاحتياط (`services/gamesLang.js`، و`pickText` في `builderContent.js` يشير إليه). قبل البدء تُقرأ لغة الإصدار الجاري المنشور (`getChallengeLanguage`)، وأثناء المحاولة تأتي من إصدارها المثبَّت.
+- **Versioning (0060)**: تحدٍّ قديم بلا إصدارات وله محاولات لم يعد يُعدَّل محتواه/حلّه الحيّان (المحرر القديم أو تحديث مباشر) — `challenge_has_attempts`؛ التعديل بالمحرر (مسودّة ← نشر، والنشر الأول ينشئ «الإصدار 0» ويربط محاولاته). ومفاتيح الحلول (`answer/solution/correct*/expected*`) في `content` ترفضها الآن قاعدة البيانات في المحرر القديم (`content_has_answer`) بدل الواجهة وحدها.
+- المحرر القديم: حقول التحدي ذي الإصدارات (عنوان/وصف/صعوبة/نقاط/مهلة/محاولات/محتوى/حلّ) معطّلة ولا تُرسل؛ الحالة والجدولة والـ slug تبقى.
+- تصحيح اختبارين قديمين في `tests/games-access-sql.test.js` ليطابقا 0049 الفعلية (رفض إداري بكلمة مرور مؤقتة).
+## الملفات
+`supabase/migrations/0060_games_final_integration.sql` (+ rollback) · جديد: `src/features/games/services/gamesLang.js` · `tests/games-final-integration.test.js` · تعديل: `ChallengePlay.jsx`, `gamesCatalog.service.js`, `gamesCore.shared.js`, `builderContent.js`, `challengeTypes.js`, `ChallengeAnswer.jsx`, `admin/{pages/ChallengesTab.jsx, components/adminUi.jsx, services/gamesAdmin.service.js, constants/gamesAdmin.js}` والترجمات الثلاث.
+## النشر
+نفّذ 0060 (جرّبه أولًا بـ rollback) ثم انشر الواجهة. الواجهة تعمل بلا 0060 (يبقى فقط خلل الحراسة)؛ و0060 تعمل بلا الواجهة.
+
+---
+
 # IAE Games — المرحلة 6.4: تجربة اللاعب لمسارات التعلم + إصلاح استئناف المحاولات (migration 0058)
 ## ماذا
 - صفحات اللاعب: `/games/paths` (المسارات المنشورة وتقدّمي)، `/games/paths/:trackId` (المسار ← الفئات ← المراحل بحالة كل مرحلة: مفتوحة/مغلقة/مكتملة، مع التقدّم وسبب القفل)، `/games/stages/:stageId` (شرط الإكمال والمتبقي، التحديات المطلوبة والمنجزة والمتبقية، المرحلة السابقة/التالية وشرط فتحها). Breadcrumbs في كل صفحة، وصلة «المسارات» في تنقل الألعاب، وقسم مسارات اللعبة في `GameDetails`، ووصلة عودة إلى المرحلة داخل `ChallengePlay` عند الوصول منها.

@@ -50,3 +50,14 @@ export async function getChallengesByIds(ids) {
   if (!list.length) return [];
   return unwrap(await supabase.from('game_challenges').select('id, game_id, slug, title').in('id', list)) || [];
 }
+
+/**
+ * لغة إصدار التحدي الجاري المنشور { default_language, allow_language_fallback } أو null (تحدٍّ قديم بلا إصدارات، أو تعذّرت القراءة).
+ * سياسة RLS (0055) تُظهر للاعب الإصدار الجاري المنشور لتحدٍّ يراه فقط؛ لا حلّ هنا ولا محتوى. تُستعمل لعرض عنوان التحدي ووصفه
+ * بنفس منطق لغة محتواه (لغة اللاعب ← الافتراضية ← الاحتياط) قبل بدء المحاولة. أثناء المحاولة تأتي اللغة من إصدارها المثبَّت (get_my_attempt_challenge).
+ */
+export async function getChallengeLanguage(challengeId) {
+  const row = unwrap(await supabase.from('game_challenge_versions').select('default_language, allow_language_fallback')
+    .eq('challenge_id', challengeId).eq('status', 'published').maybeSingle());
+  return row ? { default_language: row.default_language, allow_language_fallback: row.allow_language_fallback } : null;
+}

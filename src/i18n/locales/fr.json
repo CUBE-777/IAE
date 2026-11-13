@@ -2047,6 +2047,7 @@
         "invalid_version_transition": "Transition de statut de version non autorisée.",
         "version_pointer_locked": "La version courante change uniquement par publication.",
         "challenge_versioned": "Ce défi a des versions : modifiez-le via l’éditeur (brouillon puis publication).",
+        "challenge_has_attempts": "Ce défi a déjà des tentatives : modifiez-le via l’éditeur (brouillon puis publication) pour que chaque joueur garde le contenu de sa tentative.",
         "legacy_title_unsupported": "Le titre de l’ancien défi n’est pas valide pour l’archivage en version ; modifiez-le d’abord.",
         "builder_unavailable": "L’éditeur de défis n’est pas encore disponible : appliquez la migration 0057 à la base de données."
       },

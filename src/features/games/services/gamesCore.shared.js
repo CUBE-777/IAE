@@ -1,5 +1,5 @@
 import { supabase } from '../../../services/supabase/client';
-import { GAMES_ERROR_CODES, GAMES_LANG_FALLBACK, GAMES_UNKNOWN_ERROR } from '../constants/gamesCore';
+import { GAMES_ERROR_CODES, GAMES_UNKNOWN_ERROR } from '../constants/gamesCore';
 
 /** خطأ موحّد: code من GAMES_ERROR_CODES (أو 'unknown') ليُترجم في الواجهة؛ لا نعرض نص الخادم الخام. */
 export class GamesError extends Error {
@@ -23,15 +23,8 @@ export function unwrap({ data, error }) {
   return data;
 }
 
-/** قيمة jsonb متعددة اللغات {ar,fr,en} باللغة المطلوبة مع احتياط؛ سلسلة فارغة إن لم يوجد شيء. */
-export function pickLocalized(value, lang) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return '';
-  for (const l of [lang, ...GAMES_LANG_FALLBACK]) {
-    const v = value[l];
-    if (typeof v === 'string' && v.trim()) return v;
-  }
-  return '';
-}
+/** قيمة jsonb متعددة اللغات {ar,fr,en}: لغة اللاعب ← اللغة الافتراضية للإصدار (اختياري) ← الاحتياط. المنطق في gamesLang.js (نقي). */
+export { pickLocalized } from './gamesLang';
 
 /** أعمدة صريحة بدل النجمة كي لا يتسرّب عمود جديد حساس تلقائيًا. */
 export const COLUMNS = {

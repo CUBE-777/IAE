@@ -12,11 +12,11 @@ export function notifyError(t, err, fallbackKey = 'games.admin.errors.unknown') 
 }
 
 /** ثلاث خانات (ar/fr/en) لقيمة jsonb متعددة اللغات. */
-export function LocalizedFields({ label, value, onChange, required = false, multiline = false, maxLength = 200, error }) {
+export function LocalizedFields({ label, value, onChange, required = false, multiline = false, maxLength = 200, error, disabled = false }) {
   const { t } = useTranslation();
   const uid = useId();
   return (
-    <fieldset className="ga-fieldset">
+    <fieldset className="ga-fieldset" disabled={disabled}>
       <legend>{label}{required ? ' *' : ''}</legend>
       {LANGS.map((l) => {
         const id = `${uid}-${l}`;
