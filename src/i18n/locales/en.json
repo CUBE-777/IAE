@@ -1347,7 +1347,8 @@
       "nav": {
         "home": "Games",
         "profile": "My profile",
-        "leaderboard": "Leaderboard"
+        "leaderboard": "Leaderboard",
+        "paths": "Paths"
       },
       "games": "Games",
       "categories": "Categories",
@@ -1494,7 +1495,90 @@
         "verification_unavailable": "Verification for this challenge is unavailable right now.",
         "invalid_delta": "Invalid value.",
         "note_required": "A note is required.",
-        "user_not_found": "User not found."
+        "user_not_found": "User not found.",
+        "stage_not_available": "This stage is not available right now.",
+        "stage_locked": "This stage is locked. Check how to unlock it on the stage page.",
+        "path_not_available": "This path is not available right now."
+      },
+      "paths": {
+        "title": "Learning paths",
+        "tagline": "Progress step by step through ordered stages, and always see what is missing to unlock the next one.",
+        "empty": "No published paths yet. Check back soon.",
+        "filterByGame": "Filter by game",
+        "categoriesCount": "{{n}} categories",
+        "stagesCount": "{{n}} stages",
+        "challengesCount": "{{n}} challenges",
+        "stagesProgress": "{{done}} of {{total}} stages completed",
+        "progress": "Progress",
+        "stageProgress": "Stage progress",
+        "open": "Open path",
+        "viewAll": "All paths",
+        "notFound": "This path does not exist or is not available.",
+        "stageNotFound": "This stage does not exist or is not available.",
+        "backToPaths": "Back to paths",
+        "noCategories": "This path has no published categories yet.",
+        "noStages": "This category has no published stages yet.",
+        "noChallenges": "This stage has no challenges yet.",
+        "unlockMode": {
+          "sequential": "Stages unlock in order: complete one to unlock the next.",
+          "free": "All stages are open: start anywhere.",
+          "manual": "Stages are unlocked by an administrator."
+        },
+        "state": {
+          "completed": "Completed",
+          "unlocked": "Open",
+          "locked": "Locked"
+        },
+        "lock": {
+          "previous_stage_incomplete": "Complete “{{name}}” first to unlock this stage.",
+          "previousFallback": "the previous stage",
+          "goPrevious": "Go to the previous stage",
+          "manual_unlock_required": "An administrator must unlock this stage.",
+          "locked": "This stage is currently locked."
+        },
+        "requirements": "Stage completion requirements",
+        "rule": {
+          "all_required": "Complete every required challenge in the stage.",
+          "min_success_rate": "Reach a success rate of at least {{n}}% across the stage challenges.",
+          "min_points": "Earn at least {{n}} points from the stage challenges.",
+          "manual": "An administrator approves this stage manually after reviewing your progress."
+        },
+        "fact": {
+          "requiredDone": "{{done}} of {{total}} required challenges",
+          "solvedOf": "{{solved}} of {{total}} solved",
+          "rate": "Your current success rate: {{n}}%",
+          "points": "{{earned}} of {{needed}} points",
+          "approved": "An administrator has approved this stage",
+          "awaiting": "Waiting for administrator approval"
+        },
+        "remaining": {
+          "noRequired": "This stage has no required challenges yet, so it cannot be completed until some are added.",
+          "required": "Remaining: {{n}} required challenges.",
+          "noChallenges": "This stage has no challenges yet.",
+          "solve": "You need to solve {{n}} more challenges.",
+          "points": "Remaining: {{n}} points.",
+          "approval": "It will be completed once an administrator approves it."
+        },
+        "stageDone": "You have completed this stage.",
+        "upcomingTitle": "Upcoming challenge",
+        "required": "Required",
+        "optional": "Optional",
+        "cstate": {
+          "solved": "Solved",
+          "in_progress": "In progress",
+          "available": "Available",
+          "locked": "Locked",
+          "upcoming": "Coming soon",
+          "no_attempts": "No attempts left"
+        },
+        "challengeLocked": "This challenge opens when the stage is unlocked.",
+        "opensAt": "Starts on {{date}}",
+        "stageNav": "Stage navigation",
+        "previousStage": "Previous stage",
+        "nextStage": "Next stage",
+        "nextOpen": "The next stage is open.",
+        "nextAfterThis": "Opens after you complete this stage.",
+        "nextManual": "Opened by an administrator."
       }
     },
     "pageTitle": "Games",

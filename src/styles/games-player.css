@@ -134,9 +134,65 @@ a.gp-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .gp-pod-2 .gp-rank { background: #c0c7d1; }
 .gp-pod-3 .gp-rank { background: #d99a6c; }
 
+/* ---- مسارات التعلم (6.4): خصائص منطقية + tokens، فتتبع RTL/LTR والوضعين الداكن/الفاتح ---- */
+.gp-chip-static { text-decoration: none; }
+a.gp-chip-static { cursor: pointer; }
+a.gp-chip-static:hover { border-color: var(--gold); color: var(--gold-text); }
+.gp-badge-open { color: var(--gold-text); background: rgba(var(--gold-rgb), 0.14); }
+.gp-badge-lock { color: var(--muted); background: var(--cream); border: 1px solid var(--border); }
+
+.gp-path-card h2, .gp-path-card h3 { font-size: var(--text-h4); }
+.gp-prog { display: grid; gap: 6px; min-inline-size: 0; }
+.gp-prog-row { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: var(--text-small); }
+.gp-prog-row b { color: var(--heading); font-variant-numeric: tabular-nums; }
+
+.gp-cat { scroll-margin-block-start: 96px; }
+.gp-unlock-mode:empty { display: none; }
+.gp-stage-list { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.gp-stage-row { display: grid; gap: 8px; padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); color: var(--text-body); text-decoration: none; min-inline-size: 0; }
+.gp-stage-row:hover { border-color: var(--gold); }
+.gp-stage-row:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.gp-stage-row.gp-stage-completed { border-color: rgba(61, 220, 132, 0.45); }
+.gp-stage-row.gp-stage-locked { background: var(--cream); }
+.gp-stage-row.gp-stage-locked h3 { color: var(--muted); }
+.gp-stage-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.gp-stage-top h1, .gp-stage-top h3 { margin: 0; color: var(--heading); overflow-wrap: anywhere; min-inline-size: 0; }
+.gp-stage-row h3 { font-size: var(--text-h4); }
+
+.gp-lock-note { display: flex; align-items: flex-start; gap: 8px; margin: 0; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--cream); color: var(--text-body); overflow-wrap: anywhere; }
+.gp-lock-note svg { flex: none; margin-block-start: 2px; color: var(--gold); }
+.gp-lock-note a { color: var(--gold-text); font-weight: 700; }
+.gp-lock-compact { padding: 0; border: 0; background: transparent; color: var(--muted); font-size: var(--text-small); }
+
+.gp-req { display: grid; gap: var(--space-3); }
+.gp-req h2 { margin: 0; display: flex; align-items: center; gap: 8px; font-size: var(--text-h4); color: var(--heading); }
+.gp-req h2 svg { color: var(--gold); }
+.gp-req-rule { margin: 0; color: var(--text-body); overflow-wrap: anywhere; }
+.gp-req-left { display: flex; align-items: center; gap: 6px; margin: 0; color: var(--gold-text); font-weight: 700; }
+
+.gp-chal-list { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.gp-chal-row { display: grid; gap: 8px; }
+.gp-chal-row h3 { font-size: var(--text-h4); }
+.gp-chal-row.gp-chal-locked, .gp-chal-row.gp-chal-upcoming { opacity: 0.85; }
+.gp-chal-why { display: inline-flex; align-items: center; gap: 6px; }
+
+.gp-stage-nav { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: var(--space-3); }
+.gp-stage-nav .btn { display: inline-flex; align-items: center; gap: 6px; max-inline-size: 100%; text-align: start; white-space: normal; }
+.gp-stage-next { display: grid; gap: 4px; justify-items: end; margin-inline-start: auto; max-inline-size: 100%; }
+
+.gp-skel-list { display: grid; gap: var(--space-3); }
+.gp-skel { display: grid; gap: 10px; padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.gp-skel-line { display: block; block-size: 12px; border-radius: var(--radius-full); background: linear-gradient(90deg, var(--border), rgba(var(--gold-rgb), 0.18), var(--border)); background-size: 200% 100%; animation: gpShimmer 1.4s linear infinite; }
+.gp-skel-w90 { inline-size: 90%; } .gp-skel-w60 { inline-size: 60%; } .gp-skel-w40 { inline-size: 40%; }
+@keyframes gpShimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .gp-skel-line { animation: none; } }
+
 @media (max-width: 640px) {
   .games-links { inline-size: 100%; margin-inline-start: 0; }
   .gp-hero { padding: var(--space-4); }
   .gp-hero-icon { inline-size: 48px; block-size: 48px; }
   .gp-actions .btn { flex: 1 1 100%; text-align: center; }
+  .gp-stage-nav { display: grid; }
+  .gp-stage-nav .btn { inline-size: 100%; justify-content: center; }
+  .gp-stage-next { justify-items: stretch; margin-inline-start: 0; }
 }

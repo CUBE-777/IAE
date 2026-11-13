@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getChallenges, getGameBySlug, getGameCategories, getMyChallengeStatus } from '../services';
+import { getChallenges, getGameBySlug, getGameCategories, getMyChallengeStatus, getMyLearningTracks } from '../services';
 import { pickLocalized } from '../services/gamesCore.shared';
 import { GAMES_PATHS } from '../constants/games';
 import { useAsyncData } from '../player/hooks/useAsyncData';
@@ -19,8 +19,11 @@ export default function GameDetails() {
     const [game, categories] = await Promise.all([getGameBySlug(slug), getGameCategories()]);
     const category = game ? categories.find((c) => c.id === game.category_id) : null;
     if (!game || !category) return { game: null };
-    const [challenges, status] = await Promise.all([getChallenges(game.id), getMyChallengeStatus().catch(() => [])]);
-    return { game, category, challenges, status };
+    // مسارات التعلم لهذه اللعبة: إضافة اختيارية، فشلها (مثلًا قبل تطبيق 0058) لا يعطّل صفحة اللعبة
+    const [challenges, status, tracks] = await Promise.all([
+      getChallenges(game.id), getMyChallengeStatus().catch(() => []), getMyLearningTracks({ gameId: game.id }).catch(() => []),
+    ]);
+    return { game, category, challenges, status, tracks };
   }, [slug]);
 
   const game = data.data?.game || null;
@@ -61,6 +64,26 @@ export default function GameDetails() {
         {game.description && <p className="gp-desc gp-desc-full">{pickLocalized(game.description, lang)}</p>}
         {list.length > 0 && <p className="gp-sub">{t('games.play.solvedOf', { solved, total: list.length })}</p>}
       </header>
+
+      {data.data.tracks?.length > 0 && (
+        <section className="gp-section" aria-labelledby="gp-tracks">
+          <div className="gp-section-head">
+            <h2 id="gp-tracks">{t('games.play.paths.title')}</h2>
+            <Link className="gp-link" to={GAMES_PATHS.paths}>{t('games.play.paths.viewAll')}</Link>
+          </div>
+          <ul className="gp-grid">
+            {data.data.tracks.map((tr) => (
+              <li key={tr.id}>
+                <Link className="gp-card gp-path-card" to={GAMES_PATHS.track(tr.id)}>
+                  <h3>{pickLocalized(tr.title, lang)}</h3>
+                  <p className="gp-sub">{t('games.play.paths.stagesProgress', { done: tr.stages_completed, total: tr.stages_count })}</p>
+                  <span className="gp-cta">{t('games.play.paths.open')}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="gp-section" aria-labelledby="gp-ch">
         <div className="gp-section-head">

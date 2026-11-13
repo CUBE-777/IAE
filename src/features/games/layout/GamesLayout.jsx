@@ -28,6 +28,7 @@ export default function GamesLayout() {
               <span className="games-brand"><Gamepad2 size={20} aria-hidden="true" />{t('games.brand')}</span>
               <div className="games-links">
                 <NavLink end to={GAMES_PATHS.home}>{t('games.play.nav.home')}</NavLink>
+                <NavLink to={GAMES_PATHS.paths}>{t('games.play.nav.paths')}</NavLink>
                 <NavLink to={GAMES_PATHS.profile}>{t('games.play.nav.profile')}</NavLink>
                 <NavLink to={GAMES_PATHS.leaderboard}>{t('games.play.nav.leaderboard')}</NavLink>
               </div>

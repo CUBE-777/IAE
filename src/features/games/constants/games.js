@@ -12,6 +12,10 @@ export const GAMES_PATHS = {
   leaderboard: `${GAMES_BASE_PATH}/leaderboard`,
   game: (slug) => `${GAMES_BASE_PATH}/g/${encodeURIComponent(slug)}`,
   challenge: (id) => `${GAMES_BASE_PATH}/c/${encodeURIComponent(id)}`,
+  // مسارات التعلم (6.4): المسار ← (الفئة داخل صفحة المسار) ← المرحلة
+  paths: `${GAMES_BASE_PATH}/paths`,
+  track: (id, categoryId) => `${GAMES_BASE_PATH}/paths/${encodeURIComponent(id)}${categoryId ? `#cat-${encodeURIComponent(categoryId)}` : ''}`,
+  stage: (id) => `${GAMES_BASE_PATH}/stages/${encodeURIComponent(id)}`,
 };
 
 /** أسباب get_games_access() (0049) كما تعيدها الدالة. أي قيمة أخرى تُعامل كـ unknown (رفض). */

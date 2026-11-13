@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Timer, XCircle } from 'lucide-react';
 import { getChallengeById, getChallenges, getGameCategories, getGames, getMyChallengeStatus, measureClockOffset, startAttempt, submitAttempt } from '../services';
@@ -27,6 +27,10 @@ export default function ChallengePlay() {
   const { challengeId } = useParams();
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
+  // 6.4: عند الوصول من صفحة مرحلة نُظهر وصلة العودة إليها (للتنقل فقط؛ لا يُبنى عليها أي قرار)
+  const from = useLocation().state?.fromStage;
+  const fromStage = typeof from?.id === 'string' && from.id.length <= 64 && typeof from?.title === 'string' && from.title
+    ? { id: from.id, title: from.title.slice(0, 120) } : null;
 
   const [phase, setPhase] = useState('intro'); // intro | starting | playing | submitting | result | timeout
   const [attempt, setAttempt] = useState(null); // { id, expiresAt, offsetMs }
@@ -229,6 +233,7 @@ export default function ChallengePlay() {
       <nav className="gp-crumbs" aria-label={t('games.play.breadcrumb')}>
         <Link to={GAMES_PATHS.home}>{t('games.play.games')}</Link><span aria-hidden="true">/</span>
         <Link to={GAMES_PATHS.game(game.slug)}>{gameTitle}</Link><span aria-hidden="true">/</span>
+        {fromStage && <><Link to={GAMES_PATHS.stage(fromStage.id)}>{fromStage.title}</Link><span aria-hidden="true">/</span></>}
         <span aria-current="page">{title}</span>
       </nav>
 

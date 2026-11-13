@@ -36,6 +36,9 @@ const GamesLayout = lazy(() => import('../../features/games/layout/GamesLayout')
 const GamesHome = lazy(() => import('../../features/games/pages/GamesHome'));
 const GameDetails = lazy(() => import('../../features/games/pages/GameDetails'));
 const ChallengePlay = lazy(() => import('../../features/games/pages/ChallengePlay'));
+const LearningPaths = lazy(() => import('../../features/games/pages/LearningPaths'));
+const LearningTrack = lazy(() => import('../../features/games/pages/LearningTrack'));
+const LearningStage = lazy(() => import('../../features/games/pages/LearningStage'));
 const PlayerProfile = lazy(() => import('../../features/games/pages/PlayerProfile'));
 const GamesLeaderboard = lazy(() => import('../../features/games/pages/Leaderboard'));
 const VerifyCard = lazy(() => import('../../pages/public/VerifyCard'));
@@ -136,6 +139,9 @@ export const router = createBrowserRouter([
           { index: true, element: <GamesHome /> },
           { path: 'g/:slug', element: <GameDetails /> },
           { path: 'c/:challengeId', element: <ChallengePlay /> },
+          { path: 'paths', element: <LearningPaths /> },
+          { path: 'paths/:trackId', element: <LearningTrack /> },
+          { path: 'stages/:stageId', element: <LearningStage /> },
           { path: 'profile', element: <PlayerProfile /> },
           { path: 'leaderboard', element: <GamesLeaderboard /> },
         ],

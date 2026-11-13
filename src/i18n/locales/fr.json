@@ -1347,7 +1347,8 @@
       "nav": {
         "home": "Jeux",
         "profile": "Mon profil",
-        "leaderboard": "Classement"
+        "leaderboard": "Classement",
+        "paths": "Parcours"
       },
       "games": "Jeux",
       "categories": "Catégories",
@@ -1494,7 +1495,90 @@
         "verification_unavailable": "La vérification de ce défi est indisponible pour le moment.",
         "invalid_delta": "Valeur invalide.",
         "note_required": "Note requise.",
-        "user_not_found": "Utilisateur introuvable."
+        "user_not_found": "Utilisateur introuvable.",
+        "stage_not_available": "Cette étape n'est pas disponible pour le moment.",
+        "stage_locked": "Cette étape est verrouillée. Consultez sa condition de déverrouillage sur la page de l'étape.",
+        "path_not_available": "Ce parcours n'est pas disponible pour le moment."
+      },
+      "paths": {
+        "title": "Parcours d'apprentissage",
+        "tagline": "Progressez étape par étape et voyez toujours ce qu'il vous manque pour débloquer la suivante.",
+        "empty": "Aucun parcours publié pour l'instant. Revenez bientôt.",
+        "filterByGame": "Filtrer par jeu",
+        "categoriesCount": "{{n}} catégories",
+        "stagesCount": "{{n}} étapes",
+        "challengesCount": "{{n}} défis",
+        "stagesProgress": "{{done}} étapes sur {{total}} terminées",
+        "progress": "Progression",
+        "stageProgress": "Progression de l'étape",
+        "open": "Ouvrir le parcours",
+        "viewAll": "Tous les parcours",
+        "notFound": "Ce parcours n'existe pas ou n'est pas disponible.",
+        "stageNotFound": "Cette étape n'existe pas ou n'est pas disponible.",
+        "backToPaths": "Retour aux parcours",
+        "noCategories": "Ce parcours n'a pas encore de catégorie publiée.",
+        "noStages": "Cette catégorie n'a pas encore d'étape publiée.",
+        "noChallenges": "Cette étape n'a pas encore de défi.",
+        "unlockMode": {
+          "sequential": "Les étapes se débloquent dans l'ordre : terminez-en une pour débloquer la suivante.",
+          "free": "Toutes les étapes sont ouvertes : commencez où vous voulez.",
+          "manual": "Les étapes sont débloquées par un administrateur."
+        },
+        "state": {
+          "completed": "Terminée",
+          "unlocked": "Ouverte",
+          "locked": "Verrouillée"
+        },
+        "lock": {
+          "previous_stage_incomplete": "Terminez d'abord « {{name}} » pour débloquer cette étape.",
+          "previousFallback": "la précédente",
+          "goPrevious": "Aller à l'étape précédente",
+          "manual_unlock_required": "Un administrateur doit débloquer cette étape.",
+          "locked": "Cette étape est actuellement verrouillée."
+        },
+        "requirements": "Conditions d'achèvement de l'étape",
+        "rule": {
+          "all_required": "Réussissez tous les défis obligatoires de l'étape.",
+          "min_success_rate": "Atteignez au moins {{n}} % de réussite sur les défis de l'étape.",
+          "min_points": "Gagnez au moins {{n}} points sur les défis de l'étape.",
+          "manual": "Un administrateur valide cette étape manuellement après examen de votre progression."
+        },
+        "fact": {
+          "requiredDone": "{{done}} défis obligatoires sur {{total}}",
+          "solvedOf": "{{solved}} résolus sur {{total}}",
+          "rate": "Votre taux de réussite actuel : {{n}} %",
+          "points": "{{earned}} points sur {{needed}}",
+          "approved": "Un administrateur a validé cette étape",
+          "awaiting": "En attente de validation par un administrateur"
+        },
+        "remaining": {
+          "noRequired": "Cette étape n'a pas encore de défi obligatoire ; elle ne peut pas être terminée tant qu'il n'y en a pas.",
+          "required": "Reste : {{n}} défis obligatoires.",
+          "noChallenges": "Cette étape n'a pas encore de défi.",
+          "solve": "Il vous faut résoudre {{n}} défis de plus.",
+          "points": "Reste : {{n}} points.",
+          "approval": "Elle sera terminée dès qu'un administrateur la validera."
+        },
+        "stageDone": "Vous avez terminé cette étape.",
+        "upcomingTitle": "Défi à venir",
+        "required": "Obligatoire",
+        "optional": "Facultatif",
+        "cstate": {
+          "solved": "Résolu",
+          "in_progress": "En cours",
+          "available": "Disponible",
+          "locked": "Verrouillé",
+          "upcoming": "Bientôt",
+          "no_attempts": "Plus de tentatives"
+        },
+        "challengeLocked": "Ce défi s'ouvre lorsque l'étape est débloquée.",
+        "opensAt": "Commence le {{date}}",
+        "stageNav": "Navigation entre les étapes",
+        "previousStage": "Étape précédente",
+        "nextStage": "Étape suivante",
+        "nextOpen": "L'étape suivante est ouverte.",
+        "nextAfterThis": "S'ouvre après avoir terminé cette étape.",
+        "nextManual": "Débloquée par un administrateur."
       }
     },
     "pageTitle": "Jeux",

@@ -1,3 +1,16 @@
+# IAE Games — المرحلة 6.4: تجربة اللاعب لمسارات التعلم + إصلاح استئناف المحاولات (migration 0058)
+## ماذا
+- صفحات اللاعب: `/games/paths` (المسارات المنشورة وتقدّمي)، `/games/paths/:trackId` (المسار ← الفئات ← المراحل بحالة كل مرحلة: مفتوحة/مغلقة/مكتملة، مع التقدّم وسبب القفل)، `/games/stages/:stageId` (شرط الإكمال والمتبقي، التحديات المطلوبة والمنجزة والمتبقية، المرحلة السابقة/التالية وشرط فتحها). Breadcrumbs في كل صفحة، وصلة «المسارات» في تنقل الألعاب، وقسم مسارات اللعبة في `GameDetails`، ووصلة عودة إلى المرحلة داخل `ChallengePlay` عند الوصول منها.
+- كل القيم (الفتح والإكمال والنسب والمتبقي وسبب القفل) تأتي من الخادم عبر ثلاث RPC للقراءة فقط: `get_my_learning_tracks` · `get_my_learning_track` · `get_my_learning_stage`. القرار نفسه من دوال 0056 (`game_stage_is_unlocked`/`game_stage_is_complete`)؛ لا جدول تقدّم ولا منطق موازٍ. لا يُعاد محتوى التحدي ولا الحلول ولا الشرح. المنشور فقط (لعبة ← مسار ← فئة ← مرحلة) حتى للمدير؛ التحدي القادم بلا عنوان.
+## إصلاح الاستئناف (0058)
+- `start_game_attempt` تبحث أولًا عن محاولة `in_progress` للمستخدم نفسه وللتحدي نفسه وتستأنفها على إصدارها المثبَّت دون أي فحص نشر أو نافذة زمنية أو فتح مرحلة؛ والفحوص الكاملة (نشر التحدي/اللعبة/التصنيف، `starts_at/ends_at`، سلسلة المرحلة وفتحها، إصدار صالح، `max_attempts`) تُطبَّق على المحاولة «الجديدة» فقط. `submit_game_attempt` لم تُغيَّر (0057 تسلّم على الإصدار المثبَّت أصلًا).
+## الملفات
+`supabase/migrations/0058_games_learning_paths_player.sql` (+ `supabase/rollback/0058_games_learning_paths_player_down.sql`) · `src/features/games/{pages/LearningPaths.jsx, pages/LearningTrack.jsx, pages/LearningStage.jsx, player/components/PathsUi.jsx, services/gamesLearning.service.js}` · تعديل `services/index.js` و`constants/{games,gamesCore}.js` و`layout/GamesLayout.jsx` و`pages/{GameDetails,ChallengePlay}.jsx` و`styles/games-player.css` والراوتر والترجمات الثلاث · `tests/games-learning-paths-player-sql.test.js`
+## النشر
+نفّذ 0058 (جرّبه أولًا بـ rollback) ثم انشر الواجهة. يتطلب 0050 و0055–0057. الواجهة تعمل بلا 0058 لكن صفحات المسارات تُظهر خطأ تحميل.
+
+---
+
 # IAE Games — المرحلة 6.2: إدارة مسارات التعلم + فتح المراحل وإكمالها على الخادم (migration 0056)
 ## ماذا
 - تبويب «مسارات التعلم» في `/admin/games`: شجرة المسار ← الفئة ← المرحلة (إنشاء/تعديل/نشر/إخفاء/أرشفة/استعادة/ترتيب)، إسناد تحديات قائمة إلى مرحلة وتحديد الإلزامي منها، ومنح يدوي (فتح/اعتماد إكمال) وإلغاؤه وفحص حالة لاعب.

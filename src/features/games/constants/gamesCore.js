@@ -24,5 +24,9 @@ export const GAMES_ERROR_CODES = [
   'invalid_delta',
   'note_required',
   'user_not_found',
+  // 6.4: مسارات التعلم وبدء محاولة في مرحلة
+  'stage_not_available',
+  'stage_locked',
+  'path_not_available',
 ];
 export const GAMES_UNKNOWN_ERROR = 'unknown';
