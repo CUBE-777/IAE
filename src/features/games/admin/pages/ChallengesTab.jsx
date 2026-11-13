@@ -6,6 +6,7 @@ import { useAdminData } from '../hooks/useAdminData';
 import { deleteChallenge, getChallengeSolution, listChallenges, listGames, reorderItems, saveChallenge } from '../services/gamesAdmin.service';
 import { cleanI18n, fillI18n, fromLocalInput, pickName, slugify, SLUG_RE, toLocalInput } from '../services/gamesAdmin.shared';
 import { CONTENT_FORBIDDEN_KEY, DIFFICULTIES, VERIFY_MODES } from '../constants/gamesAdmin';
+import ChallengeBuilder from '../builder/ChallengeBuilder';
 import { ConfirmModal, Field, LocalizedFields, MoveButtons, StatusPill, moveItem, notifyError } from '../components/adminUi';
 
 const pretty = (v) => JSON.stringify(v, null, 2);
@@ -211,6 +212,7 @@ export default function ChallengesTab() {
   const { data, state, reload } = useAdminData(() => Promise.all([listChallenges(), listGames()]));
   const [gameFilter, setGameFilter] = useState('');
   const [form, setForm] = useState(undefined);
+  const [builder, setBuilder] = useState(undefined); // undefined = مغلق، null = تحدٍّ جديد، صف = تعديل
   const [del, setDel] = useState(null);
   const [busy, setBusy] = useState(false);
   const [challenges, games] = data || [[], []];
@@ -248,6 +250,13 @@ export default function ChallengesTab() {
     }
   };
 
+  if (builder !== undefined && state === 'ready') {
+    return (
+      <ChallengeBuilder challenge={builder} games={games} defaultGameId={gameFilter}
+        onClose={() => { setBuilder(undefined); reload(); }} />  /* القائمة تُحدَّث عند الإغلاق فقط: reload أثناء التحرير كان سيُفرغ المحرر */
+    );
+  }
+
   const st = state === 'ready' ? (rows.length ? '' : 'empty') : state;
   return (
     <section aria-label={t('games.admin.tabs.challenges')}>
@@ -258,6 +267,9 @@ export default function ChallengesTab() {
         </select>
         <button type="button" className="admin-quick-action" disabled={state !== 'ready' || games.length === 0} onClick={() => setForm(null)}>
           {t('games.admin.challenges.new')}
+        </button>
+        <button type="button" className="admin-quick-action" disabled={state !== 'ready' || games.length === 0} onClick={() => setBuilder(null)}>
+          {t('games.admin.builder.open')}
         </button>
       </div>
       {state === 'ready' && games.length === 0 && <p className="admin-hint">{t('games.admin.challenges.needGame')}</p>}
@@ -287,6 +299,7 @@ export default function ChallengesTab() {
                       {c.status === 'published'
                         ? <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" disabled={busy} onClick={() => setStatus(c, 'draft', 'games.admin.unpublishedOk')}>{t('games.admin.unpublish')}</button>
                         : <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" disabled={busy} onClick={() => setStatus(c, 'published', 'games.admin.publishedOk')}>{t('games.admin.publish')}</button>}
+                      <button type="button" className="admin-btn admin-btn-primary admin-btn-sm" onClick={() => setBuilder(c)}>{t('games.admin.builder.edit')}</button>
                       <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setForm(c)}>{t('admin.common.edit')}</button>
                       <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" disabled={busy} onClick={() => setDel(c)}>{t('admin.common.delete')}</button>
                     </td>
