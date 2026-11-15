@@ -25,6 +25,13 @@ export async function canManageGames() {
   return (await rpc('can_manage_games')) === true;
 }
 
+/**
+ * استيراد دفعة تحديات (0061): مسودّات فقط، لا نشر، لا تعديل لموجود. dryRun=true يتحقق دون كتابة.
+ * يعيد { ok, dry_run, total, created_count, skipped_count, error_count, items[] }.
+ */
+export const importChallengesChunk = (importId, items, dryRun) =>
+  rpc('admin_import_game_challenges', { p_import_id: importId, p_items: items, p_dry_run: dryRun });
+
 export const reorderItems = (kind, ids) => rpc('admin_reorder_game_items', { p_kind: kind, p_ids: ids });
 
 // ---- التصنيفات ----

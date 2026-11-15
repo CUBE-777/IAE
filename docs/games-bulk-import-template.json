@@ -1,0 +1,377 @@
+{
+  "schema_version": 1,
+  "import_id": "sample-import-001",
+  "description": "Replace import_id with a unique name for each file. stage_ref = existing stage UUID or \"game/track/category/stage\" slugs. All challenges are created as drafts.",
+  "challenges": [
+    {
+      "external_id": "mc-001",
+      "stage_ref": "game-slug/track-slug/category-slug/stage-slug",
+      "difficulty": 1,
+      "points": 10,
+      "default_language": "en",
+      "type": "multiple_choice",
+      "translations": {
+        "ar": {
+          "title": "عاصمة فرنسا",
+          "prompt": "ما عاصمة فرنسا؟"
+        },
+        "fr": {
+          "title": "Capitale de la France",
+          "prompt": "Quelle est la capitale de la France ?"
+        },
+        "en": {
+          "title": "Capital of France",
+          "prompt": "What is the capital of France?",
+          "feedback": "Paris is the capital of France.",
+          "hints": [
+            "Think of the Eiffel Tower."
+          ]
+        }
+      },
+      "content": {
+        "options": [
+          {
+            "id": "o1",
+            "text": {
+              "ar": "باريس",
+              "fr": "Paris",
+              "en": "Paris"
+            }
+          },
+          {
+            "id": "o2",
+            "text": {
+              "ar": "ليون",
+              "fr": "Lyon",
+              "en": "Lyon"
+            }
+          },
+          {
+            "id": "o3",
+            "text": {
+              "ar": "مرسيليا",
+              "fr": "Marseille",
+              "en": "Marseille"
+            }
+          }
+        ]
+      },
+      "solution": {
+        "choice": "o1"
+      }
+    },
+    {
+      "external_id": "fb-001",
+      "stage_ref": "game-slug/track-slug/category-slug/stage-slug",
+      "difficulty": 1,
+      "points": 10,
+      "default_language": "en",
+      "type": "fill_blanks",
+      "translations": {
+        "ar": {
+          "title": "إكمال الجملة",
+          "prompt": "اختر الكلمة المناسبة لكل فراغ."
+        },
+        "fr": {
+          "title": "Compléter la phrase",
+          "prompt": "Choisissez le bon mot pour chaque blanc."
+        },
+        "en": {
+          "title": "Complete the sentence",
+          "prompt": "Pick the right word for each blank."
+        }
+      },
+      "content": {
+        "template": {
+          "ar": "{{b1}} هي لغة برمجة",
+          "fr": "{{b1}} est un langage de programmation",
+          "en": "{{b1}} is a programming language"
+        },
+        "blanks": [
+          {
+            "id": "b1",
+            "options": [
+              {
+                "id": "o1",
+                "text": {
+                  "ar": "بايثون",
+                  "fr": "Python",
+                  "en": "Python"
+                }
+              },
+              {
+                "id": "o2",
+                "text": {
+                  "ar": "كوبرا",
+                  "fr": "Cobra",
+                  "en": "Cobra"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "solution": {
+        "blanks": {
+          "b1": "o1"
+        }
+      }
+    },
+    {
+      "external_id": "dr-001",
+      "stage_ref": "game-slug/track-slug/category-slug/stage-slug",
+      "difficulty": 1,
+      "points": 10,
+      "default_language": "en",
+      "type": "drag_reorder",
+      "translations": {
+        "ar": {
+          "title": "رتّب الخطوات",
+          "prompt": "رتّب الخطوات من الأولى إلى الأخيرة."
+        },
+        "fr": {
+          "title": "Remettre dans l’ordre",
+          "prompt": "Classez les étapes de la première à la dernière."
+        },
+        "en": {
+          "title": "Put in order",
+          "prompt": "Order the steps from first to last."
+        }
+      },
+      "content": {
+        "items": [
+          {
+            "id": "i1",
+            "text": {
+              "ar": "اكتب الكود",
+              "fr": "Écrire le code",
+              "en": "Write the code"
+            }
+          },
+          {
+            "id": "i2",
+            "text": {
+              "ar": "شغّل الكود",
+              "fr": "Exécuter le code",
+              "en": "Run the code"
+            }
+          },
+          {
+            "id": "i3",
+            "text": {
+              "ar": "اقرأ النتيجة",
+              "fr": "Lire le résultat",
+              "en": "Read the result"
+            }
+          }
+        ]
+      },
+      "solution": {
+        "order": [
+          "i1",
+          "i2",
+          "i3"
+        ]
+      }
+    },
+    {
+      "external_id": "fe-001",
+      "stage_ref": "game-slug/track-slug/category-slug/stage-slug",
+      "difficulty": 1,
+      "points": 10,
+      "default_language": "en",
+      "type": "find_error",
+      "translations": {
+        "ar": {
+          "title": "ابحث عن الخطأ",
+          "prompt": "أي سطر فيه الخطأ؟"
+        },
+        "fr": {
+          "title": "Trouver l’erreur",
+          "prompt": "Quelle ligne contient l’erreur ?"
+        },
+        "en": {
+          "title": "Find the error",
+          "prompt": "Which line has the error?"
+        }
+      },
+      "content": {
+        "code_lang": "python",
+        "lines": [
+          "name = \"IAE\"",
+          "print(nmae)",
+          "print(\"done\")"
+        ],
+        "fix_options": [
+          {
+            "id": "f1",
+            "value": "print(name)"
+          },
+          {
+            "id": "f2",
+            "value": "print(nmae())"
+          }
+        ]
+      },
+      "solution": {
+        "line": 2,
+        "fix": "f1"
+      }
+    },
+    {
+      "external_id": "mp-001",
+      "stage_ref": "game-slug/track-slug/category-slug/stage-slug",
+      "difficulty": 1,
+      "points": 10,
+      "default_language": "en",
+      "type": "match_pairs",
+      "translations": {
+        "ar": {
+          "title": "طابق الأزواج",
+          "prompt": "اربط كل مصطلح بتعريفه."
+        },
+        "fr": {
+          "title": "Associer les paires",
+          "prompt": "Associez chaque terme à sa définition."
+        },
+        "en": {
+          "title": "Match the pairs",
+          "prompt": "Match each term with its definition."
+        }
+      },
+      "content": {
+        "left": [
+          {
+            "id": "l1",
+            "text": {
+              "ar": "HTML",
+              "fr": "HTML",
+              "en": "HTML"
+            }
+          },
+          {
+            "id": "l2",
+            "text": {
+              "ar": "CSS",
+              "fr": "CSS",
+              "en": "CSS"
+            }
+          }
+        ],
+        "right": [
+          {
+            "id": "r1",
+            "text": {
+              "ar": "تنسيق الصفحة",
+              "fr": "Mise en forme",
+              "en": "Styling"
+            }
+          },
+          {
+            "id": "r2",
+            "text": {
+              "ar": "هيكل الصفحة",
+              "fr": "Structure",
+              "en": "Structure"
+            }
+          }
+        ]
+      },
+      "solution": {
+        "pairs": {
+          "l1": "r2",
+          "l2": "r1"
+        }
+      }
+    },
+    {
+      "external_id": "po-001",
+      "stage_ref": "game-slug/track-slug/category-slug/stage-slug",
+      "difficulty": 1,
+      "points": 10,
+      "default_language": "en",
+      "type": "predict_output",
+      "translations": {
+        "ar": {
+          "title": "توقّع الناتج",
+          "prompt": "ماذا يطبع هذا الكود؟"
+        },
+        "fr": {
+          "title": "Prédire la sortie",
+          "prompt": "Que affiche ce code ?"
+        },
+        "en": {
+          "title": "Predict the output",
+          "prompt": "What does this code print?"
+        }
+      },
+      "content": {
+        "code": "x = 2\nprint(x * 3)",
+        "code_lang": "python",
+        "options": [
+          {
+            "id": "o1",
+            "value": "6"
+          },
+          {
+            "id": "o2",
+            "value": "23"
+          },
+          {
+            "id": "o3",
+            "value": "5"
+          }
+        ]
+      },
+      "solution": {
+        "choice": "o1"
+      }
+    },
+    {
+      "external_id": "cc-001",
+      "stage_ref": "game-slug/track-slug/category-slug/stage-slug",
+      "difficulty": 1,
+      "points": 10,
+      "default_language": "en",
+      "type": "code_completion",
+      "translations": {
+        "ar": {
+          "title": "أكمل الكود",
+          "prompt": "اختر ما يملأ الفراغ."
+        },
+        "fr": {
+          "title": "Compléter le code",
+          "prompt": "Choisissez ce qui complète le blanc."
+        },
+        "en": {
+          "title": "Complete the code",
+          "prompt": "Pick what fills the slot."
+        }
+      },
+      "content": {
+        "code": "for i in {{s1}}(3):\n    print(i)",
+        "code_lang": "python",
+        "slots": [
+          {
+            "id": "s1",
+            "options": [
+              {
+                "id": "o1",
+                "value": "range"
+              },
+              {
+                "id": "o2",
+                "value": "len"
+              }
+            ]
+          }
+        ]
+      },
+      "solution": {
+        "slots": {
+          "s1": "o1"
+        }
+      }
+    }
+  ]
+}

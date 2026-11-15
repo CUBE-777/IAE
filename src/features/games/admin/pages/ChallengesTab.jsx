@@ -7,6 +7,7 @@ import { deleteChallenge, getChallengeSolution, listChallenges, listGames, reord
 import { cleanI18n, fillI18n, fromLocalInput, pickName, slugify, SLUG_RE, toLocalInput } from '../services/gamesAdmin.shared';
 import { CONTENT_FORBIDDEN_KEY, DIFFICULTIES, VERIFY_MODES } from '../constants/gamesAdmin';
 import ChallengeBuilder from '../builder/ChallengeBuilder';
+import BulkImport from '../bulk/BulkImport';
 import { ConfirmModal, Field, LocalizedFields, MoveButtons, StatusPill, moveItem, notifyError } from '../components/adminUi';
 
 const pretty = (v) => JSON.stringify(v, null, 2);
@@ -221,6 +222,7 @@ export default function ChallengesTab() {
   const [gameFilter, setGameFilter] = useState('');
   const [form, setForm] = useState(undefined);
   const [builder, setBuilder] = useState(undefined); // undefined = مغلق، null = تحدٍّ جديد، صف = تعديل
+  const [bulk, setBulk] = useState(false);
   const [del, setDel] = useState(null);
   const [busy, setBusy] = useState(false);
   const [challenges, games] = data || [[], []];
@@ -265,6 +267,8 @@ export default function ChallengesTab() {
     );
   }
 
+  if (bulk) return <BulkImport onClose={() => { setBulk(false); reload(); }} />;
+
   const st = state === 'ready' ? (rows.length ? '' : 'empty') : state;
   return (
     <section aria-label={t('games.admin.tabs.challenges')}>
@@ -278,6 +282,9 @@ export default function ChallengesTab() {
         </button>
         <button type="button" className="admin-quick-action" disabled={state !== 'ready' || games.length === 0} onClick={() => setBuilder(null)}>
           {t('games.admin.builder.open')}
+        </button>
+        <button type="button" className="admin-quick-action" disabled={state !== 'ready' || games.length === 0} onClick={() => setBulk(true)}>
+          {t('games.admin.bulk.open')}
         </button>
       </div>
       {state === 'ready' && games.length === 0 && <p className="admin-hint">{t('games.admin.challenges.needGame')}</p>}

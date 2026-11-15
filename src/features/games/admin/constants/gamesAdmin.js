@@ -61,6 +61,9 @@ export const GAMES_ADMIN_ERROR_CODES = [
   'content_has_answer',
   'duplicate_value',
   'invalid_reference',
+  // استيراد الدفعات (0061)
+  'import_too_large',
+  'invalid_import_id',
 ];
 
 export const ITEM_STATUSES = ['draft', 'published', 'archived'];

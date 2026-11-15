@@ -1,3 +1,15 @@
+# IAE Games — الاستيراد الجماعي للتحديات (migration 0061)
+## ماذا
+- **Games → Challenges → استيراد جماعي**: تنزيل نموذج JSON (7 أنواع)، رفع ملف، ربط `stage_ref` بمراحل موجودة، تحقق (محلي بقواعد المحرر ثم تجربة جافة خادمية)، معاينة، استيراد بتقدّم، ونتائج.
+- يُنشئ **مسودّات فقط** (تحدٍّ + الإصدار 1) ويربطها بمراحل موجودة؛ لا نشر، ولا تعديل لتحدٍّ موجود، ولا إنشاء ألعاب/مسارات/فئات/مراحل.
+- **0061**: عمود `game_challenges.import_key` (فريد جزئيًا) + RPC `admin_import_game_challenges` (can_manage_games، ≤100 عنصر، ذرّية، idempotent). الواجهة تقسّم إلى دفعات 50.
+## الملفات
+جديد: `supabase/migrations/0061_games_bulk_import.sql` (+ rollback) · `src/features/games/admin/bulk/{importModel.js,importRunner.js,BulkImport.jsx}` · `tests/games-bulk-import.test.js` · `tests/helpers/esm-extless.mjs` · `docs/games-bulk-import-template.json` · تعديل: `ChallengesTab.jsx`، `gamesAdmin.service.js`، `constants/gamesAdmin.js`، `games-admin.css`، locales ar/fr/en.
+## النشر
+نفّذ 0060 ثم 0061 (جرّب كلًّا بـ rollback أولًا) ثم انشر الواجهة. استعمل `import_id` فريدًا لكل ملف.
+
+---
+
 # IAE Games — المرحلة 6.6: المراجعة النهائية والتكامل (migration 0060)
 ## ماذا
 - **اللغة**: عنوان التحدي ووصفه وسؤاله وخياراته وتلميحه تتبع الآن منطقًا واحدًا: لغة اللاعب ← `version.default_language` ← الاحتياط (`services/gamesLang.js`، و`pickText` في `builderContent.js` يشير إليه). قبل البدء تُقرأ لغة الإصدار الجاري المنشور (`getChallengeLanguage`)، وأثناء المحاولة تأتي من إصدارها المثبَّت.

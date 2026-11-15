@@ -122,3 +122,13 @@
   .gb-pv-pairs { grid-template-columns: 1fr; }
   .gb-types { grid-template-columns: 1fr; }
 }
+
+/* ---- الاستيراد الجماعي للتحديات (0061) ---- */
+.ga-bulk-title { margin: 0; font-size: 1.05rem; flex: 1 1 auto; }
+.ga-bulk-panel { margin-block-end: var(--space-3); }
+.ga-bulk-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-block-start: var(--space-3); }
+.ga-bulk-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px 16px; margin: var(--space-3) 0 0; }
+.ga-bulk-meta dt { font-size: 0.78rem; color: var(--admin-text-muted); }
+.ga-bulk-meta dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.ga-bulk-stats { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; margin: 0 0 var(--space-3); padding: 0; }
+.ga-bulk-progress { inline-size: 100%; block-size: 10px; }
