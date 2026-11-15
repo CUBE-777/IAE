@@ -16,6 +16,7 @@ import { ChallengeMeta, SectionState } from '../player/components/PlayerUi';
 import BuilderChallenge from '../player/interactive/BuilderChallenge';
 import { isBuilderContent, sanitizeRaw } from '../player/interactive/builderContent';
 import { clearDraft, loadDraft, saveDraft } from '../player/interactive/draftStore';
+import GameIcon from '../player/components/GameIcon';
 import { attemptsLeft, formatClock, isOpenNow, sortChallenges, statusMap } from '../player/utils';
 import '../../../styles/games-interactive.css';
 
@@ -354,7 +355,8 @@ export default function ChallengePlay() {
       </nav>
 
       <article className="gp-card gp-play">
-        <header>
+        <header className="gx-play-head">
+          <GameIcon game={game} size="lg" />
           <h1>{title}</h1>
           <ChallengeMeta challenge={challenge} />
           {status?.solved && <p className="gp-note"><CheckCircle2 size={14} aria-hidden="true" /> {t('games.play.alreadySolved')}</p>}

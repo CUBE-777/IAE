@@ -116,9 +116,10 @@ test('0060: رمز challenge_has_attempts معرّف في الواجهة وتر�
   }
 });
 
-test('6.6: المحرر القديم يقفل حقول التحدي ذي الإصدارات ولا يرسلها', () => {
+test('6.6: قائمة التحديات تفتح ChallengeBuilder فقط (بلا نموذج JSON خام) والخدمة تقرأ current_version_id', () => {
   const tab = read('src/features/games/admin/pages/ChallengesTab.jsx');
-  assert.match(tab, /const locked = !!item\?\.current_version_id;/);
-  assert.match(tab, /if \(locked\) \{\s+for \(const k of \['title', 'description', 'difficulty', 'points_reward', 'time_limit_seconds', 'max_attempts', 'content', 'verify_mode', 'solution'\]\) delete data\[k\];/);
+  assert.doesNotMatch(tab, /ChallengeForm|JSON\.parse|c_content|c_solution/);
+  assert.match(tab, /<ChallengeBuilder/);
+  assert.match(tab, /setBuilder\(null\)/);
   assert.match(read('src/features/games/admin/services/gamesAdmin.service.js'), /sort_order, current_version_id, created_at/);
 });

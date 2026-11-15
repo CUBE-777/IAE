@@ -8,6 +8,7 @@ import { useAuth } from '../../../../app/providers/AuthProvider';
 import { useCanManageGames } from '../hooks/useCanManageGames';
 import { GAMES_ADMIN_TABS } from '../constants/gamesAdmin';
 import '../../../../styles/games-admin.css';
+import '../../../../styles/games-gamified.css';
 
 const TAB_COMPONENTS = {
   games: lazy(() => import('./GamesTab')),

@@ -5,6 +5,7 @@ import StateBox from '../../../../components/admin/StateBox';
 import { useAdminData } from '../hooks/useAdminData';
 import { deleteGame, listCategories, listGames, reorderItems, saveGame, setGameStatus } from '../services/gamesAdmin.service';
 import { cleanI18n, fillI18n, KIND_RE, pickName, slugify, SLUG_RE } from '../services/gamesAdmin.shared';
+import GameIcon from '../../player/components/GameIcon';
 import { ConfirmModal, Field, LocalizedFields, MoveButtons, StatusPill, moveItem, notifyError } from '../components/adminUi';
 
 function GameForm({ item, categories, nextOrder, onClose, onSaved }) {
@@ -161,7 +162,7 @@ export default function GamesTab() {
               <tbody>
                 {rows.map((g, i) => (
                   <tr key={g.id}>
-                    <td data-label={t('games.admin.fields.title')}><span className="admin-ann-title">{pickName(g.title, i18n.language)}</span><span className="admin-ann-sub" dir="ltr">{g.slug}</span></td>
+                    <td data-label={t('games.admin.fields.title')}><span className="ga-gamecell"><GameIcon game={g} size="sm" /><span><span className="admin-ann-title">{pickName(g.title, i18n.language)}</span><span className="admin-ann-sub" dir="ltr">{g.slug}</span></span></span></td>
                     <td data-label={t('games.admin.fields.category')}>{catName[g.category_id] || '—'}</td>
                     <td data-label={t('games.admin.fields.kind')} dir="ltr"><code>{g.kind}</code></td>
                     <td data-label={t('games.admin.fields.status')}><StatusPill status={g.status} /></td>

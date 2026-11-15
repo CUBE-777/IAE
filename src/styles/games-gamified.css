@@ -1,0 +1,115 @@
+/* IAE Games — طبقة Gamified: أيقونات الألعاب، لوحة اللاعب، بطاقات الألعاب والتحديات. خصائص منطقية + tokens فقط (الوضعان الداكن/الفاتح وRTL تلقائيًا). */
+
+/* ---------- أيقونة اللعبة ---------- */
+.gi { --gi: var(--gold-text, var(--gold)); position: relative; display: inline-grid; place-items: center; flex: none; color: var(--gi); }
+.gi[data-tone='navy'] { --gi: #6f87c8; }
+.gi[data-tone='teal'] { --gi: #2fa393; }
+.gi[data-tone='indigo'] { --gi: #7b78d6; }
+.gi[data-tone='rose'] { --gi: #d0627f; }
+.gi-sm { inline-size: 32px; block-size: 32px; }
+.gi-md { inline-size: 48px; block-size: 48px; }
+.gi-lg { inline-size: 64px; block-size: 64px; }
+.gi-xl { inline-size: 88px; block-size: 88px; }
+.gi-bg { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
+.gi-plate { fill: color-mix(in srgb, var(--gi) 13%, var(--surface)); stroke: color-mix(in srgb, var(--gi) 45%, transparent); stroke-width: 1.5; }
+.gi-orb { fill: color-mix(in srgb, var(--gi) 22%, transparent); }
+.gi-wave { fill: color-mix(in srgb, var(--gi) 16%, transparent); }
+.gi-ring { fill: none; stroke: color-mix(in srgb, var(--gi) 28%, transparent); stroke-width: 1.5; }
+.gi-dot { fill: var(--gi); opacity: 0.6; }
+.gi-grid { fill: none; stroke: color-mix(in srgb, var(--gi) 18%, transparent); stroke-width: 1; }
+.gi-glyph { position: relative; filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--gi) 35%, transparent)); }
+
+/* ---------- لوحة اللاعب ---------- */
+.gx-hero { display: grid; gap: var(--space-4); padding: clamp(16px, 3vw, 28px); border-radius: var(--radius-lg, 16px); color: #fff; border: 1px solid rgba(var(--gold-rgb), 0.35);
+  background: radial-gradient(circle at 100% 0, rgba(var(--gold-rgb), 0.22), transparent 55%), linear-gradient(135deg, var(--navy-mid) 0%, var(--navy) 55%, var(--navy-deep) 100%); }
+.gx-hero-main { display: flex; align-items: center; gap: var(--space-4); min-inline-size: 0; }
+.gx-hero-text { min-inline-size: 0; flex: 1; display: grid; gap: 6px; }
+.gx-hero h1 { margin: 0; font-size: clamp(1.3rem, 4vw, 2rem); line-height: 1.2; color: #fff; }
+.gx-eyebrow { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: var(--text-small); font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: var(--gold); }
+.gx-xp { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin: 0; color: rgba(255, 255, 255, 0.85); }
+.gx-xp strong { font-size: 1.4rem; color: var(--gold); }
+.gx-xp span { font-size: var(--text-small); opacity: 0.85; }
+.gx-ring { position: relative; display: grid; place-items: center; flex: none; }
+.gx-ring svg { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
+.gx-ring-bg { fill: rgba(255, 255, 255, 0.06); stroke: rgba(255, 255, 255, 0.16); stroke-width: 8; }
+.gx-ring-fg { fill: none; stroke: var(--gold); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.8s ease; }
+.gx-ring b { position: relative; font-size: 1.9rem; color: #fff; }
+.gx-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.gx-stats li { display: grid; justify-items: center; gap: 2px; padding: 10px 6px; border-radius: var(--radius-md); background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.12); text-align: center; }
+.gx-stats svg { color: var(--gold); }
+.gx-stats b { font-size: 1.3rem; }
+.gx-stats span { font-size: 0.75rem; opacity: 0.8; }
+.gx-hero-links { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.gx-link { display: inline-flex; align-items: center; gap: 2px; color: var(--gold); font-weight: 700; text-decoration: none; }
+.gx-link:hover { text-decoration: underline; }
+.gx-link svg { transition: transform 0.2s; }
+[dir='rtl'] .gx-link svg { transform: scaleX(-1); }
+.gx-link:focus-visible, .gx-game:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.gx-hero-plain { grid-auto-flow: column; justify-content: start; align-items: center; }
+.gx-hero-plain p { margin: 4px 0 0; color: rgba(255, 255, 255, 0.82); max-inline-size: 52ch; }
+
+/* ---------- أشرطة التقدّم ---------- */
+.gx-bar { block-size: 10px; border-radius: 999px; background: color-mix(in srgb, currentColor 14%, transparent); overflow: hidden; }
+.gx-bar span { display: block; block-size: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--gold-deep), var(--gold)); transition: inline-size 0.6s ease; }
+.gx-bar-ok span { background: linear-gradient(90deg, var(--success), var(--success-bright)); }
+.gx-hero .gx-bar { background: rgba(255, 255, 255, 0.16); }
+.gx-prog { display: grid; gap: 4px; }
+.gx-prog > span { font-size: var(--text-small); color: var(--muted); }
+.gp-bar-xp span { transition: inline-size 0.6s ease; }
+
+/* ---------- بطاقات الألعاب ---------- */
+.gx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: var(--space-4); }
+.gx-chips { margin-block-end: var(--space-4); }
+.gx-game { position: relative; display: grid; align-content: start; gap: 10px; padding: 16px; color: var(--heading); text-decoration: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg, 16px); overflow: hidden;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+.gx-game::before { content: ''; position: absolute; inset-inline: 0; inset-block-start: 0; block-size: 3px; background: linear-gradient(90deg, var(--gold-deep), var(--gold)); opacity: 0.55; }
+.gx-game--done::before { background: linear-gradient(90deg, var(--success), var(--success-bright)); opacity: 1; }
+.gx-game:hover { transform: translateY(-3px); border-color: rgba(var(--gold-rgb), 0.6); box-shadow: 0 10px 26px rgba(0, 0, 0, 0.16); }
+.gx-game-top { display: flex; align-items: center; gap: 10px; }
+.gx-game h3 { margin: 0; font-size: 1.1rem; line-height: 1.3; }
+.gx-tag { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; color: var(--gold-text, var(--gold)); background: rgba(var(--gold-rgb), 0.12); border: 1px solid rgba(var(--gold-rgb), 0.3); }
+.gx-done { margin-inline-start: auto; color: var(--success); display: inline-flex; }
+.gx-sr { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); }
+.gx-desc { margin: 0; color: var(--muted); font-size: var(--text-small); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.gx-sub { margin: 0; color: var(--muted); font-size: var(--text-small); }
+.gx-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0; padding: 0; list-style: none; font-size: var(--text-small); color: var(--muted); }
+.gx-meta li { display: inline-flex; align-items: center; gap: 4px; }
+.gx-meta svg { color: var(--gold-text, var(--gold)); }
+.gx-cta { display: inline-flex; align-items: center; gap: 6px; justify-self: start; margin-block-start: 2px; padding: 6px 14px; border-radius: 999px; font-weight: 800; font-size: var(--text-small); color: var(--navy-deep); background: var(--gold); }
+[dir='rtl'] .gx-cta svg { transform: scaleX(-1); }
+.gx-game--done .gx-cta { background: transparent; color: var(--success); border: 1px solid var(--success); }
+
+/* ---------- تفاصيل اللعبة / التشغيل ---------- */
+.gx-detail-head { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; border-inline-start: 4px solid var(--gold); }
+.gx-detail-body { flex: 1; min-inline-size: 220px; display: grid; gap: 8px; }
+.gx-detail-body h1 { margin: 0; }
+.gx-path { border-inline-start: 4px solid var(--gold); transition: transform 0.2s ease; }
+.gx-path:hover { transform: translateY(-2px); }
+.gx-play-head { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 14px; }
+.gx-play-head > :not(.gi):not(h1) { grid-column: 1 / -1; }
+.gx-play-head h1 { margin: 0; }
+
+/* ---------- حالات التحديات (قفل/تقدّم/نجاح) ---------- */
+.gp-challenge { position: relative; border-inline-start: 4px solid var(--border); transition: transform 0.2s ease, border-color 0.2s ease; }
+.gp-challenge:hover { transform: translateY(-2px); }
+.gp-challenge--solved { border-inline-start-color: var(--success); }
+.gp-challenge--progress { border-inline-start-color: var(--gold); }
+.gp-card-head h3 { flex: 1; min-inline-size: 0; }
+.gp-card-head { justify-content: flex-start; }
+.gp-state-ico { display: inline-flex; margin-block-start: 2px; color: var(--muted); }
+.gp-state-ico--solved { color: var(--success); }
+.gp-state-ico--progress { color: var(--gold-text, var(--gold)); }
+.gp-result { animation: gx-pop 0.35s ease both; }
+@keyframes gx-pop { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+.gp-result-ok .gp-stats dd { color: var(--success); }
+
+@media (max-width: 560px) {
+  .gx-hero-main { flex-direction: column; text-align: center; }
+  .gx-ring { inline-size: 76px !important; block-size: 76px !important; }
+  .gx-hero-plain { grid-auto-flow: row; justify-items: center; text-align: center; }
+  .gx-detail-head { justify-content: center; text-align: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gx-game, .gp-challenge, .gx-path, .gx-bar span, .gx-ring-fg, .gp-result { transition: none; animation: none; }
+  .gx-game:hover, .gp-challenge:hover, .gx-path:hover { transform: none; }
+}

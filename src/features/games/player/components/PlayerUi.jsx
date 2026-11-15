@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Award, CheckCircle2, Clock, Star, Target } from 'lucide-react';
+import { Award, CheckCircle2, Circle, Clock, PlayCircle, Star, Target } from 'lucide-react';
 import { formatClock } from '../utils';
 
 /** حالة قسم: تحميل/خطأ/فارغ بنفس الشكل في كل الصفحات. */
@@ -62,15 +62,18 @@ export function SolvedBadge() {
 
 export function ChallengeCard({ challenge, title, subtitle, status, to }) {
   const { t } = useTranslation();
+  const state = status?.solved ? 'solved' : status?.open_attempt_id ? 'progress' : 'new';
+  const StateIcon = { solved: CheckCircle2, progress: PlayCircle, new: Circle }[state];
   return (
-    <Link className="gp-card gp-challenge" to={to}>
+    <Link className={`gp-card gp-challenge gp-challenge--${state}`} to={to}>
       <div className="gp-card-head">
+        <span className={`gp-state-ico gp-state-ico--${state}`} aria-hidden="true"><StateIcon size={20} /></span>
         <h3>{title}</h3>
         {status?.solved && <SolvedBadge />}
       </div>
       {subtitle && <p className="gp-sub">{subtitle}</p>}
       <ChallengeMeta challenge={challenge} />
-      <span className="gp-cta">{status?.open_attempt_id ? t('games.play.resume') : status?.solved ? t('games.play.playAgain') : t('games.play.play')}</span>
+      <span className="gp-cta">{state === 'progress' ? t('games.play.resume') : state === 'solved' ? t('games.play.playAgain') : t('games.play.play')}</span>
     </Link>
   );
 }
@@ -87,7 +90,7 @@ export function LevelProgress({ total, level, next, lang, pickName }) {
         <strong><Award size={16} aria-hidden="true" /> {level ? `${t('games.play.level')} ${level.level} — ${pickName(level.title, lang)}` : t('games.play.noLevel')}</strong>
         <span>{next ? t('games.play.toNext', { count: Math.max(0, to - total), name: pickName(next.title, lang) }) : t('games.play.maxLevel')}</span>
       </div>
-      <div className="gp-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label={t('games.play.levelProgress')}>
+      <div className="gp-bar gp-bar-xp" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label={t('games.play.levelProgress')}>
         <span style={{ inlineSize: `${pct}%` }} />
       </div>
     </div>

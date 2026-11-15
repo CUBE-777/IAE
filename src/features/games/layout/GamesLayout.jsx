@@ -8,6 +8,7 @@ import GamesGuard from '../components/GamesGuard';
 import { GAMES_PATHS } from '../constants/games';
 import '../../../styles/games.css';
 import '../../../styles/games-player.css';
+import '../../../styles/games-gamified.css';
 
 /**
  * غلاف وحدة الألعاب: رأس/تذييل الموقع الداخليان (اللغات AR/FR/EN وRTL والداكن/الفاتح) + الحارس + إطار الألعاب.

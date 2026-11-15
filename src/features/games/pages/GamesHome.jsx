@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Gamepad2, Star, Trophy } from 'lucide-react';
 import { getAllChallenges, getGameCategories, getGames, getMyChallengeStatus, getMyGameSummary, getGameLevels } from '../services';
 import { pickLocalized } from '../services/gamesCore.shared';
 import { GAMES_PATHS } from '../constants/games';
 import { useAsyncData } from '../player/hooks/useAsyncData';
-import { ChallengeCard, LevelProgress, SectionState } from '../player/components/PlayerUi';
+import { ChallengeCard, SectionState } from '../player/components/PlayerUi';
+import { GameCard, PlainHero, PlayerHero } from '../player/components/GamifiedUi';
 import { isOpenNow, statusMap } from '../player/utils';
 
 /**
@@ -47,40 +46,17 @@ export default function GamesHome() {
   const todo = model
     ? model.open.filter((c) => model.gameById[c.game_id] && !st[c.id]?.solved).slice(0, 6)
     : [];
-  const pickName = (v, l) => pickLocalized(v, l);
 
   const catState = catalog.state === 'ready' ? (model.games.length ? '' : 'empty') : catalog.state;
 
   return (
     <div className="gp-page">
-      <header className="gp-hero">
-        <span className="gp-hero-icon"><Gamepad2 size={34} aria-hidden="true" /></span>
-        <div>
-          <h1>{t('games.brand')}</h1>
-          <p>{t('games.play.tagline')}</p>
-        </div>
-      </header>
-
-      <section className="gp-section" aria-labelledby="gp-me">
-        <div className="gp-section-head">
-          <h2 id="gp-me">{t('games.play.myProgress')}</h2>
-          <Link to={GAMES_PATHS.profile} className="gp-link">{t('games.play.viewProfile')}</Link>
-        </div>
+      {summary.data
+        ? <PlayerHero summary={summary.data} lang={lang} profileTo={GAMES_PATHS.profile} boardTo={GAMES_PATHS.leaderboard} />
+        : <PlainHero title={t('games.brand')} tagline={t('games.play.tagline')} />}
+      {summary.state !== 'ready' && summary.state !== 'loading' && (
         <SectionState state={summary.state} error={summary.error} onRetry={summary.reload} />
-        {summary.data && (
-          <div className="gp-card gp-me">
-            <div className="gp-total"><Trophy size={22} aria-hidden="true" /><strong>{summary.data.s.total_points}</strong><span>{t('games.play.pointsUnit')}</span></div>
-            <LevelProgress total={summary.data.s.total_points} level={summary.data.s.level}
-              next={summary.data.s.next_level} lang={lang} pickName={pickName} />
-            <ul className="gp-mini">
-              <li><b>{summary.data.s.solved_challenges}</b> {t('games.play.solvedCount')}</li>
-              <li><b>{summary.data.s.attempts_count}</b> {t('games.play.attemptsCount')}</li>
-              <li><b>{summary.data.s.achievements_count}</b> {t('games.play.achievementsCount')}</li>
-              <li><Link className="gp-link" to={GAMES_PATHS.leaderboard}>{t('games.play.leaderboard')}</Link></li>
-            </ul>
-          </div>
-        )}
-      </section>
+      )}
 
       <section className="gp-section" aria-labelledby="gp-games">
         <div className="gp-section-head"><h2 id="gp-games">{t('games.play.games')}</h2></div>
@@ -88,7 +64,7 @@ export default function GamesHome() {
         {model && model.games.length > 0 && (
           <>
             {model.categories.length > 0 && (
-              <div className="gp-chips" role="group" aria-label={t('games.play.categories')}>
+              <div className="gp-chips gx-chips" role="group" aria-label={t('games.play.categories')}>
                 <button type="button" className={`gp-chip${cat === '' ? ' on' : ''}`} aria-pressed={cat === ''} onClick={() => setCat('')}>{t('games.play.allCategories')}</button>
                 {model.categories.filter((c) => model.games.some((g) => g.category_id === c.id)).map((c) => (
                   <button key={c.id} type="button" className={`gp-chip${cat === c.id ? ' on' : ''}`} aria-pressed={cat === c.id} onClick={() => setCat(c.id)}>
@@ -97,26 +73,15 @@ export default function GamesHome() {
                 ))}
               </div>
             )}
-            <div className="gp-grid">
+            <div className="gx-grid">
               {shownGames.map((g) => {
                 const list = model.byGame[g.id] || [];
-                const solved = list.filter((c) => st[c.id]?.solved).length;
                 const diffs = list.map((c) => c.difficulty);
-                const total = list.reduce((a, c) => a + c.points_reward, 0);
+                const catName = pickLocalized(model.catById[g.category_id]?.name, lang);
                 return (
-                  <Link key={g.id} className="gp-card gp-game" to={GAMES_PATHS.game(g.slug)}>
-                    <span className="gp-chip gp-chip-static">{pickLocalized(model.catById[g.category_id]?.name, lang)}</span>
-                    <h3>{pickLocalized(g.title, lang)}</h3>
-                    {g.description && <p className="gp-desc">{pickLocalized(g.description, lang)}</p>}
-                    {list.length > 0 ? (
-                      <ul className="gp-meta">
-                        <li>{t('games.play.challengesCount', { count: list.length })}</li>
-                        <li>{t('games.play.difficultyRange', { min: Math.min(...diffs), max: Math.max(...diffs) })}</li>
-                        <li><Star size={14} aria-hidden="true" />{t('games.play.pointsValue', { count: total })}</li>
-                      </ul>
-                    ) : <p className="gp-sub">{t('games.play.noChallengesYet')}</p>}
-                    {list.length > 0 && <p className="gp-sub">{t('games.play.solvedOf', { solved, total: list.length })}</p>}
-                  </Link>
+                  <GameCard key={g.id} game={g} categoryName={catName} title={pickLocalized(g.title, lang)}
+                    description={g.description ? pickLocalized(g.description, lang) : ''} to={GAMES_PATHS.game(g.slug)}
+                    stats={{ count: list.length, solved: list.filter((c) => st[c.id]?.solved).length, points: list.reduce((a, c) => a + c.points_reward, 0), min: Math.min(...diffs), max: Math.max(...diffs) }} />
                 );
               })}
             </div>

@@ -6,6 +6,8 @@ import { pickLocalized } from '../services/gamesCore.shared';
 import { GAMES_PATHS } from '../constants/games';
 import { useAsyncData } from '../player/hooks/useAsyncData';
 import { ChallengeCard, SectionState } from '../player/components/PlayerUi';
+import GameIcon from '../player/components/GameIcon';
+import { ProgressBar } from '../player/components/GamifiedUi';
 import { isOpenNow, sortChallenges, statusMap } from '../player/utils';
 
 /** تفاصيل لعبة: معلوماتها وتحدياتها المتاحة للاعب فقط (منشورة + داخل نافذتها الزمنية) مع ترتيب بالصعوبة أو النقاط. */
@@ -58,11 +60,19 @@ export default function GameDetails() {
         <Link to={GAMES_PATHS.home}>{t('games.play.games')}</Link><span aria-hidden="true">/</span>
         <span aria-current="page">{pickLocalized(game.title, lang)}</span>
       </nav>
-      <header className="gp-card gp-game-head">
-        <span className="gp-chip gp-chip-static">{pickLocalized(data.data.category.name, lang)}</span>
-        <h1>{pickLocalized(game.title, lang)}</h1>
-        {game.description && <p className="gp-desc gp-desc-full">{pickLocalized(game.description, lang)}</p>}
-        {list.length > 0 && <p className="gp-sub">{t('games.play.solvedOf', { solved, total: list.length })}</p>}
+      <header className="gp-card gp-game-head gx-detail-head">
+        <GameIcon game={game} category={pickLocalized(data.data.category.name, lang)} size="xl" />
+        <div className="gx-detail-body">
+          <span className="gx-tag">{pickLocalized(data.data.category.name, lang)}</span>
+          <h1>{pickLocalized(game.title, lang)}</h1>
+          {game.description && <p className="gp-desc gp-desc-full">{pickLocalized(game.description, lang)}</p>}
+          {list.length > 0 && (
+            <div className="gx-prog">
+              <ProgressBar pct={Math.round((solved / list.length) * 100)} label={t('games.play.solvedOf', { solved, total: list.length })} tone={solved === list.length ? 'ok' : undefined} />
+              <span>{t('games.play.solvedOf', { solved, total: list.length })}</span>
+            </div>
+          )}
+        </div>
       </header>
 
       {data.data.tracks?.length > 0 && (
@@ -74,7 +84,7 @@ export default function GameDetails() {
           <ul className="gp-grid">
             {data.data.tracks.map((tr) => (
               <li key={tr.id}>
-                <Link className="gp-card gp-path-card" to={GAMES_PATHS.track(tr.id)}>
+                <Link className="gp-card gp-path-card gx-path" to={GAMES_PATHS.track(tr.id)}>
                   <h3>{pickLocalized(tr.title, lang)}</h3>
                   <p className="gp-sub">{t('games.play.paths.stagesProgress', { done: tr.stages_completed, total: tr.stages_count })}</p>
                   <span className="gp-cta">{t('games.play.paths.open')}</span>
