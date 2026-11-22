@@ -1,11 +1,12 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AdminLayout from '../../../../layouts/AdminLayout';
 import AdminPageHeader from '../../../../components/admin/AdminPageHeader';
 import StateBox from '../../../../components/admin/StateBox';
 import { useAuth } from '../../../../app/providers/AuthProvider';
 import { useCanManageGames } from '../hooks/useCanManageGames';
+import { useGamesSectionStatus } from '../../maintenance/useGamesSectionStatus';
 import { GAMES_ADMIN_TABS } from '../constants/gamesAdmin';
 import '../../../../styles/games-admin.css';
 import '../../../../styles/games-gamified.css';
@@ -28,6 +29,7 @@ export default function GamesAdmin() {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const { phase, allowed, reload } = useCanManageGames(profile?.id);
+  const { isMaintenance } = useGamesSectionStatus(); // تنبيه للمسؤول: القسم في الصيانة (الإدارة تعمل رغم ذلك: can_manage_games مستقلة عن الصيانة)
   const [params, setParams] = useSearchParams();
   const requested = params.get('tab');
   const tab = GAMES_ADMIN_TABS.includes(requested) ? requested : GAMES_ADMIN_TABS[0];
@@ -58,6 +60,12 @@ export default function GamesAdmin() {
       )}
       {phase === 'ready' && allowed && (
         <>
+          {isMaintenance && (
+            <div className="admin-panel" role="status">
+              <p style={{ margin: '0 0 8px' }}>{t('games.admin.maintenanceBanner')}</p>
+              <Link className="admin-btn admin-btn-ghost admin-btn-sm" to="/admin/settings#games-section-status">{t('games.admin.maintenanceBannerAction')}</Link>
+            </div>
+          )}
           <div className="admin-tabs ga-tabs" role="tablist" aria-label={t('games.admin.title')} onKeyDown={onKey}>
             {GAMES_ADMIN_TABS.map((k) => (
               <button key={k} id={`ga-tab-${k}`} type="button" role="tab" aria-selected={tab === k} aria-controls="ga-panel" tabIndex={tab === k ? 0 : -1}

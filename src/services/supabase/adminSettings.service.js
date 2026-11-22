@@ -1,6 +1,7 @@
 import { supabase } from './client';
 import { logAction } from './auth.service';
 import { isMissingColumn } from './profileColumns';
+import { GAMES_STATUS, GAMES_STATUS_KEY } from '../../features/games/maintenance/gamesStatusCore';
 
 export const SETTINGS_GROUPS = [
   {
@@ -53,4 +54,27 @@ export async function saveSiteSettings(rows) {
   if (error) throw error;
   await logAction('ADMIN_UPDATED_SETTINGS', 'site_settings', null, 'تحديث الإعدادات العامة');
   return { degraded };
+}
+
+/**
+ * حالة قسم الألعاب (0062): صف واحد في site_settings (key = games_section_status). الكتابة محصورة في is_super_admin() (super_admin + developer)
+ * بسياسات RLS القائمة (0003)، ومشغّل SQL يرفض أي قيمة غير enabled/maintenance. هذه الدالة تكتب هذا الصف فقط
+ * (upsert جزئي: لا يلمس بقية الإعدادات ولا عمود translations) ثم تسجّل العملية في سجل التدقيق.
+ * RLS قد ترفض بصمت (0 صفوف) فنتحقق من الصفوف المُرجعة بدل افتراض النجاح.
+ */
+export async function saveGamesSectionStatus(status) {
+  if (status !== GAMES_STATUS.ENABLED && status !== GAMES_STATUS.MAINTENANCE) throw new Error('invalid_games_section_status');
+  const { data, error } = await supabase
+    .from('site_settings')
+    .upsert({ key: GAMES_STATUS_KEY, value: status }, { onConflict: 'key' })
+    .select('key, value');
+  if (error) throw error;
+  if (!data?.length || data[0].value !== status) throw new Error('games_section_status_not_saved');
+  await logAction(
+    'ADMIN_SET_GAMES_STATUS',
+    'site_settings',
+    null,
+    status === GAMES_STATUS.MAINTENANCE ? 'تفعيل وضع الصيانة لقسم الألعاب' : 'إنهاء وضع الصيانة وإعادة تفعيل قسم الألعاب',
+  );
+  return status;
 }

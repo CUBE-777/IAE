@@ -29,6 +29,7 @@ export const GAMES_ACCESS_REASONS = [
   'no_season',
   'member_inactive',
   'membership_not_paid',
+  'maintenance', // 0062: مؤهَّل لكن القسم في وضع الصيانة
 ];
 
 export const GAMES_UNKNOWN_REASON = 'unknown';

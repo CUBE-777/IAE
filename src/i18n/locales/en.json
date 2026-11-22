@@ -1636,6 +1636,19 @@
       "backMember": "Members' space",
       "backAdmin": "Admin panel"
     },
+    "maintenance": {
+      "badge": "Under maintenance",
+      "title": "Games are taking a short break",
+      "text": "The Games section is temporarily unavailable while we carry out maintenance and improvements. Please check back soon.",
+      "reassure": "Your progress, points and achievements are safe, and they'll be waiting for you just as you left them.",
+      "actionHome": "Back to home",
+      "actionCheck": "Check again",
+      "checking": "Checking…",
+      "adminNote": "You're an administrator: you can still manage games and re-enable the section from the admin panel.",
+      "adminAction": "Open Games admin",
+      "illustration": "Game controller with a maintenance wrench",
+      "statusErrorTitle": "Couldn't check Games availability"
+    },
     "access": {
       "errorTitle": "Couldn't verify access",
       "errorText": "There was a connection problem. Please try again.",
@@ -1659,6 +1672,8 @@
       "logout": "Sign out"
     },
     "admin": {
+      "maintenanceBanner": "Games are in maintenance mode: players see the maintenance page, while Games admin keeps working normally for you.",
+      "maintenanceBannerAction": "Change section status",
       "pageTitle": "Games administration",
       "title": "Games administration",
       "subtitle": "Games, learning paths, categories, challenges, achievements, levels and players — for super admins and developers only.",

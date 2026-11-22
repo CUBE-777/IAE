@@ -1636,6 +1636,19 @@
       "backMember": "Espace adhérents",
       "backAdmin": "Panneau d'administration"
     },
+    "maintenance": {
+      "badge": "En maintenance",
+      "title": "Les jeux font une courte pause",
+      "text": "La section Jeux est temporairement indisponible pendant des opérations de maintenance et d’amélioration. Merci de revenir bientôt.",
+      "reassure": "Votre progression, vos points et vos succès sont conservés : vous les retrouverez intacts.",
+      "actionHome": "Retour à l’accueil",
+      "actionCheck": "Vérifier à nouveau",
+      "checking": "Vérification…",
+      "adminNote": "Vous êtes administrateur : vous pouvez toujours gérer les jeux et réactiver la section depuis le panneau d’administration.",
+      "adminAction": "Ouvrir l’administration des jeux",
+      "illustration": "Manette de jeu avec une clé de maintenance",
+      "statusErrorTitle": "Impossible de vérifier la disponibilité des jeux"
+    },
     "access": {
       "errorTitle": "Impossible de vérifier l'accès",
       "errorText": "Problème de connexion. Réessayez.",
@@ -1659,6 +1672,8 @@
       "logout": "Se déconnecter"
     },
     "admin": {
+      "maintenanceBanner": "Les jeux sont en maintenance : les joueurs voient la page de maintenance, mais l’administration des jeux reste pleinement disponible pour vous.",
+      "maintenanceBannerAction": "Modifier le statut de la section",
       "pageTitle": "Administration des jeux",
       "title": "Administration des jeux",
       "subtitle": "Jeux, parcours d’apprentissage, catégories, défis, succès, niveaux et joueurs — réservé aux super-admins et développeurs.",

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../app/providers/AuthProvider';
@@ -6,6 +7,8 @@ import MemberAuthShell from '../../../components/member/MemberAuthShell';
 import MemberSkeleton from '../../../components/member/MemberSkeleton';
 import { useGamesAccess } from '../hooks/useGamesAccess';
 import GamesAccessDenied from './GamesAccessDenied';
+import GamesMaintenance from './GamesMaintenance';
+import { gamesStatusStore } from '../maintenance/gamesStatus.service';
 
 /**
  * حارس وحدة الألعاب. القرار من RPC get_games_access() (0049) وحدها: لا قائمة أدوار ولا منطق عضوية في الواجهة.
@@ -23,6 +26,12 @@ export default function GamesGuard({ children }) {
   const authed = status === 'authenticated';
   const skipRpc = !authed || mustChangePassword || mfaRequired;
   const { phase, access, reload } = useGamesAccess(userId, { enabled: !skipRpc });
+  const serverSaysMaintenance = phase === 'ready' && access?.reason === 'maintenance';
+
+  // الخادم سبق الواجهة (دخلت الصيانة والحالة المحلية لم تتزامن بعد): نُزامنها فورًا، وتُعرض صفحة الصيانة هنا بدل رسالة رفض
+  useEffect(() => {
+    if (serverSaysMaintenance) gamesStatusStore.refresh();
+  }, [serverSaysMaintenance]);
 
   if (status === 'anonymous') return <Navigate to="/member/login" state={{ from: location }} replace />;
   if (status === 'loading') return <MemberSkeleton />;
@@ -38,6 +47,7 @@ export default function GamesGuard({ children }) {
     );
   }
 
+  if (serverSaysMaintenance) return <GamesMaintenance />;
   if (access?.allowed !== true) return <GamesAccessDenied reason={access?.reason} onLogout={() => logout()} />;
   return children;
 }

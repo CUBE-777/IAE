@@ -1,0 +1,33 @@
+/* صفحة صيانة الألعاب: خصائص منطقية فقط (RTL/LTR) وألوان من tokens فتتبع الوضعين الفاتح/الداكن. تعتمد على games.css (games-wrap/games-shell). */
+.games-maint { display: grid; justify-items: center; gap: 12px; text-align: center; padding: clamp(32px, 8vw, 80px) var(--space-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg, 16px); background-image: radial-gradient(circle at 50% 0, rgba(var(--gold-rgb), 0.14), transparent 60%); }
+.games-maint-art { width: min(260px, 70%); }
+.games-maint-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: var(--text-small); font-weight: 700; color: var(--gold-text); background: rgba(var(--gold-rgb), 0.12); border: 1px solid rgba(var(--gold-rgb), 0.4); }
+.games-maint h1 { margin: 0; font-size: clamp(1.7rem, 6vw, 2.8rem); line-height: var(--leading-tight); color: var(--heading); }
+.games-maint-text { margin: 0; max-width: 52ch; color: var(--muted); font-size: var(--text-body-lg); line-height: var(--leading-normal); }
+.games-maint-reassure { margin: 0; max-width: 52ch; color: var(--heading); font-weight: 600; line-height: var(--leading-normal); }
+.games-maint-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3, 12px); margin-block-start: var(--space-2, 8px); }
+.games-maint-actions .btn { cursor: pointer; }
+.games-maint-actions .btn[disabled] { opacity: 0.7; cursor: progress; }
+.games-maint-admin { margin-block-start: var(--space-3, 12px); padding: 12px 16px; max-width: 52ch; border: 1px dashed rgba(var(--gold-rgb), 0.5); border-radius: var(--radius-md); background: rgba(var(--gold-rgb), 0.07); }
+.games-maint-admin p { margin: 0 0 6px; color: var(--muted); line-height: var(--leading-normal); }
+
+/* الرسم */
+.gm-art { display: block; width: 100%; height: auto; overflow: visible; }
+.gm-shadow { fill: rgba(var(--gold-rgb), 0.16); }
+.gm-body { fill: var(--surface); stroke: var(--gold); stroke-width: 3; stroke-linejoin: round; }
+.gm-dpad { fill: var(--gold); }
+.gm-btn { fill: var(--gold); }
+.gm-btn-b { fill: var(--gold-deep, var(--gold)); }
+.gm-pill { fill: var(--muted-light, var(--muted)); }
+.gm-gear-teeth { fill: none; stroke: var(--gold); stroke-width: 7; stroke-dasharray: 6.7 6.7; }
+.gm-gear-core { fill: var(--gold); }
+.gm-gear-hole { fill: var(--surface); }
+.gm-gear { transform-box: fill-box; transform-origin: center; animation: gm-spin 14s linear infinite; }
+.gm-wrench { fill: var(--surface); stroke: var(--heading); stroke-width: 3; stroke-linejoin: round; }
+.gm-wrench-hole { fill: var(--heading); }
+@keyframes gm-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .gm-gear { animation: none; } }
+
+@media (max-width: 480px) {
+  .games-maint-actions { flex-direction: column; align-items: stretch; width: 100%; }
+}

@@ -31,8 +31,11 @@ export function useGamesAccess(userId, { enabled = true, deps = '' } = {}) {
   return { ...state, reload };
 }
 
-/** true فقط عند السماح الصريح؛ أي فشل أو رفض يُخفي رابط الدخول دون خطأ ظاهر. */
+/**
+ * true عند السماح الصريح، أو عند reason='maintenance' (0062: لا يعيدها الخادم إلا للمؤهَّلين فعلًا، فيبقى الرابط ظاهرًا لهم
+ * ويفتح صفحة الصيانة بدل أن يختفي القسم فجأة). أي فشل أو رفض آخر يُخفي رابط الدخول دون خطأ ظاهر.
+ */
 export function useCanSeeGamesLink(userId, enabled = true) {
   const { phase, access } = useGamesAccess(userId, { enabled });
-  return phase === 'ready' && access?.allowed === true;
+  return phase === 'ready' && (access?.allowed === true || access?.reason === 'maintenance');
 }

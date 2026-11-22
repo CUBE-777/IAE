@@ -2658,5 +2658,57 @@ export const ADMIN_DICT = {
  "انتهت جلسة الدخول أو لا توجد جلسة صالحة. سجّل الدخول مجددًا ثم أعد المحاولة.": {
   "fr": "Votre session a expiré ou n'est plus valide. Reconnectez-vous puis réessayez.",
   "en": "Your session has expired or is no longer valid. Sign in again and retry."
+ },
+ "حالة قسم الألعاب": {
+  "fr": "Statut de la section Jeux",
+  "en": "Games section status"
+ },
+ "يتحكم في إتاحة قسم الألعاب للأعضاء. التغيير فوري ولا يحتاج إعادة نشر، ولا يحذف أي لعبة أو نقاط أو بيانات.": {
+  "fr": "Contrôle la disponibilité de la section Jeux pour les membres. Le changement est immédiat, sans redéploiement, et ne supprime aucun jeu, point ni donnée.",
+  "en": "Controls whether members can use the Games section. The change is immediate, needs no redeployment, and deletes no games, points or data."
+ },
+ "الحالة الحالية": {
+  "fr": "Statut actuel",
+  "en": "Current status"
+ },
+ "مفعّل": {
+  "fr": "Activée",
+  "en": "Enabled"
+ },
+ "قيد الصيانة": {
+  "fr": "En maintenance",
+  "en": "Under maintenance"
+ },
+ "مفعّل: الألعاب تعمل بشكل طبيعي": {
+  "fr": "Activée : les jeux fonctionnent normalement",
+  "en": "Enabled: games work normally"
+ },
+ "صيانة: القسم غير متاح وتظهر صفحة الصيانة": {
+  "fr": "Maintenance : section indisponible, page de maintenance affichée",
+  "en": "Maintenance: section unavailable, maintenance page shown"
+ },
+ "حفظ حالة القسم": {
+  "fr": "Enregistrer le statut",
+  "en": "Save status"
+ },
+ "سيرى كل اللاعبين صفحة الصيانة فورًا ولن يتمكنوا من اللعب. تبقى إدارة الألعاب متاحة لك. متابعة؟": {
+  "fr": "Tous les joueurs verront immédiatement la page de maintenance et ne pourront plus jouer. L'administration des jeux reste disponible pour vous. Continuer ?",
+  "en": "All players will immediately see the maintenance page and won't be able to play. Games admin stays available to you. Continue?"
+ },
+ "تم تفعيل وضع الصيانة لقسم الألعاب": {
+  "fr": "Mode maintenance de la section Jeux activé",
+  "en": "Games section is now in maintenance mode"
+ },
+ "تمت إعادة تفعيل قسم الألعاب": {
+  "fr": "Section Jeux réactivée",
+  "en": "Games section re-enabled"
+ },
+ "تعذر تحديث حالة قسم الألعاب": {
+  "fr": "Impossible de mettre à jour le statut de la section Jeux",
+  "en": "Couldn't update the Games section status"
+ },
+ "تعذر تحميل حالة قسم الألعاب.": {
+  "fr": "Impossible de charger le statut de la section Jeux.",
+  "en": "Couldn't load the Games section status."
  }
 };

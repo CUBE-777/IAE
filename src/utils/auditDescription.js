@@ -38,6 +38,8 @@ const PATTERNS = [
 // عبارات ثابتة أو بادئات متبوعة باسم/موسم (دوال SQL). تُطابَق من بداية النص، والباقي يُلحق كما هو.
 const PREFIXES = [
   ['تحديث الإعدادات العامة', 'Mise à jour des paramètres généraux', 'Updated general settings'],
+  ['تفعيل وضع الصيانة لقسم الألعاب', 'Activation du mode maintenance de la section Jeux', 'Enabled maintenance mode for the Games section'],
+  ['إنهاء وضع الصيانة وإعادة تفعيل قسم الألعاب', 'Fin du mode maintenance : section Jeux réactivée', 'Ended maintenance mode and re-enabled the Games section'],
   ['تحديث شكل بطاقات الأعضاء والمكتب', "Mise à jour de l'apparence des cartes des membres et du bureau", 'Updated the look of member and board cards'],
   ['تحديث محتوى الموقع', 'Mise à jour du contenu du site', 'Updated site content'],
   ['تعديل بيانات صورة في المعرض', "Modification des données d'une image de la galerie", 'Updated a gallery image'],

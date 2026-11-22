@@ -3,6 +3,7 @@ import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import StateBox from '../../components/admin/StateBox';
 import InlineTranslationInputs from '../../components/admin/InlineTranslationInputs';
+import GamesSectionStatusPanel from '../../components/admin/GamesSectionStatusPanel';
 import { cleanTr, hasTr } from '../../utils/translationForm';
 import { SETTINGS_GROUPS, TRANSLATABLE_SETTINGS, fetchSiteSettingsAdmin, saveSiteSettings } from '../../services/supabase/adminSettings.service';
 
@@ -74,6 +75,7 @@ export default function Settings() {
   return (
     <AdminLayout>
       <AdminPageHeader title={tr('الإعدادات العامة')} subtitle={tr('معلومات النادي الأساسية الظاهرة في الموقع')} />
+      <GamesSectionStatusPanel />
       {values === null ? (
         <div className="admin-panel">
           <StateBox state={error ? 'error' : 'loading'} errorText={tr('تعذر تحميل الإعدادات.')} onRetry={load} />
