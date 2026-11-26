@@ -58,3 +58,18 @@
 }
 
 .member-id-permanent { margin: 0; font-weight: 700; color: var(--heading); }
+
+
+/* ---- التحقق العام من الشهادات ---- */
+.verify-card-valid { border-color: #1f7a4d; }
+.verify-card-valid .verify-banner { background: #e5f4ec; color: #14573a; }
+.verify-card-revoked, .verify-card-not_found { border-color: #b3261e; }
+.verify-card-revoked .verify-banner, .verify-card-not_found .verify-banner { background: var(--danger-soft); color: #8a1d17; }
+.certificate-verify-details { display: grid; gap: 0; margin: 0; padding: 0 18px 18px; }
+.certificate-verify-details > div { display: grid; grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1.2fr); gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
+.certificate-verify-details dt { color: var(--muted); font-size: 0.9rem; }
+.certificate-verify-details dd { margin: 0; color: var(--heading); font-weight: 650; overflow-wrap: anywhere; }
+.verify-card-problem .verify-banner { background: var(--cream); color: var(--heading); }
+@media (max-width: 560px) {
+  .certificate-verify-details > div { grid-template-columns: 1fr; gap: 4px; }
+}

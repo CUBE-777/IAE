@@ -1503,6 +1503,29 @@
       }
     }
   },
+  "certificateVerify": {
+    "pageTitle": "Certificate verification",
+    "crumb": "Certificate verification",
+    "title": "Verify a certificate",
+    "description": "Check the official status of this certificate issued by the IAE club.",
+    "loading": "Verifying certificate…",
+    "retry": "Try again",
+    "state": {
+      "valid": { "title": "Valid certificate", "text": "This certificate is authentic and currently valid." },
+      "revoked": { "title": "Revoked certificate", "text": "This certificate has been revoked and is no longer valid." },
+      "not_found": { "title": "Certificate not found", "text": "No certificate matching this verification code was found." },
+      "problem": { "title": "Verification unavailable", "text": "A connection error prevented verification. Please try again shortly." }
+    },
+    "fields": {
+      "holder": "Recipient",
+      "number": "Certificate number",
+      "campaign": "Campaign",
+      "activity": "Activity",
+      "activityDate": "Activity date",
+      "issuedAt": "Issue date",
+      "revokedAt": "Revocation date"
+    }
+  },
   "games": {
     "brand": "IAE Games",
     "play": {

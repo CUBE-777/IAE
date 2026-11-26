@@ -1,7 +1,7 @@
 -- ============================================================
--- supabase/tests/certificates_smoke.sql — فحص سلوكي لنظام الشهادات (0063 → 0065). يعمل داخل معاملة تُلغى (rollback) ولا يترك أثرًا.
+-- supabase/tests/certificates_smoke.sql — فحص سلوكي لنظام الشهادات (0063 → 0066). يعمل داخل معاملة تُلغى (rollback) ولا يترك أثرًا.
 --
--- التشغيل: الصق الملف كاملًا في Supabase → SQL Editor (أو: psql "$DB_URL" -f supabase/tests/certificates_smoke.sql) بعد تطبيق 0063 → 0065.
+-- التشغيل: الصق الملف كاملًا في Supabase → SQL Editor (أو: psql "$DB_URL" -f supabase/tests/certificates_smoke.sql) بعد تطبيق 0063 → 0066.
 -- ⚠️ شغّله على بيئة تجريبية لا على الإنتاج (رغم الإلغاء الكامل، فهو يكتب مؤقتًا في auth.users/members/audit_logs).
 -- أي فشل يرفع استثناءً يبدأ بـ FAIL: ويذكر السبب. النجاح = رسالة NOTICE في النهاية.
 -- ملاحظة: السباق الحقيقي بين جلستين (إلغاء/إرسال، ترقيم متزامن) لا يمكن محاكاته في معاملة واحدة؛ هنا يُختبر المنطق المتسلسل
@@ -25,8 +25,8 @@ declare
   tok text; tok_old text; tok_new text; got jsonb; got2 jsonb; n int; s text; denied boolean; qid uuid; qid2 uuid;
   c_y uuid;
 begin
-  if to_regprocedure('public.verify_certificate(text)') is null or to_regprocedure('public.certificate_email_claim_next(text)') is null then
-    raise exception 'FAIL: دوال 0063-0065 غير موجودة — طبّقها أولًا';
+  if to_regprocedure('public.verify_certificate(text)') is null or to_regprocedure('public.certificate_email_claim_next(text)') is null or to_regprocedure('public.certificate_email_recheck(uuid,text)') is null then
+    raise exception 'FAIL: دوال 0063-0066 غير موجودة — طبّقها أولًا';
   end if;
 
   -- ---------- تجهيز (بصلاحية المالك) ----------
@@ -278,14 +278,29 @@ begin
   reset role;
   got := public.certificate_email_claim_next('smoke_worker');
   if got is null or got ->> 'certificate_id' <> c_x::text then raise exception 'FAIL: claim لا يعيد المهمة المنتظرة'; end if;
-  if not public.certificate_email_recheck(qid2) then raise exception 'FAIL: recheck false لشهادة صالحة'; end if;
+  if not public.certificate_email_recheck(qid2, got ->> 'token') then raise exception 'FAIL: recheck false لرمز claim الحالي'; end if;
   if public.certificate_email_claim_next('smoke_worker') is not null then raise exception 'FAIL: claim ثانٍ أعاد مهمة (يجب لا شيء)'; end if;
+
+  -- إعادة إصدار الرمز بعد claim يجب أن تمنع العامل من إرسال الرابط القديم.
+  set local role authenticated;
+  perform set_config('request.jwt.claims', json_build_object('sub', u_super, 'role', 'authenticated', 'aal', 'aal1')::text, true);
+  perform public.certificate_reissue_token(c_x);
+  reset role;
+  if public.certificate_email_recheck(qid2, got ->> 'token') then raise exception 'FAIL: recheck قبل رمزًا قديماً بعد reissue'; end if;
+
+  -- تدوير السرّ يبطل أيضًا الرمز الذي حمله العامل قبل التدوير.
+  set local role authenticated;
+  perform set_config('request.jwt.claims', json_build_object('sub', u_dev, 'role', 'authenticated', 'aal', 'aal1')::text, true);
+  perform public.certificate_rotate_token_secret();
+  reset role;
+  if public.certificate_email_recheck(qid2, got ->> 'token') then raise exception 'FAIL: recheck قبل رمزاً قديماً بعد rotation'; end if;
+
   set local role authenticated;
   perform set_config('request.jwt.claims', json_build_object('sub', u_sec, 'role', 'authenticated', 'aal', 'aal1')::text, true);
   got2 := public.certificate_revoke(c_x, null);
   if (got2 ->> 'email_was_sending') <> 'true' then raise exception 'FAIL: الإلغاء أثناء الإرسال لم يُوثَّق'; end if;
   reset role;
-  if public.certificate_email_recheck(qid2) then raise exception 'FAIL: recheck true بعد الإلغاء'; end if;
+  if public.certificate_email_recheck(qid2, got ->> 'token') then raise exception 'FAIL: recheck true بعد الإلغاء'; end if;
   select count(*) into n from public.certificate_email_logs where queue_id = qid2 and event = 'revoked_during_send';
   if n < 1 then raise exception 'FAIL: لا حدث revoked_during_send'; end if;
   if public.certificate_email_complete(qid2, false, 'smtp_timeout') <> 'cancelled' then raise exception 'FAIL: فشل بعد الإلغاء لا يُلغى'; end if;

@@ -1,8 +1,8 @@
 # نظام الشهادات — قاعدة البيانات (المرحلة 1)
 
 > الحالة: **ملفات أُنشئت واختبارات static فقط.** لم يُنفَّذ أي SQL على Supabase، ولم تُشغَّل `certificates_smoke.sql` (لا PostgreSQL في بيئة الإنشاء).
-> الملفات: `supabase/migrations/0063…0065`، `supabase/rollback/0063…0065_*_down.sql`، `supabase/tests/certificates_smoke.sql`، `tests/certificates-sql.test.js`.
-> آخر migration قبل المرحلة: `0062_games_maintenance_mode.sql`؛ بعدها: `0065_certificates_email_queue.sql`.
+> الملفات: `supabase/migrations/0063…0066`، `supabase/rollback/0063…0066_*_down.sql`، `supabase/tests/certificates_smoke.sql`، `tests/certificates-sql.test.js`، `tests/certificates-public-verification.test.js`.
+> آخر migration قبل المرحلة: `0062_games_maintenance_mode.sql`؛ بعدها: `0066_certificates_email_token_recheck.sql`.
 
 ## 1. الجداول
 
@@ -83,6 +83,10 @@ token_hash = hex( sha256( token ) )                                             
 - `enqueue/retry`: يرفضان الملغاة بعد قفلها. `claim`: `FOR SHARE SKIP LOCKED` على الشهادة ثم `FOR UPDATE SKIP LOCKED` على الطابور، ويُلغي مهمة شهادة ملغاة.
 - مهمة نشطة واحدة لكل شهادة (فهرس فريد جزئي).
 - **حدّ لا يُمكن إزالته**: إن أُلغيت الشهادة بعد `claim` وطلب HTTP قد وصل المزوّد، **قد يصل البريد**. نُقلّص النافذة بـ `certificate_email_recheck` قبل الإرسال مباشرة، ونوثّق (`revoked_during_send`)، ولا نضمن المنع. البريد يحمل رابطًا لا PDF، فالرابط يعرض «ملغاة» بعد الإلغاء.
+
+- **إصلاح 0066 لسباق الرمز**: لم تعد `certificate_email_recheck` تقبل `queue_id` وحده. يجب أن يمرّر العامل الرمز نفسه الذي استلمه من `certificate_email_claim_next` إلى `certificate_email_recheck(queue_id, token)`. تقارن الدالة `sha256(token)` مع `certificates.token_hash` الحالي، إضافة إلى حالة الطابور والشهادة. بعد `certificate_reissue_token` أو `certificate_rotate_token_secret` يصبح الرمز القديم مرفوضًا قبل HTTP.
+- لا يُخزَّن رمز العامل في قاعدة البيانات ولا يُكتب في السجلات؛ يُمرّر كوسيط RPC فقط. لا تسجّل العامل أو مزود البريد قيمة الرمز في logs.
+- **مهم**: لم يُعثر على Edge Function/worker لإرسال الشهادات ضمن المستودع عند إعداد 0066. قبل تفعيل عامل البريد، يجب أن يستدعي RPC الجديد بوسيطين، وإلا سيفشل الاستدعاء (fail-closed) ولن يتم الإرسال. لا يوجد ادعاء بأن السباق بعد بدء طلب HTTP إلى المزود قد أُزيل.
 - `complete(false)` يعيد الجدولة بتراجع تربيعي (`attempts²` دقيقة) حتى `max_attempts` ثم `failed`. المهمة العالقة `sending` تُحرَّر إلى `failed (stale_sending)` بلا إعادة تلقائية لتفادي التكرار؛ الإعادة يدوية.
 - أخطاء الإرسال رموز `[a-z0-9_]{1,40}` فقط. لا مفاتيح مزوّد في الملفات؛ العامل (Edge Function، المرحلة 2) سيستعمل `service_role` على الخادم وحده.
 
@@ -93,7 +97,7 @@ token_hash = hex( sha256( token ) )                                             
 ## 10. RPCs (ملخّص)
 
 إدارة: `certificate_create_campaign`, `certificate_update_campaign`, `certificate_add_attendance_recipients`, `certificate_add_member_recipient`, `certificate_add_external_recipient`, `certificate_remove_recipient`, `certificate_issue_campaign`, `certificate_revoke`, `certificate_archive_campaign`, `certificate_set_public_name_mode`, `certificate_enqueue_email`, `certificate_enqueue_campaign_emails`, `certificate_retry_email` (manage) — `certificate_save_template`, `certificate_reissue_token` (admin) — `certificate_rotate_token_secret` (developer).
-مراجعة: `certificate_review_campaigns`, `certificate_review_recipients`. عضو/مدير: `get_my_certificates`, `get_certificate_render_data`. عام: `verify_certificate`. عامل (service_role): `certificate_email_claim_next/recheck/complete/release_stale`.
+مراجعة: `certificate_review_campaigns`, `certificate_review_recipients`. عضو/مدير: `get_my_certificates`, `get_certificate_render_data`. عام: `verify_certificate` عبر الصفحة `/verify-certificate/:token` (حالات valid/revoked/not_found؛ الصفحة noindex ولا تعرض بيانات الحساب). عامل (service_role): `certificate_email_claim_next`, `certificate_email_recheck(queue_id, token)`, `certificate_email_complete`, `certificate_email_release_stale`.
 
 ## 11. اختبار التزامن اليدوي (جلستان psql على بيئة تجريبية)
 
