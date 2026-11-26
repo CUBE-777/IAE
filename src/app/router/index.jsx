@@ -3,7 +3,7 @@ import { createBrowserRouter, Navigate, Outlet, useLocation } from 'react-router
 import Home from '../../pages/public/Home';
 import ProtectedRoute from '../../components/admin/ProtectedRoute';
 import RouteError from '../../components/common/RouteError';
-import { ROLES_MEMBERS, ROLES_REQUESTS, ROLES_CONTENT_VIEW, ROLES_PROJECTS, ROLES_INTERNAL_FILES_VIEW, ROLES_BUDGET, ROLES_SUPER } from '../../constants/roles';
+import { ROLES_MEMBERS, ROLES_REQUESTS, ROLES_CONTENT_VIEW, ROLES_PROJECTS, ROLES_INTERNAL_FILES_VIEW, ROLES_BUDGET, ROLES_SUPER, ROLES_CERT_REVIEW } from '../../constants/roles';
 import { GAMES_BASE_PATH } from '../../features/games/constants/games';
 import PageLoader from '../../components/common/PageLoader';
 import { useAdminPwa } from '../../hooks/useAdminPwa';
@@ -62,6 +62,7 @@ const Settings = lazy(() => import('../../pages/admin/Settings'));
 const GamesAdmin = lazy(() => import('../../features/games/admin/pages/GamesAdmin'));
 const Budget = lazy(() => import('../../pages/admin/Budget'));
 const Security = lazy(() => import('../../pages/admin/Security'));
+const Certificates = lazy(() => import('../../pages/admin/Certificates'));
 const Privacy = lazy(() => import('../../pages/public/Privacy'));
 
 /**
@@ -164,6 +165,7 @@ export const router = createBrowserRouter([
       { path: '/admin/budget', element: protectedAdmin(ROLES_BUDGET, <Budget />) },
       { path: '/admin/admins', element: protectedAdmin(ROLES_SUPER, <AdminUsers />) },
       { path: '/admin/audit', element: protectedAdmin(ROLES_SUPER, <Audit />) },
+      { path: '/admin/certificates', element: protectedAdmin(ROLES_CERT_REVIEW, <Certificates />) },
       { path: '/admin/security', element: protectedAdmin([], <Security />) },
       { path: '/admin/settings', element: protectedAdmin(ROLES_SUPER, <Settings />) },
       { path: '/admin/games', element: protectedAdmin(ROLES_SUPER, <GamesAdmin />) },

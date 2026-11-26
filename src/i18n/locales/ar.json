@@ -399,6 +399,8 @@
       "gamesAdmin": "إدارة الألعاب",
       "projects": "المشاريع",
       "sectionDocs": "الوثائق",
+      "certificates": "الشهادات",
+      "sectionCertificates": "الشهادات",
       "internalFiles": "الملفات الداخلية",
       "sectionAccount": "حسابي",
       "security": "أمان الحساب"
@@ -542,6 +544,169 @@
       "pinnedOk": "تم تثبيت الإعلان",
       "unpinnedOk": "تم إلغاء التثبيت",
       "updateFailed": "تعذر تحديث الإعلان"
+    },
+    "certificates": {
+      "pageTitle": "الشهادات — IAE",
+      "title": "الشهادات",
+      "subtitle": "حملات الشهادات والمستفيدون",
+      "new": "حملة جديدة",
+      "back": "العودة إلى الحملات",
+      "open": "فتح",
+      "empty": "لا توجد حملات شهادات.",
+      "emptyFiltered": "لا توجد حملات مطابقة للبحث.",
+      "loadError": "تعذر تحميل الحملات.",
+      "unavailable": "وحدة الشهادات غير متاحة في قاعدة البيانات (migrations 0063 إلى 0065 غير مطبّقة أو ناقصة). تواصل مع المطوّر.",
+      "reviewOnlyNotice": "عرض فقط: يمكن لدورك الاطلاع على الحملات والمستفيدين دون أي إجراء تعديل.",
+      "search": "ابحث عن حملة…",
+      "filterStatus": "تصفية حسب الحالة",
+      "allStatuses": "كل الحالات",
+      "colTitle": "العنوان",
+      "colType": "النوع",
+      "colSource": "المصدر",
+      "colLanguage": "اللغة",
+      "colStatus": "الحالة",
+      "colRecipients": "المستفيدون",
+      "colActions": "إجراءات",
+      "recipientsCount": "{{total}} (منها {{issued}} مُصدَرة)",
+      "types": {
+        "participation": "مشاركة",
+        "organization": "تنظيم",
+        "volunteering": "تطوّع",
+        "training": "تكوين"
+      },
+      "sources": {
+        "attendance_based": "الحضور في نشاط",
+        "manual_selection": "اختيار يدوي",
+        "registration_based": "التسجيل (معطّل)"
+      },
+      "status": {
+        "draft": "مسودة",
+        "issued": "مُصدَرة",
+        "archived": "مؤرشفة"
+      },
+      "recStatus": {
+        "pending": "قيد الانتظار",
+        "issued": "مُصدَر"
+      },
+      "certStatus": {
+        "valid": "صالحة",
+        "revoked": "ملغاة"
+      },
+      "kinds": {
+        "member": "عضو",
+        "external": "خارجي"
+      },
+      "nameModes": {
+        "masked": "اسم مُقنَّع (مثل A**** B****)",
+        "none": "بدون عرض الاسم",
+        "full": "الاسم كاملًا"
+      },
+      "languages": {
+        "fr": "الفرنسية",
+        "ar": "العربية",
+        "en": "الإنجليزية"
+      },
+      "form": {
+        "createTitle": "حملة شهادات جديدة",
+        "editTitle": "تعديل الحملة",
+        "fieldTitle": "عنوان الحملة",
+        "fieldType": "نوع الشهادة",
+        "fieldSource": "مصدر الأهلية",
+        "fieldActivity": "النشاط المرتبط",
+        "fieldActivityNone": "— بدون نشاط —",
+        "fieldTemplate": "القالب",
+        "fieldLanguage": "لغة الشهادة",
+        "fieldNameMode": "عرض الاسم في التحقق العام",
+        "nameModeHint": "بعد الإصدار لا يمكن توسيع هذا الإعداد (التضييق فقط).",
+        "lockedHint": "يمكن تعديل العنوان والقالب واللغة وعرض الاسم فقط، وما دامت الحملة مسودة.",
+        "errTitle": "يجب أن يتراوح العنوان بين 3 و200 حرف.",
+        "errTemplate": "اختر قالبًا.",
+        "errActivity": "اختر نشاطًا لحملة مبنية على الحضور.",
+        "refsError": "تعذر تحميل القوالب والأنشطة.",
+        "saveOk": "تم حفظ الحملة.",
+        "saveFailed": "تعذر حفظ الحملة."
+      },
+      "detail": {
+        "details": "تفاصيل الحملة",
+        "nameMode": "عرض الاسم علنًا",
+        "template": "القالب",
+        "activity": "النشاط",
+        "createdAt": "أُنشئت في",
+        "issuedAt": "أُصدرت في",
+        "lockedAfterDraft": "الحملة لم تعد مسودة: العنوان والقالب واللغة والخصوصية مقفلة.",
+        "loadError": "تعذر تحميل الحملة."
+      },
+      "recipients": {
+        "heading": "المستفيدون",
+        "searchPlaceholder": "بحث (الاسم، البريد، الرقم)…",
+        "colName": "الاسم",
+        "colEmail": "البريد",
+        "colKind": "الصفة",
+        "colNumber": "رقم الشهادة",
+        "noEmail": "—",
+        "hasEmail": "مُدخَل",
+        "empty": "لا يوجد مستفيدون بعد.",
+        "emptyFiltered": "لا يوجد مستفيد مطابق."
+      },
+      "add": {
+        "fromAttendance": "إضافة من الحضور",
+        "fromAttendanceConfirm": "إضافة",
+        "fromAttendanceBody": "سيُضاف الأعضاء المسجَّل حضورهم في النشاط «{{activity}}» كمستفيدين قيد الانتظار (يُتجاهل المكرَّر).",
+        "fromAttendanceOk": "أُضيف {{count}} مستفيد.",
+        "fromAttendanceNone": "لا يوجد مستفيدون جدد للإضافة.",
+        "addMember": "إضافة عضو",
+        "addExternal": "إضافة شخص خارجي",
+        "memberTitle": "إضافة أعضاء",
+        "memberSearch": "ابحث عن عضو بالاسم",
+        "memberSearchPlaceholder": "2 أحرف على الأقل…",
+        "memberNone": "لم يُعثر على عضو.",
+        "memberAdd": "إضافة",
+        "alreadyAdded": "مُضاف",
+        "searching": "جارٍ البحث…",
+        "searchError": "فشل البحث.",
+        "externalTitle": "إضافة شخص خارجي",
+        "externalName": "الاسم الكامل",
+        "externalEmail": "البريد الإلكتروني (اختياري)",
+        "externalAdd": "إضافة",
+        "errName": "يجب أن يتراوح الاسم بين 2 و200 حرف.",
+        "errEmail": "بريد إلكتروني غير صالح.",
+        "addOk": "تمت إضافة المستفيد.",
+        "addFailed": "تعذرت الإضافة."
+      },
+      "validate": {
+        "button": "اعتماد وإصدار",
+        "title": "اعتماد الشهادات وإصدارها",
+        "body": "سيحصل {{count}} مستفيد قيد الانتظار على شهادة مرقّمة.",
+        "irreversible": "لا يمكن حذف المستفيدين بعد إصدار شهاداتهم. هذا الإجراء لا يرسل أي بريد.",
+        "confirm": "اعتماد وإصدار",
+        "ok": "أُصدرت {{issued}} شهادة ({{skipped}} متجاوَزة).",
+        "failed": "تعذر الإصدار."
+      },
+      "reject": {
+        "button": "رفض",
+        "title": "رفض هذا المستفيد",
+        "body": "سيُحذف المستفيد من الحملة ولن يحصل على شهادة.",
+        "confirm": "رفض",
+        "ok": "تم رفض المستفيد.",
+        "failed": "تعذر الرفض."
+      },
+      "errors": {
+        "certificate_campaign_not_found": "الحملة غير موجودة.",
+        "certificate_campaign_locked_after_draft": "لم تعد الحملة مسودة: لا يمكن تعديلها.",
+        "certificate_campaign_archived": "الحملة مؤرشفة.",
+        "certificate_campaign_invalid_transition": "تغيير الحالة غير مسموح.",
+        "certificate_template_not_found": "القالب غير موجود أو غير مفعّل.",
+        "certificate_activity_not_found": "النشاط غير موجود.",
+        "certificate_activity_required": "النشاط مطلوب لحملة مبنية على الحضور.",
+        "certificate_registration_based_disabled": "مصدر «التسجيل» غير متاح بعد.",
+        "certificate_wrong_eligibility": "هذا الإجراء لا يطابق مصدر الأهلية للحملة.",
+        "certificate_member_not_found": "العضو غير موجود.",
+        "certificate_recipient_duplicate": "هذا المستفيد موجود مسبقًا في الحملة.",
+        "certificate_recipient_not_found": "المستفيد غير موجود.",
+        "certificate_recipient_issued_immutable": "لا يمكن حذف مستفيد صدرت شهادته.",
+        "certificate_no_recipients": "لا يوجد مستفيدون قيد الانتظار للإصدار.",
+        "certificate_secret_missing": "إعداد أمان الشهادات مفقود في قاعدة البيانات."
+      }
     },
     "modal": {
       "close": "إغلاق النافذة"

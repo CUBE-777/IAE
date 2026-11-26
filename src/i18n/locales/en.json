@@ -399,6 +399,8 @@
       "gamesAdmin": "Games administration",
       "projects": "Projects",
       "sectionDocs": "Documents",
+      "certificates": "Certificates",
+      "sectionCertificates": "Certificates",
       "internalFiles": "Internal files",
       "sectionAccount": "My account",
       "security": "Account security"
@@ -542,6 +544,169 @@
       "pinnedOk": "Announcement pinned",
       "unpinnedOk": "Announcement unpinned",
       "updateFailed": "Could not update the announcement"
+    },
+    "certificates": {
+      "pageTitle": "Certificates — IAE",
+      "title": "Certificates",
+      "subtitle": "Certificate campaigns and recipients",
+      "new": "New campaign",
+      "back": "Back to campaigns",
+      "open": "Open",
+      "empty": "No certificate campaigns.",
+      "emptyFiltered": "No campaign matches your search.",
+      "loadError": "Could not load campaigns.",
+      "unavailable": "The Certificates module is not available on the database (migrations 0063 to 0065 not applied or incomplete). Contact a developer.",
+      "reviewOnlyNotice": "Read-only: your role can view campaigns and recipients, without any modification action.",
+      "search": "Search a campaign…",
+      "filterStatus": "Filter by status",
+      "allStatuses": "All statuses",
+      "colTitle": "Title",
+      "colType": "Type",
+      "colSource": "Source",
+      "colLanguage": "Language",
+      "colStatus": "Status",
+      "colRecipients": "Recipients",
+      "colActions": "Actions",
+      "recipientsCount": "{{total}} ({{issued}} issued)",
+      "types": {
+        "participation": "Participation",
+        "organization": "Organization",
+        "volunteering": "Volunteering",
+        "training": "Training"
+      },
+      "sources": {
+        "attendance_based": "Activity attendance",
+        "manual_selection": "Manual selection",
+        "registration_based": "Registrations (disabled)"
+      },
+      "status": {
+        "draft": "Draft",
+        "issued": "Issued",
+        "archived": "Archived"
+      },
+      "recStatus": {
+        "pending": "Pending",
+        "issued": "Issued"
+      },
+      "certStatus": {
+        "valid": "Valid",
+        "revoked": "Revoked"
+      },
+      "kinds": {
+        "member": "Member",
+        "external": "External"
+      },
+      "nameModes": {
+        "masked": "Masked name (e.g. A**** B****)",
+        "none": "Name hidden",
+        "full": "Full name"
+      },
+      "languages": {
+        "fr": "French",
+        "ar": "Arabic",
+        "en": "English"
+      },
+      "form": {
+        "createTitle": "New certificate campaign",
+        "editTitle": "Edit campaign",
+        "fieldTitle": "Campaign title",
+        "fieldType": "Certificate type",
+        "fieldSource": "Eligibility source",
+        "fieldActivity": "Linked activity",
+        "fieldActivityNone": "— No activity —",
+        "fieldTemplate": "Template",
+        "fieldLanguage": "Certificate language",
+        "fieldNameMode": "Name display on public verification",
+        "nameModeHint": "After issuance this setting can only be restricted, never widened.",
+        "lockedHint": "Only the title, template, language and name display can be edited, and only while the campaign is a draft.",
+        "errTitle": "The title must be between 3 and 200 characters.",
+        "errTemplate": "Choose a template.",
+        "errActivity": "Choose an activity for an attendance-based campaign.",
+        "refsError": "Could not load templates and activities.",
+        "saveOk": "Campaign saved.",
+        "saveFailed": "Could not save the campaign."
+      },
+      "detail": {
+        "details": "Campaign details",
+        "nameMode": "Public name display",
+        "template": "Template",
+        "activity": "Activity",
+        "createdAt": "Created on",
+        "issuedAt": "Issued on",
+        "lockedAfterDraft": "The campaign is no longer a draft: title, template, language and privacy are locked.",
+        "loadError": "Could not load the campaign."
+      },
+      "recipients": {
+        "heading": "Recipients",
+        "searchPlaceholder": "Search (name, email, number)…",
+        "colName": "Name",
+        "colEmail": "Email",
+        "colKind": "Profile",
+        "colNumber": "Certificate no.",
+        "noEmail": "—",
+        "hasEmail": "On file",
+        "empty": "No recipients yet.",
+        "emptyFiltered": "No matching recipient."
+      },
+      "add": {
+        "fromAttendance": "Add from attendance",
+        "fromAttendanceConfirm": "Add",
+        "fromAttendanceBody": "Members with a recorded attendance for the activity \"{{activity}}\" will be added as pending recipients (duplicates are ignored).",
+        "fromAttendanceOk": "{{count}} recipient(s) added.",
+        "fromAttendanceNone": "No new recipient to add.",
+        "addMember": "Add a member",
+        "addExternal": "Add an external person",
+        "memberTitle": "Add members",
+        "memberSearch": "Search a member by name",
+        "memberSearchPlaceholder": "At least 2 characters…",
+        "memberNone": "No member found.",
+        "memberAdd": "Add",
+        "alreadyAdded": "Already added",
+        "searching": "Searching…",
+        "searchError": "Search failed.",
+        "externalTitle": "Add an external person",
+        "externalName": "Full name",
+        "externalEmail": "Email (optional)",
+        "externalAdd": "Add",
+        "errName": "The name must be between 2 and 200 characters.",
+        "errEmail": "Invalid email address.",
+        "addOk": "Recipient added.",
+        "addFailed": "Could not add."
+      },
+      "validate": {
+        "button": "Validate and issue",
+        "title": "Validate and issue certificates",
+        "body": "{{count}} pending recipient(s) will receive a numbered certificate.",
+        "irreversible": "Issued recipients can no longer be removed. This action sends no email.",
+        "confirm": "Validate and issue",
+        "ok": "{{issued}} certificate(s) issued ({{skipped}} skipped).",
+        "failed": "Issuance failed."
+      },
+      "reject": {
+        "button": "Reject",
+        "title": "Reject this recipient",
+        "body": "The recipient will be removed from the campaign and will not receive a certificate.",
+        "confirm": "Reject",
+        "ok": "Recipient rejected.",
+        "failed": "Could not reject."
+      },
+      "errors": {
+        "certificate_campaign_not_found": "Campaign not found.",
+        "certificate_campaign_locked_after_draft": "The campaign is no longer a draft: it cannot be edited.",
+        "certificate_campaign_archived": "The campaign is archived.",
+        "certificate_campaign_invalid_transition": "Status change not allowed.",
+        "certificate_template_not_found": "Template not found or inactive.",
+        "certificate_activity_not_found": "Activity not found.",
+        "certificate_activity_required": "An activity is required for an attendance-based campaign.",
+        "certificate_registration_based_disabled": "The \"registrations\" source is not available yet.",
+        "certificate_wrong_eligibility": "This action does not match the campaign's eligibility source.",
+        "certificate_member_not_found": "Member not found.",
+        "certificate_recipient_duplicate": "This recipient is already in the campaign.",
+        "certificate_recipient_not_found": "Recipient not found.",
+        "certificate_recipient_issued_immutable": "An already issued recipient cannot be removed.",
+        "certificate_no_recipients": "No pending recipient to issue.",
+        "certificate_secret_missing": "Certificate security configuration is missing on the database."
+      }
     },
     "modal": {
       "close": "Close dialog"

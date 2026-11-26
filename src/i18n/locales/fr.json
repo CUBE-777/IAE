@@ -399,6 +399,8 @@
       "gamesAdmin": "Administration des jeux",
       "projects": "Projets",
       "sectionDocs": "Documents",
+      "certificates": "Certificats",
+      "sectionCertificates": "Certificats",
       "internalFiles": "Fichiers internes",
       "sectionAccount": "Mon compte",
       "security": "Sécurité du compte"
@@ -542,6 +544,169 @@
       "pinnedOk": "Annonce épinglée",
       "unpinnedOk": "Annonce désépinglée",
       "updateFailed": "Impossible de mettre à jour l'annonce"
+    },
+    "certificates": {
+      "pageTitle": "Certificats — IAE",
+      "title": "Certificats",
+      "subtitle": "Campagnes de certificats et bénéficiaires",
+      "new": "Nouvelle campagne",
+      "back": "Retour aux campagnes",
+      "open": "Ouvrir",
+      "empty": "Aucune campagne de certificats.",
+      "emptyFiltered": "Aucune campagne ne correspond à la recherche.",
+      "loadError": "Impossible de charger les campagnes.",
+      "unavailable": "Le module Certificats n'est pas disponible sur la base de données (migrations 0063 à 0065 non appliquées ou incomplètes). Contactez un développeur.",
+      "reviewOnlyNotice": "Consultation seule : votre rôle peut consulter les campagnes et les bénéficiaires, sans aucune action de modification.",
+      "search": "Rechercher une campagne…",
+      "filterStatus": "Filtrer par statut",
+      "allStatuses": "Tous les statuts",
+      "colTitle": "Titre",
+      "colType": "Type",
+      "colSource": "Source",
+      "colLanguage": "Langue",
+      "colStatus": "Statut",
+      "colRecipients": "Bénéficiaires",
+      "colActions": "Actions",
+      "recipientsCount": "{{total}} (dont {{issued}} émis)",
+      "types": {
+        "participation": "Participation",
+        "organization": "Organisation",
+        "volunteering": "Bénévolat",
+        "training": "Formation"
+      },
+      "sources": {
+        "attendance_based": "Présences à une activité",
+        "manual_selection": "Sélection manuelle",
+        "registration_based": "Inscriptions (désactivé)"
+      },
+      "status": {
+        "draft": "Brouillon",
+        "issued": "Émise",
+        "archived": "Archivée"
+      },
+      "recStatus": {
+        "pending": "En attente",
+        "issued": "Émis"
+      },
+      "certStatus": {
+        "valid": "Valide",
+        "revoked": "Révoquée"
+      },
+      "kinds": {
+        "member": "Membre",
+        "external": "Externe"
+      },
+      "nameModes": {
+        "masked": "Nom masqué (ex. A**** B****)",
+        "none": "Nom non affiché",
+        "full": "Nom complet"
+      },
+      "languages": {
+        "fr": "Français",
+        "ar": "Arabe",
+        "en": "Anglais"
+      },
+      "form": {
+        "createTitle": "Nouvelle campagne de certificats",
+        "editTitle": "Modifier la campagne",
+        "fieldTitle": "Titre de la campagne",
+        "fieldType": "Type de certificat",
+        "fieldSource": "Source d'éligibilité",
+        "fieldActivity": "Activité liée",
+        "fieldActivityNone": "— Aucune activité —",
+        "fieldTemplate": "Modèle",
+        "fieldLanguage": "Langue du certificat",
+        "fieldNameMode": "Affichage du nom en vérification publique",
+        "nameModeHint": "Après l'émission, ce réglage ne peut plus être élargi (seulement restreint).",
+        "lockedHint": "Seuls le titre, le modèle, la langue et l'affichage du nom sont modifiables, et uniquement tant que la campagne est en brouillon.",
+        "errTitle": "Le titre doit contenir entre 3 et 200 caractères.",
+        "errTemplate": "Choisissez un modèle.",
+        "errActivity": "Choisissez une activité pour une campagne basée sur les présences.",
+        "refsError": "Impossible de charger les modèles et activités.",
+        "saveOk": "Campagne enregistrée.",
+        "saveFailed": "Échec de l'enregistrement de la campagne."
+      },
+      "detail": {
+        "details": "Détails de la campagne",
+        "nameMode": "Affichage public du nom",
+        "template": "Modèle",
+        "activity": "Activité",
+        "createdAt": "Créée le",
+        "issuedAt": "Émise le",
+        "lockedAfterDraft": "La campagne n'est plus en brouillon : titre, modèle, langue et confidentialité sont verrouillés.",
+        "loadError": "Impossible de charger la campagne."
+      },
+      "recipients": {
+        "heading": "Bénéficiaires",
+        "searchPlaceholder": "Rechercher (nom, e-mail, numéro)…",
+        "colName": "Nom",
+        "colEmail": "E-mail",
+        "colKind": "Profil",
+        "colNumber": "N° de certificat",
+        "noEmail": "—",
+        "hasEmail": "Renseigné",
+        "empty": "Aucun bénéficiaire pour l'instant.",
+        "emptyFiltered": "Aucun bénéficiaire ne correspond."
+      },
+      "add": {
+        "fromAttendance": "Ajouter depuis les présences",
+        "fromAttendanceConfirm": "Ajouter",
+        "fromAttendanceBody": "Les membres ayant une présence enregistrée pour l'activité « {{activity}} » seront ajoutés comme bénéficiaires en attente (les doublons sont ignorés).",
+        "fromAttendanceOk": "{{count}} bénéficiaire(s) ajouté(s).",
+        "fromAttendanceNone": "Aucun nouveau bénéficiaire à ajouter.",
+        "addMember": "Ajouter un membre",
+        "addExternal": "Ajouter une personne externe",
+        "memberTitle": "Ajouter des membres",
+        "memberSearch": "Rechercher un membre par nom",
+        "memberSearchPlaceholder": "Au moins 2 caractères…",
+        "memberNone": "Aucun membre trouvé.",
+        "memberAdd": "Ajouter",
+        "alreadyAdded": "Déjà ajouté",
+        "searching": "Recherche…",
+        "searchError": "La recherche a échoué.",
+        "externalTitle": "Ajouter une personne externe",
+        "externalName": "Nom complet",
+        "externalEmail": "E-mail (facultatif)",
+        "externalAdd": "Ajouter",
+        "errName": "Le nom doit contenir entre 2 et 200 caractères.",
+        "errEmail": "Adresse e-mail invalide.",
+        "addOk": "Bénéficiaire ajouté.",
+        "addFailed": "Échec de l'ajout."
+      },
+      "validate": {
+        "button": "Valider et émettre",
+        "title": "Valider et émettre les certificats",
+        "body": "{{count}} bénéficiaire(s) en attente recevront un certificat numéroté.",
+        "irreversible": "Les bénéficiaires émis ne peuvent plus être retirés. Aucun e-mail n'est envoyé par cette action.",
+        "confirm": "Valider et émettre",
+        "ok": "{{issued}} certificat(s) émis ({{skipped}} ignoré(s)).",
+        "failed": "Échec de l'émission."
+      },
+      "reject": {
+        "button": "Rejeter",
+        "title": "Rejeter ce bénéficiaire",
+        "body": "Le bénéficiaire sera retiré de la campagne et ne recevra pas de certificat.",
+        "confirm": "Rejeter",
+        "ok": "Bénéficiaire rejeté.",
+        "failed": "Échec du rejet."
+      },
+      "errors": {
+        "certificate_campaign_not_found": "Campagne introuvable.",
+        "certificate_campaign_locked_after_draft": "La campagne n'est plus en brouillon : modification impossible.",
+        "certificate_campaign_archived": "La campagne est archivée.",
+        "certificate_campaign_invalid_transition": "Changement de statut non autorisé.",
+        "certificate_template_not_found": "Modèle introuvable ou inactif.",
+        "certificate_activity_not_found": "Activité introuvable.",
+        "certificate_activity_required": "Une activité est requise pour une campagne basée sur les présences.",
+        "certificate_registration_based_disabled": "La source « inscriptions » n'est pas encore disponible.",
+        "certificate_wrong_eligibility": "Cette action ne correspond pas à la source d'éligibilité de la campagne.",
+        "certificate_member_not_found": "Membre introuvable.",
+        "certificate_recipient_duplicate": "Ce bénéficiaire existe déjà dans la campagne.",
+        "certificate_recipient_not_found": "Bénéficiaire introuvable.",
+        "certificate_recipient_issued_immutable": "Un bénéficiaire déjà émis ne peut pas être retiré.",
+        "certificate_no_recipients": "Aucun bénéficiaire en attente à émettre.",
+        "certificate_secret_missing": "Configuration de sécurité des certificats manquante côté base de données."
+      }
     },
     "modal": {
       "close": "Fermer la fenêtre"

@@ -45,3 +45,10 @@ export const isReadOnlyRole = (role) => ROLES_READONLY.includes(role);
  * الأدوار الأربعة فقط: لا نواب. صفحة الأعضاء تفتح لـ ROLES_MEMBERS (أوسع)، فأزرار هذا النظام تُخفى عن بقية الأدوار.
  */
 export const ROLES_MEMBER_SYSTEM = ['developer', 'super_admin', 'secretary_general', 'members_manager'];
+
+/**
+ * الشهادات (0063/0064) — مرآة can_manage_certificates() / can_review_certificate_recipients() في SQL.
+ * الإدارة: developer, super_admin, secretary_general. المراجعة تضيف members_manager (قراءة فقط عبر RPC المراجعة).
+ */
+export const ROLES_CERT_MANAGE = ['developer', 'super_admin', 'secretary_general'];
+export const ROLES_CERT_REVIEW = [...ROLES_CERT_MANAGE, 'members_manager'];

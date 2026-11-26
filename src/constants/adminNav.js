@@ -1,4 +1,4 @@
-import { ROLES_MEMBERS, ROLES_REQUESTS, ROLES_CONTENT_VIEW, ROLES_PROJECTS, ROLES_INTERNAL_FILES_VIEW, ROLES_BUDGET, ROLES_SUPER } from './roles.js'; // امتداد .js صريح ليستورده node:test أيضًا
+import { ROLES_MEMBERS, ROLES_REQUESTS, ROLES_CONTENT_VIEW, ROLES_PROJECTS, ROLES_INTERNAL_FILES_VIEW, ROLES_BUDGET, ROLES_SUPER, ROLES_CERT_REVIEW } from './roles.js'; // امتداد .js صريح ليستورده node:test أيضًا
 
 /**
  * src/constants/adminNav.js
@@ -22,6 +22,8 @@ export const ADMIN_NAV = [
   { key: 'budget', labelKey: 'budget', label: 'الميزانية', href: '/admin/budget', icon: 'wallet', roles: ROLES_BUDGET },
   { sectionKey: 'sectionDocs', section: 'الوثائق' },
   { key: 'internalFiles', labelKey: 'internalFiles', label: 'الملفات الداخلية', href: '/admin/internal-files', icon: 'folder', roles: ROLES_INTERNAL_FILES_VIEW },
+  { sectionKey: 'sectionCertificates', section: 'الشهادات' },
+  { key: 'certificates', labelKey: 'certificates', label: 'الشهادات', href: '/admin/certificates', icon: 'award', roles: ROLES_CERT_REVIEW },
   { sectionKey: 'sectionAccount', section: 'حسابي' },
   { key: 'security', labelKey: 'security', label: 'أمان الحساب', href: '/admin/security', icon: 'shield', roles: [] },
   { sectionKey: 'sectionAdmin', section: 'الإدارة' },
