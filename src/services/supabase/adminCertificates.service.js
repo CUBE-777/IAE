@@ -183,13 +183,16 @@ export async function addExternalRecipient(campaignId, name, email) {
   return data;
 }
 
-/** رفض مستفيد غير مُصدَر = حذفه من الحملة (الدالة ترفض المُصدَرين) */
-export async function rejectCertificateRecipient(recipientId) {
+/**
+ * إزالة مستفيد معلّق = حذف نهائي للسطر (الدالة ترفض المُصدَرين). ليس «رفضًا»: لا توجد حالة rejected في 0063،
+ * ولا اعتماد/رفض فردي في 0064. تُستعمل فقط لتصحيح خطأ في الإضافة.
+ */
+export async function removeCertificateRecipient(recipientId) {
   const { error } = await supabase.rpc('certificate_remove_recipient', { p_recipient_id: recipientId });
   if (error) throw error;
 }
 
-/** اعتماد/إصدار كل المستفيدين المعلّقين: { issued, skipped, status } */
+/** إصدار شهادات كل المستفيدين المعلّقين في الحملة (عملية جماعية، ليست اعتمادًا فرديًا): { issued, skipped, status } */
 export async function issueCertificateCampaign(campaignId) {
   const { data, error } = await supabase.rpc('certificate_issue_campaign', { p_campaign_id: campaignId });
   if (error) throw error;

@@ -4,7 +4,7 @@ import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import StateBox from '../../components/admin/StateBox';
 import {
   fetchCertificateCampaign, fetchCertificateRecipients, fetchCertificateTemplates, isCertificateSchemaMissing,
-  addAttendanceRecipients, rejectCertificateRecipient, issueCertificateCampaign,
+  addAttendanceRecipients, removeCertificateRecipient, issueCertificateCampaign,
 } from '../../services/supabase/adminCertificates.service';
 import { formatDate } from '../../utils/i18nContent';
 import CertificateCampaignFormModal from './CertificateCampaignFormModal';
@@ -14,7 +14,8 @@ import { CAMPAIGN_BADGE, RECIPIENT_BADGE, CERT_BADGE, notifyCertError } from './
 /**
  * تفاصيل حملة + مستفيدوها.
  * canManage=false (members_manager): عرض فقط عبر RPC المراجعة؛ لا توجد دالة كتابة له في 0064،
- * فلا تُعرض أي أزرار تعديل/اعتماد/رفض (الخادم سيرفضها على أي حال).
+ * فلا تُعرض أي أزرار كتابة (الخادم سيرفضها على أي حال).
+ * لا يوجد اعتماد/رفض فردي في قاعدة البيانات: الإصدار جماعي على مستوى الحملة، والإزالة حذف لمستفيد معلّق.
  */
 export default function CertificateCampaignDetail({ id, canManage, onBack }) {
   const { t, i18n } = useTranslation();
@@ -24,7 +25,7 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [dialog, setDialog] = useState(null); // 'edit' | 'member' | 'external' | { type: 'attendance'|'issue'|'reject', ... }
+  const [dialog, setDialog] = useState(null); // 'edit' | 'member' | 'external' | { type: 'attendance'|'issue'|'remove', ... }
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(({ silent = false } = {}) => {
@@ -160,10 +161,11 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
               </>
             )}
             <button type="button" className="admin-btn admin-btn-primary admin-btn-sm" disabled={!canIssue} onClick={() => setDialog({ type: 'issue' })}>
-              {t('admin.certificates.validate.button')}
+              {t('admin.certificates.issue.button')}
             </button>
           </div>
         )}
+        {canManage && !archived && pending.length > 0 && <p className="admin-hint">{t('admin.certificates.issue.scope')}</p>}
 
         <div className="admin-search-row">
           <input type="search" className="admin-input" value={search} onChange={(e) => setSearch(e.target.value)}
@@ -213,7 +215,7 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
                     {canManage && !archived && (
                       <td className="admin-cell-actions">
                         {r.status === 'pending'
-                          ? <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDialog({ type: 'reject', recipient: r })}>{t('admin.certificates.reject.button')}</button>
+                          ? <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDialog({ type: 'remove', recipient: r })}>{t('admin.certificates.remove.button')}</button>
                           : '—'}
                       </td>
                     )}
@@ -244,21 +246,21 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
         </ConfirmModal>
       )}
       {dialog?.type === 'issue' && (
-        <ConfirmModal title={t('admin.certificates.validate.title')} confirmLabel={t('admin.certificates.validate.confirm')} busy={busy}
+        <ConfirmModal title={t('admin.certificates.issue.title')} confirmLabel={t('admin.certificates.issue.confirm')} busy={busy}
           onClose={() => setDialog(null)}
           onConfirm={() => run(() => issueCertificateCampaign(campaign.id),
-            (r) => t('admin.certificates.validate.ok', { issued: r.issued ?? 0, skipped: r.skipped ?? 0 }),
-            'admin.certificates.validate.failed')}>
-          <p>{t('admin.certificates.validate.body', { count: pending.length })}</p>
-          <p className="admin-hint">{t('admin.certificates.validate.irreversible')}</p>
+            (r) => t('admin.certificates.issue.ok', { issued: r.issued ?? 0, skipped: r.skipped ?? 0 }),
+            'admin.certificates.issue.failed')}>
+          <p>{t('admin.certificates.issue.body', { count: pending.length })}</p>
+          <p className="admin-hint">{t('admin.certificates.issue.irreversible')}</p>
         </ConfirmModal>
       )}
-      {dialog?.type === 'reject' && (
-        <ConfirmModal title={t('admin.certificates.reject.title')} confirmLabel={t('admin.certificates.reject.confirm')} danger busy={busy}
+      {dialog?.type === 'remove' && (
+        <ConfirmModal title={t('admin.certificates.remove.title')} confirmLabel={t('admin.certificates.remove.confirm')} danger busy={busy}
           onClose={() => setDialog(null)}
-          onConfirm={() => run(() => rejectCertificateRecipient(dialog.recipient.id), t('admin.certificates.reject.ok'), 'admin.certificates.reject.failed')}>
+          onConfirm={() => run(() => removeCertificateRecipient(dialog.recipient.id), t('admin.certificates.remove.ok'), 'admin.certificates.remove.failed')}>
           <p><strong>{dialog.recipient.display_name}</strong></p>
-          <p>{t('admin.certificates.reject.body')}</p>
+          <p>{t('admin.certificates.remove.body')}</p>
         </ConfirmModal>
       )}
     </>

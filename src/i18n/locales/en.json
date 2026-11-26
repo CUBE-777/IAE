@@ -673,22 +673,23 @@
         "addOk": "Recipient added.",
         "addFailed": "Could not add."
       },
-      "validate": {
-        "button": "Validate and issue",
-        "title": "Validate and issue certificates",
-        "body": "{{count}} pending recipient(s) will receive a numbered certificate.",
+      "issue": {
+        "button": "Issue pending certificates",
+        "title": "Issue pending certificates",
+        "body": "{{count}} pending recipient(s) will receive a numbered certificate. Issuance applies to the whole campaign: it cannot be applied to a single recipient.",
+        "scope": "Issuance applies to all pending recipients of the campaign. The database provides no individual validation or rejection.",
         "irreversible": "Issued recipients can no longer be removed. This action sends no email.",
-        "confirm": "Validate and issue",
+        "confirm": "Issue",
         "ok": "{{issued}} certificate(s) issued ({{skipped}} skipped).",
         "failed": "Issuance failed."
       },
-      "reject": {
-        "button": "Reject",
-        "title": "Reject this recipient",
-        "body": "The recipient will be removed from the campaign and will not receive a certificate.",
-        "confirm": "Reject",
-        "ok": "Recipient rejected.",
-        "failed": "Could not reject."
+      "remove": {
+        "button": "Remove",
+        "title": "Remove this recipient from the campaign",
+        "body": "The pending recipient will be permanently deleted from the list. This is not a rejection: no \"rejected\" status is kept. Use this only to correct an adding mistake.",
+        "confirm": "Remove",
+        "ok": "Recipient removed from the campaign.",
+        "failed": "Could not remove the recipient."
       },
       "errors": {
         "certificate_campaign_not_found": "Campaign not found.",

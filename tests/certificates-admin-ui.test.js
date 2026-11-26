@@ -101,3 +101,19 @@ test('الشهادات: مفاتيح الترجمة موجودة في اللغا
 test('الشهادات: الفرنسية اللغة الافتراضية لإنشاء الحملة', () => {
   assert.match(read('src/pages/admin/CertificateCampaignFormModal.jsx'), /language: campaign\?\.language \|\| 'fr'/);
 });
+
+test('الشهادات: لا اعتماد/رفض فردي مزيَّف — الإصدار جماعي والإزالة ليست رفضًا', () => {
+  const detail = read('src/pages/admin/CertificateCampaignDetail.jsx');
+  assert.ok(!/rejectCertificateRecipient|admin\.certificates\.(validate|reject)\./.test(detail + service), 'بقايا مفاتيح/دوال validate/reject');
+  assert.match(service, /export async function removeCertificateRecipient[\s\S]*?certificate_remove_recipient/);
+  assert.match(service, /export async function issueCertificateCampaign[\s\S]*?certificate_issue_campaign/);
+  // لا حالة rejected في القاعدة (0063): لا يجوز اختلاقها في الواجهة
+  assert.ok(!/'rejected'/.test(sql63.match(/create table[^;]*certificate_recipients[\s\S]*?\);/i)?.[0] || ''), 'rejected غير موجودة في certificate_recipients');
+  for (const l of ['fr', 'ar', 'en']) {
+    const c = JSON.parse(read(`src/i18n/locales/${l}.json`)).admin.certificates;
+    assert.ok(c.issue && c.remove && c.issue.scope, `مفاتيح issue/remove مفقودة (${l})`);
+    assert.ok(!c.validate && !c.reject, `مفاتيح قديمة validate/reject ما زالت موجودة (${l})`);
+  }
+  const fr = JSON.parse(read('src/i18n/locales/fr.json')).admin.certificates;
+  assert.ok(!/rejet(é|er)\s*\.?$/i.test(fr.remove.ok) && /pas un rejet/i.test(fr.remove.body), 'la suppression ne doit pas être présentée comme un rejet');
+});

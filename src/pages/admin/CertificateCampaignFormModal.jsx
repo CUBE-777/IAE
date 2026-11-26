@@ -50,7 +50,8 @@ export default function CertificateCampaignFormModal({ campaign, onClose, onSave
     const er = {};
     const title = values.title.trim();
     if (title.length < 3 || title.length > 200) er.title = t('admin.certificates.form.errTitle');
-    if (!values.template_id) er.template_id = t('admin.certificates.form.errTemplate');
+    // en modification, un modèle devenu inactif n'est plus listé : on le laisse inchangé (l'RPC garde le modèle existant si null)
+    if (!values.template_id && !editing) er.template_id = t('admin.certificates.form.errTemplate');
     if (!editing && values.eligibility_source === 'attendance_based' && !values.activity_id) er.activity_id = t('admin.certificates.form.errActivity');
     return er;
   };
@@ -63,7 +64,7 @@ export default function CertificateCampaignFormModal({ campaign, onClose, onSave
     setSaving(true);
     const toast = window.notify?.loading(t('admin.common.saving'));
     try {
-      const payload = { ...values, title: values.title.trim() };
+      const payload = { ...values, title: values.title.trim(), template_id: values.template_id || null };
       let newId = null;
       if (editing) await updateCertificateCampaign(campaign.id, payload);
       else newId = await createCertificateCampaign(payload);

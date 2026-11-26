@@ -673,22 +673,23 @@
         "addOk": "Bénéficiaire ajouté.",
         "addFailed": "Échec de l'ajout."
       },
-      "validate": {
-        "button": "Valider et émettre",
-        "title": "Valider et émettre les certificats",
-        "body": "{{count}} bénéficiaire(s) en attente recevront un certificat numéroté.",
+      "issue": {
+        "button": "Émettre les certificats en attente",
+        "title": "Émettre les certificats en attente",
+        "body": "{{count}} bénéficiaire(s) en attente recevront un certificat numéroté. L'émission concerne toute la campagne : elle ne peut pas être appliquée à un seul bénéficiaire.",
+        "scope": "L'émission s'applique à tous les bénéficiaires en attente de la campagne. La base de données ne prévoit ni validation ni rejet individuel.",
         "irreversible": "Les bénéficiaires émis ne peuvent plus être retirés. Aucun e-mail n'est envoyé par cette action.",
-        "confirm": "Valider et émettre",
+        "confirm": "Émettre",
         "ok": "{{issued}} certificat(s) émis ({{skipped}} ignoré(s)).",
         "failed": "Échec de l'émission."
       },
-      "reject": {
-        "button": "Rejeter",
-        "title": "Rejeter ce bénéficiaire",
-        "body": "Le bénéficiaire sera retiré de la campagne et ne recevra pas de certificat.",
-        "confirm": "Rejeter",
-        "ok": "Bénéficiaire rejeté.",
-        "failed": "Échec du rejet."
+      "remove": {
+        "button": "Retirer",
+        "title": "Retirer ce bénéficiaire de la campagne",
+        "body": "Le bénéficiaire en attente sera supprimé définitivement de la liste. Ce n'est pas un rejet : aucun statut « rejeté » n'est conservé. Utilisez cette action uniquement pour corriger une erreur d'ajout.",
+        "confirm": "Retirer",
+        "ok": "Bénéficiaire retiré de la campagne.",
+        "failed": "Échec du retrait."
       },
       "errors": {
         "certificate_campaign_not_found": "Campagne introuvable.",
