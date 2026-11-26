@@ -1,7 +1,7 @@
 # نظام الشهادات — قاعدة البيانات (المرحلة 1)
 
 > الحالة: **ملفات أُنشئت واختبارات static فقط.** لم يُنفَّذ أي SQL على Supabase، ولم تُشغَّل `certificates_smoke.sql` (لا PostgreSQL في بيئة الإنشاء).
-> الملفات: `supabase/migrations/0063…0066`، `supabase/rollback/0063…0066_*_down.sql`، `supabase/tests/certificates_smoke.sql`، `tests/certificates-sql.test.js`.
+> الملفات: `supabase/migrations/0063…0066`، `supabase/rollback/0063…0066_*_down.sql`، `supabase/tests/certificates_smoke.sql`، `tests/certificates-sql.test.js`، `tests/certificates-public-verification.test.js`.
 > آخر migration قبل المرحلة: `0062_games_maintenance_mode.sql`؛ بعدها: `0066_certificates_email_token_recheck.sql`.
 
 ## 1. الجداول
@@ -97,7 +97,7 @@ token_hash = hex( sha256( token ) )                                             
 ## 10. RPCs (ملخّص)
 
 إدارة: `certificate_create_campaign`, `certificate_update_campaign`, `certificate_add_attendance_recipients`, `certificate_add_member_recipient`, `certificate_add_external_recipient`, `certificate_remove_recipient`, `certificate_issue_campaign`, `certificate_revoke`, `certificate_archive_campaign`, `certificate_set_public_name_mode`, `certificate_enqueue_email`, `certificate_enqueue_campaign_emails`, `certificate_retry_email` (manage) — `certificate_save_template`, `certificate_reissue_token` (admin) — `certificate_rotate_token_secret` (developer).
-مراجعة: `certificate_review_campaigns`, `certificate_review_recipients`. عضو/مدير: `get_my_certificates`, `get_certificate_render_data`. عام: `verify_certificate`. عامل (service_role): `certificate_email_claim_next/recheck/complete/release_stale`.
+مراجعة: `certificate_review_campaigns`, `certificate_review_recipients`. عضو/مدير: `get_my_certificates`, `get_certificate_render_data`. عام: `verify_certificate` عبر الصفحة `/verify-certificate/:token` (حالات valid/revoked/not_found؛ الصفحة noindex ولا تعرض بيانات الحساب). عامل (service_role): `certificate_email_claim_next`, `certificate_email_recheck(queue_id, token)`, `certificate_email_complete`, `certificate_email_release_stale`.
 
 ## 11. اختبار التزامن اليدوي (جلستان psql على بيئة تجريبية)
 
