@@ -18,6 +18,15 @@ export default function VerifyCertificate() {
   const { t, i18n } = useTranslation();
   const { token } = useParams();
   useNoindex();
+
+  // The verification token is in the URL; prevent it from being sent as a Referer.
+  useEffect(() => {
+    const meta = document.createElement('meta');
+    meta.name = 'referrer';
+    meta.content = 'no-referrer';
+    document.head.appendChild(meta);
+    return () => meta.remove();
+  }, []);
   const [phase, setPhase] = useState('loading');
   const [result, setResult] = useState(null);
   const [retry, setRetry] = useState(0);
