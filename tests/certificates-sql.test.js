@@ -8,10 +8,12 @@ const stripSql = (s) => s.replace(/--.*$/gm, '');
 const f63 = stripSql(read('supabase/migrations/0063_certificates_schema.sql'));
 const f64 = stripSql(read('supabase/migrations/0064_certificates_admin_functions.sql'));
 const f65 = stripSql(read('supabase/migrations/0065_certificates_email_queue.sql'));
-const all = f63 + f64 + f65;
+const f66 = stripSql(read('supabase/migrations/0066_certificates_email_token_recheck.sql'));
+const all = f63 + f64 + f65 + f66;
 const down63 = stripSql(read('supabase/rollback/0063_certificates_schema_down.sql'));
 const down64 = stripSql(read('supabase/rollback/0064_certificates_admin_functions_down.sql'));
 const down65 = stripSql(read('supabase/rollback/0065_certificates_email_queue_down.sql'));
+const down66 = stripSql(read('supabase/rollback/0066_certificates_email_token_recheck_down.sql'));
 
 const fnBody = (src, name) => {
   const i = src.indexOf(`function public.${name}(`);
@@ -26,10 +28,11 @@ test('الترقيم: 0063→0065 متسلسلة بعد 0062 ولا يوجد ت�
   const files = fs.readdirSync(new URL('../supabase/migrations/', import.meta.url)).filter((x) => /^\d{4}_.*\.sql$/.test(x));
   const nums = files.map((x) => x.slice(0, 4));
   assert.equal(new Set(nums).size, nums.length, 'أرقام migrations مكرّرة');
-  for (const n of ['0062', '0063', '0064', '0065']) assert.ok(nums.includes(n), n);
+  for (const n of ['0062', '0063', '0064', '0065', '0066']) assert.ok(nums.includes(n), n);
   assert.ok(fs.existsSync(new URL('../supabase/rollback/0063_certificates_schema_down.sql', import.meta.url)));
   assert.ok(fs.existsSync(new URL('../supabase/rollback/0064_certificates_admin_functions_down.sql', import.meta.url)));
   assert.ok(fs.existsSync(new URL('../supabase/rollback/0065_certificates_email_queue_down.sql', import.meta.url)));
+  assert.ok(fs.existsSync(new URL('../supabase/rollback/0066_certificates_email_token_recheck_down.sql', import.meta.url)));
 });
 
 test('الجداول الثمانية معرّفة، RLS مفعّل، وكل الصلاحيات مسحوبة', () => {
@@ -79,7 +82,7 @@ test('المساعدات الداخلية بلا منح؛ والمنح صريح�
   assert.equal(grantsAnon.length, 1);
   assert.match(grantsAnon[0], /verify_certificate\(text\)\s+to anon, authenticated/);
   // عامل البريد: service_role فقط
-  for (const f of ['certificate_email_claim_next(text)', 'certificate_email_recheck(uuid)', 'certificate_email_complete(uuid, boolean, text)', 'certificate_email_release_stale(integer)']) {
+  for (const f of ['certificate_email_claim_next(text)', 'certificate_email_complete(uuid, boolean, text)', 'certificate_email_release_stale(integer)']) {
     assert.ok(f65.includes(`grant execute on function public.${f}`), f);
     assert.match(f65, new RegExp(`grant execute on function public\\.${f.replace(/[()]/g, '\\$&')}\\s+to service_role;`), f);
   }
@@ -208,7 +211,11 @@ test('الإلغاء والطابور: ترتيب الأقفال، SKIP LOCKED،
   assert.match(claim, /from public\.certificate_email_queue where id = v_cand\.id for update skip locked/);
   assert.ok(claim.indexOf('for share skip locked') < claim.indexOf('for update skip locked'), 'الشهادة قبل الطابور');
   assert.match(claim, /v_c\.status <> 'valid'/);
-  assert.match(fnBody(f65, 'certificate_email_recheck'), /q\.status = 'sending' and c\.status = 'valid'/);
+  assert.match(fnBody(f66, 'certificate_email_recheck'), /c\.token_hash = public\.certificate_token_hash\(p_token\)/);
+  assert.match(fnBody(f66, 'certificate_email_recheck'), /q\.status = 'sending'/);
+  assert.match(f66, /revoke all on function public\.certificate_email_recheck\(uuid, text\) from public, anon, authenticated/);
+  assert.match(f66, /grant execute on function public\.certificate_email_recheck\(uuid, text\) to service_role/);
+  assert.doesNotMatch(f66, /certificate_email_recheck\(uuid\)/);
   assert.match(fnBody(f65, 'certificate_email_complete'), /elsif v_c\.status <> 'valid' then[\s\S]*'cancelled'/);
   assert.match(fnBody(f65, 'certificate_email_release_stale'), /'stale_sending'/);
   // الطابور لا يخزّن نصًّا حرًّا للأخطاء
@@ -255,10 +262,12 @@ test('Rollback: لا يحذف بيانات ولا يمسّ جداول النظا
   for (const t of TABLES) assert.match(down63, new RegExp(`drop table if exists public\\.${t};`), t);
   assert.match(down64, /exists \(select 1 from public\.certificates\)/);
   assert.match(down65, /status in \('queued', 'sending'\)/);
+  assert.match(down66, /drop function if exists public\.certificate_email_recheck\(uuid, text\)/);
+  assert.doesNotMatch(down66, /create or replace function public\.certificate_email_recheck\(uuid\)/);
 });
 
-test('0063→0065 لا تمسّ security-hardening ولا ملفات قائمة، وتنتهي بـ commit', () => {
-  for (const f of ['0063_certificates_schema', '0064_certificates_admin_functions', '0065_certificates_email_queue']) {
+test('0063→0066 لا تمسّ security-hardening ولا ملفات قائمة، وتنتهي بـ commit', () => {
+  for (const f of ['0063_certificates_schema', '0064_certificates_admin_functions', '0065_certificates_email_queue', '0066_certificates_email_token_recheck']) {
     const src = stripSql(read(`supabase/migrations/${f}.sql`)).trim();
     assert.match(src, /^begin;/);
     assert.match(src, /commit;$/);
