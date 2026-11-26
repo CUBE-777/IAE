@@ -25,7 +25,7 @@ declare
   tok text; tok_old text; tok_new text; got jsonb; got2 jsonb; n int; s text; denied boolean; qid uuid; qid2 uuid;
   c_y uuid;
 begin
-  if to_regprocedure('public.verify_certificate(text)') is null or to_regprocedure('public.certificate_email_claim_next(text)') is null then
+  if to_regprocedure('public.verify_certificate(text)') is null or to_regprocedure('public.certificate_email_claim_next(text)') is null or to_regprocedure('public.certificate_email_recheck(uuid,text)') is null then
     raise exception 'FAIL: دوال 0063-0066 غير موجودة — طبّقها أولًا';
   end if;
 
