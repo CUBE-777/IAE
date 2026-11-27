@@ -1,0 +1,19 @@
+/* صفحة «شهاداتي» في فضاء المنخرطين. خصائص منطقية فقط ليعمل RTL/LTR. الشارات (member-badge*) والهياكل (sk*) من member.css / member-shell.css. */
+.mc-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
+.mc-card {
+  display: grid; gap: var(--space-3); padding: var(--space-4);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+}
+.mc-card-revoked { opacity: 0.85; border-style: dashed; }
+.mc-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.mc-number { font-weight: 700; color: var(--heading); direction: ltr; unicode-bidi: isolate; overflow-wrap: anywhere; }
+.mc-title { margin: 0; color: var(--heading); font-size: var(--text-body); line-height: var(--leading-normal); overflow-wrap: anywhere; }
+.mc-meta { display: grid; gap: 4px; margin: 0; color: var(--muted); font-size: var(--text-small); }
+.mc-meta div { display: flex; flex-wrap: wrap; gap: 6px; }
+.mc-meta dt { font-weight: 600; }
+.mc-meta dd { margin: 0; }
+.mc-note { margin: 0; color: var(--muted); font-size: var(--text-small); }
+.mc-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+@media (min-width: 640px) {
+  .mc-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

@@ -841,6 +841,18 @@
         "ok": "Bénéficiaire retiré de la campagne.",
         "failed": "Échec du retrait."
       },
+      "email": {
+        "button": "Planifier l’envoi par e-mail",
+        "title": "Planifier l’envoi des certificats par e-mail",
+        "body": "{{count}} certificat(s) valide(s) avec une adresse e-mail seront ajoutés à la file d’envoi. Les certificats déjà en file ou déjà envoyés sont ignorés.",
+        "confirm": "Planifier",
+        "hint": "L’envoi n’est pas immédiat : un service d’arrière-plan planifié envoie les messages par lots. L’e-mail contient un lien de vérification, pas le PDF.",
+        "none": "Aucun certificat valide avec adresse e-mail à planifier.",
+        "ok": "{{count}} message(s) ajouté(s) à la file d’envoi.",
+        "okNone": "Aucun nouveau message : tout est déjà en file ou envoyé.",
+        "failed": "Impossible de planifier l’envoi des e-mails.",
+        "last": "Dernière planification : {{count}} message(s) ajouté(s)."
+      },
       "pdf": {
         "download": "Télécharger PDF",
         "downloading": "Génération…",
@@ -1323,6 +1335,7 @@
     "loading": "Chargement…",
     "nav": {
       "label": "Menu de l'espace adhérents",
+      "certificates": "Mes certificats",
       "home": "Mon profil",
       "card": "Modifier ma carte",
       "logout": "Se déconnecter",
@@ -1481,6 +1494,39 @@
         "confirmText": "Votre carte disparaîtra immédiatement de la page des membres. Pour la réafficher, vous devrez envoyer une demande de modification validée par l'administration.",
         "confirm": "Oui, masquer ma carte",
         "cancel": "Annuler"
+      }
+    },
+    "certificates": {
+      "pageTitle": "Mes certificats",
+      "title": "Mes certificats",
+      "description": "Les certificats délivrés par le club à votre nom. Téléchargez-les en PDF quand vous en avez besoin.",
+      "loading": "Chargement de vos certificats…",
+      "loadError": "Impossible de charger vos certificats.",
+      "empty": "Aucun certificat pour le moment. Ils apparaîtront ici dès leur délivrance.",
+      "download": "Télécharger le PDF",
+      "downloading": "Génération…",
+      "downloadOk": "PDF téléchargé.",
+      "revokedNote": "Ce certificat a été révoqué : aucun PDF n’est disponible.",
+      "status": {
+        "valid": "Valide",
+        "revoked": "Révoqué"
+      },
+      "fields": {
+        "type": "Type",
+        "issuedAt": "Date de délivrance"
+      },
+      "types": {
+        "participation": "Participation",
+        "organization": "Organisation",
+        "volunteering": "Bénévolat",
+        "training": "Formation"
+      },
+      "errors": {
+        "certificate_not_found": "Certificat introuvable ou accès refusé.",
+        "certificate_revoked": "Ce certificat a été révoqué : aucun PDF ne peut être généré.",
+        "certificate_render_invalid": "Données du certificat incomplètes : PDF impossible.",
+        "certificate_qr_invalid": "Lien de vérification invalide : PDF impossible.",
+        "certificate_pdf_failed": "Échec de la génération du PDF. Réessayez."
       }
     },
     "announcements": {

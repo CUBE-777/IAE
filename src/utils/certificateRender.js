@@ -10,7 +10,7 @@ import { createZip } from './zipBuilder.js';
 
 export const TOKEN_RE = /^[A-Za-z0-9_-]{43}$/;
 export const VERIFY_PATH_RE = /^\/verify-certificate\/[A-Za-z0-9_-]{43}$/;
-const NUMBER_RE = /^IAE-\d{4}-\d{6,}$/;
+export const NUMBER_RE = /^IAE-\d{4}-\d{6,}$/;
 const LOCALES = { fr: 'fr-FR', ar: 'ar-u-nu-latn', en: 'en-US' };
 
 // ------------------------------------------------------------------ البيانات والتصميم

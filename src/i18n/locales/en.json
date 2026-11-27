@@ -841,6 +841,18 @@
         "ok": "Recipient removed from the campaign.",
         "failed": "Could not remove the recipient."
       },
+      "email": {
+        "button": "Schedule email sending",
+        "title": "Schedule certificate emails",
+        "body": "{{count}} valid certificate(s) with an email address will be added to the sending queue. Certificates already queued or already sent are skipped.",
+        "confirm": "Schedule",
+        "hint": "Sending is not immediate: a scheduled background worker sends messages in batches. The email carries a verification link, not the PDF.",
+        "none": "No valid certificate with an email address to schedule.",
+        "ok": "{{count}} message(s) added to the sending queue.",
+        "okNone": "No new messages: everything is already queued or sent.",
+        "failed": "Could not schedule the emails.",
+        "last": "Last scheduling: {{count}} message(s) added."
+      },
       "pdf": {
         "download": "Download PDF",
         "downloading": "Generating…",
@@ -1323,6 +1335,7 @@
     "loading": "Loading…",
     "nav": {
       "label": "Members' space menu",
+      "certificates": "My certificates",
       "home": "My profile",
       "card": "Edit my card",
       "logout": "Sign out",
@@ -1481,6 +1494,39 @@
         "confirmText": "Your card will disappear from the members page right away. To show it again you will need to send an edit request approved by the administration.",
         "confirm": "Yes, hide my card",
         "cancel": "Cancel"
+      }
+    },
+    "certificates": {
+      "pageTitle": "My certificates",
+      "title": "My certificates",
+      "description": "Certificates the club has issued in your name. Download them as PDF whenever you need.",
+      "loading": "Loading your certificates…",
+      "loadError": "Could not load your certificates.",
+      "empty": "No certificates yet. They will appear here once issued.",
+      "download": "Download PDF",
+      "downloading": "Generating…",
+      "downloadOk": "PDF downloaded.",
+      "revokedNote": "This certificate has been revoked: no PDF is available.",
+      "status": {
+        "valid": "Valid",
+        "revoked": "Revoked"
+      },
+      "fields": {
+        "type": "Type",
+        "issuedAt": "Issue date"
+      },
+      "types": {
+        "participation": "Participation",
+        "organization": "Organization",
+        "volunteering": "Volunteering",
+        "training": "Training"
+      },
+      "errors": {
+        "certificate_not_found": "Certificate not found or access denied.",
+        "certificate_revoked": "This certificate has been revoked: no PDF can be generated.",
+        "certificate_render_invalid": "Incomplete certificate data: PDF not possible.",
+        "certificate_qr_invalid": "Invalid verification link: PDF not possible.",
+        "certificate_pdf_failed": "PDF generation failed. Please try again."
       }
     },
     "announcements": {

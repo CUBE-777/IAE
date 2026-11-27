@@ -8,6 +8,7 @@ import {
 } from '../../services/supabase/adminCertificates.service';
 import { formatDate } from '../../utils/i18nContent';
 import { bulkEligible, isBulkEligible } from '../../utils/certificateRender';
+import { enqueueCampaignEmails } from '../../services/supabase/certificateEmail.service';
 import { downloadCertificatePdf, downloadCampaignZip } from '../../utils/certificatePdf';
 import CertificateCampaignFormModal from './CertificateCampaignFormModal';
 import { ConfirmModal, AddMemberModal, AddExternalModal } from './CertificateRecipientModals';
@@ -31,6 +32,7 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
   const [busy, setBusy] = useState(false);
   const [pdfBusyId, setPdfBusyId] = useState(null); // certificate_id قيد التوليد
   const [zip, setZip] = useState(null); // { running, total, done, ok, failed, failures, saved }
+  const [queuedEmails, setQueuedEmails] = useState(null); // عدد ما أُضيف للطابور في آخر جدولة (null = لم تُنفَّذ بعد في هذه الجلسة)
 
   const load = useCallback(({ silent = false } = {}) => {
     if (!silent) {
@@ -72,6 +74,8 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
       (!q || r.display_name.toLowerCase().includes(q) || (r.email || '').toLowerCase().includes(q) || (r.certificate_number || '').toLowerCase().includes(q)));
   }, [recipients, search, statusFilter]);
   const downloadable = useMemo(() => bulkEligible(recipients), [recipients]);
+  // شهادات صالحة وصادرة ولها بريد (تظهر للإدارة فقط؛ الخادم يعيد الفحص ويستبعد المجدول/المرسل سابقًا)
+  const emailable = useMemo(() => bulkEligible(recipients).filter((r) => !!r.email), [recipients]);
   const existingMemberIds = useMemo(() => new Set((recipients || []).map((r) => r.member_id).filter(Boolean)), [recipients]);
 
   const run = async (fn, okMsg, failKey) => {
@@ -212,6 +216,18 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
           </div>
         )}
         {canManage && <p className="admin-hint">{downloadable.length === 0 ? t('admin.certificates.pdf.bulkNone') : t('admin.certificates.pdf.bulkHint')}</p>}
+
+        {canManage && (
+          <>
+            <div className="admin-quick-actions">
+              <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" disabled={emailable.length === 0 || busy} onClick={() => setDialog({ type: 'email' })}>
+                {`${t('admin.certificates.email.button')} (${emailable.length})`}
+              </button>
+            </div>
+            <p className="admin-hint">{emailable.length === 0 ? t('admin.certificates.email.none') : t('admin.certificates.email.hint')}</p>
+            {queuedEmails !== null && <p className="admin-hint" role="status">{t('admin.certificates.email.last', { count: queuedEmails })}</p>}
+          </>
+        )}
         {zip && (
           <div className="admin-panel" role="status" aria-live="polite">
             <progress value={zip.done} max={Math.max(1, zip.total)} style={{ width: '100%' }} />
@@ -312,6 +328,18 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
             (n) => (n > 0 ? t('admin.certificates.add.fromAttendanceOk', { count: n }) : t('admin.certificates.add.fromAttendanceNone')),
             'admin.certificates.add.addFailed')}>
           <p>{t('admin.certificates.add.fromAttendanceBody', { activity: campaign.activity_title_snapshot || '—' })}</p>
+        </ConfirmModal>
+      )}
+      {dialog?.type === 'email' && (
+        <ConfirmModal title={t('admin.certificates.email.title')} confirmLabel={t('admin.certificates.email.confirm')} busy={busy}
+          onClose={() => setDialog(null)}
+          onConfirm={() => run(async () => {
+            const n = await enqueueCampaignEmails(campaign.id);
+            setQueuedEmails(n);
+            return n;
+          }, (n) => (n > 0 ? t('admin.certificates.email.ok', { count: n }) : t('admin.certificates.email.okNone')), 'admin.certificates.email.failed')}>
+          <p>{t('admin.certificates.email.body', { count: emailable.length })}</p>
+          <p className="admin-hint">{t('admin.certificates.email.hint')}</p>
         </ConfirmModal>
       )}
       {dialog?.type === 'issue' && (

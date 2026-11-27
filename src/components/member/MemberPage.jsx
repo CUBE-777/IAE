@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Bell, Download, MoreHorizontal, Home, LayoutDashboard, Gamepad2, LogOut, Pencil, QrCode, ShieldCheck, Users } from 'lucide-react';
+import { Award, Bell, Download, MoreHorizontal, Home, LayoutDashboard, Gamepad2, LogOut, Pencil, QrCode, ShieldCheck, Users } from 'lucide-react';
 import { useAuth } from '../../app/providers/AuthProvider';
 import { useCanSeeGamesLink } from '../../features/games/hooks/useGamesAccess';
 import { GAMES_BASE_PATH } from '../../features/games/constants/games';
@@ -50,7 +50,7 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
   }, [moreOpen]);
 
   const dot = hasNewAnnouncement && <span className="ms-dot" role="img" aria-label={t('member.nav.newAnnouncements')} />;
-  const moreActive = ['/member/card', '/member/board-card', '/member/security'].includes(location.pathname.replace(/\/$/, ''));
+  const moreActive = ['/member/card', '/member/board-card', '/member/certificates', '/member/security'].includes(location.pathname.replace(/\/$/, ''));
   const subtitle = member ? [member.university, member.promotion].filter((v) => v && String(v).trim()).join(' · ') : '';
 
   return (
@@ -77,6 +77,7 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
           <NavLink to="/member/card"><Pencil size={20} aria-hidden="true" />{t('member.nav.card')}</NavLink>
           {hasBoardCard && <NavLink to="/member/board-card"><Users size={20} aria-hidden="true" />{t('member.nav.boardCard')}</NavLink>}
           <NavLink to="/member/announcements"><Bell size={20} aria-hidden="true" />{t('member.nav.announcements')}{dot}</NavLink>
+          <NavLink to="/member/certificates"><Award size={20} aria-hidden="true" />{t('member.nav.certificates')}</NavLink>
           <NavLink to="/member/security"><ShieldCheck size={20} aria-hidden="true" />{t('member.nav.security')}</NavLink>
           {showGames && <NavLink to={GAMES_BASE_PATH}><Gamepad2 size={20} aria-hidden="true" />{t('member.nav.games')}</NavLink>}
         </nav>
@@ -113,6 +114,7 @@ export default function MemberPage({ titleKey, descriptionKey, pageTitleKey, chi
             <div className="ms-sheet" role="menu">
               <NavLink to="/member/card" role="menuitem"><Pencil size={20} aria-hidden="true" />{t('member.nav.card')}</NavLink>
               {hasBoardCard && <NavLink to="/member/board-card" role="menuitem"><Users size={20} aria-hidden="true" />{t('member.nav.boardCard')}</NavLink>}
+              <NavLink to="/member/certificates" role="menuitem"><Award size={20} aria-hidden="true" />{t('member.nav.certificates')}</NavLink>
               <NavLink to="/member/security" role="menuitem"><ShieldCheck size={20} aria-hidden="true" />{t('member.nav.security')}</NavLink>
               {showGames && <NavLink to={GAMES_BASE_PATH} role="menuitem"><Gamepad2 size={20} aria-hidden="true" />{t('member.nav.games')}</NavLink>}
               {isAdmin && <Link to="/admin/dashboard" role="menuitem"><LayoutDashboard size={20} aria-hidden="true" />{t('member.nav.admin')}</Link>}

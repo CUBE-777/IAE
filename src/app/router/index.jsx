@@ -31,6 +31,7 @@ const MemberBoardCard = lazy(() => import('../../pages/member/MemberBoardCard'))
 const MemberIdCard = lazy(() => import('../../pages/member/MemberIdCard'));
 const MemberSecurity = lazy(() => import('../../pages/member/MemberSecurity'));
 const MemberAnnouncements = lazy(() => import('../../pages/member/MemberAnnouncements'));
+const MemberCertificates = lazy(() => import('../../pages/member/MemberCertificates'));
 // وحدة IAE Games (المرحلة 1): مستقلة في src/features/games وتُحمَّل عند الطلب؛ الحارس داخل GamesLayout
 const GamesLayout = lazy(() => import('../../features/games/layout/GamesLayout'));
 const GamesHome = lazy(() => import('../../features/games/pages/GamesHome'));
@@ -132,6 +133,7 @@ export const router = createBrowserRouter([
           { path: 'board-card', element: <MemberBoardCard /> },
           { path: 'id', element: <MemberIdCard /> },
           { path: 'announcements', element: <MemberAnnouncements /> },
+          { path: 'certificates', element: <MemberCertificates /> },
           { path: 'security', element: <MemberSecurity /> },
         ],
       },
