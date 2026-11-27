@@ -7,6 +7,8 @@ import {
   addAttendanceRecipients, removeCertificateRecipient, issueCertificateCampaign,
 } from '../../services/supabase/adminCertificates.service';
 import { formatDate } from '../../utils/i18nContent';
+import { bulkEligible, isBulkEligible } from '../../utils/certificateRender';
+import { downloadCertificatePdf, downloadCampaignZip } from '../../utils/certificatePdf';
 import CertificateCampaignFormModal from './CertificateCampaignFormModal';
 import { ConfirmModal, AddMemberModal, AddExternalModal } from './CertificateRecipientModals';
 import { CAMPAIGN_BADGE, RECIPIENT_BADGE, CERT_BADGE, notifyCertError } from './certificateUi';
@@ -27,6 +29,8 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
   const [statusFilter, setStatusFilter] = useState('');
   const [dialog, setDialog] = useState(null); // 'edit' | 'member' | 'external' | { type: 'attendance'|'issue'|'remove', ... }
   const [busy, setBusy] = useState(false);
+  const [pdfBusyId, setPdfBusyId] = useState(null); // certificate_id قيد التوليد
+  const [zip, setZip] = useState(null); // { running, total, done, ok, failed, failures, saved }
 
   const load = useCallback(({ silent = false } = {}) => {
     if (!silent) {
@@ -67,6 +71,7 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
       (!statusFilter || r.status === statusFilter) &&
       (!q || r.display_name.toLowerCase().includes(q) || (r.email || '').toLowerCase().includes(q) || (r.certificate_number || '').toLowerCase().includes(q)));
   }, [recipients, search, statusFilter]);
+  const downloadable = useMemo(() => bulkEligible(recipients), [recipients]);
   const existingMemberIds = useMemo(() => new Set((recipients || []).map((r) => r.member_id).filter(Boolean)), [recipients]);
 
   const run = async (fn, okMsg, failKey) => {
@@ -80,6 +85,38 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
       notifyCertError(err, t, failKey);
     } finally {
       setBusy(false);
+    }
+  };
+
+  const downloadOne = async (r) => {
+    if (pdfBusyId || zip?.running) return;
+    setPdfBusyId(r.certificate_id);
+    try {
+      await downloadCertificatePdf(r.certificate_id);
+      window.notify?.success(t('admin.certificates.pdf.downloadOk'));
+    } catch (err) {
+      notifyCertError(err, t, 'admin.certificates.pdf.downloadFailed');
+    } finally {
+      setPdfBusyId(null);
+    }
+  };
+
+  const downloadAll = async () => {
+    if (pdfBusyId || zip?.running || downloadable.length === 0) return;
+    const items = downloadable.map((r) => ({ id: r.certificate_id, name: r.display_name }));
+    setZip({ running: true, total: items.length, done: 0, ok: 0, failed: 0, failures: [], saved: false });
+    try {
+      const res = await downloadCampaignZip({
+        items,
+        campaignTitle: campaign.title,
+        onProgress: (p) => setZip((z) => ({ ...(z || {}), running: true, ...p })),
+      });
+      setZip({ running: false, total: res.total, done: res.total, ok: res.ok, failed: res.failures.length, failures: res.failures, saved: res.saved });
+      if (res.saved) window.notify?.success(t('admin.certificates.pdf.bulkDone', { ok: res.ok, failed: res.failures.length }));
+      else window.notify?.error(t('admin.certificates.pdf.bulkNoneGenerated'));
+    } catch (err) {
+      setZip(null);
+      notifyCertError(err, t, 'admin.certificates.pdf.downloadFailed');
     }
   };
 
@@ -167,6 +204,32 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
         )}
         {canManage && !archived && pending.length > 0 && <p className="admin-hint">{t('admin.certificates.issue.scope')}</p>}
 
+        {canManage && (
+          <div className="admin-quick-actions">
+            <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" disabled={downloadable.length === 0 || !!zip?.running || !!pdfBusyId} onClick={downloadAll}>
+              {zip?.running ? t('admin.certificates.pdf.bulkBusy') : `${t('admin.certificates.pdf.bulkButton')} (${downloadable.length})`}
+            </button>
+          </div>
+        )}
+        {canManage && <p className="admin-hint">{downloadable.length === 0 ? t('admin.certificates.pdf.bulkNone') : t('admin.certificates.pdf.bulkHint')}</p>}
+        {zip && (
+          <div className="admin-panel" role="status" aria-live="polite">
+            <progress value={zip.done} max={Math.max(1, zip.total)} style={{ width: '100%' }} />
+            <p>{t('admin.certificates.pdf.bulkProgress', { done: zip.done, total: zip.total, ok: zip.ok, failed: zip.failed })}</p>
+            {!zip.running && zip.failures.length > 0 && (
+              <>
+                <p className="admin-hint">{t('admin.certificates.pdf.bulkFailures')}</p>
+                <ul>
+                  {zip.failures.map((f) => (
+                    <li key={f.id}>{f.name} — {t(`admin.certificates.errors.${f.code}`, { defaultValue: f.code })}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {!zip.running && <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setZip(null)}>{t('admin.certificates.pdf.bulkClose')}</button>}
+          </div>
+        )}
+
         <div className="admin-search-row">
           <input type="search" className="admin-input" value={search} onChange={(e) => setSearch(e.target.value)}
             placeholder={t('admin.certificates.recipients.searchPlaceholder')} aria-label={t('admin.certificates.recipients.searchPlaceholder')} />
@@ -193,7 +256,7 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
                   <th>{t('admin.certificates.colSource')}</th>
                   <th>{t('admin.certificates.colStatus')}</th>
                   <th>{t('admin.certificates.recipients.colNumber')}</th>
-                  {canManage && !archived && <th>{t('admin.certificates.colActions')}</th>}
+                  {canManage && <th>{t('admin.certificates.colActions')}</th>}
                 </tr>
               </thead>
               <tbody>
@@ -212,11 +275,17 @@ export default function CertificateCampaignDetail({ id, canManage, onBack }) {
                       )}
                     </td>
                     <td data-label={t('admin.certificates.recipients.colNumber')} dir="ltr">{r.certificate_number || '—'}</td>
-                    {canManage && !archived && (
+                    {canManage && (
                       <td className="admin-cell-actions">
-                        {r.status === 'pending'
-                          ? <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDialog({ type: 'remove', recipient: r })}>{t('admin.certificates.remove.button')}</button>
-                          : '—'}
+                        {r.status === 'pending' && !archived && (
+                          <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setDialog({ type: 'remove', recipient: r })}>{t('admin.certificates.remove.button')}</button>
+                        )}
+                        {isBulkEligible(r) && (
+                          <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" disabled={!!pdfBusyId || !!zip?.running} onClick={() => downloadOne(r)}>
+                            {pdfBusyId === r.certificate_id ? t('admin.certificates.pdf.downloading') : t('admin.certificates.pdf.download')}
+                          </button>
+                        )}
+                        {!isBulkEligible(r) && !(r.status === 'pending' && !archived) && '—'}
                       </td>
                     )}
                   </tr>

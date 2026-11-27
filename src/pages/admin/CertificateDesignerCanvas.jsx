@@ -1,45 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PAGE_W, PAGE_H, MIN_SIZE_MM, FONTS, SAMPLE, dirOf, textOf, interpolate } from './certificateDesign';
+import { PAGE_W, PAGE_H, MIN_SIZE_MM, SAMPLE } from './certificateDesign';
+import { ElementBody } from '../../components/certificates/CertificatePage';
 
-const PT_MM = 0.3528; // 1pt بالمليمتر
 const snap = (v) => Math.round(v * 2) / 2; // خطوة 0.5mm
 const CORNERS = ['nw', 'ne', 'sw', 'se'];
-
-function ElementBody({ el, lang, preview, scale }) {
-  if (el.type === 'text') {
-    const raw = textOf(el, lang);
-    const content = interpolate(raw, preview ? SAMPLE[lang] : {});
-    return (
-      <div
-        className="cd-text"
-        dir={dirOf(lang)}
-        style={{
-          fontFamily: FONTS[el.font] || FONTS.sans,
-          fontSize: `${el.size * PT_MM * scale}px`,
-          color: el.color,
-          textAlign: el.align,
-          fontWeight: el.bold ? 700 : 400,
-          fontStyle: el.italic ? 'italic' : 'normal',
-        }}
-      >
-        {content}
-      </div>
-    );
-  }
-  if (el.type === 'image') {
-    return <img src={el.src} alt="" draggable={false} style={{ width: '100%', height: '100%', objectFit: el.fit, opacity: el.opacity }} />;
-  }
-  if (el.type === 'shape') {
-    const sw = el.strokeWidth * scale;
-    const style = { width: '100%', height: '100%', boxSizing: 'border-box', opacity: el.opacity, background: el.fill };
-    if (el.shape !== 'line' && sw > 0) style.border = `${sw}px solid ${el.stroke}`;
-    if (el.shape === 'ellipse') style.borderRadius = '50%';
-    return <div style={style} />;
-  }
-  // qr: مساحة محجوزة فقط (توليد QR مهمة لاحقة)
-  return <div className="cd-qr" aria-hidden="true" />;
-}
 
 /**
  * لوحة A4 أفقية (297×210mm). الإحداثيات بالمليمتر وتُحوَّل إلى بكسل بمقياس = عرض الحاوية / 297،
@@ -161,7 +126,7 @@ export default function CertificateDesignerCanvas({ design, lang, preview, selec
               style={{ left: el.x * scale, top: el.y * scale, width: el.w * scale, height: el.h * scale, pointerEvents: preview || el.locked ? 'none' : 'auto' }}
               onPointerDown={(e) => start(e, el, 'move')}
             >
-              <ElementBody el={el} lang={lang} preview={preview} scale={scale} />
+              <ElementBody el={el} lang={lang} vars={preview ? SAMPLE[lang] : {}} scale={scale} />
               {selected && !el.locked && CORNERS.map((c) => (
                 <span key={c} className={`cd-handle cd-handle-${c}`} onPointerDown={(e) => start(e, el, c)} />
               ))}

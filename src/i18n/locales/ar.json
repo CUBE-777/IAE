@@ -841,6 +841,21 @@
         "ok": "تمت إزالة المستفيد من الحملة.",
         "failed": "تعذرت الإزالة."
       },
+      "pdf": {
+        "download": "تنزيل PDF",
+        "downloading": "جارٍ التوليد…",
+        "downloadOk": "تم تنزيل ملف PDF.",
+        "downloadFailed": "تعذّر توليد ملف PDF.",
+        "bulkButton": "تنزيل الكل (ZIP)",
+        "bulkNone": "لا توجد شهادات صالحة للتنزيل.",
+        "bulkHint": "تُضمَّن الشهادات الصادرة والصالحة فقط؛ وتُستبعد الشهادات المعلّقة والملغاة. يُولَّد كل ملف PDF داخل متصفحك واحدًا تلو الآخر.",
+        "bulkProgress": "جارٍ التوليد {{done}} / {{total}} — نجح {{ok}}، وفشل {{failed}}",
+        "bulkDone": "تم تنزيل ملف ZIP: {{ok}} شهادة، {{failed}} إخفاق.",
+        "bulkNoneGenerated": "تعذّر توليد أي ملف PDF، ولم يُنشأ ملف ZIP.",
+        "bulkFailures": "الشهادات التي فشلت:",
+        "bulkClose": "إغلاق",
+        "bulkBusy": "جارٍ التوليد…"
+      },
       "errors": {
         "certificate_campaign_not_found": "الحملة غير موجودة.",
         "certificate_campaign_locked_after_draft": "لم تعد الحملة مسودة: لا يمكن تعديلها.",
@@ -856,7 +871,12 @@
         "certificate_recipient_not_found": "المستفيد غير موجود.",
         "certificate_recipient_issued_immutable": "لا يمكن حذف مستفيد صدرت شهادته.",
         "certificate_no_recipients": "لا يوجد مستفيدون قيد الانتظار للإصدار.",
-        "certificate_secret_missing": "إعداد أمان الشهادات مفقود في قاعدة البيانات."
+        "certificate_secret_missing": "إعداد أمان الشهادات مفقود في قاعدة البيانات.",
+        "certificate_not_found": "الشهادة غير موجودة أو لا تملك صلاحية الوصول إليها.",
+        "certificate_revoked": "هذه الشهادة ملغاة، ولا يمكن توليد PDF لها.",
+        "certificate_render_invalid": "بيانات الشهادة ناقصة: تعذّر توليد PDF.",
+        "certificate_qr_invalid": "رابط التحقق غير صالح: تعذّر توليد PDF.",
+        "certificate_pdf_failed": "فشل توليد ملف PDF."
       }
     },
     "modal": {
@@ -1651,6 +1671,49 @@
         "title": "تعذّر التحقق الآن",
         "text": "حدثت مشكلة في الاتصال أو كثرت المحاولات من هذا الجهاز. انتظر قليلًا ثم أعد المحاولة. هذا لا يعني أن الرمز غير صالح."
       }
+    }
+  },
+  "certificateVerify": {
+    "pageTitle": "التحقق من شهادة",
+    "crumb": "التحقق من شهادة",
+    "title": "التحقق من شهادة",
+    "description": "نتيجة التحقق من شهادة صادرة عن نادي IAE.",
+    "loading": "جارٍ التحقق…",
+    "retry": "إعادة المحاولة",
+    "state": {
+      "valid": {
+        "title": "شهادة صالحة",
+        "text": "هذه الشهادة صادرة فعلًا عن نادي IAE."
+      },
+      "revoked": {
+        "title": "شهادة ملغاة",
+        "text": "تم إلغاء هذه الشهادة ولم تعد صالحة."
+      },
+      "not_found": {
+        "title": "شهادة غير موجودة",
+        "text": "لا توجد شهادة مطابقة لهذا الرمز. تحقق من رمز QR أو الرابط المستعمل."
+      },
+      "problem": {
+        "title": "تعذّر التحقق حاليًا",
+        "text": "مشكلة في الاتصال. انتظر قليلًا ثم أعد المحاولة. هذا لا يعني أن الشهادة غير صالحة."
+      }
+    },
+    "fields": {
+      "number": "رقم الشهادة",
+      "type": "النوع",
+      "holder": "صاحب الشهادة",
+      "holderHidden": "الاسم غير معروض (حفاظًا على الخصوصية)",
+      "campaign": "العنوان",
+      "activity": "النشاط",
+      "activityDate": "تاريخ النشاط",
+      "issuedAt": "تاريخ الإصدار",
+      "revokedAt": "تاريخ الإلغاء"
+    },
+    "types": {
+      "participation": "مشاركة",
+      "organization": "تنظيم",
+      "volunteering": "تطوّع",
+      "training": "تكوين"
     }
   },
   "games": {

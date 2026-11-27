@@ -841,6 +841,21 @@
         "ok": "Recipient removed from the campaign.",
         "failed": "Could not remove the recipient."
       },
+      "pdf": {
+        "download": "Download PDF",
+        "downloading": "Generating…",
+        "downloadOk": "PDF downloaded.",
+        "downloadFailed": "Could not generate the PDF.",
+        "bulkButton": "Download all (ZIP)",
+        "bulkNone": "No valid certificates to download.",
+        "bulkHint": "Only issued, valid certificates are included; pending and revoked ones are excluded. Each PDF is generated in your browser, one at a time.",
+        "bulkProgress": "Generating {{done}} / {{total}} — {{ok}} succeeded, {{failed}} failed",
+        "bulkDone": "ZIP downloaded: {{ok}} certificate(s), {{failed}} failure(s).",
+        "bulkNoneGenerated": "No PDF could be generated: no ZIP was created.",
+        "bulkFailures": "Failed certificates:",
+        "bulkClose": "Close",
+        "bulkBusy": "Generating…"
+      },
       "errors": {
         "certificate_campaign_not_found": "Campaign not found.",
         "certificate_campaign_locked_after_draft": "The campaign is no longer a draft: it cannot be edited.",
@@ -856,7 +871,12 @@
         "certificate_recipient_not_found": "Recipient not found.",
         "certificate_recipient_issued_immutable": "An already issued recipient cannot be removed.",
         "certificate_no_recipients": "No pending recipient to issue.",
-        "certificate_secret_missing": "Certificate security configuration is missing on the database."
+        "certificate_secret_missing": "Certificate security configuration is missing on the database.",
+        "certificate_not_found": "Certificate not found or access denied.",
+        "certificate_revoked": "This certificate has been revoked: no PDF can be generated.",
+        "certificate_render_invalid": "Incomplete certificate data: PDF not possible.",
+        "certificate_qr_invalid": "Invalid verification link: PDF not possible.",
+        "certificate_pdf_failed": "PDF generation failed."
       }
     },
     "modal": {
@@ -1651,6 +1671,49 @@
         "title": "Can't verify right now",
         "text": "There was a connection problem, or too many attempts from this device. Wait a moment and try again. This doesn't mean the code is invalid."
       }
+    }
+  },
+  "certificateVerify": {
+    "pageTitle": "Certificate verification",
+    "crumb": "Certificate verification",
+    "title": "Certificate verification",
+    "description": "Result of verifying a certificate issued by the IAE club.",
+    "loading": "Verifying…",
+    "retry": "Try again",
+    "state": {
+      "valid": {
+        "title": "Valid certificate",
+        "text": "This certificate was genuinely issued by the IAE club."
+      },
+      "revoked": {
+        "title": "Revoked certificate",
+        "text": "This certificate has been revoked and is no longer valid."
+      },
+      "not_found": {
+        "title": "Certificate not found",
+        "text": "No certificate matches this code. Check the QR code or link you used."
+      },
+      "problem": {
+        "title": "Verification unavailable right now",
+        "text": "Connection problem. Wait a moment and try again. This does not mean the certificate is invalid."
+      }
+    },
+    "fields": {
+      "number": "Certificate no.",
+      "type": "Type",
+      "holder": "Holder",
+      "holderHidden": "Name not disclosed (privacy)",
+      "campaign": "Title",
+      "activity": "Activity",
+      "activityDate": "Activity date",
+      "issuedAt": "Issue date",
+      "revokedAt": "Revocation date"
+    },
+    "types": {
+      "participation": "Participation",
+      "organization": "Organization",
+      "volunteering": "Volunteering",
+      "training": "Training"
     }
   },
   "games": {

@@ -841,6 +841,21 @@
         "ok": "Bénéficiaire retiré de la campagne.",
         "failed": "Échec du retrait."
       },
+      "pdf": {
+        "download": "Télécharger PDF",
+        "downloading": "Génération…",
+        "downloadOk": "PDF téléchargé.",
+        "downloadFailed": "Impossible de générer le PDF.",
+        "bulkButton": "Télécharger tout (ZIP)",
+        "bulkNone": "Aucun certificat valide à télécharger.",
+        "bulkHint": "Seuls les certificats émis et valides sont inclus ; les certificats en attente et révoqués sont exclus. Chaque PDF est généré dans votre navigateur, un par un.",
+        "bulkProgress": "Génération {{done}} / {{total}} — {{ok}} réussi(s), {{failed}} échec(s)",
+        "bulkDone": "ZIP téléchargé : {{ok}} certificat(s), {{failed}} échec(s).",
+        "bulkNoneGenerated": "Aucun PDF n'a pu être généré : aucun ZIP n'a été créé.",
+        "bulkFailures": "Certificats en échec :",
+        "bulkClose": "Fermer",
+        "bulkBusy": "Génération en cours…"
+      },
       "errors": {
         "certificate_campaign_not_found": "Campagne introuvable.",
         "certificate_campaign_locked_after_draft": "La campagne n'est plus en brouillon : modification impossible.",
@@ -856,7 +871,12 @@
         "certificate_recipient_not_found": "Bénéficiaire introuvable.",
         "certificate_recipient_issued_immutable": "Un bénéficiaire déjà émis ne peut pas être retiré.",
         "certificate_no_recipients": "Aucun bénéficiaire en attente à émettre.",
-        "certificate_secret_missing": "Configuration de sécurité des certificats manquante côté base de données."
+        "certificate_secret_missing": "Configuration de sécurité des certificats manquante côté base de données.",
+        "certificate_not_found": "Certificat introuvable ou accès refusé.",
+        "certificate_revoked": "Ce certificat a été révoqué : aucun PDF ne peut être généré.",
+        "certificate_render_invalid": "Données du certificat incomplètes : PDF impossible.",
+        "certificate_qr_invalid": "Lien de vérification invalide : PDF impossible.",
+        "certificate_pdf_failed": "Échec de la génération du PDF."
       }
     },
     "modal": {
@@ -1651,6 +1671,49 @@
         "title": "Vérification impossible pour le moment",
         "text": "Problème de connexion ou trop de tentatives depuis cet appareil. Patientez un instant puis réessayez. Cela ne signifie pas que le code est invalide."
       }
+    }
+  },
+  "certificateVerify": {
+    "pageTitle": "Vérification de certificat",
+    "crumb": "Vérification de certificat",
+    "title": "Vérification de certificat",
+    "description": "Résultat de la vérification d'un certificat délivré par le club IAE.",
+    "loading": "Vérification en cours…",
+    "retry": "Réessayer",
+    "state": {
+      "valid": {
+        "title": "Certificat valide",
+        "text": "Ce certificat a bien été délivré par le club IAE."
+      },
+      "revoked": {
+        "title": "Certificat révoqué",
+        "text": "Ce certificat a été révoqué et n'est plus valide."
+      },
+      "not_found": {
+        "title": "Certificat introuvable",
+        "text": "Aucun certificat ne correspond à ce code. Vérifiez le QR code ou le lien utilisé."
+      },
+      "problem": {
+        "title": "Vérification impossible pour le moment",
+        "text": "Problème de connexion. Patientez un instant puis réessayez. Cela ne signifie pas que le certificat est invalide."
+      }
+    },
+    "fields": {
+      "number": "N° de certificat",
+      "type": "Type",
+      "holder": "Titulaire",
+      "holderHidden": "Nom non communiqué (confidentialité)",
+      "campaign": "Intitulé",
+      "activity": "Activité",
+      "activityDate": "Date de l'activité",
+      "issuedAt": "Date d'émission",
+      "revokedAt": "Date de révocation"
+    },
+    "types": {
+      "participation": "Participation",
+      "organization": "Organisation",
+      "volunteering": "Bénévolat",
+      "training": "Formation"
     }
   },
   "games": {

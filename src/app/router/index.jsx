@@ -42,6 +42,7 @@ const LearningStage = lazy(() => import('../../features/games/pages/LearningStag
 const PlayerProfile = lazy(() => import('../../features/games/pages/PlayerProfile'));
 const GamesLeaderboard = lazy(() => import('../../features/games/pages/Leaderboard'));
 const VerifyCard = lazy(() => import('../../pages/public/VerifyCard'));
+const VerifyCertificate = lazy(() => import('../../pages/public/VerifyCertificate'));
 const NotFound = lazy(() => import('../../pages/public/NotFound'));
 const Login = lazy(() => import('../../pages/admin/Login'));
 const Dashboard = lazy(() => import('../../pages/admin/Dashboard'));
@@ -115,6 +116,8 @@ export const router = createBrowserRouter([
 
       // صفحة التحقق العامة من بطاقة العضوية الرقمية (0040): يفتحها من يمسح الرمز بكاميرا الهاتف — غير مفهرسة وبلا تخزين
       { path: '/verify/:token', element: <VerifyCard /> },
+      // التحقق العام من الشهادات (QR الشهادة): مسار مستقل تمامًا عن /verify/:token — غير مفهرس وبلا تخزين للرمز
+      { path: '/verify-certificate/:token', element: <VerifyCertificate /> },
 
       // فضاء المنخرطين (المرحلة 4): دخول وتفعيل عامّان، وما بعدهما خلف حارس حساب العضو (MemberLayout). كلها غير مفهرسة
       { path: '/member/login', element: <MemberLogin /> },

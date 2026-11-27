@@ -84,6 +84,7 @@ export async function fetchCertificateRecipients(campaignId, { canManage }) {
       status: r.status,
       certificate_number: r.certificate_number || null,
       certificate_status: r.certificate_status || null,
+      certificate_id: null,
       email: null,
       has_email: !!r.has_email,
       member_id: null,
@@ -117,6 +118,7 @@ export async function fetchCertificateRecipients(campaignId, { canManage }) {
       status: r.status,
       certificate_number: c?.certificate_number || null,
       certificate_status: c?.status || null,
+      certificate_id: c?.id || null,
       email: r.email || null,
       has_email: !!r.email,
       member_id: r.member_id || null,
@@ -124,6 +126,17 @@ export async function fetchCertificateRecipients(campaignId, { canManage }) {
     };
   });
   return { campaign: null, recipients };
+}
+
+/**
+ * بيانات رسم شهادة صادرة (المرحلة 2B.2): get_certificate_render_data — manage أو مالك الشهادة فقط، والملغاة ترفع certificate_revoked.
+ * تتضمن الرمز الآمن المشتق عند الطلب (token/verification_path): لا يُخزَّن ولا يُسجَّل ولا يُنشأ بديل عنه في الواجهة.
+ */
+export async function fetchCertificateRenderData(certificateId) {
+  const { data, error } = await supabase.rpc('get_certificate_render_data', { p_certificate_id: certificateId });
+  if (error) throw error;
+  if (!data || typeof data !== 'object') throw new Error('certificate_render_invalid');
+  return data;
 }
 
 /** بحث أعضاء للإضافة اليدوية (manage فقط؛ أعمدة محدّدة) */

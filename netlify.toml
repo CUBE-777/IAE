@@ -53,6 +53,14 @@
     Referrer-Policy = "no-referrer"
     Cache-Control = "no-store"
 
+# الشهادات (Phase 2B.2): التحقق العام /verify-certificate/:token — نفس حماية الرمز في المسار (لا فهرسة ولا Referer ولا تخزين).
+[[headers]]
+  for = "/verify-certificate/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "no-referrer"
+    Cache-Control = "no-store"
+
 # المرحلة 3: ملفات Vite المبنية في /assets/ أسماؤها تحوي hash، فيمكن تخزينها سنة كاملة.
 # index.html وtheme-init.js يبقيان بلا تخزين طويل ليصل أي نشر جديد للزوار فورًا.
 [[headers]]
