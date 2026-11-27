@@ -11,7 +11,8 @@ const sorted = (a) => [...a].sort();
 const sql63 = read('supabase/migrations/0063_certificates_schema.sql');
 const sql64 = read('supabase/migrations/0064_certificates_admin_functions.sql');
 const service = read('src/services/supabase/adminCertificates.service.js');
-const PAGES = ['Certificates', 'CertificateCampaignDetail', 'CertificateCampaignFormModal', 'CertificateRecipientModals', 'certificateUi'];
+const PAGES = ['Certificates', 'CertificateCampaignDetail', 'CertificateCampaignFormModal', 'CertificateRecipientModals', 'certificateUi',
+  'CertificateDesigner', 'CertificateDesignerCanvas', 'CertificateDesignerPanels'];
 
 const sqlRoles = (fn) => {
   const m = sql63.match(new RegExp(`function public\\.${fn}\\(\\)[\\s\\S]*?in \\(([^)]*)\\)`));

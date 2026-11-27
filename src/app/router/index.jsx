@@ -63,6 +63,7 @@ const GamesAdmin = lazy(() => import('../../features/games/admin/pages/GamesAdmi
 const Budget = lazy(() => import('../../pages/admin/Budget'));
 const Security = lazy(() => import('../../pages/admin/Security'));
 const Certificates = lazy(() => import('../../pages/admin/Certificates'));
+const CertificateDesigner = lazy(() => import('../../pages/admin/CertificateDesigner'));
 const Privacy = lazy(() => import('../../pages/public/Privacy'));
 
 /**
@@ -166,6 +167,8 @@ export const router = createBrowserRouter([
       { path: '/admin/admins', element: protectedAdmin(ROLES_SUPER, <AdminUsers />) },
       { path: '/admin/audit', element: protectedAdmin(ROLES_SUPER, <Audit />) },
       { path: '/admin/certificates', element: protectedAdmin(ROLES_CERT_REVIEW, <Certificates />) },
+      // محرر القوالب: الحفظ عبر certificate_save_template المقصورة على can_admin_certificates() = developer/super_admin
+      { path: '/admin/certificates/designer', element: protectedAdmin(ROLES_SUPER, <CertificateDesigner />) },
       { path: '/admin/security', element: protectedAdmin([], <Security />) },
       { path: '/admin/settings', element: protectedAdmin(ROLES_SUPER, <Settings />) },
       { path: '/admin/games', element: protectedAdmin(ROLES_SUPER, <GamesAdmin />) },

@@ -17,6 +17,7 @@ const CAMPAIGN_COLS =
   'id, title, certificate_type, eligibility_source, activity_id, activity_title_snapshot, activity_date_snapshot, template_id, language, public_name_mode, status, issued_at, archived_at, created_at';
 const RECIPIENT_COLS = 'id, campaign_id, member_id, kind, display_name, email, eligibility_source, attended_at, status, certificate_id, created_at';
 const TEMPLATE_COLS = 'id, code, name, style, is_active';
+const TEMPLATE_DESIGN_COLS = 'id, code, name, style, design, is_system, is_active';
 
 /** الوحدة غير مطبّقة على القاعدة (migration لم تُنفَّذ): دالة/جدول غير موجود */
 export function isCertificateSchemaMissing(err) {
@@ -44,6 +45,16 @@ export async function fetchCertificateCampaign(id) {
 
 export async function fetchCertificateTemplates() {
   const { data, error } = await supabase.from('certificate_templates').select(TEMPLATE_COLS).eq('is_active', true).order('name');
+  if (error) throw error;
+  return data || [];
+}
+
+/**
+ * كل القوالب (النشطة وغير النشطة) مع design لمحرر القوالب. لا تُستعمل عند اختيار قالب حملة (لا حاجة للتصميم هناك).
+ * القراءة مسموحة لمن يملك can_manage_certificates() عبر سياسة SELECT؛ الحفظ لـ developer/super_admin فقط (RPC).
+ */
+export async function fetchCertificateTemplatesWithDesign() {
+  const { data, error } = await supabase.from('certificate_templates').select(TEMPLATE_DESIGN_COLS).order('is_system', { ascending: false }).order('name');
   if (error) throw error;
   return data || [];
 }
@@ -197,4 +208,20 @@ export async function issueCertificateCampaign(campaignId) {
   const { data, error } = await supabase.rpc('certificate_issue_campaign', { p_campaign_id: campaignId });
   if (error) throw error;
   return data || { issued: 0, skipped: 0 };
+}
+
+/**
+ * حفظ قالب عبر certificate_save_template (إنشاء إن كان id فارغًا، وإلا تحديث).
+ * القوالب النظامية: الخادم يتجاهل name/style ويحفظ design/is_active فقط. يُرجع uuid القالب.
+ */
+export async function saveCertificateTemplate({ id, name, style, design, isActive }) {
+  const { data, error } = await supabase.rpc('certificate_save_template', {
+    p_id: id || null,
+    p_name: name,
+    p_style: style,
+    p_design: design,
+    p_is_active: isActive !== false,
+  });
+  if (error) throw error;
+  return data;
 }

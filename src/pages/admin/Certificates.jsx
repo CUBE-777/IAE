@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AdminLayout from '../../layouts/AdminLayout';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import StateBox from '../../components/admin/StateBox';
 import { useAuth } from '../../app/providers/AuthProvider';
-import { ROLES_CERT_MANAGE } from '../../constants/roles';
+import { ROLES_CERT_MANAGE, ROLES_SUPER } from '../../constants/roles';
 import { fetchCertificateCampaigns, isCertificateSchemaMissing } from '../../services/supabase/adminCertificates.service';
 import CertificateCampaignFormModal from './CertificateCampaignFormModal';
 import CertificateCampaignDetail from './CertificateCampaignDetail';
@@ -17,6 +17,7 @@ export default function Certificates() {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const canManage = ROLES_CERT_MANAGE.includes(profile?.role);
+  const canDesign = ROLES_SUPER.includes(profile?.role);
   const [params, setParams] = useSearchParams();
   const campaignId = params.get('c');
 
@@ -69,7 +70,12 @@ export default function Certificates() {
       <AdminPageHeader
         title={t('admin.certificates.title')}
         subtitle={t('admin.certificates.subtitle')}
-        actions={canManage ? <button type="button" className="admin-quick-action" onClick={() => setCreating(true)}>{t('admin.certificates.new')}</button> : null}
+        actions={canManage ? (
+          <>
+            {canDesign && <Link className="admin-quick-action" to="/admin/certificates/designer">{t('admin.certificates.designer.open')}</Link>}
+            <button type="button" className="admin-quick-action" onClick={() => setCreating(true)}>{t('admin.certificates.new')}</button>
+          </>
+        ) : null}
       />
 
       {!canManage && <p className="admin-hint">{t('admin.certificates.reviewOnlyNotice')}</p>}

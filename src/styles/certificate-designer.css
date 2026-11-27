@@ -1,0 +1,104 @@
+/* محرر قوالب الشهادات (Phase 2B.1) — أصناف جديدة ببادئة cd- فقط؛ لا تعديل لأي صنف موجود. */
+
+.cd-root { outline: none; }
+.cd-root .admin-panel { margin-bottom: 14px; padding: 14px 16px; }
+
+.cd-h2 { font-size: 0.95rem; margin: 0 0 10px; }
+.cd-field { margin: 0; min-width: 0; }
+.cd-fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.cd-fieldset:disabled { opacity: 0.6; }
+.cd-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; margin-bottom: 8px; }
+.cd-row { display: flex; align-items: center; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
+
+/* ---- معلومات القالب */
+.cd-meta { display: grid; grid-template-columns: minmax(180px, 1.2fr) minmax(180px, 1.2fr) minmax(140px, 0.8fr) auto; gap: 10px 14px; align-items: end; }
+.cd-meta-active { align-self: center; }
+.cd-meta-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.cd-meta-note { grid-column: 1 / -1; margin: 0; }
+.cd-size { font-size: 0.78rem; color: var(--admin-text-muted); font-variant-numeric: tabular-nums; }
+.cd-size.is-over { color: #c0392b; font-weight: 600; }
+
+/* ---- شريط الأدوات */
+.cd-toolbar { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+.cd-tool-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.cd-tool { display: inline-flex; align-items: center; gap: 6px; }
+.cd-preview-note { margin: 0 0 10px; }
+
+.cd-check { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; cursor: pointer; }
+.cd-seg { display: inline-flex; border: 1px solid var(--admin-border); border-radius: var(--radius-sm); overflow: hidden; }
+.cd-seg-btn {
+  background: var(--admin-surface); color: var(--admin-text); border: 0; padding: 6px 10px; cursor: pointer;
+  font: inherit; font-size: 0.8rem; display: inline-flex; align-items: center; justify-content: center; min-width: 34px;
+}
+.cd-seg-btn + .cd-seg-btn { border-inline-start: 1px solid var(--admin-border); }
+.cd-seg-btn.is-active { background: var(--admin-accent-soft); color: var(--admin-accent); font-weight: 600; }
+.cd-seg-btn.cd-solo { border: 1px solid var(--admin-border); border-radius: var(--radius-sm); }
+.cd-seg-btn:focus-visible, .cd-icon-btn:focus-visible, .cd-layer-main:focus-visible, .cd-chip:focus-visible { outline: 2px solid var(--admin-accent); outline-offset: 1px; }
+
+/* ---- الشبكة: طبقات | لوحة | خصائص */
+.cd-grid { display: grid; grid-template-columns: 230px minmax(0, 1fr) 270px; gap: 14px; align-items: start; }
+.cd-canvas-col { min-width: 0; }
+.cd-layers, .cd-props { max-height: 78vh; overflow: auto; margin-bottom: 0 !important; }
+
+/* ---- الطبقات */
+.cd-layers-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.cd-layer { display: flex; align-items: center; gap: 2px; border-radius: var(--radius-sm); }
+.cd-layer.is-selected { background: var(--admin-accent-soft); }
+.cd-layer.is-hidden .cd-layer-label { opacity: 0.45; text-decoration: line-through; }
+.cd-layer-main {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; background: none; border: 0; color: var(--admin-text);
+  padding: 6px 6px; cursor: pointer; font: inherit; font-size: 0.82rem; text-align: start;
+}
+.cd-layer-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cd-icon-btn {
+  background: none; border: 0; color: var(--admin-text-muted); padding: 5px; cursor: pointer; border-radius: 6px; display: inline-flex;
+}
+.cd-icon-btn:hover:not(:disabled) { background: var(--admin-surface-alt); color: var(--admin-text); }
+.cd-icon-btn:disabled { opacity: 0.3; cursor: default; }
+.cd-icon-btn[aria-pressed='true'] { color: var(--admin-accent); }
+
+/* ---- اللوحة (ورقة A4: ألوانها صريحة لأنها تمثّل الورق لا الواجهة) */
+.cd-stage { width: 100%; max-width: 1100px; margin: 0 auto; }
+.cd-page {
+  position: relative; overflow: hidden; direction: ltr; margin: 0 auto; box-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+  user-select: none; touch-action: none; max-width: 100%;
+}
+.cd-el { position: absolute; box-sizing: border-box; cursor: move; }
+.cd-el.is-locked { cursor: default; }
+.cd-el.is-selected { outline: 1.5px solid #0a66c8; outline-offset: 0; }
+.cd-el:not(.is-selected):hover { outline: 1px dashed rgba(10, 102, 200, 0.6); }
+.cd-page.is-preview .cd-el:hover { outline: 0; }
+.cd-text { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: stretch; line-height: 1.25; white-space: pre-wrap; overflow-wrap: anywhere; }
+.cd-qr {
+  width: 100%; height: 100%; border: 1px dashed #6b7686; box-sizing: border-box;
+  background: conic-gradient(#222 25%, #fff 0 50%, #222 0 75%, #fff 0) 0 0 / 16% 16%; opacity: 0.55;
+}
+.cd-handle {
+  position: absolute; width: 9px; height: 9px; background: #fff; border: 1.5px solid #0a66c8; box-sizing: border-box; border-radius: 2px;
+}
+.cd-handle-nw { top: -5px; left: -5px; cursor: nwse-resize; }
+.cd-handle-ne { top: -5px; right: -5px; cursor: nesw-resize; }
+.cd-handle-sw { bottom: -5px; left: -5px; cursor: nesw-resize; }
+.cd-handle-se { bottom: -5px; right: -5px; cursor: nwse-resize; }
+
+/* ---- الخصائص */
+.cd-color-row { display: flex; align-items: center; gap: 8px; }
+.cd-color { width: 44px; height: 32px; padding: 0; border: 1px solid var(--admin-border); border-radius: 6px; background: none; cursor: pointer; }
+.cd-vars { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-bottom: 10px; }
+.cd-chip {
+  background: var(--admin-surface-alt); color: var(--admin-text); border: 1px solid var(--admin-border); border-radius: 999px;
+  padding: 2px 8px; font: inherit; font-size: 0.72rem; cursor: pointer;
+}
+.cd-chip:hover { border-color: var(--admin-accent); }
+
+/* ---- شاشات أصغر: اللوحة أولًا ثم الخصائص ثم الطبقات */
+@media (max-width: 1100px) {
+  .cd-grid { grid-template-columns: minmax(0, 1fr) 260px; }
+  .cd-canvas-col { grid-column: 1 / -1; order: -1; }
+  .cd-layers, .cd-props { max-height: none; }
+}
+@media (max-width: 720px) {
+  .cd-grid { grid-template-columns: minmax(0, 1fr); }
+  .cd-meta { grid-template-columns: minmax(0, 1fr); }
+  .cd-tool-label { display: none; }
+}
